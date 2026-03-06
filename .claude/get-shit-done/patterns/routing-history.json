@@ -1,0 +1,92 @@
+{
+  "task_types": {
+    "flutter-setup": {
+      "best_model": "opus",
+      "average_duration": "4-6h",
+      "success_rate": 100,
+      "sample_size": 1,
+      "common_deviations": [
+        "liquid_glass_renderer API incompatible - fallback to standard glass widgets",
+        "Build runner conflicts - use --delete-conflicting-outputs flag"
+      ]
+    },
+    "drift-schema": {
+      "best_model": "opus",
+      "average_duration": "30min",
+      "success_rate": 100,
+      "sample_size": 1,
+      "common_deviations": []
+    },
+    "drift-dao-crud": {
+      "best_model": "opus",
+      "average_duration": "45min",
+      "success_rate": 100,
+      "sample_size": 1,
+      "common_deviations": [
+        "Use entry.id.present instead of entry.id.value == null",
+        "Import drift with 'hide isNotNull, isNull' to avoid matcher conflicts"
+      ]
+    },
+    "flutter-provider": {
+      "best_model": "opus",
+      "average_duration": "30min",
+      "success_rate": 100,
+      "sample_size": 1,
+      "common_deviations": [
+        "Stream subscription needs to be cancelled in dispose()",
+        "Auto-select first entity if none persisted"
+      ]
+    },
+    "flutter-crud-screen": {
+      "best_model": "opus",
+      "average_duration": "45min",
+      "success_rate": 100,
+      "sample_size": 1,
+      "common_deviations": [
+        "Widget tests with streams may timeout - use pump() instead of pumpAndSettle()"
+      ]
+    },
+    "flutter-form-dialog": {
+      "best_model": "sonnet",
+      "average_duration": "20min",
+      "success_rate": 100,
+      "sample_size": 1,
+      "common_deviations": []
+    },
+    "theming": {
+      "best_model": "sonnet",
+      "average_duration": "20min",
+      "success_rate": 100,
+      "sample_size": 1,
+      "common_deviations": [
+        "withOpacity deprecated - use withValues(alpha: x)"
+      ]
+    },
+    "localization": {
+      "best_model": "sonnet",
+      "average_duration": "15min",
+      "success_rate": 100,
+      "sample_size": 2,
+      "common_deviations": []
+    },
+    "test-infrastructure": {
+      "best_model": "sonnet",
+      "average_duration": "20min",
+      "success_rate": 100,
+      "sample_size": 1,
+      "common_deviations": []
+    },
+    "flutter-widget-test": {
+      "best_model": "opus",
+      "average_duration": "30min",
+      "success_rate": 100,
+      "sample_size": 1,
+      "common_deviations": [
+        "Drift stream subscriptions cause pumpAndSettle() to hang",
+        "Workaround: await tester.pumpWidget(Container()) at test end",
+        "Alternative: Use pump() with fixed duration instead of pumpAndSettle()"
+      ]
+    }
+  },
+  "updated_at": "2026-03-06T12:00:00Z"
+}

@@ -121,4 +121,55 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get addHousehold => 'Add Household';
+
+  @override
+  String get electricityReading => 'Electricity Reading';
+
+  @override
+  String get electricityReadings => 'Electricity Readings';
+
+  @override
+  String get addElectricityReading => 'Add Reading';
+
+  @override
+  String get editElectricityReading => 'Edit Reading';
+
+  @override
+  String get deleteElectricityReading => 'Delete Reading';
+
+  @override
+  String get deleteReadingConfirm =>
+      'Are you sure you want to delete this reading?';
+
+  @override
+  String get noElectricityReadings =>
+      'No readings yet. Add your first meter reading!';
+
+  @override
+  String get meterValue => 'Meter Value';
+
+  @override
+  String get meterValueHint => 'Enter current meter value';
+
+  @override
+  String consumptionSince(String value) {
+    return '+$value kWh since previous';
+  }
+
+  @override
+  String get firstReading => 'First reading';
+
+  @override
+  String get readingMustBePositive => 'Value must be positive';
+
+  @override
+  String readingMustBeGreaterOrEqual(String previousValue) {
+    return 'Value must be >= $previousValue kWh';
+  }
+
+  @override
+  String get dateAndTime => 'Date & Time';
+
+  @override
+  String get ok => 'OK';
 }

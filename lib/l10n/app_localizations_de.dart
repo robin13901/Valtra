@@ -122,4 +122,55 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get addHousehold => 'Haushalt hinzufügen';
+
+  @override
+  String get electricityReading => 'Stromablesung';
+
+  @override
+  String get electricityReadings => 'Stromablesungen';
+
+  @override
+  String get addElectricityReading => 'Ablesung hinzufügen';
+
+  @override
+  String get editElectricityReading => 'Ablesung bearbeiten';
+
+  @override
+  String get deleteElectricityReading => 'Ablesung löschen';
+
+  @override
+  String get deleteReadingConfirm =>
+      'Möchten Sie diese Ablesung wirklich löschen?';
+
+  @override
+  String get noElectricityReadings =>
+      'Noch keine Ablesungen. Fügen Sie Ihre erste Zählerablesung hinzu!';
+
+  @override
+  String get meterValue => 'Zählerstand';
+
+  @override
+  String get meterValueHint => 'Aktuellen Zählerstand eingeben';
+
+  @override
+  String consumptionSince(String value) {
+    return '+$value kWh seit letzter Ablesung';
+  }
+
+  @override
+  String get firstReading => 'Erste Ablesung';
+
+  @override
+  String get readingMustBePositive => 'Der Wert muss positiv sein';
+
+  @override
+  String readingMustBeGreaterOrEqual(String previousValue) {
+    return 'Der Wert muss >= $previousValue kWh sein';
+  }
+
+  @override
+  String get dateAndTime => 'Datum & Uhrzeit';
+
+  @override
+  String get ok => 'OK';
 }

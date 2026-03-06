@@ -319,6 +319,96 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Add Household'**
   String get addHousehold;
+
+  /// No description provided for @electricityReading.
+  ///
+  /// In en, this message translates to:
+  /// **'Electricity Reading'**
+  String get electricityReading;
+
+  /// No description provided for @electricityReadings.
+  ///
+  /// In en, this message translates to:
+  /// **'Electricity Readings'**
+  String get electricityReadings;
+
+  /// No description provided for @addElectricityReading.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Reading'**
+  String get addElectricityReading;
+
+  /// No description provided for @editElectricityReading.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Reading'**
+  String get editElectricityReading;
+
+  /// No description provided for @deleteElectricityReading.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Reading'**
+  String get deleteElectricityReading;
+
+  /// No description provided for @deleteReadingConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this reading?'**
+  String get deleteReadingConfirm;
+
+  /// No description provided for @noElectricityReadings.
+  ///
+  /// In en, this message translates to:
+  /// **'No readings yet. Add your first meter reading!'**
+  String get noElectricityReadings;
+
+  /// No description provided for @meterValue.
+  ///
+  /// In en, this message translates to:
+  /// **'Meter Value'**
+  String get meterValue;
+
+  /// No description provided for @meterValueHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter current meter value'**
+  String get meterValueHint;
+
+  /// No description provided for @consumptionSince.
+  ///
+  /// In en, this message translates to:
+  /// **'+{value} kWh since previous'**
+  String consumptionSince(String value);
+
+  /// No description provided for @firstReading.
+  ///
+  /// In en, this message translates to:
+  /// **'First reading'**
+  String get firstReading;
+
+  /// No description provided for @readingMustBePositive.
+  ///
+  /// In en, this message translates to:
+  /// **'Value must be positive'**
+  String get readingMustBePositive;
+
+  /// No description provided for @readingMustBeGreaterOrEqual.
+  ///
+  /// In en, this message translates to:
+  /// **'Value must be >= {previousValue} kWh'**
+  String readingMustBeGreaterOrEqual(String previousValue);
+
+  /// No description provided for @dateAndTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Date & Time'**
+  String get dateAndTime;
+
+  /// No description provided for @ok.
+  ///
+  /// In en, this message translates to:
+  /// **'OK'**
+  String get ok;
 }
 
 class _AppLocalizationsDelegate

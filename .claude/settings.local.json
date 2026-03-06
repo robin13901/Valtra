@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:github.com)",
+      "Bash(flutter test test/screens/households_screen_test.dart)",
+      "Bash(flutter test test/screens/households_screen_test.dart --reporter expanded)",
+      "Bash(flutter test)",
+      "Bash(flutter analyze)"
+    ]
+  }
+}

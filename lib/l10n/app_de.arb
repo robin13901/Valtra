@@ -36,5 +36,20 @@
   "householdNameTooLong": "Haushaltsname darf maximal 100 Zeichen lang sein",
   "cannotDeleteHousehold": "Haushalt kann nicht gelöscht werden",
   "householdHasRelatedData": "Dieser Haushalt hat zugehörige Zähler oder Ablesungen. Löschen Sie diese zuerst, bevor Sie den Haushalt entfernen.",
-  "addHousehold": "Haushalt hinzufügen"
+  "addHousehold": "Haushalt hinzufügen",
+  "electricityReading": "Stromablesung",
+  "electricityReadings": "Stromablesungen",
+  "addElectricityReading": "Ablesung hinzufügen",
+  "editElectricityReading": "Ablesung bearbeiten",
+  "deleteElectricityReading": "Ablesung löschen",
+  "deleteReadingConfirm": "Möchten Sie diese Ablesung wirklich löschen?",
+  "noElectricityReadings": "Noch keine Ablesungen. Fügen Sie Ihre erste Zählerablesung hinzu!",
+  "meterValue": "Zählerstand",
+  "meterValueHint": "Aktuellen Zählerstand eingeben",
+  "consumptionSince": "+{value} kWh seit letzter Ablesung",
+  "firstReading": "Erste Ablesung",
+  "readingMustBePositive": "Der Wert muss positiv sein",
+  "readingMustBeGreaterOrEqual": "Der Wert muss >= {previousValue} kWh sein",
+  "dateAndTime": "Datum & Uhrzeit",
+  "ok": "OK"
 }

@@ -4,10 +4,13 @@ import 'package:provider/provider.dart';
 import 'app_theme.dart';
 import 'database/app_database.dart';
 import 'database/connection/shared.dart';
+import 'database/daos/electricity_dao.dart';
 import 'database/daos/household_dao.dart';
 import 'l10n/app_localizations.dart';
+import 'providers/electricity_provider.dart';
 import 'providers/household_provider.dart';
 import 'providers/theme_provider.dart';
+import 'screens/electricity_screen.dart';
 import 'widgets/household_selector.dart';
 
 void main() async {
@@ -24,32 +27,70 @@ void main() async {
   final householdProvider = HouseholdProvider(HouseholdDao(database));
   await householdProvider.init();
 
+  // Initialize electricity provider
+  final electricityProvider = ElectricityProvider(ElectricityDao(database));
+
+  // Connect electricity provider to household changes
+  if (householdProvider.selectedHouseholdId != null) {
+    electricityProvider.setHouseholdId(householdProvider.selectedHouseholdId);
+  }
+
   runApp(ValtraApp(
     database: database,
     themeProvider: themeProvider,
     householdProvider: householdProvider,
+    electricityProvider: electricityProvider,
   ));
 }
 
-class ValtraApp extends StatelessWidget {
+class ValtraApp extends StatefulWidget {
   final AppDatabase database;
   final ThemeProvider themeProvider;
   final HouseholdProvider householdProvider;
+  final ElectricityProvider electricityProvider;
 
   const ValtraApp({
     super.key,
     required this.database,
     required this.themeProvider,
     required this.householdProvider,
+    required this.electricityProvider,
   });
+
+  @override
+  State<ValtraApp> createState() => _ValtraAppState();
+}
+
+class _ValtraAppState extends State<ValtraApp> {
+  @override
+  void initState() {
+    super.initState();
+    // Listen to household changes to update electricity provider
+    widget.householdProvider.addListener(_onHouseholdChanged);
+  }
+
+  @override
+  void dispose() {
+    widget.householdProvider.removeListener(_onHouseholdChanged);
+    super.dispose();
+  }
+
+  void _onHouseholdChanged() {
+    widget.electricityProvider
+        .setHouseholdId(widget.householdProvider.selectedHouseholdId);
+  }
 
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        Provider<AppDatabase>.value(value: database),
-        ChangeNotifierProvider<ThemeProvider>.value(value: themeProvider),
-        ChangeNotifierProvider<HouseholdProvider>.value(value: householdProvider),
+        Provider<AppDatabase>.value(value: widget.database),
+        ChangeNotifierProvider<ThemeProvider>.value(
+            value: widget.themeProvider),
+        ChangeNotifierProvider<HouseholdProvider>.value(
+            value: widget.householdProvider),
+        ChangeNotifierProvider<ElectricityProvider>.value(
+            value: widget.electricityProvider),
       ],
       child: Consumer<ThemeProvider>(
         builder: (context, themeProvider, child) {
@@ -111,17 +152,34 @@ class HomeScreen extends StatelessWidget {
             const SizedBox(height: 8),
             _buildCurrentHousehold(context, l10n),
             const SizedBox(height: 32),
-            _buildCategoryChip(context, Icons.electric_bolt, l10n.electricity,
-                AppColors.electricityColor),
+            _buildCategoryChip(
+              context,
+              Icons.electric_bolt,
+              l10n.electricity,
+              AppColors.electricityColor,
+              onTap: () => _navigateToElectricity(context),
+            ),
             const SizedBox(height: 8),
             _buildCategoryChip(
-                context, Icons.local_fire_department, l10n.gas, AppColors.gasColor),
+              context,
+              Icons.local_fire_department,
+              l10n.gas,
+              AppColors.gasColor,
+            ),
             const SizedBox(height: 8),
             _buildCategoryChip(
-                context, Icons.water_drop, l10n.water, AppColors.waterColor),
+              context,
+              Icons.water_drop,
+              l10n.water,
+              AppColors.waterColor,
+            ),
             const SizedBox(height: 8),
             _buildCategoryChip(
-                context, Icons.thermostat, l10n.heating, AppColors.heatingColor),
+              context,
+              Icons.thermostat,
+              l10n.heating,
+              AppColors.heatingColor,
+            ),
           ],
         ),
       ),
@@ -168,12 +226,39 @@ class HomeScreen extends StatelessWidget {
     BuildContext context,
     IconData icon,
     String label,
-    Color color,
-  ) {
-    return Chip(
+    Color color, {
+    VoidCallback? onTap,
+  }) {
+    final chip = Chip(
       avatar: Icon(icon, color: color, size: 20),
       label: Text(label),
       backgroundColor: color.withValues(alpha: 0.1),
+    );
+
+    if (onTap != null) {
+      return InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(8),
+        child: chip,
+      );
+    }
+
+    return chip;
+  }
+
+  void _navigateToElectricity(BuildContext context) {
+    final householdProvider = context.read<HouseholdProvider>();
+    if (householdProvider.selectedHousehold == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.selectHousehold),
+        ),
+      );
+      return;
+    }
+
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (context) => const ElectricityScreen()),
     );
   }
 }

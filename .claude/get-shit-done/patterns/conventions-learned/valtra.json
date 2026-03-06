@@ -1,0 +1,101 @@
+{
+  "project": "valtra",
+  "captured_at": "2026-03-06",
+  "language": {
+    "primary": "dart",
+    "version": "^3.10.0"
+  },
+  "framework": {
+    "name": "flutter",
+    "patterns": ["provider", "drift", "material3", "sharedpreferences"]
+  },
+  "naming": {
+    "files": {
+      "pattern": "snake_case",
+      "examples": ["app_theme.dart", "test_database.dart", "app_database.dart", "household_dao.dart", "household_provider.dart"]
+    },
+    "classes": {
+      "pattern": "PascalCase",
+      "examples": ["AppTheme", "AppColors", "ThemeProvider", "HouseholdDao", "HouseholdProvider"]
+    },
+    "variables": {
+      "pattern": "camelCase",
+      "examples": ["lightTheme", "darkTheme", "householdId", "selectedHousehold"]
+    },
+    "constants": {
+      "pattern": "camelCase (static)",
+      "examples": ["ultraViolet", "lemonChiffon", "_selectedHouseholdKey"]
+    },
+    "tables": {
+      "pattern": "PascalCase plural",
+      "examples": ["Households", "ElectricityReadings", "WaterMeters"]
+    },
+    "entities": {
+      "pattern": "PascalCase singular (via @DataClassName)",
+      "examples": ["Household", "ElectricityReading", "WaterMeter"]
+    },
+    "daos": {
+      "pattern": "{Entity}Dao",
+      "examples": ["HouseholdDao"]
+    },
+    "providers": {
+      "pattern": "{Entity}Provider",
+      "examples": ["ThemeProvider", "HouseholdProvider"]
+    },
+    "screens": {
+      "pattern": "{Entity}sScreen (plural)",
+      "examples": ["HouseholdsScreen"]
+    },
+    "dialogs": {
+      "pattern": "{Entity}FormDialog",
+      "examples": ["HouseholdFormDialog"]
+    }
+  },
+  "structure": {
+    "lib": {
+      "database": ["tables.dart", "app_database.dart", "connection/native.dart"],
+      "database/daos": ["{entity}_dao.dart"],
+      "providers": ["theme_provider.dart", "{entity}_provider.dart"],
+      "screens": ["{entity}s_screen.dart"],
+      "widgets": ["liquid_glass_widgets.dart", "{entity}_selector.dart"],
+      "widgets/dialogs": ["{entity}_form_dialog.dart"],
+      "l10n": ["app_en.arb", "app_de.arb"]
+    },
+    "test": {
+      "helpers": ["test_database.dart", "test_utils.dart"],
+      "database": ["tables_test.dart", "{entity}_dao_test.dart"],
+      "providers": ["{entity}_provider_test.dart"],
+      "screens": ["{entity}s_screen_test.dart"],
+      "widgets": ["{entity}_form_dialog_test.dart", "{entity}_selector_test.dart"]
+    }
+  },
+  "testing": {
+    "framework": "flutter_test",
+    "mocking": "mocktail",
+    "database": "in-memory NativeDatabase",
+    "patterns": [
+      "Use createTestDatabase() factory",
+      "Group tests by feature",
+      "Test theme brightness separately",
+      "Import drift with 'hide isNotNull, isNull'",
+      "Use SharedPreferences.setMockInitialValues({}) in setUp",
+      "Add Future.delayed(Duration(milliseconds: 100)) after stream operations"
+    ]
+  },
+  "localization": {
+    "method": "flutter_localizations + intl",
+    "languages": ["en", "de"],
+    "file_format": "ARB",
+    "location": "lib/l10n/"
+  },
+  "ci_cd": {
+    "platform": "GitHub Actions",
+    "workflow": "flutter-tests.yml"
+  },
+  "pitfalls_learned": [
+    "Drift isNotNull/isNull conflicts with flutter_test matchers - use hide in import",
+    "Widget tests with ChangeNotifier streams may timeout - use pump() instead of pumpAndSettle()",
+    "Value.absent check: use entry.id.present not entry.id.value == null",
+    "withOpacity() deprecated - use withValues(alpha: x)"
+  ]
+}

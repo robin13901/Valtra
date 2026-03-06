@@ -36,5 +36,30 @@
   "householdNameTooLong": "Household name must be 100 characters or less",
   "cannotDeleteHousehold": "Cannot Delete Household",
   "householdHasRelatedData": "This household has related meters or readings. Delete them first before removing the household.",
-  "addHousehold": "Add Household"
+  "addHousehold": "Add Household",
+  "electricityReading": "Electricity Reading",
+  "electricityReadings": "Electricity Readings",
+  "addElectricityReading": "Add Reading",
+  "editElectricityReading": "Edit Reading",
+  "deleteElectricityReading": "Delete Reading",
+  "deleteReadingConfirm": "Are you sure you want to delete this reading?",
+  "noElectricityReadings": "No readings yet. Add your first meter reading!",
+  "meterValue": "Meter Value",
+  "meterValueHint": "Enter current meter value",
+  "consumptionSince": "+{value} kWh since previous",
+  "@consumptionSince": {
+    "placeholders": {
+      "value": {"type": "String"}
+    }
+  },
+  "firstReading": "First reading",
+  "readingMustBePositive": "Value must be positive",
+  "readingMustBeGreaterOrEqual": "Value must be >= {previousValue} kWh",
+  "@readingMustBeGreaterOrEqual": {
+    "placeholders": {
+      "previousValue": {"type": "String"}
+    }
+  },
+  "dateAndTime": "Date & Time",
+  "ok": "OK"
 }
