@@ -173,4 +173,129 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get ok => 'OK';
+
+  @override
+  String get rooms => 'Räume';
+
+  @override
+  String get addRoom => 'Raum hinzufügen';
+
+  @override
+  String get editRoom => 'Raum bearbeiten';
+
+  @override
+  String get deleteRoom => 'Raum löschen';
+
+  @override
+  String get roomName => 'Raumname';
+
+  @override
+  String get roomNameHint => 'Raumnamen eingeben';
+
+  @override
+  String get noRooms =>
+      'Noch keine Räume. Erstellen Sie einen, um Ihre Smart Plugs zu organisieren!';
+
+  @override
+  String get roomNameRequired => 'Raumname ist erforderlich';
+
+  @override
+  String get roomNameTooLong => 'Raumname darf maximal 100 Zeichen lang sein';
+
+  @override
+  String get deleteRoomConfirm => 'Möchten Sie diesen Raum wirklich löschen?';
+
+  @override
+  String roomHasSmartPlugs(int count) {
+    return 'Dieser Raum hat $count Smart Plug(s). Diese werden ebenfalls gelöscht.';
+  }
+
+  @override
+  String get smartPlugs => 'Smart Plugs';
+
+  @override
+  String get addSmartPlug => 'Smart Plug hinzufügen';
+
+  @override
+  String get editSmartPlug => 'Smart Plug bearbeiten';
+
+  @override
+  String get deleteSmartPlug => 'Smart Plug löschen';
+
+  @override
+  String get smartPlugName => 'Plug-Name';
+
+  @override
+  String get smartPlugNameHint => 'Smart Plug Namen eingeben';
+
+  @override
+  String get noSmartPlugs =>
+      'Noch keine Smart Plugs. Fügen Sie einen hinzu, um den Geräteverbrauch zu verfolgen!';
+
+  @override
+  String get smartPlugNameRequired => 'Plug-Name ist erforderlich';
+
+  @override
+  String get deleteSmartPlugConfirm =>
+      'Möchten Sie diesen Smart Plug wirklich löschen?';
+
+  @override
+  String get selectRoom => 'Raum auswählen';
+
+  @override
+  String get roomRequired => 'Bitte wählen Sie einen Raum';
+
+  @override
+  String get addConsumption => 'Verbrauch hinzufügen';
+
+  @override
+  String get editConsumption => 'Verbrauch bearbeiten';
+
+  @override
+  String get deleteConsumption => 'Verbrauch löschen';
+
+  @override
+  String get noConsumption => 'Noch keine Verbrauchseinträge.';
+
+  @override
+  String get deleteConsumptionConfirm =>
+      'Möchten Sie diesen Eintrag wirklich löschen?';
+
+  @override
+  String get intervalType => 'Intervalltyp';
+
+  @override
+  String get intervalStart => 'Startdatum';
+
+  @override
+  String get daily => 'Täglich';
+
+  @override
+  String get weekly => 'Wöchentlich';
+
+  @override
+  String get monthly => 'Monatlich';
+
+  @override
+  String get yearly => 'Jährlich';
+
+  @override
+  String smartPlugCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Smart Plugs',
+      one: '1 Smart Plug',
+      zero: 'Keine Smart Plugs',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String lastEntry(String value, String interval) {
+    return 'Zuletzt: $value kWh ($interval)';
+  }
+
+  @override
+  String get manageRooms => 'Räume verwalten';
 }

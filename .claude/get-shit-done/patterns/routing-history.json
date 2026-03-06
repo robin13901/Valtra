@@ -21,37 +21,43 @@
       "best_model": "opus",
       "average_duration": "45min",
       "success_rate": 100,
-      "sample_size": 1,
+      "sample_size": 2,
       "common_deviations": [
         "Use entry.id.present instead of entry.id.value == null",
-        "Import drift with 'hide isNotNull, isNull' to avoid matcher conflicts"
+        "Import drift with 'hide isNotNull, isNull' to avoid matcher conflicts",
+        "JOIN queries return JoinedRow - use r.readTable(entity) to extract",
+        "Cascade delete requires transaction() for atomicity"
       ]
     },
     "flutter-provider": {
       "best_model": "opus",
       "average_duration": "30min",
       "success_rate": 100,
-      "sample_size": 1,
+      "sample_size": 2,
       "common_deviations": [
         "Stream subscription needs to be cancelled in dispose()",
-        "Auto-select first entity if none persisted"
+        "Auto-select first entity if none persisted",
+        "Grouped getters need to rebuild map from list on each access"
       ]
     },
     "flutter-crud-screen": {
       "best_model": "opus",
       "average_duration": "45min",
       "success_rate": 100,
-      "sample_size": 1,
+      "sample_size": 2,
       "common_deviations": [
-        "Widget tests with streams may timeout - use pump() instead of pumpAndSettle()"
+        "Widget tests with streams may timeout - use pump() instead of pumpAndSettle()",
+        "Grouped ListView needs sorted keys for consistent ordering"
       ]
     },
     "flutter-form-dialog": {
       "best_model": "sonnet",
       "average_duration": "20min",
       "success_rate": 100,
-      "sample_size": 1,
-      "common_deviations": []
+      "sample_size": 3,
+      "common_deviations": [
+        "Check parent list before showing child form - show snackbar if empty"
+      ]
     },
     "theming": {
       "best_model": "sonnet",
@@ -66,7 +72,7 @@
       "best_model": "sonnet",
       "average_duration": "15min",
       "success_rate": 100,
-      "sample_size": 2,
+      "sample_size": 3,
       "common_deviations": []
     },
     "test-infrastructure": {
@@ -80,13 +86,24 @@
       "best_model": "opus",
       "average_duration": "30min",
       "success_rate": 100,
-      "sample_size": 1,
+      "sample_size": 2,
       "common_deviations": [
         "Drift stream subscriptions cause pumpAndSettle() to hang",
         "Workaround: await tester.pumpWidget(Container()) at test end",
         "Alternative: Use pump() with fixed duration instead of pumpAndSettle()"
       ]
+    },
+    "hierarchical-crud": {
+      "best_model": "opus",
+      "average_duration": "2-3h",
+      "success_rate": 100,
+      "sample_size": 1,
+      "common_deviations": [
+        "Indirect relationship requires JOIN query",
+        "Cascade delete with warning dialog",
+        "Grouped display by parent entity"
+      ]
     }
   },
-  "updated_at": "2026-03-06T12:00:00Z"
+  "updated_at": "2026-03-06T14:00:00Z"
 }

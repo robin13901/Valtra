@@ -172,4 +172,129 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get ok => 'OK';
+
+  @override
+  String get rooms => 'Rooms';
+
+  @override
+  String get addRoom => 'Add Room';
+
+  @override
+  String get editRoom => 'Edit Room';
+
+  @override
+  String get deleteRoom => 'Delete Room';
+
+  @override
+  String get roomName => 'Room Name';
+
+  @override
+  String get roomNameHint => 'Enter room name';
+
+  @override
+  String get noRooms =>
+      'No rooms yet. Create one to organize your smart plugs!';
+
+  @override
+  String get roomNameRequired => 'Room name is required';
+
+  @override
+  String get roomNameTooLong => 'Room name must be 100 characters or less';
+
+  @override
+  String get deleteRoomConfirm => 'Are you sure you want to delete this room?';
+
+  @override
+  String roomHasSmartPlugs(int count) {
+    return 'This room has $count smart plug(s). They will also be deleted.';
+  }
+
+  @override
+  String get smartPlugs => 'Smart Plugs';
+
+  @override
+  String get addSmartPlug => 'Add Smart Plug';
+
+  @override
+  String get editSmartPlug => 'Edit Smart Plug';
+
+  @override
+  String get deleteSmartPlug => 'Delete Smart Plug';
+
+  @override
+  String get smartPlugName => 'Plug Name';
+
+  @override
+  String get smartPlugNameHint => 'Enter smart plug name';
+
+  @override
+  String get noSmartPlugs =>
+      'No smart plugs yet. Add one to start tracking device consumption!';
+
+  @override
+  String get smartPlugNameRequired => 'Plug name is required';
+
+  @override
+  String get deleteSmartPlugConfirm =>
+      'Are you sure you want to delete this smart plug?';
+
+  @override
+  String get selectRoom => 'Select Room';
+
+  @override
+  String get roomRequired => 'Please select a room';
+
+  @override
+  String get addConsumption => 'Add Consumption';
+
+  @override
+  String get editConsumption => 'Edit Consumption';
+
+  @override
+  String get deleteConsumption => 'Delete Consumption';
+
+  @override
+  String get noConsumption => 'No consumption entries yet.';
+
+  @override
+  String get deleteConsumptionConfirm =>
+      'Are you sure you want to delete this entry?';
+
+  @override
+  String get intervalType => 'Interval Type';
+
+  @override
+  String get intervalStart => 'Start Date';
+
+  @override
+  String get daily => 'Daily';
+
+  @override
+  String get weekly => 'Weekly';
+
+  @override
+  String get monthly => 'Monthly';
+
+  @override
+  String get yearly => 'Yearly';
+
+  @override
+  String smartPlugCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count smart plugs',
+      one: '1 smart plug',
+      zero: 'No smart plugs',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String lastEntry(String value, String interval) {
+    return 'Last: $value kWh ($interval)';
+  }
+
+  @override
+  String get manageRooms => 'Manage Rooms';
 }

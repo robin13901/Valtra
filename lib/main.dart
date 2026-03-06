@@ -6,11 +6,16 @@ import 'database/app_database.dart';
 import 'database/connection/shared.dart';
 import 'database/daos/electricity_dao.dart';
 import 'database/daos/household_dao.dart';
+import 'database/daos/room_dao.dart';
+import 'database/daos/smart_plug_dao.dart';
 import 'l10n/app_localizations.dart';
 import 'providers/electricity_provider.dart';
 import 'providers/household_provider.dart';
+import 'providers/room_provider.dart';
+import 'providers/smart_plug_provider.dart';
 import 'providers/theme_provider.dart';
 import 'screens/electricity_screen.dart';
+import 'screens/smart_plugs_screen.dart';
 import 'widgets/household_selector.dart';
 
 void main() async {
@@ -30,9 +35,17 @@ void main() async {
   // Initialize electricity provider
   final electricityProvider = ElectricityProvider(ElectricityDao(database));
 
-  // Connect electricity provider to household changes
+  // Initialize room provider
+  final roomProvider = RoomProvider(RoomDao(database));
+
+  // Initialize smart plug provider
+  final smartPlugProvider = SmartPlugProvider(SmartPlugDao(database));
+
+  // Connect providers to household changes
   if (householdProvider.selectedHouseholdId != null) {
     electricityProvider.setHouseholdId(householdProvider.selectedHouseholdId);
+    roomProvider.setHouseholdId(householdProvider.selectedHouseholdId);
+    smartPlugProvider.setHouseholdId(householdProvider.selectedHouseholdId);
   }
 
   runApp(ValtraApp(
@@ -40,6 +53,8 @@ void main() async {
     themeProvider: themeProvider,
     householdProvider: householdProvider,
     electricityProvider: electricityProvider,
+    roomProvider: roomProvider,
+    smartPlugProvider: smartPlugProvider,
   ));
 }
 
@@ -48,6 +63,8 @@ class ValtraApp extends StatefulWidget {
   final ThemeProvider themeProvider;
   final HouseholdProvider householdProvider;
   final ElectricityProvider electricityProvider;
+  final RoomProvider roomProvider;
+  final SmartPlugProvider smartPlugProvider;
 
   const ValtraApp({
     super.key,
@@ -55,6 +72,8 @@ class ValtraApp extends StatefulWidget {
     required this.themeProvider,
     required this.householdProvider,
     required this.electricityProvider,
+    required this.roomProvider,
+    required this.smartPlugProvider,
   });
 
   @override
@@ -65,7 +84,7 @@ class _ValtraAppState extends State<ValtraApp> {
   @override
   void initState() {
     super.initState();
-    // Listen to household changes to update electricity provider
+    // Listen to household changes to update providers
     widget.householdProvider.addListener(_onHouseholdChanged);
   }
 
@@ -76,8 +95,10 @@ class _ValtraAppState extends State<ValtraApp> {
   }
 
   void _onHouseholdChanged() {
-    widget.electricityProvider
-        .setHouseholdId(widget.householdProvider.selectedHouseholdId);
+    final householdId = widget.householdProvider.selectedHouseholdId;
+    widget.electricityProvider.setHouseholdId(householdId);
+    widget.roomProvider.setHouseholdId(householdId);
+    widget.smartPlugProvider.setHouseholdId(householdId);
   }
 
   @override
@@ -91,6 +112,10 @@ class _ValtraAppState extends State<ValtraApp> {
             value: widget.householdProvider),
         ChangeNotifierProvider<ElectricityProvider>.value(
             value: widget.electricityProvider),
+        ChangeNotifierProvider<RoomProvider>.value(
+            value: widget.roomProvider),
+        ChangeNotifierProvider<SmartPlugProvider>.value(
+            value: widget.smartPlugProvider),
       ],
       child: Consumer<ThemeProvider>(
         builder: (context, themeProvider, child) {
@@ -158,6 +183,14 @@ class HomeScreen extends StatelessWidget {
               l10n.electricity,
               AppColors.electricityColor,
               onTap: () => _navigateToElectricity(context),
+            ),
+            const SizedBox(height: 8),
+            _buildCategoryChip(
+              context,
+              Icons.power,
+              l10n.smartPlugs,
+              AppColors.electricityColor,
+              onTap: () => _navigateToSmartPlugs(context),
             ),
             const SizedBox(height: 8),
             _buildCategoryChip(
@@ -259,6 +292,22 @@ class HomeScreen extends StatelessWidget {
 
     Navigator.of(context).push(
       MaterialPageRoute(builder: (context) => const ElectricityScreen()),
+    );
+  }
+
+  void _navigateToSmartPlugs(BuildContext context) {
+    final householdProvider = context.read<HouseholdProvider>();
+    if (householdProvider.selectedHousehold == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.selectHousehold),
+        ),
+      );
+      return;
+    }
+
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (context) => const SmartPlugsScreen()),
     );
   }
 }

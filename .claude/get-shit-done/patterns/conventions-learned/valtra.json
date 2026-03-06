@@ -96,6 +96,10 @@
     "Drift isNotNull/isNull conflicts with flutter_test matchers - use hide in import",
     "Widget tests with ChangeNotifier streams may timeout - use pump() instead of pumpAndSettle()",
     "Value.absent check: use entry.id.present not entry.id.value == null",
-    "withOpacity() deprecated - use withValues(alpha: x)"
+    "withOpacity() deprecated - use withValues(alpha: x)",
+    "JOIN queries return JoinedRow - use r.readTable(entity) to extract correct table",
+    "Cascade delete requires transaction() for atomicity",
+    "Grouped lists need sorted keys for consistent ordering",
+    "Check parent list before showing child form dialog - show snackbar if empty"
   ]
 }

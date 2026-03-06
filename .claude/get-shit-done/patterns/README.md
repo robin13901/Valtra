@@ -64,6 +64,7 @@ Tracks which models work best for which task types:
 | flutter-theme-system | ui | flutter, material3 | 100% |
 | flutter-household-crud | crud | flutter, drift, provider, sharedpreferences | 100% |
 | flutter-meter-reading-crud | crud | flutter, drift, provider, intl | 100% |
+| flutter-smart-plug-room-crud | crud | flutter, drift, provider, intl | 100% |
 
 ---
 

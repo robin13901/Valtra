@@ -409,6 +409,222 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'OK'**
   String get ok;
+
+  /// No description provided for @rooms.
+  ///
+  /// In en, this message translates to:
+  /// **'Rooms'**
+  String get rooms;
+
+  /// No description provided for @addRoom.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Room'**
+  String get addRoom;
+
+  /// No description provided for @editRoom.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Room'**
+  String get editRoom;
+
+  /// No description provided for @deleteRoom.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Room'**
+  String get deleteRoom;
+
+  /// No description provided for @roomName.
+  ///
+  /// In en, this message translates to:
+  /// **'Room Name'**
+  String get roomName;
+
+  /// No description provided for @roomNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter room name'**
+  String get roomNameHint;
+
+  /// No description provided for @noRooms.
+  ///
+  /// In en, this message translates to:
+  /// **'No rooms yet. Create one to organize your smart plugs!'**
+  String get noRooms;
+
+  /// No description provided for @roomNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Room name is required'**
+  String get roomNameRequired;
+
+  /// No description provided for @roomNameTooLong.
+  ///
+  /// In en, this message translates to:
+  /// **'Room name must be 100 characters or less'**
+  String get roomNameTooLong;
+
+  /// No description provided for @deleteRoomConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this room?'**
+  String get deleteRoomConfirm;
+
+  /// No description provided for @roomHasSmartPlugs.
+  ///
+  /// In en, this message translates to:
+  /// **'This room has {count} smart plug(s). They will also be deleted.'**
+  String roomHasSmartPlugs(int count);
+
+  /// No description provided for @smartPlugs.
+  ///
+  /// In en, this message translates to:
+  /// **'Smart Plugs'**
+  String get smartPlugs;
+
+  /// No description provided for @addSmartPlug.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Smart Plug'**
+  String get addSmartPlug;
+
+  /// No description provided for @editSmartPlug.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Smart Plug'**
+  String get editSmartPlug;
+
+  /// No description provided for @deleteSmartPlug.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Smart Plug'**
+  String get deleteSmartPlug;
+
+  /// No description provided for @smartPlugName.
+  ///
+  /// In en, this message translates to:
+  /// **'Plug Name'**
+  String get smartPlugName;
+
+  /// No description provided for @smartPlugNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter smart plug name'**
+  String get smartPlugNameHint;
+
+  /// No description provided for @noSmartPlugs.
+  ///
+  /// In en, this message translates to:
+  /// **'No smart plugs yet. Add one to start tracking device consumption!'**
+  String get noSmartPlugs;
+
+  /// No description provided for @smartPlugNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Plug name is required'**
+  String get smartPlugNameRequired;
+
+  /// No description provided for @deleteSmartPlugConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this smart plug?'**
+  String get deleteSmartPlugConfirm;
+
+  /// No description provided for @selectRoom.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Room'**
+  String get selectRoom;
+
+  /// No description provided for @roomRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select a room'**
+  String get roomRequired;
+
+  /// No description provided for @addConsumption.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Consumption'**
+  String get addConsumption;
+
+  /// No description provided for @editConsumption.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Consumption'**
+  String get editConsumption;
+
+  /// No description provided for @deleteConsumption.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Consumption'**
+  String get deleteConsumption;
+
+  /// No description provided for @noConsumption.
+  ///
+  /// In en, this message translates to:
+  /// **'No consumption entries yet.'**
+  String get noConsumption;
+
+  /// No description provided for @deleteConsumptionConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this entry?'**
+  String get deleteConsumptionConfirm;
+
+  /// No description provided for @intervalType.
+  ///
+  /// In en, this message translates to:
+  /// **'Interval Type'**
+  String get intervalType;
+
+  /// No description provided for @intervalStart.
+  ///
+  /// In en, this message translates to:
+  /// **'Start Date'**
+  String get intervalStart;
+
+  /// No description provided for @daily.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily'**
+  String get daily;
+
+  /// No description provided for @weekly.
+  ///
+  /// In en, this message translates to:
+  /// **'Weekly'**
+  String get weekly;
+
+  /// No description provided for @monthly.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly'**
+  String get monthly;
+
+  /// No description provided for @yearly.
+  ///
+  /// In en, this message translates to:
+  /// **'Yearly'**
+  String get yearly;
+
+  /// No description provided for @smartPlugCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{No smart plugs} =1{1 smart plug} other{{count} smart plugs}}'**
+  String smartPlugCount(int count);
+
+  /// No description provided for @lastEntry.
+  ///
+  /// In en, this message translates to:
+  /// **'Last: {value} kWh ({interval})'**
+  String lastEntry(String value, String interval);
+
+  /// No description provided for @manageRooms.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage Rooms'**
+  String get manageRooms;
 }
 
 class _AppLocalizationsDelegate

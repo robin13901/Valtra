@@ -61,5 +61,57 @@
     }
   },
   "dateAndTime": "Date & Time",
-  "ok": "OK"
+  "ok": "OK",
+  "rooms": "Rooms",
+  "addRoom": "Add Room",
+  "editRoom": "Edit Room",
+  "deleteRoom": "Delete Room",
+  "roomName": "Room Name",
+  "roomNameHint": "Enter room name",
+  "noRooms": "No rooms yet. Create one to organize your smart plugs!",
+  "roomNameRequired": "Room name is required",
+  "roomNameTooLong": "Room name must be 100 characters or less",
+  "deleteRoomConfirm": "Are you sure you want to delete this room?",
+  "roomHasSmartPlugs": "This room has {count} smart plug(s). They will also be deleted.",
+  "@roomHasSmartPlugs": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "smartPlugs": "Smart Plugs",
+  "addSmartPlug": "Add Smart Plug",
+  "editSmartPlug": "Edit Smart Plug",
+  "deleteSmartPlug": "Delete Smart Plug",
+  "smartPlugName": "Plug Name",
+  "smartPlugNameHint": "Enter smart plug name",
+  "noSmartPlugs": "No smart plugs yet. Add one to start tracking device consumption!",
+  "smartPlugNameRequired": "Plug name is required",
+  "deleteSmartPlugConfirm": "Are you sure you want to delete this smart plug?",
+  "selectRoom": "Select Room",
+  "roomRequired": "Please select a room",
+  "addConsumption": "Add Consumption",
+  "editConsumption": "Edit Consumption",
+  "deleteConsumption": "Delete Consumption",
+  "noConsumption": "No consumption entries yet.",
+  "deleteConsumptionConfirm": "Are you sure you want to delete this entry?",
+  "intervalType": "Interval Type",
+  "intervalStart": "Start Date",
+  "daily": "Daily",
+  "weekly": "Weekly",
+  "monthly": "Monthly",
+  "yearly": "Yearly",
+  "smartPlugCount": "{count, plural, =0{No smart plugs} =1{1 smart plug} other{{count} smart plugs}}",
+  "@smartPlugCount": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "lastEntry": "Last: {value} kWh ({interval})",
+  "@lastEntry": {
+    "placeholders": {
+      "value": {"type": "String"},
+      "interval": {"type": "String"}
+    }
+  },
+  "manageRooms": "Manage Rooms"
 }

@@ -2,16 +2,17 @@
 
 ## Current Status
 - **Milestone**: 1 - Core Foundation (v0.1.0)
-- **Phase**: Phase 3 - COMPLETED
+- **Phase**: Phase 4 - COMPLETED
 - **Last Updated**: 2026-03-06
 
 ## Completed Phases
 - **Phase 1**: Project Setup & Architecture (COMPLETED)
 - **Phase 2**: Household Management (COMPLETED)
 - **Phase 3**: Electricity Tracking (COMPLETED)
+- **Phase 4**: Smart Plug & Room Management (COMPLETED)
 
 ## In Progress
-_None - Ready for Phase 4_
+_None - Ready for Phase 5_
 
 ## Blocked
 _None_
@@ -28,6 +29,9 @@ _None_
 | 2026-03-06 | 3 | Phase executed | All 10 tasks completed, 77 tests passing |
 | 2026-03-06 | 3 | Phase verified | 5/5 UAT tests passed |
 | 2026-03-06 | 3 | Patterns captured | flutter-meter-reading-crud pattern saved |
+| 2026-03-06 | 4 | Phase executed | All 16 tasks completed, 138 tests passing |
+| 2026-03-06 | 4 | Phase verified | 5/5 UAT tests passed |
+| 2026-03-06 | 4 | Patterns captured | flutter-smart-plug-room-crud pattern saved |
 
 ## Key Decisions
 1. **Local-first architecture** - Using Drift/SQLite for offline-capable data storage
@@ -38,6 +42,7 @@ _None_
 6. **Glass widgets** - Using standard Flutter glass-style widgets (liquid_glass_renderer API was not compatible)
 7. **Widget test simplification** - Using tester.runAsync() and pumpWidget(Container()) cleanup for Drift stream tests
 8. **Delta calculation** - Readings sorted newest first, deltas calculated from adjacent readings in list
+9. **Hierarchical CRUD** - Rooms contain SmartPlugs; indirect household query via JOIN; cascade delete with warning
 
 ## Outstanding Questions
 _None at this time_
@@ -46,5 +51,5 @@ _None at this time_
 1. **LiquidGlass integration** - Using standard Flutter glass-style widgets instead of full liquid_glass_renderer integration
 
 ## Next Actions
-1. Commit Phase 3 changes
-2. Run `/gsd:plan-phase 4` to plan Smart Plug & Room Management
+1. Commit Phase 4 changes
+2. Run `/gsd:plan-phase 5` to plan Water Tracking
