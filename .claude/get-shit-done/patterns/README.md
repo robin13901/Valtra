@@ -10,7 +10,10 @@ patterns/
 │   ├── flutter-project-setup.md
 │   ├── drift-database-schema.md
 │   ├── flutter-theme-system.md
-│   └── flutter-household-crud.md
+│   ├── flutter-household-crud.md
+│   ├── flutter-meter-reading-crud.md
+│   ├── flutter-smart-plug-room-crud.md
+│   └── flutter-multi-meter-tracking.md
 ├── conventions-learned/  # Project-specific conventions (JSON)
 │   └── valtra.json
 └── routing-history.json  # Agent/model performance tracking
@@ -65,6 +68,7 @@ Tracks which models work best for which task types:
 | flutter-household-crud | crud | flutter, drift, provider, sharedpreferences | 100% |
 | flutter-meter-reading-crud | crud | flutter, drift, provider, intl | 100% |
 | flutter-smart-plug-room-crud | crud | flutter, drift, provider, intl | 100% |
+| flutter-multi-meter-tracking | crud | flutter, drift, provider, intl | 100% |
 
 ---
 
