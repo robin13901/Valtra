@@ -373,4 +373,37 @@ class AppLocalizationsDe extends AppLocalizations {
   String waterReadingMustBeGreaterOrEqual(String previousValue) {
     return 'Der Wert muss >= $previousValue m³ sein';
   }
+
+  @override
+  String get gasReading => 'Gasablesung';
+
+  @override
+  String get gasReadings => 'Gasablesungen';
+
+  @override
+  String get addGasReading => 'Ablesung hinzufügen';
+
+  @override
+  String get editGasReading => 'Ablesung bearbeiten';
+
+  @override
+  String get deleteGasReading => 'Ablesung löschen';
+
+  @override
+  String get deleteGasReadingConfirm =>
+      'Möchten Sie diese Ablesung wirklich löschen?';
+
+  @override
+  String get noGasReadings =>
+      'Noch keine Ablesungen. Fügen Sie Ihre erste Zählerablesung hinzu!';
+
+  @override
+  String gasConsumptionSince(String value) {
+    return '+$value m³ seit letzter Ablesung';
+  }
+
+  @override
+  String gasReadingMustBeGreaterOrEqual(String previousValue) {
+    return 'Der Wert muss >= $previousValue m³ sein';
+  }
 }

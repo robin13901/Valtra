@@ -372,4 +372,36 @@ class AppLocalizationsEn extends AppLocalizations {
   String waterReadingMustBeGreaterOrEqual(String previousValue) {
     return 'Value must be >= $previousValue m³';
   }
+
+  @override
+  String get gasReading => 'Gas Reading';
+
+  @override
+  String get gasReadings => 'Gas Readings';
+
+  @override
+  String get addGasReading => 'Add Reading';
+
+  @override
+  String get editGasReading => 'Edit Reading';
+
+  @override
+  String get deleteGasReading => 'Delete Reading';
+
+  @override
+  String get deleteGasReadingConfirm =>
+      'Are you sure you want to delete this reading?';
+
+  @override
+  String get noGasReadings => 'No readings yet. Add your first meter reading!';
+
+  @override
+  String gasConsumptionSince(String value) {
+    return '+$value m³ since previous';
+  }
+
+  @override
+  String gasReadingMustBeGreaterOrEqual(String previousValue) {
+    return 'Value must be >= $previousValue m³';
+  }
 }

@@ -109,5 +109,14 @@
   "deleteWaterReading": "Ablesung löschen",
   "noWaterReadings": "Noch keine Ablesungen. Fügen Sie Ihre erste Zählerablesung hinzu!",
   "waterConsumptionSince": "+{value} m³ seit letzter Ablesung",
-  "waterReadingMustBeGreaterOrEqual": "Der Wert muss >= {previousValue} m³ sein"
+  "waterReadingMustBeGreaterOrEqual": "Der Wert muss >= {previousValue} m³ sein",
+  "gasReading": "Gasablesung",
+  "gasReadings": "Gasablesungen",
+  "addGasReading": "Ablesung hinzufügen",
+  "editGasReading": "Ablesung bearbeiten",
+  "deleteGasReading": "Ablesung löschen",
+  "deleteGasReadingConfirm": "Möchten Sie diese Ablesung wirklich löschen?",
+  "noGasReadings": "Noch keine Ablesungen. Fügen Sie Ihre erste Zählerablesung hinzu!",
+  "gasConsumptionSince": "+{value} m³ seit letzter Ablesung",
+  "gasReadingMustBeGreaterOrEqual": "Der Wert muss >= {previousValue} m³ sein"
 }

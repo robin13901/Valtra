@@ -757,6 +757,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Value must be >= {previousValue} m³'**
   String waterReadingMustBeGreaterOrEqual(String previousValue);
+
+  /// No description provided for @gasReading.
+  ///
+  /// In en, this message translates to:
+  /// **'Gas Reading'**
+  String get gasReading;
+
+  /// No description provided for @gasReadings.
+  ///
+  /// In en, this message translates to:
+  /// **'Gas Readings'**
+  String get gasReadings;
+
+  /// No description provided for @addGasReading.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Reading'**
+  String get addGasReading;
+
+  /// No description provided for @editGasReading.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Reading'**
+  String get editGasReading;
+
+  /// No description provided for @deleteGasReading.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Reading'**
+  String get deleteGasReading;
+
+  /// No description provided for @deleteGasReadingConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this reading?'**
+  String get deleteGasReadingConfirm;
+
+  /// No description provided for @noGasReadings.
+  ///
+  /// In en, this message translates to:
+  /// **'No readings yet. Add your first meter reading!'**
+  String get noGasReadings;
+
+  /// No description provided for @gasConsumptionSince.
+  ///
+  /// In en, this message translates to:
+  /// **'+{value} m³ since previous'**
+  String gasConsumptionSince(String value);
+
+  /// No description provided for @gasReadingMustBeGreaterOrEqual.
+  ///
+  /// In en, this message translates to:
+  /// **'Value must be >= {previousValue} m³'**
+  String gasReadingMustBeGreaterOrEqual(String previousValue);
 }
 
 class _AppLocalizationsDelegate

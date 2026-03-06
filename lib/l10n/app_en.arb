@@ -150,5 +150,24 @@
     "placeholders": {
       "previousValue": {"type": "String"}
     }
+  },
+  "gasReading": "Gas Reading",
+  "gasReadings": "Gas Readings",
+  "addGasReading": "Add Reading",
+  "editGasReading": "Edit Reading",
+  "deleteGasReading": "Delete Reading",
+  "deleteGasReadingConfirm": "Are you sure you want to delete this reading?",
+  "noGasReadings": "No readings yet. Add your first meter reading!",
+  "gasConsumptionSince": "+{value} m³ since previous",
+  "@gasConsumptionSince": {
+    "placeholders": {
+      "value": {"type": "String"}
+    }
+  },
+  "gasReadingMustBeGreaterOrEqual": "Value must be >= {previousValue} m³",
+  "@gasReadingMustBeGreaterOrEqual": {
+    "placeholders": {
+      "previousValue": {"type": "String"}
+    }
   }
 }
