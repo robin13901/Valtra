@@ -60,15 +60,15 @@ Tracks which models work best for which task types:
 
 ## Captured Patterns
 
-| Pattern | Domain | Tech Stack | Success Rate |
-|---------|--------|------------|--------------|
-| flutter-project-setup | setup | flutter, drift, provider | 100% |
-| drift-database-schema | db | dart, drift, sqlite | 100% |
-| flutter-theme-system | ui | flutter, material3 | 100% |
-| flutter-household-crud | crud | flutter, drift, provider, sharedpreferences | 100% |
-| flutter-meter-reading-crud | crud | flutter, drift, provider, intl | 100% |
-| flutter-smart-plug-room-crud | crud | flutter, drift, provider, intl | 100% |
-| flutter-multi-meter-tracking | crud | flutter, drift, provider, intl | 100% |
+| Pattern | Domain | Tech Stack | Success Rate | Uses |
+|---------|--------|------------|--------------|------|
+| flutter-project-setup | setup | flutter, drift, provider | 100% | 1 |
+| drift-database-schema | db | dart, drift, sqlite | 100% | 1 |
+| flutter-theme-system | ui | flutter, material3 | 100% | 1 |
+| flutter-household-crud | crud | flutter, drift, provider, sharedpreferences | 100% | 1 |
+| flutter-meter-reading-crud | crud | flutter, drift, provider, intl | 100% | 2 |
+| flutter-smart-plug-room-crud | crud | flutter, drift, provider, intl | 100% | 1 |
+| flutter-multi-meter-tracking | crud | flutter, drift, provider, intl | 100% | 1 |
 
 ---
 

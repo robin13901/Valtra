@@ -3,9 +3,10 @@ name: flutter-meter-reading-crud
 domain: crud
 tech: [flutter, drift, provider, intl]
 success_rate: 100%
-times_used: 1
+times_used: 2
 source_project: valtra
 captured_at: 2026-03-06
+validated_phases: [3-electricity, 6-gas]
 ---
 
 ## Context
@@ -147,3 +148,21 @@ void _onHouseholdChanged() {
 3. **Edit Reading** - Deltas recalculate correctly
 4. **Delete Reading** - Adjacent readings' deltas update
 5. **Validation Error** - Prevents value < previous reading
+6. **Navigation** - Home screen chip navigates to meter screen
+
+### Validated Implementations
+
+| Phase | Meter | Unit | Value Field | Color |
+|-------|-------|------|-------------|-------|
+| 3 | Electricity | kWh | `valueKwh` | electricityColor (#FFD93D) |
+| 6 | Gas | m³ | `valueCubicMeters` | gasColor (#FF8C42) |
+
+### Adaptation Notes
+- Copy DAO/Provider/Screen from previous meter type and replace:
+  - Table name (`electricityReadings` → `gasReadings`)
+  - Entity name (`ElectricityReading` → `GasReading`)
+  - Value field (`valueKwh` → `valueCubicMeters`)
+  - Unit display (`kWh` → `m³`)
+  - Color (`electricityColor` → `gasColor`)
+  - Icon (`Icons.electric_bolt` → `Icons.local_fire_department`)
+  - Localization keys (prefix with meter type)
