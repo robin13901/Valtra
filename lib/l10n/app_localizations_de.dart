@@ -298,4 +298,79 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get manageRooms => 'Räume verwalten';
+
+  @override
+  String get waterMeters => 'Wasserzähler';
+
+  @override
+  String get addWaterMeter => 'Wasserzähler hinzufügen';
+
+  @override
+  String get editWaterMeter => 'Wasserzähler bearbeiten';
+
+  @override
+  String get deleteWaterMeter => 'Wasserzähler löschen';
+
+  @override
+  String get waterMeterName => 'Zählername';
+
+  @override
+  String get waterMeterNameHint => 'Zählernamen eingeben';
+
+  @override
+  String get waterMeterType => 'Zählertyp';
+
+  @override
+  String get coldWater => 'Kaltwasser';
+
+  @override
+  String get hotWater => 'Warmwasser';
+
+  @override
+  String get otherWater => 'Sonstiges';
+
+  @override
+  String get noWaterMeters =>
+      'Noch keine Wasserzähler. Fügen Sie einen hinzu, um den Wasserverbrauch zu verfolgen!';
+
+  @override
+  String get waterMeterNameRequired => 'Zählername ist erforderlich';
+
+  @override
+  String get deleteWaterMeterConfirm =>
+      'Möchten Sie diesen Wasserzähler wirklich löschen?';
+
+  @override
+  String waterMeterHasReadings(int count) {
+    return 'Dieser Zähler hat $count Ablesung(en). Diese werden ebenfalls gelöscht.';
+  }
+
+  @override
+  String get waterReading => 'Wasserablesung';
+
+  @override
+  String get waterReadings => 'Wasserablesungen';
+
+  @override
+  String get addWaterReading => 'Ablesung hinzufügen';
+
+  @override
+  String get editWaterReading => 'Ablesung bearbeiten';
+
+  @override
+  String get deleteWaterReading => 'Ablesung löschen';
+
+  @override
+  String get noWaterReadings =>
+      'Noch keine Ablesungen. Fügen Sie Ihre erste Zählerablesung hinzu!';
+
+  @override
+  String waterConsumptionSince(String value) {
+    return '+$value m³ seit letzter Ablesung';
+  }
+
+  @override
+  String waterReadingMustBeGreaterOrEqual(String previousValue) {
+    return 'Der Wert muss >= $previousValue m³ sein';
+  }
 }

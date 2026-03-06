@@ -8,14 +8,17 @@ import 'database/daos/electricity_dao.dart';
 import 'database/daos/household_dao.dart';
 import 'database/daos/room_dao.dart';
 import 'database/daos/smart_plug_dao.dart';
+import 'database/daos/water_dao.dart';
 import 'l10n/app_localizations.dart';
 import 'providers/electricity_provider.dart';
 import 'providers/household_provider.dart';
 import 'providers/room_provider.dart';
 import 'providers/smart_plug_provider.dart';
 import 'providers/theme_provider.dart';
+import 'providers/water_provider.dart';
 import 'screens/electricity_screen.dart';
 import 'screens/smart_plugs_screen.dart';
+import 'screens/water_screen.dart';
 import 'widgets/household_selector.dart';
 
 void main() async {
@@ -41,11 +44,15 @@ void main() async {
   // Initialize smart plug provider
   final smartPlugProvider = SmartPlugProvider(SmartPlugDao(database));
 
+  // Initialize water provider
+  final waterProvider = WaterProvider(WaterDao(database));
+
   // Connect providers to household changes
   if (householdProvider.selectedHouseholdId != null) {
     electricityProvider.setHouseholdId(householdProvider.selectedHouseholdId);
     roomProvider.setHouseholdId(householdProvider.selectedHouseholdId);
     smartPlugProvider.setHouseholdId(householdProvider.selectedHouseholdId);
+    waterProvider.setHouseholdId(householdProvider.selectedHouseholdId);
   }
 
   runApp(ValtraApp(
@@ -55,6 +62,7 @@ void main() async {
     electricityProvider: electricityProvider,
     roomProvider: roomProvider,
     smartPlugProvider: smartPlugProvider,
+    waterProvider: waterProvider,
   ));
 }
 
@@ -65,6 +73,7 @@ class ValtraApp extends StatefulWidget {
   final ElectricityProvider electricityProvider;
   final RoomProvider roomProvider;
   final SmartPlugProvider smartPlugProvider;
+  final WaterProvider waterProvider;
 
   const ValtraApp({
     super.key,
@@ -74,6 +83,7 @@ class ValtraApp extends StatefulWidget {
     required this.electricityProvider,
     required this.roomProvider,
     required this.smartPlugProvider,
+    required this.waterProvider,
   });
 
   @override
@@ -99,6 +109,7 @@ class _ValtraAppState extends State<ValtraApp> {
     widget.electricityProvider.setHouseholdId(householdId);
     widget.roomProvider.setHouseholdId(householdId);
     widget.smartPlugProvider.setHouseholdId(householdId);
+    widget.waterProvider.setHouseholdId(householdId);
   }
 
   @override
@@ -116,6 +127,8 @@ class _ValtraAppState extends State<ValtraApp> {
             value: widget.roomProvider),
         ChangeNotifierProvider<SmartPlugProvider>.value(
             value: widget.smartPlugProvider),
+        ChangeNotifierProvider<WaterProvider>.value(
+            value: widget.waterProvider),
       ],
       child: Consumer<ThemeProvider>(
         builder: (context, themeProvider, child) {
@@ -205,6 +218,7 @@ class HomeScreen extends StatelessWidget {
               Icons.water_drop,
               l10n.water,
               AppColors.waterColor,
+              onTap: () => _navigateToWater(context),
             ),
             const SizedBox(height: 8),
             _buildCategoryChip(
@@ -308,6 +322,22 @@ class HomeScreen extends StatelessWidget {
 
     Navigator.of(context).push(
       MaterialPageRoute(builder: (context) => const SmartPlugsScreen()),
+    );
+  }
+
+  void _navigateToWater(BuildContext context) {
+    final householdProvider = context.read<HouseholdProvider>();
+    if (householdProvider.selectedHousehold == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.selectHousehold),
+        ),
+      );
+      return;
+    }
+
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (context) => const WaterScreen()),
     );
   }
 }

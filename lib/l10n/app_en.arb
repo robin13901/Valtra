@@ -113,5 +113,42 @@
       "interval": {"type": "String"}
     }
   },
-  "manageRooms": "Manage Rooms"
+  "manageRooms": "Manage Rooms",
+  "waterMeters": "Water Meters",
+  "addWaterMeter": "Add Water Meter",
+  "editWaterMeter": "Edit Water Meter",
+  "deleteWaterMeter": "Delete Water Meter",
+  "waterMeterName": "Meter Name",
+  "waterMeterNameHint": "Enter meter name",
+  "waterMeterType": "Meter Type",
+  "coldWater": "Cold Water",
+  "hotWater": "Hot Water",
+  "otherWater": "Other",
+  "noWaterMeters": "No water meters yet. Add one to start tracking water consumption!",
+  "waterMeterNameRequired": "Meter name is required",
+  "deleteWaterMeterConfirm": "Are you sure you want to delete this water meter?",
+  "waterMeterHasReadings": "This meter has {count} reading(s). They will also be deleted.",
+  "@waterMeterHasReadings": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "waterReading": "Water Reading",
+  "waterReadings": "Water Readings",
+  "addWaterReading": "Add Reading",
+  "editWaterReading": "Edit Reading",
+  "deleteWaterReading": "Delete Reading",
+  "noWaterReadings": "No readings yet. Add your first meter reading!",
+  "waterConsumptionSince": "+{value} m³ since previous",
+  "@waterConsumptionSince": {
+    "placeholders": {
+      "value": {"type": "String"}
+    }
+  },
+  "waterReadingMustBeGreaterOrEqual": "Value must be >= {previousValue} m³",
+  "@waterReadingMustBeGreaterOrEqual": {
+    "placeholders": {
+      "previousValue": {"type": "String"}
+    }
+  }
 }

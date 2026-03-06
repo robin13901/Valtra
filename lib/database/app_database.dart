@@ -4,6 +4,7 @@ import 'daos/electricity_dao.dart';
 import 'daos/household_dao.dart';
 import 'daos/room_dao.dart';
 import 'daos/smart_plug_dao.dart';
+import 'daos/water_dao.dart';
 import 'tables.dart';
 
 part 'app_database.g.dart';
@@ -24,6 +25,7 @@ part 'app_database.g.dart';
   ElectricityDao,
   RoomDao,
   SmartPlugDao,
+  WaterDao,
 ])
 class AppDatabase extends _$AppDatabase {
   AppDatabase(super.e);
@@ -51,4 +53,8 @@ class AppDatabase extends _$AppDatabase {
   /// Provides access to smart plug CRUD operations.
   @override
   SmartPlugDao get smartPlugDao => SmartPlugDao(this);
+
+  /// Provides access to water meter and reading CRUD operations.
+  @override
+  WaterDao get waterDao => WaterDao(this);
 }

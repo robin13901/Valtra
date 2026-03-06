@@ -297,4 +297,79 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get manageRooms => 'Manage Rooms';
+
+  @override
+  String get waterMeters => 'Water Meters';
+
+  @override
+  String get addWaterMeter => 'Add Water Meter';
+
+  @override
+  String get editWaterMeter => 'Edit Water Meter';
+
+  @override
+  String get deleteWaterMeter => 'Delete Water Meter';
+
+  @override
+  String get waterMeterName => 'Meter Name';
+
+  @override
+  String get waterMeterNameHint => 'Enter meter name';
+
+  @override
+  String get waterMeterType => 'Meter Type';
+
+  @override
+  String get coldWater => 'Cold Water';
+
+  @override
+  String get hotWater => 'Hot Water';
+
+  @override
+  String get otherWater => 'Other';
+
+  @override
+  String get noWaterMeters =>
+      'No water meters yet. Add one to start tracking water consumption!';
+
+  @override
+  String get waterMeterNameRequired => 'Meter name is required';
+
+  @override
+  String get deleteWaterMeterConfirm =>
+      'Are you sure you want to delete this water meter?';
+
+  @override
+  String waterMeterHasReadings(int count) {
+    return 'This meter has $count reading(s). They will also be deleted.';
+  }
+
+  @override
+  String get waterReading => 'Water Reading';
+
+  @override
+  String get waterReadings => 'Water Readings';
+
+  @override
+  String get addWaterReading => 'Add Reading';
+
+  @override
+  String get editWaterReading => 'Edit Reading';
+
+  @override
+  String get deleteWaterReading => 'Delete Reading';
+
+  @override
+  String get noWaterReadings =>
+      'No readings yet. Add your first meter reading!';
+
+  @override
+  String waterConsumptionSince(String value) {
+    return '+$value m³ since previous';
+  }
+
+  @override
+  String waterReadingMustBeGreaterOrEqual(String previousValue) {
+    return 'Value must be >= $previousValue m³';
+  }
 }

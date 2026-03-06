@@ -625,6 +625,138 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Manage Rooms'**
   String get manageRooms;
+
+  /// No description provided for @waterMeters.
+  ///
+  /// In en, this message translates to:
+  /// **'Water Meters'**
+  String get waterMeters;
+
+  /// No description provided for @addWaterMeter.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Water Meter'**
+  String get addWaterMeter;
+
+  /// No description provided for @editWaterMeter.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Water Meter'**
+  String get editWaterMeter;
+
+  /// No description provided for @deleteWaterMeter.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Water Meter'**
+  String get deleteWaterMeter;
+
+  /// No description provided for @waterMeterName.
+  ///
+  /// In en, this message translates to:
+  /// **'Meter Name'**
+  String get waterMeterName;
+
+  /// No description provided for @waterMeterNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter meter name'**
+  String get waterMeterNameHint;
+
+  /// No description provided for @waterMeterType.
+  ///
+  /// In en, this message translates to:
+  /// **'Meter Type'**
+  String get waterMeterType;
+
+  /// No description provided for @coldWater.
+  ///
+  /// In en, this message translates to:
+  /// **'Cold Water'**
+  String get coldWater;
+
+  /// No description provided for @hotWater.
+  ///
+  /// In en, this message translates to:
+  /// **'Hot Water'**
+  String get hotWater;
+
+  /// No description provided for @otherWater.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get otherWater;
+
+  /// No description provided for @noWaterMeters.
+  ///
+  /// In en, this message translates to:
+  /// **'No water meters yet. Add one to start tracking water consumption!'**
+  String get noWaterMeters;
+
+  /// No description provided for @waterMeterNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Meter name is required'**
+  String get waterMeterNameRequired;
+
+  /// No description provided for @deleteWaterMeterConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this water meter?'**
+  String get deleteWaterMeterConfirm;
+
+  /// No description provided for @waterMeterHasReadings.
+  ///
+  /// In en, this message translates to:
+  /// **'This meter has {count} reading(s). They will also be deleted.'**
+  String waterMeterHasReadings(int count);
+
+  /// No description provided for @waterReading.
+  ///
+  /// In en, this message translates to:
+  /// **'Water Reading'**
+  String get waterReading;
+
+  /// No description provided for @waterReadings.
+  ///
+  /// In en, this message translates to:
+  /// **'Water Readings'**
+  String get waterReadings;
+
+  /// No description provided for @addWaterReading.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Reading'**
+  String get addWaterReading;
+
+  /// No description provided for @editWaterReading.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Reading'**
+  String get editWaterReading;
+
+  /// No description provided for @deleteWaterReading.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Reading'**
+  String get deleteWaterReading;
+
+  /// No description provided for @noWaterReadings.
+  ///
+  /// In en, this message translates to:
+  /// **'No readings yet. Add your first meter reading!'**
+  String get noWaterReadings;
+
+  /// No description provided for @waterConsumptionSince.
+  ///
+  /// In en, this message translates to:
+  /// **'+{value} m³ since previous'**
+  String waterConsumptionSince(String value);
+
+  /// No description provided for @waterReadingMustBeGreaterOrEqual.
+  ///
+  /// In en, this message translates to:
+  /// **'Value must be >= {previousValue} m³'**
+  String waterReadingMustBeGreaterOrEqual(String previousValue);
 }
 
 class _AppLocalizationsDelegate
