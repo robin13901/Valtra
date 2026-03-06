@@ -1,0 +1,35 @@
+{
+    "name": "valtra",
+    "short_name": "valtra",
+    "start_url": ".",
+    "display": "standalone",
+    "background_color": "#0175C2",
+    "theme_color": "#0175C2",
+    "description": "Valtra ist eine App zur Erfassung und Analyse von Energie- und Wasserzählerständen (Strom, Gas, Wasser) über mehrere Haushalte hinweg, inklusive Verbrauchsstatistiken, Interpolation von Messwerten und Visualisierung der Nutzung bis auf Raum- und Geräteeebene.",
+    "orientation": "portrait-primary",
+    "prefer_related_applications": false,
+    "icons": [
+        {
+            "src": "icons/Icon-192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "icons/Icon-512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        },
+        {
+            "src": "icons/Icon-maskable-192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "maskable"
+        },
+        {
+            "src": "icons/Icon-maskable-512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "maskable"
+        }
+    ]
+}
