@@ -146,6 +146,12 @@ abstract class AppLocalizations {
   /// **'Households'**
   String get households;
 
+  /// No description provided for @household.
+  ///
+  /// In en, this message translates to:
+  /// **'Household'**
+  String get household;
+
   /// No description provided for @addReading.
   ///
   /// In en, this message translates to:
@@ -253,6 +259,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Household Name'**
   String get householdName;
+
+  /// No description provided for @editHousehold.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Household'**
+  String get editHousehold;
+
+  /// No description provided for @deleteHousehold.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Household'**
+  String get deleteHousehold;
+
+  /// No description provided for @householdDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Description (optional)'**
+  String get householdDescription;
+
+  /// No description provided for @deleteHouseholdConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this household?'**
+  String get deleteHouseholdConfirm;
+
+  /// No description provided for @noHouseholds.
+  ///
+  /// In en, this message translates to:
+  /// **'No households yet. Create one to get started!'**
+  String get noHouseholds;
+
+  /// No description provided for @householdRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Household name is required'**
+  String get householdRequired;
+
+  /// No description provided for @householdNameTooLong.
+  ///
+  /// In en, this message translates to:
+  /// **'Household name must be 100 characters or less'**
+  String get householdNameTooLong;
+
+  /// No description provided for @cannotDeleteHousehold.
+  ///
+  /// In en, this message translates to:
+  /// **'Cannot Delete Household'**
+  String get cannotDeleteHousehold;
+
+  /// No description provided for @householdHasRelatedData.
+  ///
+  /// In en, this message translates to:
+  /// **'This household has related meters or readings. Delete them first before removing the household.'**
+  String get householdHasRelatedData;
+
+  /// No description provided for @addHousehold.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Household'**
+  String get addHousehold;
 }
 
 class _AppLocalizationsDelegate

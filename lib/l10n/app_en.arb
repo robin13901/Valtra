@@ -8,6 +8,7 @@
   "analysis": "Analysis",
   "settings": "Settings",
   "households": "Households",
+  "household": "Household",
   "addReading": "Add Reading",
   "save": "Save",
   "cancel": "Cancel",
@@ -25,5 +26,15 @@
   "noData": "No data available",
   "selectHousehold": "Select Household",
   "createHousehold": "Create Household",
-  "householdName": "Household Name"
+  "householdName": "Household Name",
+  "editHousehold": "Edit Household",
+  "deleteHousehold": "Delete Household",
+  "householdDescription": "Description (optional)",
+  "deleteHouseholdConfirm": "Are you sure you want to delete this household?",
+  "noHouseholds": "No households yet. Create one to get started!",
+  "householdRequired": "Household name is required",
+  "householdNameTooLong": "Household name must be 100 characters or less",
+  "cannotDeleteHousehold": "Cannot Delete Household",
+  "householdHasRelatedData": "This household has related meters or readings. Delete them first before removing the household.",
+  "addHousehold": "Add Household"
 }

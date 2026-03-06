@@ -1,0 +1,200 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:valtra/database/app_database.dart';
+import 'package:valtra/l10n/app_localizations.dart';
+import 'package:valtra/widgets/dialogs/household_form_dialog.dart';
+
+void main() {
+  Widget buildTestWidget({Household? household}) {
+    return MaterialApp(
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+      home: Builder(
+        builder: (context) => Scaffold(
+          body: ElevatedButton(
+            onPressed: () {
+              HouseholdFormDialog.show(context, household: household);
+            },
+            child: const Text('Open Dialog'),
+          ),
+        ),
+      ),
+    );
+  }
+
+  group('HouseholdFormDialog', () {
+    testWidgets('validates empty name', (tester) async {
+      await tester.pumpWidget(buildTestWidget());
+      await tester.pumpAndSettle();
+
+      // Open dialog
+      await tester.tap(find.text('Open Dialog'));
+      await tester.pumpAndSettle();
+
+      // Verify dialog is open
+      expect(find.text('Create Household'), findsOneWidget);
+
+      // Try to save with empty name
+      await tester.tap(find.text('Save'));
+      await tester.pumpAndSettle();
+
+      // Should show validation error
+      expect(find.text('Household name is required'), findsOneWidget);
+    });
+
+    testWidgets('submits form with valid data', (tester) async {
+      HouseholdFormData? result;
+
+      await tester.pumpWidget(MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: Builder(
+          builder: (context) => Scaffold(
+            body: ElevatedButton(
+              onPressed: () async {
+                result = await HouseholdFormDialog.show(context);
+              },
+              child: const Text('Open Dialog'),
+            ),
+          ),
+        ),
+      ));
+      await tester.pumpAndSettle();
+
+      // Open dialog
+      await tester.tap(find.text('Open Dialog'));
+      await tester.pumpAndSettle();
+
+      // Enter valid name
+      await tester.enterText(
+          find.widgetWithText(TextFormField, 'Household Name'), 'My Home');
+      await tester.pumpAndSettle();
+
+      // Enter description
+      final descriptionField = find.widgetWithText(
+          TextFormField, 'Description (optional)');
+      await tester.enterText(descriptionField, 'Main residence');
+      await tester.pumpAndSettle();
+
+      // Save
+      await tester.tap(find.text('Save'));
+      await tester.pumpAndSettle();
+
+      // Verify result
+      expect(result, isNotNull);
+      expect(result!.name, 'My Home');
+      expect(result!.description, 'Main residence');
+    });
+
+    testWidgets('cancel closes dialog without saving', (tester) async {
+      HouseholdFormData? result;
+
+      await tester.pumpWidget(MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: Builder(
+          builder: (context) => Scaffold(
+            body: ElevatedButton(
+              onPressed: () async {
+                result = await HouseholdFormDialog.show(context);
+              },
+              child: const Text('Open Dialog'),
+            ),
+          ),
+        ),
+      ));
+      await tester.pumpAndSettle();
+
+      // Open dialog
+      await tester.tap(find.text('Open Dialog'));
+      await tester.pumpAndSettle();
+
+      // Enter some data
+      await tester.enterText(
+          find.widgetWithText(TextFormField, 'Household Name'), 'My Home');
+      await tester.pumpAndSettle();
+
+      // Cancel
+      await tester.tap(find.text('Cancel'));
+      await tester.pumpAndSettle();
+
+      // Dialog should be closed and result should be null
+      expect(find.text('Create Household'), findsNothing);
+      expect(result, isNull);
+    });
+
+    testWidgets('edit mode pre-fills fields', (tester) async {
+      final household = Household(
+        id: 1,
+        name: 'Existing Home',
+        description: 'My existing home',
+        createdAt: DateTime.now(),
+      );
+
+      await tester.pumpWidget(MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: Builder(
+          builder: (context) => Scaffold(
+            body: ElevatedButton(
+              onPressed: () {
+                HouseholdFormDialog.show(context, household: household);
+              },
+              child: const Text('Open Dialog'),
+            ),
+          ),
+        ),
+      ));
+      await tester.pumpAndSettle();
+
+      // Open dialog
+      await tester.tap(find.text('Open Dialog'));
+      await tester.pumpAndSettle();
+
+      // Verify edit mode title
+      expect(find.text('Edit Household'), findsOneWidget);
+
+      // Verify fields are pre-filled
+      expect(find.text('Existing Home'), findsOneWidget);
+      expect(find.text('My existing home'), findsOneWidget);
+    });
+
+    testWidgets('returns null description when empty', (tester) async {
+      HouseholdFormData? result;
+
+      await tester.pumpWidget(MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: Builder(
+          builder: (context) => Scaffold(
+            body: ElevatedButton(
+              onPressed: () async {
+                result = await HouseholdFormDialog.show(context);
+              },
+              child: const Text('Open Dialog'),
+            ),
+          ),
+        ),
+      ));
+      await tester.pumpAndSettle();
+
+      // Open dialog
+      await tester.tap(find.text('Open Dialog'));
+      await tester.pumpAndSettle();
+
+      // Enter only name
+      await tester.enterText(
+          find.widgetWithText(TextFormField, 'Household Name'), 'My Home');
+      await tester.pumpAndSettle();
+
+      // Save
+      await tester.tap(find.text('Save'));
+      await tester.pumpAndSettle();
+
+      // Verify result with null description
+      expect(result, isNotNull);
+      expect(result!.name, 'My Home');
+      expect(result!.description, isNull);
+    });
+  });
+}

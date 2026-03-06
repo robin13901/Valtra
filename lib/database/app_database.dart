@@ -1,5 +1,6 @@
 import 'package:drift/drift.dart';
 
+import 'daos/household_dao.dart';
 import 'tables.dart';
 
 part 'app_database.g.dart';
@@ -15,6 +16,8 @@ part 'app_database.g.dart';
   Rooms,
   SmartPlugs,
   SmartPlugConsumptions,
+], daos: [
+  HouseholdDao,
 ])
 class AppDatabase extends _$AppDatabase {
   AppDatabase(super.e);
@@ -26,4 +29,8 @@ class AppDatabase extends _$AppDatabase {
   MigrationStrategy get migration => MigrationStrategy(
         onCreate: (m) async => await m.createAll(),
       );
+
+  /// Provides access to household CRUD operations.
+  @override
+  HouseholdDao get householdDao => HouseholdDao(this);
 }

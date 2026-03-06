@@ -8,6 +8,7 @@
   "analysis": "Analyse",
   "settings": "Einstellungen",
   "households": "Haushalte",
+  "household": "Haushalt",
   "addReading": "Ablesung hinzufügen",
   "save": "Speichern",
   "cancel": "Abbrechen",
@@ -25,5 +26,15 @@
   "noData": "Keine Daten vorhanden",
   "selectHousehold": "Haushalt auswählen",
   "createHousehold": "Haushalt erstellen",
-  "householdName": "Haushaltsname"
+  "householdName": "Haushaltsname",
+  "editHousehold": "Haushalt bearbeiten",
+  "deleteHousehold": "Haushalt löschen",
+  "householdDescription": "Beschreibung (optional)",
+  "deleteHouseholdConfirm": "Möchten Sie diesen Haushalt wirklich löschen?",
+  "noHouseholds": "Noch keine Haushalte. Erstellen Sie einen, um zu beginnen!",
+  "householdRequired": "Haushaltsname ist erforderlich",
+  "householdNameTooLong": "Haushaltsname darf maximal 100 Zeichen lang sein",
+  "cannotDeleteHousehold": "Haushalt kann nicht gelöscht werden",
+  "householdHasRelatedData": "Dieser Haushalt hat zugehörige Zähler oder Ablesungen. Löschen Sie diese zuerst, bevor Sie den Haushalt entfernen.",
+  "addHousehold": "Haushalt hinzufügen"
 }

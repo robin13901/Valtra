@@ -4,8 +4,11 @@ import 'package:provider/provider.dart';
 import 'app_theme.dart';
 import 'database/app_database.dart';
 import 'database/connection/shared.dart';
+import 'database/daos/household_dao.dart';
 import 'l10n/app_localizations.dart';
+import 'providers/household_provider.dart';
 import 'providers/theme_provider.dart';
+import 'widgets/household_selector.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -17,20 +20,27 @@ void main() async {
   // Initialize database
   final database = AppDatabase(openConnection());
 
+  // Initialize household provider
+  final householdProvider = HouseholdProvider(HouseholdDao(database));
+  await householdProvider.init();
+
   runApp(ValtraApp(
     database: database,
     themeProvider: themeProvider,
+    householdProvider: householdProvider,
   ));
 }
 
 class ValtraApp extends StatelessWidget {
   final AppDatabase database;
   final ThemeProvider themeProvider;
+  final HouseholdProvider householdProvider;
 
   const ValtraApp({
     super.key,
     required this.database,
     required this.themeProvider,
+    required this.householdProvider,
   });
 
   @override
@@ -39,6 +49,7 @@ class ValtraApp extends StatelessWidget {
       providers: [
         Provider<AppDatabase>.value(value: database),
         ChangeNotifierProvider<ThemeProvider>.value(value: themeProvider),
+        ChangeNotifierProvider<HouseholdProvider>.value(value: householdProvider),
       ],
       child: Consumer<ThemeProvider>(
         builder: (context, themeProvider, child) {
@@ -72,6 +83,7 @@ class HomeScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text(l10n.appTitle),
         actions: [
+          const HouseholdSelector(),
           IconButton(
             icon: Icon(isDark ? Icons.light_mode : Icons.dark_mode),
             onPressed: () => themeProvider.toggleTheme(),
@@ -97,10 +109,7 @@ class HomeScreen extends StatelessWidget {
                   ),
             ),
             const SizedBox(height: 8),
-            Text(
-              l10n.noData,
-              style: Theme.of(context).textTheme.bodyLarge,
-            ),
+            _buildCurrentHousehold(context, l10n),
             const SizedBox(height: 32),
             _buildCategoryChip(context, Icons.electric_bolt, l10n.electricity,
                 AppColors.electricityColor),
@@ -120,6 +129,38 @@ class HomeScreen extends StatelessWidget {
         onPressed: () {},
         child: const Icon(Icons.add),
       ),
+    );
+  }
+
+  Widget _buildCurrentHousehold(BuildContext context, AppLocalizations l10n) {
+    final householdProvider = context.watch<HouseholdProvider>();
+    final selectedHousehold = householdProvider.selectedHousehold;
+
+    if (selectedHousehold == null) {
+      return Text(
+        l10n.noHouseholds,
+        style: Theme.of(context).textTheme.bodyLarge,
+      );
+    }
+
+    return Column(
+      children: [
+        Text(
+          selectedHousehold.name,
+          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                fontWeight: FontWeight.w500,
+              ),
+        ),
+        if (selectedHousehold.description != null) ...[
+          const SizedBox(height: 4),
+          Text(
+            selectedHousehold.description!,
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
+          ),
+        ],
+      ],
     );
   }
 

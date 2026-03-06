@@ -3089,6 +3089,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $SmartPlugsTable smartPlugs = $SmartPlugsTable(this);
   late final $SmartPlugConsumptionsTable smartPlugConsumptions =
       $SmartPlugConsumptionsTable(this);
+  late final HouseholdDao householdDao = HouseholdDao(this as AppDatabase);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();

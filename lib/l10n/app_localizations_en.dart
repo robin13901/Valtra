@@ -33,6 +33,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get households => 'Households';
 
   @override
+  String get household => 'Household';
+
+  @override
   String get addReading => 'Add Reading';
 
   @override
@@ -85,4 +88,37 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get householdName => 'Household Name';
+
+  @override
+  String get editHousehold => 'Edit Household';
+
+  @override
+  String get deleteHousehold => 'Delete Household';
+
+  @override
+  String get householdDescription => 'Description (optional)';
+
+  @override
+  String get deleteHouseholdConfirm =>
+      'Are you sure you want to delete this household?';
+
+  @override
+  String get noHouseholds => 'No households yet. Create one to get started!';
+
+  @override
+  String get householdRequired => 'Household name is required';
+
+  @override
+  String get householdNameTooLong =>
+      'Household name must be 100 characters or less';
+
+  @override
+  String get cannotDeleteHousehold => 'Cannot Delete Household';
+
+  @override
+  String get householdHasRelatedData =>
+      'This household has related meters or readings. Delete them first before removing the household.';
+
+  @override
+  String get addHousehold => 'Add Household';
 }
