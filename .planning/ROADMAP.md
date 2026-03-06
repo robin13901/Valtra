@@ -167,6 +167,6 @@ Phase 7 (Heating) ────────────────────�
 | **Total** | | **~47-62h** |
 
 ## Current Status
-- **Active Phase**: None (project initialization)
-- **Next Phase**: Phase 1 - Project Setup & Architecture
+- **Active Phase**: Phase 1 - Project Setup & Architecture (PLANNED)
+- **Next Phase**: Phase 2 - Household Management
 - **Blockers**: None
