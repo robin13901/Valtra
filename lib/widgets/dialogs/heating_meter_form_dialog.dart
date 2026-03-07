@@ -121,6 +121,52 @@ class _HeatingMeterFormDialogState extends State<HeatingMeterFormDialog> {
                     return null;
                   },
                 ),
+              const SizedBox(height: 16),
+              Text(
+                l10n.heatingType,
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+              const SizedBox(height: 8),
+              SegmentedButton<HeatingType>(
+                segments: [
+                  ButtonSegment<HeatingType>(
+                    value: HeatingType.ownMeter,
+                    label: Text(l10n.ownMeter),
+                  ),
+                  ButtonSegment<HeatingType>(
+                    value: HeatingType.centralMeter,
+                    label: Text(l10n.centralHeating),
+                  ),
+                ],
+                selected: {_heatingType},
+                onSelectionChanged: (selection) {
+                  setState(() {
+                    _heatingType = selection.first;
+                  });
+                },
+              ),
+              if (_heatingType == HeatingType.centralMeter) ...[
+                const SizedBox(height: 16),
+                TextFormField(
+                  controller: _ratioController,
+                  decoration: InputDecoration(
+                    labelText: l10n.heatingRatio,
+                    hintText: l10n.heatingRatioHint,
+                    suffixText: '%',
+                  ),
+                  keyboardType: TextInputType.number,
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return l10n.heatingRatioRequired;
+                    }
+                    final parsed = double.tryParse(value.trim());
+                    if (parsed == null || parsed < 1 || parsed > 100) {
+                      return l10n.heatingRatioInvalid;
+                    }
+                    return null;
+                  },
+                ),
+              ],
             ],
           ),
         ),
@@ -142,7 +188,7 @@ class _HeatingMeterFormDialogState extends State<HeatingMeterFormDialog> {
     if (_formKey.currentState!.validate()) {
       final ratioText = _ratioController.text.trim();
       double? ratio;
-      if (ratioText.isNotEmpty) {
+      if (_heatingType == HeatingType.centralMeter && ratioText.isNotEmpty) {
         ratio = double.tryParse(ratioText);
         if (ratio != null) ratio = ratio / 100.0;
       }

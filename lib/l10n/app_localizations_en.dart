@@ -261,22 +261,16 @@ class AppLocalizationsEn extends AppLocalizations {
       'Are you sure you want to delete this entry?';
 
   @override
-  String get intervalType => 'Interval Type';
+  String get selectMonth => 'Select month';
 
   @override
-  String get intervalStart => 'Start Date';
+  String get entryExistsForMonth =>
+      'Entry already exists for this month. It will be updated.';
 
   @override
-  String get daily => 'Daily';
-
-  @override
-  String get weekly => 'Weekly';
-
-  @override
-  String get monthly => 'Monthly';
-
-  @override
-  String get yearly => 'Yearly';
+  String consumptionForMonth(String month) {
+    return 'Consumption for $month';
+  }
 
   @override
   String smartPlugCount(int count) {
@@ -422,12 +416,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get heatingMeterNameHint => 'Enter meter name';
-
-  @override
-  String get heatingMeterLocation => 'Location';
-
-  @override
-  String get heatingMeterLocationHint => 'e.g. Living Room (optional)';
 
   @override
   String get noHeatingMeters =>
@@ -817,4 +805,25 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hideInterpolatedValues => 'Hide interpolated values';
+
+  @override
+  String get heatingType => 'Heating type';
+
+  @override
+  String get ownMeter => 'Own meter';
+
+  @override
+  String get centralHeating => 'Central heating';
+
+  @override
+  String get heatingRatio => 'Heating ratio (%)';
+
+  @override
+  String get heatingRatioHint => 'Share of total heating energy';
+
+  @override
+  String get heatingRatioRequired => 'Heating ratio is required';
+
+  @override
+  String get heatingRatioInvalid => 'Must be between 1 and 100';
 }

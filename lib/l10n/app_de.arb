@@ -79,12 +79,14 @@
   "deleteConsumption": "Verbrauch löschen",
   "noConsumption": "Noch keine Verbrauchseinträge.",
   "deleteConsumptionConfirm": "Möchten Sie diesen Eintrag wirklich löschen?",
-  "intervalType": "Intervalltyp",
-  "intervalStart": "Startdatum",
-  "daily": "Täglich",
-  "weekly": "Wöchentlich",
-  "monthly": "Monatlich",
-  "yearly": "Jährlich",
+  "selectMonth": "Monat w\u00e4hlen",
+  "entryExistsForMonth": "Eintrag f\u00fcr diesen Monat existiert bereits. Er wird aktualisiert.",
+  "consumptionForMonth": "Verbrauch f\u00fcr {month}",
+  "@consumptionForMonth": {
+    "placeholders": {
+      "month": {"type": "String"}
+    }
+  },
   "smartPlugCount": "{count, plural, =0{Keine Smart Plugs} =1{1 Smart Plug} other{{count} Smart Plugs}}",
   "lastEntry": "Zuletzt: {value} kWh ({interval})",
   "manageRooms": "Räume verwalten",
@@ -125,8 +127,6 @@
   "deleteHeatingMeter": "Heizungszähler löschen",
   "heatingMeterName": "Zählername",
   "heatingMeterNameHint": "Zählernamen eingeben",
-  "heatingMeterLocation": "Standort",
-  "heatingMeterLocationHint": "z.B. Wohnzimmer (optional)",
   "noHeatingMeters": "Noch keine Heizungszähler. Fügen Sie einen hinzu, um den Heizverbrauch zu verfolgen!",
   "heatingMeterNameRequired": "Zählername ist erforderlich",
   "deleteHeatingMeterConfirm": "Möchten Sie diesen Heizungszähler wirklich löschen?",
@@ -312,5 +312,12 @@
   "home": "Start",
   "interpolatedValue": "Interpolierter Wert",
   "showInterpolatedValues": "Interpolierte Werte anzeigen",
-  "hideInterpolatedValues": "Interpolierte Werte ausblenden"
+  "hideInterpolatedValues": "Interpolierte Werte ausblenden",
+  "heatingType": "Heizungstyp",
+  "ownMeter": "Eigener Zähler",
+  "centralHeating": "Zentralheizung",
+  "heatingRatio": "Heizanteil (%)",
+  "heatingRatioHint": "Anteil an der Gesamtheizenergie",
+  "heatingRatioRequired": "Heizanteil ist erforderlich",
+  "heatingRatioInvalid": "Muss zwischen 1 und 100 liegen"
 }

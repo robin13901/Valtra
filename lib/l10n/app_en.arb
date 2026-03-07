@@ -94,12 +94,14 @@
   "deleteConsumption": "Delete Consumption",
   "noConsumption": "No consumption entries yet.",
   "deleteConsumptionConfirm": "Are you sure you want to delete this entry?",
-  "intervalType": "Interval Type",
-  "intervalStart": "Start Date",
-  "daily": "Daily",
-  "weekly": "Weekly",
-  "monthly": "Monthly",
-  "yearly": "Yearly",
+  "selectMonth": "Select month",
+  "entryExistsForMonth": "Entry already exists for this month. It will be updated.",
+  "consumptionForMonth": "Consumption for {month}",
+  "@consumptionForMonth": {
+    "placeholders": {
+      "month": {"type": "String"}
+    }
+  },
   "smartPlugCount": "{count, plural, =0{No smart plugs} =1{1 smart plug} other{{count} smart plugs}}",
   "@smartPlugCount": {
     "placeholders": {
@@ -176,8 +178,6 @@
   "deleteHeatingMeter": "Delete Heating Meter",
   "heatingMeterName": "Meter Name",
   "heatingMeterNameHint": "Enter meter name",
-  "heatingMeterLocation": "Location",
-  "heatingMeterLocationHint": "e.g. Living Room (optional)",
   "noHeatingMeters": "No heating meters yet. Add one to start tracking heating consumption!",
   "heatingMeterNameRequired": "Meter name is required",
   "deleteHeatingMeterConfirm": "Are you sure you want to delete this heating meter?",
@@ -378,5 +378,12 @@
   "home": "Home",
   "interpolatedValue": "Interpolated value",
   "showInterpolatedValues": "Show interpolated values",
-  "hideInterpolatedValues": "Hide interpolated values"
+  "hideInterpolatedValues": "Hide interpolated values",
+  "heatingType": "Heating type",
+  "ownMeter": "Own meter",
+  "centralHeating": "Central heating",
+  "heatingRatio": "Heating ratio (%)",
+  "heatingRatioHint": "Share of total heating energy",
+  "heatingRatioRequired": "Heating ratio is required",
+  "heatingRatioInvalid": "Must be between 1 and 100"
 }

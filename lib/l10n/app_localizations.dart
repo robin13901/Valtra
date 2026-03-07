@@ -572,41 +572,23 @@ abstract class AppLocalizations {
   /// **'Are you sure you want to delete this entry?'**
   String get deleteConsumptionConfirm;
 
-  /// No description provided for @intervalType.
+  /// No description provided for @selectMonth.
   ///
   /// In en, this message translates to:
-  /// **'Interval Type'**
-  String get intervalType;
+  /// **'Select month'**
+  String get selectMonth;
 
-  /// No description provided for @intervalStart.
+  /// No description provided for @entryExistsForMonth.
   ///
   /// In en, this message translates to:
-  /// **'Start Date'**
-  String get intervalStart;
+  /// **'Entry already exists for this month. It will be updated.'**
+  String get entryExistsForMonth;
 
-  /// No description provided for @daily.
+  /// No description provided for @consumptionForMonth.
   ///
   /// In en, this message translates to:
-  /// **'Daily'**
-  String get daily;
-
-  /// No description provided for @weekly.
-  ///
-  /// In en, this message translates to:
-  /// **'Weekly'**
-  String get weekly;
-
-  /// No description provided for @monthly.
-  ///
-  /// In en, this message translates to:
-  /// **'Monthly'**
-  String get monthly;
-
-  /// No description provided for @yearly.
-  ///
-  /// In en, this message translates to:
-  /// **'Yearly'**
-  String get yearly;
+  /// **'Consumption for {month}'**
+  String consumptionForMonth(String month);
 
   /// No description provided for @smartPlugCount.
   ///
@@ -847,18 +829,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Enter meter name'**
   String get heatingMeterNameHint;
-
-  /// No description provided for @heatingMeterLocation.
-  ///
-  /// In en, this message translates to:
-  /// **'Location'**
-  String get heatingMeterLocation;
-
-  /// No description provided for @heatingMeterLocationHint.
-  ///
-  /// In en, this message translates to:
-  /// **'e.g. Living Room (optional)'**
-  String get heatingMeterLocationHint;
 
   /// No description provided for @noHeatingMeters.
   ///
@@ -1555,6 +1525,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Hide interpolated values'**
   String get hideInterpolatedValues;
+
+  /// No description provided for @heatingType.
+  ///
+  /// In en, this message translates to:
+  /// **'Heating type'**
+  String get heatingType;
+
+  /// No description provided for @ownMeter.
+  ///
+  /// In en, this message translates to:
+  /// **'Own meter'**
+  String get ownMeter;
+
+  /// No description provided for @centralHeating.
+  ///
+  /// In en, this message translates to:
+  /// **'Central heating'**
+  String get centralHeating;
+
+  /// No description provided for @heatingRatio.
+  ///
+  /// In en, this message translates to:
+  /// **'Heating ratio (%)'**
+  String get heatingRatio;
+
+  /// No description provided for @heatingRatioHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Share of total heating energy'**
+  String get heatingRatioHint;
+
+  /// No description provided for @heatingRatioRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Heating ratio is required'**
+  String get heatingRatioRequired;
+
+  /// No description provided for @heatingRatioInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Must be between 1 and 100'**
+  String get heatingRatioInvalid;
 }
 
 class _AppLocalizationsDelegate

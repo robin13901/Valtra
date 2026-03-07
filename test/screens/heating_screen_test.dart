@@ -1,3 +1,4 @@
+import 'package:drift/drift.dart' as drift;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
@@ -5,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:valtra/app_theme.dart';
 import 'package:valtra/database/app_database.dart';
 import 'package:valtra/database/daos/heating_dao.dart';
+import 'package:valtra/database/tables.dart';
 import 'package:valtra/l10n/app_localizations.dart';
 import 'package:valtra/providers/heating_provider.dart';
 import 'package:valtra/providers/locale_provider.dart';
@@ -88,8 +90,9 @@ void main() {
               await tester.pumpWidget(Container());
             }));
 
-    testWidgets('displays list of meters',
+    testWidgets('displays meters grouped by room',
         (tester) => tester.runAsync(() async {
+              // Add meters to different rooms
               await dao.insertMeter(HeatingMetersCompanion.insert(
                 householdId: householdId,
                 roomId: roomId,
@@ -112,18 +115,28 @@ void main() {
                   .pumpWidget(wrapWithProviders(const HeatingScreen()));
               await tester.pumpAndSettle();
 
+              // Room headers should be visible
+              expect(find.text('Living Room'), findsOneWidget);
+              expect(find.text('Kitchen'), findsOneWidget);
+
+              // Room section icons
+              expect(find.byIcon(Icons.meeting_room),
+                  findsAtLeastNWidgets(2));
+
+              // Meter names
               expect(find.text('Bedroom Radiator'), findsOneWidget);
               expect(find.text('Kitchen Radiator'), findsOneWidget);
 
               await tester.pumpWidget(Container());
             }));
 
-    testWidgets('meter shows room name subtitle',
+    testWidgets('shows heating type label on meter card',
         (tester) => tester.runAsync(() async {
               await dao.insertMeter(HeatingMetersCompanion.insert(
                 householdId: householdId,
                 roomId: roomId,
-                name: 'Bedroom Radiator',
+                name: 'Own Meter',
+                heatingType: const drift.Value(HeatingType.ownMeter),
               ));
               await Future.delayed(const Duration(milliseconds: 100));
 
@@ -131,8 +144,31 @@ void main() {
                   .pumpWidget(wrapWithProviders(const HeatingScreen()));
               await tester.pumpAndSettle();
 
-              expect(find.text('Living Room'), findsOneWidget);
-              expect(find.byIcon(Icons.room), findsOneWidget);
+              expect(find.text('Own meter'), findsOneWidget);
+
+              await tester.pumpWidget(Container());
+            }));
+
+    testWidgets('central meter shows ratio badge',
+        (tester) => tester.runAsync(() async {
+              await dao.insertMeter(HeatingMetersCompanion.insert(
+                householdId: householdId,
+                roomId: roomId,
+                name: 'Central Meter',
+                heatingType: const drift.Value(HeatingType.centralMeter),
+                heatingRatio: const drift.Value(0.25),
+              ));
+              await Future.delayed(const Duration(milliseconds: 100));
+
+              await tester
+                  .pumpWidget(wrapWithProviders(const HeatingScreen()));
+              await tester.pumpAndSettle();
+
+              // Should show ratio badge
+              expect(find.text('25%'), findsOneWidget);
+
+              // Should show central heating type label
+              expect(find.text('Central heating'), findsOneWidget);
 
               await tester.pumpWidget(Container());
             }));
@@ -270,6 +306,66 @@ void main() {
                   find.text(
                       'No readings yet. Add your first meter reading!'),
                   findsOneWidget);
+
+              await tester.pumpWidget(Container());
+            }));
+
+    testWidgets('has manage rooms button in app bar',
+        (tester) => tester.runAsync(() async {
+              await tester
+                  .pumpWidget(wrapWithProviders(const HeatingScreen()));
+              await tester.pumpAndSettle();
+
+              // Room management icon in app bar
+              expect(find.byIcon(Icons.meeting_room), findsOneWidget);
+
+              await tester.pumpWidget(Container());
+            }));
+
+    testWidgets('no location/Standort text shown anywhere',
+        (tester) => tester.runAsync(() async {
+              await dao.insertMeter(HeatingMetersCompanion.insert(
+                householdId: householdId,
+                roomId: roomId,
+                name: 'Test Meter',
+              ));
+              await Future.delayed(const Duration(milliseconds: 100));
+
+              await tester
+                  .pumpWidget(wrapWithProviders(const HeatingScreen()));
+              await tester.pumpAndSettle();
+
+              // No location field or label
+              expect(find.text('Location'), findsNothing);
+              expect(find.text('Standort'), findsNothing);
+
+              await tester.pumpWidget(Container());
+            }));
+
+    testWidgets('two meters in same room grouped under one room header',
+        (tester) => tester.runAsync(() async {
+              await dao.insertMeter(HeatingMetersCompanion.insert(
+                householdId: householdId,
+                roomId: roomId,
+                name: 'Radiator 1',
+              ));
+              await dao.insertMeter(HeatingMetersCompanion.insert(
+                householdId: householdId,
+                roomId: roomId,
+                name: 'Radiator 2',
+              ));
+              await Future.delayed(const Duration(milliseconds: 100));
+
+              await tester
+                  .pumpWidget(wrapWithProviders(const HeatingScreen()));
+              await tester.pumpAndSettle();
+
+              // Only one room header for "Living Room"
+              expect(find.text('Living Room'), findsOneWidget);
+
+              // Both meters visible
+              expect(find.text('Radiator 1'), findsOneWidget);
+              expect(find.text('Radiator 2'), findsOneWidget);
 
               await tester.pumpWidget(Container());
             }));

@@ -262,22 +262,16 @@ class AppLocalizationsDe extends AppLocalizations {
       'Möchten Sie diesen Eintrag wirklich löschen?';
 
   @override
-  String get intervalType => 'Intervalltyp';
+  String get selectMonth => 'Monat wählen';
 
   @override
-  String get intervalStart => 'Startdatum';
+  String get entryExistsForMonth =>
+      'Eintrag für diesen Monat existiert bereits. Er wird aktualisiert.';
 
   @override
-  String get daily => 'Täglich';
-
-  @override
-  String get weekly => 'Wöchentlich';
-
-  @override
-  String get monthly => 'Monatlich';
-
-  @override
-  String get yearly => 'Jährlich';
+  String consumptionForMonth(String month) {
+    return 'Verbrauch für $month';
+  }
 
   @override
   String smartPlugCount(int count) {
@@ -424,12 +418,6 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get heatingMeterNameHint => 'Zählernamen eingeben';
-
-  @override
-  String get heatingMeterLocation => 'Standort';
-
-  @override
-  String get heatingMeterLocationHint => 'z.B. Wohnzimmer (optional)';
 
   @override
   String get noHeatingMeters =>
@@ -820,4 +808,25 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get hideInterpolatedValues => 'Interpolierte Werte ausblenden';
+
+  @override
+  String get heatingType => 'Heizungstyp';
+
+  @override
+  String get ownMeter => 'Eigener Zähler';
+
+  @override
+  String get centralHeating => 'Zentralheizung';
+
+  @override
+  String get heatingRatio => 'Heizanteil (%)';
+
+  @override
+  String get heatingRatioHint => 'Anteil an der Gesamtheizenergie';
+
+  @override
+  String get heatingRatioRequired => 'Heizanteil ist erforderlich';
+
+  @override
+  String get heatingRatioInvalid => 'Muss zwischen 1 und 100 liegen';
 }

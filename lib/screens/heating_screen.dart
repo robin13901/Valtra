@@ -4,11 +4,13 @@ import 'package:provider/provider.dart';
 
 import '../app_theme.dart';
 import '../database/app_database.dart';
+import '../database/tables.dart';
 import '../l10n/app_localizations.dart';
 import '../providers/analytics_provider.dart';
 import '../providers/heating_provider.dart';
 import '../providers/locale_provider.dart';
 import '../screens/monthly_analytics_screen.dart';
+import '../screens/rooms_screen.dart';
 import '../services/analytics/analytics_models.dart';
 import '../services/interpolation/models.dart';
 import '../services/number_format_service.dart';
@@ -16,7 +18,7 @@ import '../widgets/dialogs/heating_meter_form_dialog.dart';
 import '../widgets/dialogs/heating_reading_form_dialog.dart';
 import '../widgets/liquid_glass_widgets.dart';
 
-/// Screen displaying heating meters with their readings.
+/// Screen displaying heating meters grouped by room.
 class HeatingScreen extends StatelessWidget {
   const HeatingScreen({super.key});
 
@@ -24,7 +26,7 @@ class HeatingScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final provider = context.watch<HeatingProvider>();
-    final metersWithRooms = provider.metersWithRooms;
+    final metersByRoom = provider.metersByRoom;
 
     return Scaffold(
       appBar: buildGlassAppBar(
@@ -52,11 +54,16 @@ class HeatingScreen extends StatelessWidget {
             },
             tooltip: l10n.analyticsHub,
           ),
+          IconButton(
+            icon: const Icon(Icons.meeting_room),
+            onPressed: () => _navigateToRooms(context),
+            tooltip: l10n.manageRooms,
+          ),
         ],
       ),
-      body: metersWithRooms.isEmpty
+      body: metersByRoom.isEmpty
           ? _buildEmptyState(context, l10n)
-          : _HeatingMetersList(metersWithRooms: metersWithRooms),
+          : _HeatingMetersByRoom(metersByRoom: metersByRoom),
       floatingActionButton: buildGlassFAB(
         context: context,
         icon: Icons.add,
@@ -88,6 +95,12 @@ class HeatingScreen extends StatelessWidget {
     );
   }
 
+  void _navigateToRooms(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (context) => const RoomsScreen()),
+    );
+  }
+
   Future<void> _addMeter(BuildContext context) async {
     final provider = context.read<HeatingProvider>();
     final roomDao = context.read<AppDatabase>().roomDao;
@@ -96,6 +109,20 @@ class HeatingScreen extends StatelessWidget {
 
     final rooms = await roomDao.getRoomsForHousehold(householdId);
     if (!context.mounted) return;
+
+    if (rooms.isEmpty) {
+      final l10n = AppLocalizations.of(context)!;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n.noRooms),
+          action: SnackBarAction(
+            label: l10n.addRoom,
+            onPressed: () => _navigateToRooms(context),
+          ),
+        ),
+      );
+      return;
+    }
 
     final result = await HeatingMeterFormDialog.show(
       context,
@@ -112,19 +139,63 @@ class HeatingScreen extends StatelessWidget {
   }
 }
 
-class _HeatingMetersList extends StatelessWidget {
-  final List<HeatingMeterWithRoom> metersWithRooms;
+class _HeatingMetersByRoom extends StatelessWidget {
+  final Map<String, List<HeatingMeterWithRoom>> metersByRoom;
 
-  const _HeatingMetersList({required this.metersWithRooms});
+  const _HeatingMetersByRoom({required this.metersByRoom});
 
   @override
   Widget build(BuildContext context) {
+    final roomNames = metersByRoom.keys.toList()..sort();
+
     return ListView.builder(
       padding: const EdgeInsets.all(16),
-      itemCount: metersWithRooms.length,
+      itemCount: roomNames.length,
       itemBuilder: (context, index) {
-        return _HeatingMeterCard(meterWithRoom: metersWithRooms[index]);
+        final roomName = roomNames[index];
+        final meters = metersByRoom[roomName]!;
+        return _RoomSection(roomName: roomName, meters: meters);
       },
+    );
+  }
+}
+
+class _RoomSection extends StatelessWidget {
+  final String roomName;
+  final List<HeatingMeterWithRoom> meters;
+
+  const _RoomSection({required this.roomName, required this.meters});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: Row(
+            children: [
+              Icon(
+                Icons.meeting_room,
+                size: 20,
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+              const SizedBox(width: 8),
+              Text(
+                roomName,
+                style: theme.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ],
+          ),
+        ),
+        ...meters.map((mwr) => _HeatingMeterCard(meterWithRoom: mwr)),
+        const SizedBox(height: 16),
+      ],
     );
   }
 }
@@ -177,31 +248,45 @@ class _HeatingMeterCardState extends State<_HeatingMeterCard> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          meter.name,
-                          style: theme.textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
                         Row(
                           children: [
-                            Icon(
-                              Icons.room,
-                              size: 14,
-                              color:
-                                  theme.colorScheme.onSurfaceVariant,
-                            ),
-                            const SizedBox(width: 4),
-                            Text(
-                              roomName,
-                              style:
-                                  theme.textTheme.bodySmall?.copyWith(
-                                color: theme
-                                    .colorScheme.onSurfaceVariant,
+                            Expanded(
+                              child: Text(
+                                meter.name,
+                                style: theme.textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                ),
                               ),
                             ),
+                            if (meter.heatingType == HeatingType.centralMeter &&
+                                meter.heatingRatio != null)
+                              Container(
+                                margin: const EdgeInsets.only(left: 8),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 8, vertical: 2),
+                                decoration: BoxDecoration(
+                                  color: AppColors.heatingColor
+                                      .withValues(alpha: 0.15),
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Text(
+                                  '${(meter.heatingRatio! * 100).toStringAsFixed(0)}%',
+                                  style: theme.textTheme.bodySmall?.copyWith(
+                                    color: AppColors.heatingColor,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
                           ],
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          meter.heatingType == HeatingType.centralMeter
+                              ? l10n.centralHeating
+                              : l10n.ownMeter,
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: theme.colorScheme.onSurfaceVariant,
+                          ),
                         ),
                         if (readings.isNotEmpty) ...[
                           const SizedBox(height: 4),
