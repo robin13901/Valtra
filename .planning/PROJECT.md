@@ -57,9 +57,10 @@ Managing utility consumption across multiple households requires manual tracking
 </details>
 
 ### Next: v0.3.0 - Polish & Enhancement
-- Phase 12: LiquidGlass UI Polish (bottom nav, FAB, dialog styling)
-- Phase 13: Data Entry Enhancements (quick entry, validation, UX)
-- Phase 14: Testing & Documentation (80%+ coverage, integration tests, README)
+- Phase 12: Settings & Configuration (theme toggle, cost configuration, app preferences)
+- Phase 13: Cost Tracking (price models, cost calculations, cost display in analytics)
+- Phase 14: UI/UX Polish & Data Entry (LiquidGlass styling, quick entry, validation)
+- Phase 15: Backup, Testing & Documentation (DB export/import, 80%+ coverage, README)
 
 ## Success Criteria
 1. ~~All meter types can be recorded with timestamps~~ (v0.1.0)
@@ -69,6 +70,9 @@ Managing utility consumption across multiple households requires manual tracking
 5. ~~Analytics views show meaningful consumption insights with line/bar/pie charts~~ (v0.2.0)
 6. ~~CSV export works for all meter types via system share sheet~~ (v0.2.0)
 7. 80%+ test coverage maintained (v0.3.0)
+8. Cost tracking shows accurate cost calculations with tiered pricing (v0.3.0)
+9. Dark/light/system theme toggle works with full UI consistency (v0.3.0)
+10. Database backup/restore works via file export/import (v0.3.0)
 
 ## Repository
 - Location: c:\SAPDevelop\Privat\Valtra
