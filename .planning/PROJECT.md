@@ -35,13 +35,28 @@ Managing utility consumption across multiple households requires manual tracking
 - Comprehensive test coverage with Codecov integration
 - GitHub Actions CI/CD pipeline
 
+## Current State
+
+### Shipped: v0.1.0 - Core Foundation (2026-03-07)
+- 7 phases completed: Project setup, household management, and CRUD for all 5 meter types
+- 44 source files (9,681 LOC), 35 test files (7,492 LOC), 313 tests passing
+- 10 database tables, 7 DAOs, 8 providers, 8 screens, 10 form dialogs
+- Full EN/DE localization (140 keys)
+- Architecture: Drift DAOs -> Provider state management -> Material 3 + LiquidGlass UI
+
+### Next Milestone Goals: v0.2.0 - Analytics & Visualization
+- Interpolation engine for monthly boundary values
+- Monthly and yearly analytics screens with charts
+- Smart plug analytics with pie charts (by plug, by room, "Other")
+- Consumption trend visualization with fl_chart
+
 ## Success Criteria
-1. All meter types can be recorded with timestamps
-2. Smart plug data aggregates correctly by room
-3. Interpolation produces accurate monthly values
-4. Multi-household data remains properly isolated
-5. Analytics views show meaningful consumption insights
-6. 80%+ test coverage maintained
+1. ~~All meter types can be recorded with timestamps~~ (v0.1.0)
+2. Smart plug data aggregates correctly by room (v0.2.0)
+3. Interpolation produces accurate monthly values (v0.2.0)
+4. ~~Multi-household data remains properly isolated~~ (v0.1.0)
+5. Analytics views show meaningful consumption insights (v0.2.0)
+6. 80%+ test coverage maintained (v0.3.0)
 
 ## Repository
 - Location: c:\SAPDevelop\Privat\Valtra

@@ -1,63 +1,7 @@
 # Valtra - Development Roadmap
 
-## Milestone 1: Core Foundation (v0.1.0)
-**Goal**: Establish app architecture, database, and basic CRUD for all meter types
-
-### Phase 1: Project Setup & Architecture
-**Requirements**: NFR-1, NFR-2, NFR-3, NFR-4
-- [ ] Configure pubspec.yaml with all dependencies (Drift, Provider, fl_chart, liquid_glass_renderer, intl)
-- [ ] Setup l10n.yaml and create app_en.arb / app_de.arb with initial strings
-- [ ] Create app theme with Ultra Violet (#5F4A8B) and Lemon Chiffon (#FEFACD)
-- [ ] Setup Drift database with tables schema
-- [ ] Create GitHub Actions workflow (flutter-tests.yml)
-- [ ] Setup test infrastructure with test helpers
-
-### Phase 2: Household Management
-**Requirements**: FR-1
-- [ ] Create Household model and DAO
-- [ ] Implement HouseholdProvider for state management
-- [ ] Build Household list/create/edit screens
-- [ ] Add household selector widget
-- [ ] Persist selected household in SharedPreferences
-
-### Phase 3: Electricity Tracking
-**Requirements**: FR-2
-- [ ] Create ElectricityMeter and ElectricityReading models/tables
-- [ ] Implement ElectricityDao with CRUD operations
-- [ ] Build Electricity screen with reading list
-- [ ] Create AddElectricityReadingDialog
-- [ ] Display consumption deltas between readings
-
-### Phase 4: Smart Plug & Room Management
-**Requirements**: FR-3
-- [ ] Create Room model and DAO
-- [ ] Create SmartPlug and SmartPlugConsumption models/tables
-- [ ] Implement SmartPlugDao with interval-based consumption logging
-- [ ] Build Room management screen
-- [ ] Build SmartPlug management screen with room assignment
-- [ ] Create SmartPlugConsumption entry form (interval selector + value)
-
-### Phase 5: Water Tracking
-**Requirements**: FR-4
-- [ ] Create WaterMeter (with type: cold/hot/other) and WaterReading models
-- [ ] Implement WaterDao with multi-meter support
-- [ ] Build Water screen with meter tabs/list
-- [ ] Create AddWaterMeterDialog and AddWaterReadingDialog
-
-### Phase 6: Gas Tracking
-**Requirements**: FR-5
-- [ ] Create GasMeter and GasReading models/tables
-- [ ] Implement GasDao with CRUD operations
-- [ ] Build Gas screen with reading list
-- [ ] Create AddGasReadingDialog
-- [ ] Optional: Add kWh conversion display
-
-### Phase 7: Heating Meter Tracking
-**Requirements**: FR-6
-- [ ] Create HeatingMeter and HeatingReading models/tables
-- [ ] Implement HeatingDao with multi-meter support
-- [ ] Build Heating screen with meter management
-- [ ] Create AddHeatingMeterDialog and AddHeatingReadingDialog
+## Milestone 1: Core Foundation (v0.1.0) - COMPLETED
+7 phases (Setup, Households, Electricity, Smart Plugs, Water, Gas, Heating) | 313 tests | [Full details](milestones/v0.1.0-ROADMAP.md)
 
 ---
 
@@ -124,49 +68,25 @@
 ## Phase Dependencies
 
 ```
-Phase 1 (Setup) ─────────────────────────────────────┐
-                                                     │
-Phase 2 (Households) ────────────────────────────────┼─► Phase 8 (Interpolation)
-                                                     │           │
-Phase 3 (Electricity) ───────────────────────────────┤           ▼
-                                                     │   Phase 9 (Monthly Analytics)
-Phase 4 (Smart Plugs) ───────────────────────────────┤           │
-                                                     │           ▼
-Phase 5 (Water) ─────────────────────────────────────┤   Phase 10 (Yearly Analytics)
-                                                     │
-Phase 6 (Gas) ───────────────────────────────────────┤   Phase 11 (Smart Plug Analytics)
-                                                     │           │
-Phase 7 (Heating) ───────────────────────────────────┘           ▼
-                                                         Phase 12 (UI Polish)
-                                                                 │
-                                                                 ▼
-                                                         Phase 13 (Data Entry)
-                                                                 │
-                                                                 ▼
-                                                         Phase 14 (Testing)
+Milestone 1 (v0.1.0) ──────────────────────────────┐
+  Phases 1-7 COMPLETED                              │
+                                                     ▼
+Phase 8 (Interpolation) ───► Phase 9 (Monthly Analytics)
+                                        │
+                                        ▼
+                             Phase 10 (Yearly Analytics)
+
+Phase 11 (Smart Plug Analytics) ───────► Phase 12 (UI Polish)
+                                                 │
+                                                 ▼
+                                         Phase 13 (Data Entry)
+                                                 │
+                                                 ▼
+                                         Phase 14 (Testing)
 ```
 
-## Estimated Effort
-
-| Phase | Complexity | Estimated Hours |
-|-------|------------|-----------------|
-| 1. Project Setup | Medium | 4-6h |
-| 2. Households | Low | 2-3h |
-| 3. Electricity | Medium | 3-4h |
-| 4. Smart Plugs | High | 5-6h |
-| 5. Water | Medium | 3-4h |
-| 6. Gas | Low | 2-3h |
-| 7. Heating | Medium | 3-4h |
-| 8. Interpolation | Medium | 3-4h |
-| 9. Monthly Analytics | High | 5-6h |
-| 10. Yearly Analytics | Medium | 3-4h |
-| 11. Smart Plug Analytics | High | 4-5h |
-| 12. UI Polish | Medium | 4-5h |
-| 13. Data Entry | Low | 2-3h |
-| 14. Testing | Medium | 4-5h |
-| **Total** | | **~47-62h** |
-
 ## Current Status
-- **Active Phase**: Phase 1 - Project Setup & Architecture (PLANNED)
-- **Next Phase**: Phase 2 - Household Management
+- **Completed**: Milestone 1 (v0.1.0) - Core Foundation
+- **Active Milestone**: 2 - Analytics & Visualization
+- **Next Phase**: Phase 8 - Interpolation Engine (requires `/gsd:new-milestone` for requirements)
 - **Blockers**: None
