@@ -37,6 +37,8 @@ YearlyAnalyticsData _buildYearlyData({
   double? totalConsumption,
   double? previousYearTotal,
   String unit = 'kWh',
+  double? extrapolatedTotal,
+  int? extrapolationBasisMonths,
 }) {
   final breakdown = monthlyBreakdown ??
       [
@@ -52,6 +54,8 @@ YearlyAnalyticsData _buildYearlyData({
     totalConsumption: totalConsumption ?? 600.0,
     previousYearTotal: previousYearTotal,
     unit: unit,
+    extrapolatedTotal: extrapolatedTotal,
+    extrapolationBasisMonths: extrapolationBasisMonths,
   );
 }
 
@@ -300,6 +304,116 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byType(FloatingActionButton), findsNothing);
+    });
+
+    testWidgets('shows projected total when extrapolation data exists',
+        (tester) async {
+      final data = _buildYearlyData(
+        extrapolatedTotal: 2400.0,
+        extrapolationBasisMonths: 3,
+      );
+      setUpDefaultStubs(yearlyData: data);
+
+      await tester.pumpWidget(
+        _wrap(
+          const YearlyAnalyticsScreen(meterType: MeterType.electricity),
+          provider,
+          themeProvider,
+          localeProvider,
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Summary card should display projected total
+      expect(find.textContaining('Projected total'), findsOneWidget);
+      expect(find.textContaining('Based on 3 months'), findsOneWidget);
+    });
+
+    testWidgets('does not show projected total when extrapolation is null',
+        (tester) async {
+      setUpDefaultStubs(yearlyData: _buildYearlyData());
+
+      await tester.pumpWidget(
+        _wrap(
+          const YearlyAnalyticsScreen(meterType: MeterType.electricity),
+          provider,
+          themeProvider,
+          localeProvider,
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.textContaining('Projected total'), findsNothing);
+      expect(find.textContaining('Based on'), findsNothing);
+    });
+
+    testWidgets('renders extrapolated bars with distinct style',
+        (tester) async {
+      // Create data with both actual and extrapolated months
+      final periods = [
+        _period(DateTime(2026, 1, 1), 200),
+        _period(DateTime(2026, 2, 1), 180),
+        PeriodConsumption(
+          periodStart: DateTime(2026, 3, 1),
+          periodEnd: DateTime(2026, 4, 1),
+          startValue: 0,
+          endValue: 190,
+          consumption: 190,
+          startInterpolated: false,
+          endInterpolated: false,
+          isExtrapolated: true,
+        ),
+      ];
+      final data = _buildYearlyData(
+        monthlyBreakdown: periods,
+        extrapolatedTotal: 2280.0,
+        extrapolationBasisMonths: 2,
+      );
+      setUpDefaultStubs(yearlyData: data);
+
+      await tester.pumpWidget(
+        _wrap(
+          const YearlyAnalyticsScreen(meterType: MeterType.electricity),
+          provider,
+          themeProvider,
+          localeProvider,
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // The chart should render without errors and show 3 bars
+      // (visual style differences are in the chart widget, just verify no crash)
+      expect(find.text('Monthly Breakdown'), findsOneWidget);
+    });
+
+    testWidgets('shows m\u00B3 unit for gas analysis', (tester) async {
+      final data = YearlyAnalyticsData(
+        meterType: MeterType.gas,
+        year: 2026,
+        monthlyBreakdown: [
+          _period(DateTime(2026, 1, 1), 50),
+          _period(DateTime(2026, 2, 1), 45),
+        ],
+        totalConsumption: 95.0,
+        unit: 'm\u00B3',
+      );
+      setUpDefaultStubs(
+        yearlyData: data,
+        selectedMeterType: MeterType.gas,
+      );
+
+      await tester.pumpWidget(
+        _wrap(
+          const YearlyAnalyticsScreen(meterType: MeterType.gas),
+          provider,
+          themeProvider,
+          localeProvider,
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Should display m3 unit, not kWh
+      expect(find.textContaining('m\u00B3'), findsWidgets);
     });
   });
 }

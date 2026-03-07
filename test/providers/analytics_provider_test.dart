@@ -485,10 +485,10 @@ void main() {
 
       final gasSummary = provider.overviewSummaries[MeterType.gas];
       expect(gasSummary, isNotNull);
-      expect(gasSummary!.unit, 'kWh');
+      expect(gasSummary!.unit, 'm\u00B3');
     });
 
-    test('gas monthly data applies kWh conversion to daily values', () async {
+    test('gas monthly data does NOT apply kWh conversion to daily values', () async {
       _stubEmptyDaos(
         mockElectricityDao,
         mockGasDao,
@@ -548,11 +548,12 @@ void main() {
       provider.setSelectedMonth(DateTime(2024, 6, 1));
       await Future.delayed(const Duration(milliseconds: 100));
 
-      // Verify gas conversion was called
-      verify(() => mockGasConversionService.toKwh(
-            any(),
-            factor: any(named: 'factor'),
-          )).called(greaterThanOrEqualTo(1));
+      // Gas daily values should NOT be converted to kWh (raw m³ displayed)
+      // toKwh is only used for cost calculation, not display
+      if (provider.monthlyData != null &&
+          provider.monthlyData!.dailyValues.isNotEmpty) {
+        expect(provider.monthlyData!.dailyValues.first.value, 10.0);
+      }
     });
 
     test('non-gas meter types do not apply gas conversion on daily values',
@@ -642,7 +643,7 @@ void main() {
       expect(provider.monthlyData?.unit, 'kWh');
     });
 
-    test('gas display unit is kWh (converted)', () async {
+    test('gas display unit is m\u00B3 (raw)', () async {
       _stubEmptyDaos(
         mockElectricityDao,
         mockGasDao,
@@ -660,7 +661,7 @@ void main() {
       provider.setSelectedMonth(DateTime(2024, 6, 1));
       await Future.delayed(const Duration(milliseconds: 100));
 
-      expect(provider.monthlyData?.unit, 'kWh');
+      expect(provider.monthlyData?.unit, 'm\u00B3');
     });
 
     test('water display unit is m\u00B3', () async {

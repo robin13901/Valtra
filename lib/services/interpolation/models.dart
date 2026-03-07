@@ -43,6 +43,7 @@ class PeriodConsumption {
   final double consumption;
   final bool startInterpolated;
   final bool endInterpolated;
+  final bool isExtrapolated;
 
   const PeriodConsumption({
     required this.periodStart,
@@ -52,7 +53,20 @@ class PeriodConsumption {
     required this.consumption,
     required this.startInterpolated,
     required this.endInterpolated,
+    this.isExtrapolated = false,
   });
+
+  /// Create a copy with [isExtrapolated] set to true.
+  PeriodConsumption copyWithExtrapolated() => PeriodConsumption(
+        periodStart: periodStart,
+        periodEnd: periodEnd,
+        startValue: startValue,
+        endValue: endValue,
+        consumption: consumption,
+        startInterpolated: startInterpolated,
+        endInterpolated: endInterpolated,
+        isExtrapolated: true,
+      );
 
   @override
   bool operator ==(Object other) =>
@@ -65,7 +79,8 @@ class PeriodConsumption {
           endValue == other.endValue &&
           consumption == other.consumption &&
           startInterpolated == other.startInterpolated &&
-          endInterpolated == other.endInterpolated;
+          endInterpolated == other.endInterpolated &&
+          isExtrapolated == other.isExtrapolated;
 
   @override
   int get hashCode => Object.hash(
@@ -76,13 +91,15 @@ class PeriodConsumption {
         consumption,
         startInterpolated,
         endInterpolated,
+        isExtrapolated,
       );
 
   @override
   String toString() =>
       'PeriodConsumption(periodStart: $periodStart, periodEnd: $periodEnd, '
       'startValue: $startValue, endValue: $endValue, consumption: $consumption, '
-      'startInterpolated: $startInterpolated, endInterpolated: $endInterpolated)';
+      'startInterpolated: $startInterpolated, endInterpolated: $endInterpolated, '
+      'isExtrapolated: $isExtrapolated)';
 }
 
 /// A display item for reading lists that wraps either a real reading

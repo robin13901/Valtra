@@ -74,6 +74,8 @@ class YearlyAnalyticsData {
   final double? totalCost; // null if no cost config
   final double? previousYearTotalCost; // for YoY comparison
   final String? currencySymbol;
+  final double? extrapolatedTotal; // projected year-end total (current year only)
+  final int? extrapolationBasisMonths; // how many actual months used for projection
 
   const YearlyAnalyticsData({
     required this.meterType,
@@ -86,6 +88,8 @@ class YearlyAnalyticsData {
     this.totalCost,
     this.previousYearTotalCost,
     this.currencySymbol,
+    this.extrapolatedTotal,
+    this.extrapolationBasisMonths,
   });
 }
 

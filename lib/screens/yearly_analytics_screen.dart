@@ -110,6 +110,8 @@ class _YearlyAnalyticsScreenState extends State<YearlyAnalyticsScreen> {
           previousYearTotalCost: data.previousYearTotalCost,
           currencySymbol: data.currencySymbol,
           locale: locale,
+          extrapolatedTotal: data.extrapolatedTotal,
+          extrapolationBasisMonths: data.extrapolationBasisMonths,
         ),
         const SizedBox(height: 24),
 
@@ -249,6 +251,8 @@ class _YearlySummaryCard extends StatelessWidget {
   final double? previousYearTotalCost;
   final String? currencySymbol;
   final String locale;
+  final double? extrapolatedTotal;
+  final int? extrapolationBasisMonths;
 
   const _YearlySummaryCard({
     required this.totalConsumption,
@@ -260,6 +264,8 @@ class _YearlySummaryCard extends StatelessWidget {
     this.previousYearTotalCost,
     this.currencySymbol,
     required this.locale,
+    this.extrapolatedTotal,
+    this.extrapolationBasisMonths,
   });
 
   @override
@@ -280,6 +286,25 @@ class _YearlySummaryCard extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                 ),
           ),
+          if (extrapolatedTotal != null) ...[
+            const SizedBox(height: 4),
+            Text(
+              l10n.projectedTotal(
+                '~${ValtraNumberFormat.consumption(extrapolatedTotal!, locale)} $unit',
+              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    fontStyle: FontStyle.italic,
+                  ),
+            ),
+            if (extrapolationBasisMonths != null)
+              Text(
+                l10n.basedOnMonths(extrapolationBasisMonths!),
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
+              ),
+          ],
           if (totalConsumption != null &&
               previousYearTotal != null &&
               previousYearTotal! > 0) ...[

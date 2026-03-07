@@ -1,5 +1,24 @@
 import 'models.dart';
 
+/// Result of year-end extrapolation.
+class ExtrapolationResult {
+  /// Projected total consumption for the full year.
+  final double projectedTotal;
+
+  /// Extrapolated monthly periods (one per remaining month).
+  /// Each is marked with [PeriodConsumption.isExtrapolated] = true.
+  final List<PeriodConsumption> projectedMonths;
+
+  /// Number of actual data months used as basis.
+  final int actualMonthCount;
+
+  const ExtrapolationResult({
+    required this.projectedTotal,
+    required this.projectedMonths,
+    required this.actualMonthCount,
+  });
+}
+
 /// Pure-logic interpolation engine for estimating meter values
 /// at arbitrary points in time between actual readings.
 class InterpolationService {
@@ -159,5 +178,50 @@ class InterpolationService {
     }
 
     return targets;
+  }
+
+  /// Extrapolate year-end consumption from partial-year data.
+  ///
+  /// Takes the actual monthly consumptions so far and projects
+  /// the remaining months at the same average rate.
+  /// Returns null if no actual consumption data is provided.
+  ExtrapolationResult? extrapolateYearEnd({
+    required List<PeriodConsumption> actualMonths,
+    required int year,
+  }) {
+    if (actualMonths.isEmpty) return null;
+
+    final actualTotal =
+        actualMonths.fold<double>(0, (sum, p) => sum + p.consumption);
+    final avgMonthly = actualTotal / actualMonths.length;
+
+    // Determine which months are already covered
+    final coveredMonths =
+        actualMonths.map((p) => p.periodStart.month).toSet();
+
+    // Generate extrapolated periods for remaining months
+    final projectedMonths = <PeriodConsumption>[];
+    for (int m = 1; m <= 12; m++) {
+      if (!coveredMonths.contains(m)) {
+        projectedMonths.add(PeriodConsumption(
+          periodStart: DateTime(year, m, 1),
+          periodEnd: DateTime(year, m + 1, 1),
+          startValue: 0,
+          endValue: 0,
+          consumption: avgMonthly,
+          startInterpolated: false,
+          endInterpolated: false,
+          isExtrapolated: true,
+        ));
+      }
+    }
+
+    final projectedTotal = actualTotal + projectedMonths.length * avgMonthly;
+
+    return ExtrapolationResult(
+      projectedTotal: projectedTotal,
+      projectedMonths: projectedMonths,
+      actualMonthCount: actualMonths.length,
+    );
   }
 }

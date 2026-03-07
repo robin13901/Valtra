@@ -165,22 +165,21 @@ class AnalyticsProvider extends ChangeNotifier {
           }
         }
 
-        // Apply gas kWh conversion if gas type
-        if (type == MeterType.gas && currentConsumption != null) {
-          currentConsumption = _gasConversionService.toKwh(
-            currentConsumption,
-            factor: _settingsProvider.gasKwhFactor,
-          );
-        }
-
         // Calculate cost for current month if config exists
+        // For gas: convert m³ to kWh for cost calculation (cost config uses €/kWh)
         double? latestMonthCost;
         String? currencySymbol;
         final costMeterType = _toCostMeterType(type);
         if (costMeterType != null && currentConsumption != null) {
+          final costConsumption = type == MeterType.gas
+              ? _gasConversionService.toKwh(
+                  currentConsumption,
+                  factor: _settingsProvider.gasKwhFactor,
+                )
+              : currentConsumption;
           final costResult = _costConfigProvider.calculateCost(
             meterType: costMeterType,
-            consumption: currentConsumption,
+            consumption: costConsumption,
             periodStart: currentMonthStart,
             periodEnd: DateTime(now.year, now.month + 1, 1),
           );
@@ -194,7 +193,7 @@ class AnalyticsProvider extends ChangeNotifier {
           meterType: type,
           latestMonthConsumption: currentConsumption,
           hasInterpolation: hasInterpolation,
-          unit: type == MeterType.gas ? 'kWh' : unitForMeterType(type),
+          unit: unitForMeterType(type),
           latestMonthCost: latestMonthCost,
           currencySymbol: currencySymbol,
         );
@@ -270,14 +269,6 @@ class AnalyticsProvider extends ChangeNotifier {
             : null,
       );
 
-      // Apply gas conversion if needed
-      if (_selectedMeterType == MeterType.gas) {
-        monthlyConsumption = _gasConversionService.toKwhConsumptions(
-          monthlyConsumption,
-          factor: _settingsProvider.gasKwhFactor,
-        );
-      }
-
       // Calculate total consumption for the selected month
       double? totalConsumption;
       for (final period in monthlyConsumption) {
@@ -292,10 +283,7 @@ class AnalyticsProvider extends ChangeNotifier {
       final dailyValues = dailyBoundaries
           .map((b) => ChartDataPoint(
                 timestamp: b.timestamp,
-                value: _selectedMeterType == MeterType.gas
-                    ? _gasConversionService.toKwh(b.value,
-                        factor: _settingsProvider.gasKwhFactor)
-                    : b.value,
+                value: b.value,
                 isInterpolated: b.isInterpolated,
               ))
           .toList();
@@ -348,7 +336,7 @@ class AnalyticsProvider extends ChangeNotifier {
   }
 
   String _getDisplayUnit(MeterType type) {
-    return type == MeterType.gas ? 'kWh' : unitForMeterType(type);
+    return unitForMeterType(type);
   }
 
   /// Map MeterType to CostMeterType (heating has no cost tracking).
@@ -366,14 +354,23 @@ class AnalyticsProvider extends ChangeNotifier {
   }
 
   /// Calculate cost for a single period using active config.
+  /// For gas: converts m³ consumption to kWh before applying cost config.
   double? _calculatePeriodCost(
       PeriodConsumption period, MeterType meterType) {
     final costMeterType = _toCostMeterType(meterType);
     if (costMeterType == null) return null;
 
+    // Gas cost config uses €/kWh, so convert m³ to kWh for cost math
+    final costConsumption = meterType == MeterType.gas
+        ? _gasConversionService.toKwh(
+            period.consumption,
+            factor: _settingsProvider.gasKwhFactor,
+          )
+        : period.consumption;
+
     final result = _costConfigProvider.calculateCost(
       meterType: costMeterType,
-      consumption: period.consumption,
+      consumption: costConsumption,
       periodStart: period.periodStart,
       periodEnd: period.periodEnd,
     );
@@ -421,14 +418,6 @@ class AnalyticsProvider extends ChangeNotifier {
             : null,
       );
 
-      // Apply gas conversion if needed
-      if (_selectedMeterType == MeterType.gas) {
-        monthlyBreakdown = _gasConversionService.toKwhConsumptions(
-          monthlyBreakdown,
-          factor: _settingsProvider.gasKwhFactor,
-        );
-      }
-
       final totalConsumption = monthlyBreakdown.isEmpty
           ? null
           : monthlyBreakdown.fold<double>(
@@ -459,12 +448,6 @@ class AnalyticsProvider extends ChangeNotifier {
               ? _heatingRatios
               : null,
         );
-        if (_selectedMeterType == MeterType.gas) {
-          prevBreakdown = _gasConversionService.toKwhConsumptions(
-            prevBreakdown,
-            factor: _settingsProvider.gasKwhFactor,
-          );
-        }
         if (prevBreakdown.isNotEmpty) {
           prevTotal = prevBreakdown.fold<double>(
               0, (sum, p) => sum + p.consumption);
@@ -505,6 +488,27 @@ class AnalyticsProvider extends ChangeNotifier {
         }
       }
 
+      // Extrapolate year-end for current year only
+      double? extrapolatedTotal;
+      int? extrapolationBasisMonths;
+      final now = DateTime.now();
+      final isCurrentYear = _selectedYear == now.year;
+      if (isCurrentYear && monthlyBreakdown.isNotEmpty && monthlyBreakdown.length < 12) {
+        final extrapolation = _interpolationService.extrapolateYearEnd(
+          actualMonths: monthlyBreakdown,
+          year: _selectedYear,
+        );
+        if (extrapolation != null) {
+          extrapolatedTotal = extrapolation.projectedTotal;
+          extrapolationBasisMonths = extrapolation.actualMonthCount;
+          // Append extrapolated months to breakdown for chart display
+          monthlyBreakdown = [
+            ...monthlyBreakdown,
+            ...extrapolation.projectedMonths,
+          ];
+        }
+      }
+
       _yearlyData = YearlyAnalyticsData(
         meterType: _selectedMeterType,
         year: _selectedYear,
@@ -516,6 +520,8 @@ class AnalyticsProvider extends ChangeNotifier {
         totalCost: totalCost,
         previousYearTotalCost: prevYearTotalCost,
         currencySymbol: currencySymbol,
+        extrapolatedTotal: extrapolatedTotal,
+        extrapolationBasisMonths: extrapolationBasisMonths,
       );
     } catch (e) {
       _yearlyData = null;

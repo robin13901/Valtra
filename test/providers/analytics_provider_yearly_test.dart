@@ -698,7 +698,7 @@ void main() {
   });
 
   group('gas conversion on yearly data', () {
-    test('gas meter type applies kWh conversion to monthly breakdown',
+    test('gas meter type does NOT apply kWh conversion to monthly breakdown (displays m\u00B3)',
         () async {
       _stubEmptyDaos(
         mockElectricityDao,
@@ -725,13 +725,12 @@ void main() {
             rangeEnd: any(named: 'rangeEnd'),
           )).thenReturn(breakdown);
 
-      // Stub gas conversion
-      final convertedBreakdown =
-          createYearlyBreakdown(2024, baseConsumption: 515.0);
-      when(() => mockGasConversionService.toKwhConsumptions(
-            any(),
-            factor: any(named: 'factor'),
-          )).thenReturn(convertedBreakdown);
+      // Stub gas conversion for cost calculation (toKwh used for cost only)
+      when(() => mockGasConversionService.toKwh(any(),
+              factor: any(named: 'factor')))
+          .thenAnswer((inv) =>
+              (inv.positionalArguments[0] as double) *
+              (inv.namedArguments[#factor] as double));
 
       provider.setHouseholdId(1);
       await Future.delayed(const Duration(milliseconds: 50));
@@ -742,14 +741,14 @@ void main() {
       provider.setSelectedYear(2024);
       await Future.delayed(const Duration(milliseconds: 100));
 
-      // Verify gas conversion was called for current year breakdown
-      verify(() => mockGasConversionService.toKwhConsumptions(
+      // toKwhConsumptions should NOT be called (no display conversion)
+      verifyNever(() => mockGasConversionService.toKwhConsumptions(
             any(),
             factor: any(named: 'factor'),
-          )).called(greaterThanOrEqualTo(1));
+          ));
     });
 
-    test('gas conversion applied to previous year breakdown too', () async {
+    test('gas conversion NOT applied to previous year breakdown (displays m\u00B3)', () async {
       _stubEmptyDaos(
         mockElectricityDao,
         mockGasDao,
@@ -773,12 +772,11 @@ void main() {
             rangeEnd: any(named: 'rangeEnd'),
           )).thenReturn(breakdown);
 
-      final convertedBreakdown =
-          createYearlyBreakdown(2024, baseConsumption: 515.0);
-      when(() => mockGasConversionService.toKwhConsumptions(
-            any(),
-            factor: any(named: 'factor'),
-          )).thenReturn(convertedBreakdown);
+      when(() => mockGasConversionService.toKwh(any(),
+              factor: any(named: 'factor')))
+          .thenAnswer((inv) =>
+              (inv.positionalArguments[0] as double) *
+              (inv.namedArguments[#factor] as double));
 
       provider.setHouseholdId(1);
       await Future.delayed(const Duration(milliseconds: 50));
@@ -789,11 +787,11 @@ void main() {
       provider.setSelectedYear(2024);
       await Future.delayed(const Duration(milliseconds: 100));
 
-      // toKwhConsumptions called at least 2 times: current year + previous year
-      verify(() => mockGasConversionService.toKwhConsumptions(
+      // toKwhConsumptions should NOT be called at all
+      verifyNever(() => mockGasConversionService.toKwhConsumptions(
             any(),
             factor: any(named: 'factor'),
-          )).called(greaterThanOrEqualTo(2));
+          ));
     });
 
     test('non-gas meter types do not apply gas conversion on yearly data',
@@ -836,7 +834,7 @@ void main() {
           ));
     });
 
-    test('gas yearly totalConsumption reflects converted values', () async {
+    test('gas yearly totalConsumption reflects raw m\u00B3 values (not converted)', () async {
       _stubEmptyDaos(
         mockElectricityDao,
         mockGasDao,
@@ -860,13 +858,12 @@ void main() {
             rangeEnd: any(named: 'rangeEnd'),
           )).thenReturn(rawBreakdown);
 
-      // Each month 10 * 10.3 = 103, total = 103 * 12 = 1236
-      final convertedBreakdown =
-          createYearlyBreakdown(2024, baseConsumption: 103.0);
-      when(() => mockGasConversionService.toKwhConsumptions(
-            any(),
-            factor: any(named: 'factor'),
-          )).thenReturn(convertedBreakdown);
+      // Stub gas conversion for cost calculation
+      when(() => mockGasConversionService.toKwh(any(),
+              factor: any(named: 'factor')))
+          .thenAnswer((inv) =>
+              (inv.positionalArguments[0] as double) *
+              (inv.namedArguments[#factor] as double));
 
       provider.setHouseholdId(1);
       await Future.delayed(const Duration(milliseconds: 50));
@@ -877,8 +874,8 @@ void main() {
       provider.setSelectedYear(2024);
       await Future.delayed(const Duration(milliseconds: 100));
 
-      // Total should be sum of converted breakdown: 103 * 12 = 1236
-      expect(provider.yearlyData!.totalConsumption, 1236.0);
+      // Total should be sum of raw breakdown: 10 * 12 = 120 (m³, not kWh)
+      expect(provider.yearlyData!.totalConsumption, 120.0);
     });
   });
 
@@ -937,7 +934,7 @@ void main() {
       expect(provider.yearlyData?.unit, 'kWh');
     });
 
-    test('gas yearly display unit is kWh (converted)', () async {
+    test('gas yearly display unit is m\u00B3 (raw)', () async {
       _stubEmptyDaos(
         mockElectricityDao,
         mockGasDao,
@@ -954,7 +951,7 @@ void main() {
       provider.setSelectedYear(2024);
       await Future.delayed(const Duration(milliseconds: 100));
 
-      expect(provider.yearlyData?.unit, 'kWh');
+      expect(provider.yearlyData?.unit, 'm\u00B3');
     });
 
     test('water yearly display unit is m\u00B3', () async {

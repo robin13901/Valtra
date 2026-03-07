@@ -42,19 +42,26 @@ class MonthlyBarChart extends StatelessWidget {
           period.periodStart.month == highlightMonth!.month;
       final hasInterpolation =
           period.startInterpolated || period.endInterpolated;
+      final isExtrapolated = period.isExtrapolated;
 
       return BarChartGroupData(
         x: i,
         barRods: [
           BarChartRodData(
             toY: period.consumption,
-            color: isHighlighted
-                ? primaryColor
-                : primaryColor.withValues(alpha: 0.6),
+            color: isExtrapolated
+                ? primaryColor.withValues(alpha: 0.3)
+                : isHighlighted
+                    ? primaryColor
+                    : primaryColor.withValues(alpha: 0.6),
             width: 20,
             borderRadius:
                 const BorderRadius.vertical(top: Radius.circular(4)),
-            borderDashArray: hasInterpolation ? [4, 2] : null,
+            borderDashArray: isExtrapolated
+                ? [6, 3]
+                : hasInterpolation
+                    ? [4, 2]
+                    : null,
           ),
         ],
       );
