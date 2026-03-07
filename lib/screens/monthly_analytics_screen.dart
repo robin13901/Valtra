@@ -10,8 +10,6 @@ import '../services/csv_export_service.dart';
 import '../services/number_format_service.dart';
 import '../services/share_service.dart';
 import '../widgets/liquid_glass_widgets.dart';
-import '../widgets/charts/chart_legend.dart';
-import '../widgets/charts/consumption_line_chart.dart';
 import '../widgets/charts/monthly_bar_chart.dart';
 import 'yearly_analytics_screen.dart';
 
@@ -36,11 +34,6 @@ class MonthlyAnalyticsScreen extends StatelessWidget {
             onPressed: () => _navigateToYearly(context, provider),
             tooltip: l10n.yearlyAnalytics,
           ),
-          IconButton(
-            icon: const Icon(Icons.date_range),
-            onPressed: () => _pickDateRange(context),
-            tooltip: l10n.customDateRange,
-          ),
         ],
       ),
       body: provider.isLoading
@@ -53,7 +46,6 @@ class MonthlyAnalyticsScreen extends StatelessWidget {
                     // Month navigation header
                     _MonthNavigationHeader(
                       selectedMonth: provider.selectedMonth,
-                      customRange: provider.customRange,
                       onPrevious: () => provider.navigateMonth(-1),
                       onNext: () => provider.navigateMonth(1),
                     ),
@@ -70,37 +62,8 @@ class MonthlyAnalyticsScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 24),
 
-                    // Line chart section
-                    Text(l10n.dailyTrends,
-                        style: Theme.of(context).textTheme.titleMedium),
-                    const SizedBox(height: 8),
-                    SizedBox(
-                      height: 250,
-                      child: ConsumptionLineChart(
-                        dataPoints: data.dailyValues,
-                        rangeStart: provider.customRange?.start ??
-                            provider.selectedMonth,
-                        rangeEnd: provider.customRange?.end ??
-                            DateTime(provider.selectedMonth.year,
-                                provider.selectedMonth.month + 1, 0),
-                        primaryColor: color,
-                        unit: data.unit,
-                        locale: locale,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    ChartLegend(items: [
-                      ChartLegendItem(color: color, label: l10n.actual),
-                      ChartLegendItem(
-                        color: color.withValues(alpha: 0.5),
-                        label: l10n.interpolated,
-                        isDashed: true,
-                      ),
-                    ]),
-                    const SizedBox(height: 24),
-
                     // Bar chart section
-                    Text(l10n.monthlyComparison,
+                    Text(l10n.monthlyProgress,
                         style: Theme.of(context).textTheme.titleMedium),
                     const SizedBox(height: 8),
                     SizedBox(
@@ -139,25 +102,6 @@ class MonthlyAnalyticsScreen extends StatelessWidget {
     }
   }
 
-  Future<void> _pickDateRange(BuildContext context) async {
-    final provider = context.read<AnalyticsProvider>();
-    final now = DateTime.now();
-    final range = await showDateRangePicker(
-      context: context,
-      firstDate: DateTime(2020),
-      lastDate: now,
-      initialDateRange: provider.customRange ??
-          DateTimeRange(
-            start: provider.selectedMonth,
-            end: DateTime(provider.selectedMonth.year,
-                provider.selectedMonth.month + 1, 0),
-          ),
-    );
-    if (range != null) {
-      provider.setCustomRange(range);
-    }
-  }
-
   void _navigateToYearly(BuildContext context, AnalyticsProvider provider) {
     Navigator.of(context).push(
       MaterialPageRoute(
@@ -189,13 +133,11 @@ class MonthlyAnalyticsScreen extends StatelessWidget {
 
 class _MonthNavigationHeader extends StatelessWidget {
   final DateTime selectedMonth;
-  final DateTimeRange? customRange;
   final VoidCallback onPrevious;
   final VoidCallback onNext;
 
   const _MonthNavigationHeader({
     required this.selectedMonth,
-    required this.customRange,
     required this.onPrevious,
     required this.onNext,
   });
@@ -216,9 +158,7 @@ class _MonthNavigationHeader extends StatelessWidget {
         ),
         Expanded(
           child: Text(
-            customRange != null
-                ? '${DateFormat.MMMd().format(customRange!.start)} \u2013 ${DateFormat.MMMd().format(customRange!.end)}'
-                : DateFormat.yMMMM().format(selectedMonth),
+            DateFormat.yMMMM().format(selectedMonth),
             textAlign: TextAlign.center,
             style: Theme.of(context)
                 .textTheme
@@ -228,7 +168,7 @@ class _MonthNavigationHeader extends StatelessWidget {
         ),
         IconButton(
           icon: const Icon(Icons.chevron_right),
-          onPressed: isCurrentMonth && customRange == null ? null : onNext,
+          onPressed: isCurrentMonth ? null : onNext,
           tooltip: AppLocalizations.of(context)!.nextMonth,
         ),
       ],

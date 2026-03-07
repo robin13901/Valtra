@@ -24,14 +24,6 @@ class SmartPlugAnalyticsScreen extends StatelessWidget {
       appBar: buildGlassAppBar(
         context: context,
         title: l10n.smartPlugAnalytics,
-        actions: [
-          if (provider.period == AnalyticsPeriod.custom)
-            IconButton(
-              icon: const Icon(Icons.date_range),
-              onPressed: () => _pickDateRange(context),
-              tooltip: l10n.customDateRange,
-            ),
-        ],
       ),
       body: provider.isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -194,24 +186,6 @@ class SmartPlugAnalyticsScreen extends StatelessWidget {
     return slices;
   }
 
-  Future<void> _pickDateRange(BuildContext context) async {
-    final provider = context.read<SmartPlugAnalyticsProvider>();
-    final now = DateTime.now();
-    final range = await showDateRangePicker(
-      context: context,
-      firstDate: DateTime(2020),
-      lastDate: now,
-      initialDateRange: provider.customRange ??
-          DateTimeRange(
-            start: provider.selectedMonth,
-            end: DateTime(
-                provider.selectedMonth.year, provider.selectedMonth.month + 1, 0),
-          ),
-    );
-    if (range != null) {
-      provider.setCustomRange(range);
-    }
-  }
 }
 
 class _PeriodSelector extends StatelessWidget {
@@ -237,10 +211,6 @@ class _PeriodSelector extends StatelessWidget {
           value: AnalyticsPeriod.yearly,
           label: Text(l10n.periodYearly),
         ),
-        ButtonSegment(
-          value: AnalyticsPeriod.custom,
-          label: Text(l10n.periodCustom),
-        ),
       ],
       selected: {period},
       onSelectionChanged: (selected) => onChanged(selected.first),
@@ -264,8 +234,6 @@ class _PeriodNavigationHeader extends StatelessWidget {
         return _MonthNavigation(provider: provider);
       case AnalyticsPeriod.yearly:
         return _YearNavigation(provider: provider);
-      case AnalyticsPeriod.custom:
-        return _CustomRangeDisplay(provider: provider, l10n: l10n);
     }
   }
 }
@@ -332,38 +300,6 @@ class _YearNavigation extends StatelessWidget {
           onPressed: () => provider.navigateYear(1),
         ),
       ],
-    );
-  }
-}
-
-class _CustomRangeDisplay extends StatelessWidget {
-  final SmartPlugAnalyticsProvider provider;
-  final AppLocalizations l10n;
-
-  const _CustomRangeDisplay({
-    required this.provider,
-    required this.l10n,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final range = provider.customRange;
-    if (range == null) {
-      return Center(
-        child: Text(
-          l10n.customDateRange,
-          style: Theme.of(context).textTheme.titleMedium,
-        ),
-      );
-    }
-    return Center(
-      child: Text(
-        '${DateFormat.MMMd().format(range.start)} \u2013 ${DateFormat.MMMd().format(range.end)}',
-        style: Theme.of(context)
-            .textTheme
-            .titleMedium
-            ?.copyWith(fontWeight: FontWeight.bold),
-      ),
     );
   }
 }
