@@ -66,7 +66,7 @@ void main() {
 
   // -- Helper functions --
 
-  _MockSmartPlug _createSmartPlug({
+  _MockSmartPlug createSmartPlug({
     required int id,
     required int roomId,
     required String name,
@@ -78,7 +78,7 @@ void main() {
     return plug;
   }
 
-  _MockRoom _createRoom({
+  _MockRoom createRoom({
     required int id,
     required int householdId,
     required String name,
@@ -90,7 +90,7 @@ void main() {
     return room;
   }
 
-  void _stubEmptyData() {
+  void stubEmptyData() {
     when(() => mockSmartPlugDao.getSmartPlugsForHousehold(any()))
         .thenAnswer((_) async => <SmartPlug>[]);
     when(() => mockRoomDao.getRoomsForHousehold(any()))
@@ -102,16 +102,16 @@ void main() {
         .thenAnswer((_) async => <ElectricityReading>[]);
   }
 
-  void _stub3PlugsAcross2Rooms() {
-    final room1 = _createRoom(id: 1, householdId: 1, name: 'Living Room');
-    final room2 = _createRoom(id: 2, householdId: 1, name: 'Kitchen');
+  void stub3PlugsAcross2Rooms() {
+    final room1 = createRoom(id: 1, householdId: 1, name: 'Living Room');
+    final room2 = createRoom(id: 2, householdId: 1, name: 'Kitchen');
 
     final plug1 =
-        _createSmartPlug(id: 10, roomId: 1, name: 'TV');
+        createSmartPlug(id: 10, roomId: 1, name: 'TV');
     final plug2 =
-        _createSmartPlug(id: 20, roomId: 1, name: 'Lamp');
+        createSmartPlug(id: 20, roomId: 1, name: 'Lamp');
     final plug3 =
-        _createSmartPlug(id: 30, roomId: 2, name: 'Fridge');
+        createSmartPlug(id: 30, roomId: 2, name: 'Fridge');
 
     when(() => mockSmartPlugDao.getSmartPlugsForHousehold(1))
         .thenAnswer((_) async => [plug1, plug2, plug3]);
@@ -134,7 +134,7 @@ void main() {
         .thenAnswer((_) async => 60.0);
   }
 
-  void _stubElectricityReturning(double totalKwh) {
+  void stubElectricityReturning(double totalKwh) {
     final reading1 = _MockElectricityReading();
     when(() => reading1.id).thenReturn(1);
     when(() => reading1.householdId).thenReturn(1);
@@ -203,7 +203,7 @@ void main() {
 
   group('setHouseholdId', () {
     test('setting null clears data and notifies listeners', () {
-      _stubEmptyData();
+      stubEmptyData();
       provider.setHouseholdId(1);
 
       var notified = false;
@@ -217,7 +217,7 @@ void main() {
     });
 
     test('setting non-null triggers loadData', () async {
-      _stubEmptyData();
+      stubEmptyData();
 
       provider.setHouseholdId(1);
 
@@ -229,8 +229,8 @@ void main() {
 
   group('loadData with 3 plugs across 2 rooms', () {
     test('returns correct byPlug list', () async {
-      _stub3PlugsAcross2Rooms();
-      _stubElectricityReturning(100.0);
+      stub3PlugsAcross2Rooms();
+      stubElectricityReturning(100.0);
 
       provider.setHouseholdId(1);
       await Future.delayed(const Duration(milliseconds: 100));
@@ -249,8 +249,8 @@ void main() {
     });
 
     test('returns correct byRoom list', () async {
-      _stub3PlugsAcross2Rooms();
-      _stubElectricityReturning(100.0);
+      stub3PlugsAcross2Rooms();
+      stubElectricityReturning(100.0);
 
       provider.setHouseholdId(1);
       await Future.delayed(const Duration(milliseconds: 100));
@@ -269,8 +269,8 @@ void main() {
     test('totalElectricity=100, totalSmartPlug=75 => otherConsumption=25',
         () async {
       // Set up plugs returning 75 total
-      final room1 = _createRoom(id: 1, householdId: 1, name: 'Room');
-      final plug1 = _createSmartPlug(id: 10, roomId: 1, name: 'Plug');
+      final room1 = createRoom(id: 1, householdId: 1, name: 'Room');
+      final plug1 = createSmartPlug(id: 10, roomId: 1, name: 'Plug');
       when(() => mockSmartPlugDao.getSmartPlugsForHousehold(1))
           .thenAnswer((_) async => [plug1]);
       when(() => mockRoomDao.getRoomsForHousehold(1))
@@ -282,7 +282,7 @@ void main() {
       when(() => mockSmartPlugDao.getTotalSmartPlugConsumption(1, any(), any()))
           .thenAnswer((_) async => 75.0);
 
-      _stubElectricityReturning(100.0);
+      stubElectricityReturning(100.0);
 
       provider.setHouseholdId(1);
       await Future.delayed(const Duration(milliseconds: 100));
@@ -295,8 +295,8 @@ void main() {
     });
 
     test('Other clamped to 0 when totalSmartPlug > totalElectricity', () async {
-      final room1 = _createRoom(id: 1, householdId: 1, name: 'Room');
-      final plug1 = _createSmartPlug(id: 10, roomId: 1, name: 'Plug');
+      final room1 = createRoom(id: 1, householdId: 1, name: 'Room');
+      final plug1 = createSmartPlug(id: 10, roomId: 1, name: 'Plug');
       when(() => mockSmartPlugDao.getSmartPlugsForHousehold(1))
           .thenAnswer((_) async => [plug1]);
       when(() => mockRoomDao.getRoomsForHousehold(1))
@@ -309,7 +309,7 @@ void main() {
           .thenAnswer((_) async => 150.0);
 
       // Total electricity only 100
-      _stubElectricityReturning(100.0);
+      stubElectricityReturning(100.0);
 
       provider.setHouseholdId(1);
       await Future.delayed(const Duration(milliseconds: 100));
@@ -320,8 +320,8 @@ void main() {
     });
 
     test('Other is null when no electricity readings exist', () async {
-      final room1 = _createRoom(id: 1, householdId: 1, name: 'Room');
-      final plug1 = _createSmartPlug(id: 10, roomId: 1, name: 'Plug');
+      final room1 = createRoom(id: 1, householdId: 1, name: 'Room');
+      final plug1 = createSmartPlug(id: 10, roomId: 1, name: 'Plug');
       when(() => mockSmartPlugDao.getSmartPlugsForHousehold(1))
           .thenAnswer((_) async => [plug1]);
       when(() => mockRoomDao.getRoomsForHousehold(1))
@@ -350,7 +350,7 @@ void main() {
   group('period switching', () {
     test('setPeriod(monthly) + setSelectedMonth changes date range and reloads',
         () async {
-      _stubEmptyData();
+      stubEmptyData();
 
       provider.setHouseholdId(1);
       await Future.delayed(const Duration(milliseconds: 50));
@@ -369,7 +369,7 @@ void main() {
 
     test('setPeriod(yearly) + setSelectedYear changes date range and reloads',
         () async {
-      _stubEmptyData();
+      stubEmptyData();
 
       provider.setHouseholdId(1);
       await Future.delayed(const Duration(milliseconds: 50));
@@ -387,7 +387,7 @@ void main() {
 
     test('setPeriod(custom) + setCustomRange changes date range and reloads',
         () async {
-      _stubEmptyData();
+      stubEmptyData();
 
       provider.setHouseholdId(1);
       await Future.delayed(const Duration(milliseconds: 50));
@@ -409,7 +409,7 @@ void main() {
 
   group('month navigation', () {
     test('navigateMonth(1) increments month', () async {
-      _stubEmptyData();
+      stubEmptyData();
 
       provider.setHouseholdId(1);
       await Future.delayed(const Duration(milliseconds: 50));
@@ -423,7 +423,7 @@ void main() {
     });
 
     test('navigateMonth(-1) decrements month', () async {
-      _stubEmptyData();
+      stubEmptyData();
 
       provider.setHouseholdId(1);
       await Future.delayed(const Duration(milliseconds: 50));
@@ -439,7 +439,7 @@ void main() {
 
   group('year navigation', () {
     test('navigateYear(1) increments year', () async {
-      _stubEmptyData();
+      stubEmptyData();
 
       provider.setHouseholdId(1);
       await Future.delayed(const Duration(milliseconds: 50));
@@ -453,7 +453,7 @@ void main() {
     });
 
     test('navigateYear(-1) decrements year', () async {
-      _stubEmptyData();
+      stubEmptyData();
 
       provider.setHouseholdId(1);
       await Future.delayed(const Duration(milliseconds: 50));
@@ -470,7 +470,7 @@ void main() {
   group('empty state', () {
     test('no plugs returns empty byPlug and byRoom with totalSmartPlug=0',
         () async {
-      _stubEmptyData();
+      stubEmptyData();
 
       provider.setHouseholdId(1);
       await Future.delayed(const Duration(milliseconds: 100));
@@ -485,7 +485,7 @@ void main() {
 
   group('loading state', () {
     test('isLoading is true during loadData, false after completion', () async {
-      _stubEmptyData();
+      stubEmptyData();
 
       final loadingStates = <bool>[];
       provider.addListener(() {
@@ -504,8 +504,8 @@ void main() {
   group('pie chart colors', () {
     test('pie slice colors are assigned from predefined palette in order',
         () async {
-      _stub3PlugsAcross2Rooms();
-      _stubElectricityReturning(100.0);
+      stub3PlugsAcross2Rooms();
+      stubElectricityReturning(100.0);
 
       provider.setHouseholdId(1);
       await Future.delayed(const Duration(milliseconds: 100));
