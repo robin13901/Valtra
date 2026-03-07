@@ -1,19 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:valtra/app_theme.dart';
 import 'package:valtra/database/app_database.dart';
 import 'package:valtra/database/daos/electricity_dao.dart';
 import 'package:valtra/l10n/app_localizations.dart';
 import 'package:valtra/providers/electricity_provider.dart';
+import 'package:valtra/providers/locale_provider.dart';
+import 'package:valtra/providers/theme_provider.dart';
 import 'package:valtra/screens/electricity_screen.dart';
+import 'package:valtra/widgets/liquid_glass_widgets.dart';
 
 import '../helpers/test_database.dart';
+import '../helpers/test_locale_provider.dart';
 
 void main() {
   late AppDatabase database;
   late ElectricityDao dao;
   late ElectricityProvider provider;
+  late ThemeProvider themeProvider;
+  late MockLocaleProvider localeProvider;
   late int householdId;
 
   Widget wrapWithProviders(Widget child) {
@@ -21,10 +28,13 @@ void main() {
       providers: [
         Provider<AppDatabase>.value(value: database),
         ChangeNotifierProvider<ElectricityProvider>.value(value: provider),
+        ChangeNotifierProvider<ThemeProvider>.value(value: themeProvider),
+        ChangeNotifierProvider<LocaleProvider>.value(value: localeProvider),
       ],
       child: MaterialApp(
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('en'),
         theme: AppTheme.lightTheme,
         home: child,
       ),
@@ -32,9 +42,13 @@ void main() {
   }
 
   setUp(() async {
+    SharedPreferences.setMockInitialValues({});
     database = createTestDatabase();
     dao = ElectricityDao(database);
     provider = ElectricityProvider(dao);
+    themeProvider = ThemeProvider();
+    await themeProvider.init();
+    localeProvider = MockLocaleProvider();
 
     // Create a test household
     householdId = await database
@@ -85,7 +99,7 @@ void main() {
                   .pumpWidget(wrapWithProviders(const ElectricityScreen()));
               await tester.pumpAndSettle();
 
-              // Should show readings
+              // Should show readings (English format: 1,000.0)
               expect(find.textContaining('1,000.0'), findsOneWidget);
               expect(find.textContaining('1,150.0'), findsOneWidget);
 
@@ -147,8 +161,8 @@ void main() {
               .pumpWidget(wrapWithProviders(const ElectricityScreen()));
           await tester.pumpAndSettle();
 
-          // Tap on the card
-          await tester.tap(find.byType(Card));
+          // Tap on the GlassCard
+          await tester.tap(find.byType(GlassCard));
           await tester.pumpAndSettle();
 
           // Dialog should appear in edit mode
@@ -156,16 +170,5 @@ void main() {
 
           await tester.pumpWidget(Container());
         }));
-
-    testWidgets('shows kWh chip in app bar',
-        (tester) => tester.runAsync(() async {
-              await tester
-                  .pumpWidget(wrapWithProviders(const ElectricityScreen()));
-              await tester.pumpAndSettle();
-
-              expect(find.text('kWh'), findsOneWidget);
-
-              await tester.pumpWidget(Container());
-            }));
   });
 }

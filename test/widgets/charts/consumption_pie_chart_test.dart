@@ -9,6 +9,7 @@ void main() {
   Widget buildSubject({
     List<PieSliceData> slices = const [],
     String unit = 'kWh',
+    String locale = 'en',
   }) {
     return MaterialApp(
       localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -21,6 +22,7 @@ void main() {
           child: ConsumptionPieChart(
             slices: slices,
             unit: unit,
+            locale: locale,
           ),
         ),
       ),

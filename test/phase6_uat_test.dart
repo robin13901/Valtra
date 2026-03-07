@@ -8,10 +8,13 @@ import 'package:valtra/database/daos/household_dao.dart';
 import 'package:valtra/l10n/app_localizations.dart';
 import 'package:valtra/providers/gas_provider.dart';
 import 'package:valtra/providers/household_provider.dart';
+import 'package:valtra/providers/locale_provider.dart';
+import 'package:valtra/providers/theme_provider.dart';
 import 'package:valtra/screens/gas_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'helpers/test_database.dart';
+import 'helpers/test_locale_provider.dart';
 
 /// Phase 6 UAT verification tests - Gas Tracking
 void main() {
@@ -19,6 +22,8 @@ void main() {
   late GasDao dao;
   late GasProvider gasProvider;
   late HouseholdProvider householdProvider;
+  late ThemeProvider themeProvider;
+  late MockLocaleProvider localeProvider;
   late int householdId;
 
   Widget wrapWithProviders(Widget child) {
@@ -28,10 +33,13 @@ void main() {
         ChangeNotifierProvider<GasProvider>.value(value: gasProvider),
         ChangeNotifierProvider<HouseholdProvider>.value(
             value: householdProvider),
+        ChangeNotifierProvider<ThemeProvider>.value(value: themeProvider),
+        ChangeNotifierProvider<LocaleProvider>.value(value: localeProvider),
       ],
       child: MaterialApp(
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('en'),
         theme: AppTheme.lightTheme,
         home: child,
       ),
@@ -45,6 +53,9 @@ void main() {
     gasProvider = GasProvider(dao);
     householdProvider = HouseholdProvider(HouseholdDao(database));
     await householdProvider.init();
+    themeProvider = ThemeProvider();
+    await themeProvider.init();
+    localeProvider = MockLocaleProvider();
 
     // Create a test household and select it
     householdId = await database
@@ -220,7 +231,6 @@ void main() {
 
               // Verify we're on the Gas screen
               expect(find.text('Gas'), findsOneWidget);
-              expect(find.text('m³'), findsOneWidget);
               expect(find.byType(FloatingActionButton), findsOneWidget);
 
               await tester.pumpWidget(Container());

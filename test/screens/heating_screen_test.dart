@@ -2,19 +2,26 @@ import 'package:drift/drift.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:valtra/app_theme.dart';
 import 'package:valtra/database/app_database.dart';
 import 'package:valtra/database/daos/heating_dao.dart';
 import 'package:valtra/l10n/app_localizations.dart';
 import 'package:valtra/providers/heating_provider.dart';
+import 'package:valtra/providers/locale_provider.dart';
+import 'package:valtra/providers/theme_provider.dart';
 import 'package:valtra/screens/heating_screen.dart';
+import 'package:valtra/widgets/liquid_glass_widgets.dart';
 
 import '../helpers/test_database.dart';
+import '../helpers/test_locale_provider.dart';
 
 void main() {
   late AppDatabase database;
   late HeatingDao dao;
   late HeatingProvider provider;
+  late ThemeProvider themeProvider;
+  late MockLocaleProvider localeProvider;
   late int householdId;
 
   Widget wrapWithProviders(Widget child) {
@@ -22,10 +29,13 @@ void main() {
       providers: [
         Provider<AppDatabase>.value(value: database),
         ChangeNotifierProvider<HeatingProvider>.value(value: provider),
+        ChangeNotifierProvider<ThemeProvider>.value(value: themeProvider),
+        ChangeNotifierProvider<LocaleProvider>.value(value: localeProvider),
       ],
       child: MaterialApp(
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('en'),
         theme: AppTheme.lightTheme,
         home: child,
       ),
@@ -33,9 +43,13 @@ void main() {
   }
 
   setUp(() async {
+    SharedPreferences.setMockInitialValues({});
     database = createTestDatabase();
     dao = HeatingDao(database);
     provider = HeatingProvider(dao);
+    themeProvider = ThemeProvider();
+    await themeProvider.init();
+    localeProvider = MockLocaleProvider();
 
     householdId = await database
         .into(database.households)
@@ -162,7 +176,7 @@ void main() {
 
               expect(find.text('Heating Readings'), findsNothing);
 
-              await tester.tap(find.byType(Card));
+              await tester.tap(find.byType(GlassCard));
               await tester.pumpAndSettle();
 
               expect(find.text('Heating Readings'), findsOneWidget);
@@ -195,7 +209,7 @@ void main() {
                   .pumpWidget(wrapWithProviders(const HeatingScreen()));
               await tester.pumpAndSettle();
 
-              await tester.tap(find.byType(Card));
+              await tester.tap(find.byType(GlassCard));
               await tester.pumpAndSettle();
 
               expect(find.textContaining('+50.5'), findsOneWidget);
@@ -240,7 +254,7 @@ void main() {
                   .pumpWidget(wrapWithProviders(const HeatingScreen()));
               await tester.pumpAndSettle();
 
-              await tester.tap(find.byType(Card));
+              await tester.tap(find.byType(GlassCard));
               await tester.pumpAndSettle();
 
               await tester.tap(find.text('Add Reading'));
@@ -263,7 +277,7 @@ void main() {
                   .pumpWidget(wrapWithProviders(const HeatingScreen()));
               await tester.pumpAndSettle();
 
-              await tester.tap(find.byType(Card));
+              await tester.tap(find.byType(GlassCard));
               await tester.pumpAndSettle();
 
               expect(

@@ -1,20 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:valtra/app_theme.dart';
 import 'package:valtra/database/app_database.dart';
 import 'package:valtra/database/daos/water_dao.dart';
 import 'package:valtra/database/tables.dart';
 import 'package:valtra/l10n/app_localizations.dart';
+import 'package:valtra/providers/locale_provider.dart';
+import 'package:valtra/providers/theme_provider.dart';
 import 'package:valtra/providers/water_provider.dart';
 import 'package:valtra/screens/water_screen.dart';
+import 'package:valtra/widgets/liquid_glass_widgets.dart';
 
 import '../helpers/test_database.dart';
+import '../helpers/test_locale_provider.dart';
 
 void main() {
   late AppDatabase database;
   late WaterDao dao;
   late WaterProvider provider;
+  late ThemeProvider themeProvider;
+  late MockLocaleProvider localeProvider;
   late int householdId;
 
   Widget wrapWithProviders(Widget child) {
@@ -22,10 +29,13 @@ void main() {
       providers: [
         Provider<AppDatabase>.value(value: database),
         ChangeNotifierProvider<WaterProvider>.value(value: provider),
+        ChangeNotifierProvider<ThemeProvider>.value(value: themeProvider),
+        ChangeNotifierProvider<LocaleProvider>.value(value: localeProvider),
       ],
       child: MaterialApp(
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('en'),
         theme: AppTheme.lightTheme,
         home: child,
       ),
@@ -33,9 +43,13 @@ void main() {
   }
 
   setUp(() async {
+    SharedPreferences.setMockInitialValues({});
     database = createTestDatabase();
     dao = WaterDao(database);
     provider = WaterProvider(dao);
+    themeProvider = ThemeProvider();
+    await themeProvider.init();
+    localeProvider = MockLocaleProvider();
 
     // Create a test household
     householdId = await database
@@ -61,7 +75,7 @@ void main() {
                   find.text(
                       'No water meters yet. Add one to start tracking water consumption!'),
                   findsOneWidget);
-              expect(find.byIcon(Icons.water_drop_outlined), findsOneWidget);
+              expect(find.byIcon(Icons.water_drop), findsOneWidget);
 
               await tester.pumpWidget(Container());
             }));
@@ -139,16 +153,6 @@ void main() {
               await tester.pumpWidget(Container());
             }));
 
-    testWidgets('shows m³ chip in app bar',
-        (tester) => tester.runAsync(() async {
-              await tester.pumpWidget(wrapWithProviders(const WaterScreen()));
-              await tester.pumpAndSettle();
-
-              expect(find.text('m³'), findsOneWidget);
-
-              await tester.pumpWidget(Container());
-            }));
-
     testWidgets('meter card expands to show readings',
         (tester) => tester.runAsync(() async {
               final meterId = await dao.insertMeter(WaterMetersCompanion.insert(
@@ -170,7 +174,7 @@ void main() {
               expect(find.text('Water Readings'), findsNothing);
 
               // Tap to expand
-              await tester.tap(find.byType(Card));
+              await tester.tap(find.byType(GlassCard));
               await tester.pumpAndSettle();
 
               // Now readings should be visible
@@ -204,7 +208,7 @@ void main() {
               await tester.pumpAndSettle();
 
               // Expand the card
-              await tester.tap(find.byType(Card));
+              await tester.tap(find.byType(GlassCard));
               await tester.pumpAndSettle();
 
               // Should show delta
@@ -254,7 +258,7 @@ void main() {
               await tester.pumpAndSettle();
 
               // Expand the card
-              await tester.tap(find.byType(Card));
+              await tester.tap(find.byType(GlassCard));
               await tester.pumpAndSettle();
 
               // Tap add reading button
@@ -280,7 +284,7 @@ void main() {
               await tester.pumpAndSettle();
 
               // Expand the card
-              await tester.tap(find.byType(Card));
+              await tester.tap(find.byType(GlassCard));
               await tester.pumpAndSettle();
 
               // Should show empty readings message

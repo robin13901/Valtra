@@ -2,11 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:valtra/l10n/app_localizations.dart';
 import 'package:valtra/providers/analytics_provider.dart';
+import 'package:valtra/providers/locale_provider.dart';
+import 'package:valtra/providers/theme_provider.dart';
 import 'package:valtra/screens/monthly_analytics_screen.dart';
 import 'package:valtra/services/analytics/analytics_models.dart';
 import 'package:valtra/services/interpolation/models.dart';
+
+import '../helpers/test_locale_provider.dart';
 
 class MockAnalyticsProvider extends ChangeNotifier
     with Mock
@@ -14,6 +19,8 @@ class MockAnalyticsProvider extends ChangeNotifier
 
 void main() {
   late MockAnalyticsProvider mockProvider;
+  late ThemeProvider themeProvider;
+  late MockLocaleProvider localeProvider;
 
   final testMonth = DateTime(2026, 3, 1);
   final testData = MonthlyAnalyticsData(
@@ -65,8 +72,12 @@ void main() {
   );
 
   Widget buildSubject() {
-    return ChangeNotifierProvider<AnalyticsProvider>.value(
-      value: mockProvider,
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider<AnalyticsProvider>.value(value: mockProvider),
+        ChangeNotifierProvider<ThemeProvider>.value(value: themeProvider),
+        ChangeNotifierProvider<LocaleProvider>.value(value: localeProvider),
+      ],
       child: MaterialApp(
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
@@ -86,8 +97,12 @@ void main() {
     when(() => mockProvider.householdId).thenReturn(1);
   }
 
-  setUp(() {
+  setUp(() async {
+    SharedPreferences.setMockInitialValues({});
     mockProvider = MockAnalyticsProvider();
+    themeProvider = ThemeProvider();
+    await themeProvider.init();
+    localeProvider = MockLocaleProvider();
     setUpDefaultStubs();
   });
 

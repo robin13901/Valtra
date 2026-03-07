@@ -2,10 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:valtra/l10n/app_localizations.dart';
 import 'package:valtra/providers/analytics_provider.dart';
+import 'package:valtra/providers/locale_provider.dart';
+import 'package:valtra/providers/theme_provider.dart';
 import 'package:valtra/screens/analytics_screen.dart';
 import 'package:valtra/services/analytics/analytics_models.dart';
+import 'package:valtra/widgets/liquid_glass_widgets.dart';
+
+import '../helpers/test_locale_provider.dart';
 
 class MockAnalyticsProvider extends ChangeNotifier
     with Mock
@@ -17,10 +23,16 @@ void main() {
   });
 
   late MockAnalyticsProvider mockProvider;
+  late ThemeProvider themeProvider;
+  late MockLocaleProvider localeProvider;
 
   Widget buildSubject() {
-    return ChangeNotifierProvider<AnalyticsProvider>.value(
-      value: mockProvider,
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider<AnalyticsProvider>.value(value: mockProvider),
+        ChangeNotifierProvider<ThemeProvider>.value(value: themeProvider),
+        ChangeNotifierProvider<LocaleProvider>.value(value: localeProvider),
+      ],
       child: MaterialApp(
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
@@ -45,8 +57,12 @@ void main() {
     when(() => mockProvider.householdId).thenReturn(1);
   }
 
-  setUp(() {
+  setUp(() async {
+    SharedPreferences.setMockInitialValues({});
     mockProvider = MockAnalyticsProvider();
+    themeProvider = ThemeProvider();
+    await themeProvider.init();
+    localeProvider = MockLocaleProvider();
     setUpDefaultStubs();
   });
 
@@ -56,7 +72,7 @@ void main() {
       await tester.pumpWidget(buildSubject());
       await tester.pumpAndSettle();
 
-      expect(find.byType(Card), findsNWidgets(4));
+      expect(find.byType(GlassCard), findsAtLeastNWidgets(4));
     });
 
     testWidgets('shows loading indicator when isLoading is true',
@@ -68,7 +84,7 @@ void main() {
 
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
       // Cards should not be visible while loading
-      expect(find.byType(Card), findsNothing);
+      expect(find.byType(GlassCard), findsNothing);
     });
 
     testWidgets('shows correct section title "Consumption Overview"',
@@ -177,8 +193,8 @@ void main() {
       await tester.pumpWidget(buildSubject());
       await tester.pumpAndSettle();
 
-      // Should still render 4 cards even with empty summaries
-      expect(find.byType(Card), findsNWidgets(4));
+      // Should still render 4 GlassCards even with empty summaries
+      expect(find.byType(GlassCard), findsAtLeastNWidgets(4));
       // All should show noData
       expect(find.text('No data available'), findsNWidgets(4));
     });

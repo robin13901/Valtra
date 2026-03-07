@@ -2,10 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:valtra/l10n/app_localizations.dart';
+import 'package:valtra/providers/locale_provider.dart';
 import 'package:valtra/providers/smart_plug_analytics_provider.dart';
+import 'package:valtra/providers/theme_provider.dart';
 import 'package:valtra/screens/smart_plug_analytics_screen.dart';
 import 'package:valtra/services/analytics/analytics_models.dart';
+
+import '../helpers/test_locale_provider.dart';
 
 class MockSmartPlugAnalyticsProvider extends ChangeNotifier
     with Mock
@@ -13,10 +18,17 @@ class MockSmartPlugAnalyticsProvider extends ChangeNotifier
 
 void main() {
   late MockSmartPlugAnalyticsProvider mockProvider;
+  late ThemeProvider themeProvider;
+  late MockLocaleProvider localeProvider;
 
   Widget buildSubject() {
-    return ChangeNotifierProvider<SmartPlugAnalyticsProvider>.value(
-      value: mockProvider,
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider<SmartPlugAnalyticsProvider>.value(
+            value: mockProvider),
+        ChangeNotifierProvider<ThemeProvider>.value(value: themeProvider),
+        ChangeNotifierProvider<LocaleProvider>.value(value: localeProvider),
+      ],
       child: MaterialApp(
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
@@ -91,8 +103,12 @@ void main() {
     registerFallbackValue(AnalyticsPeriod.monthly);
   });
 
-  setUp(() {
+  setUp(() async {
+    SharedPreferences.setMockInitialValues({});
     mockProvider = MockSmartPlugAnalyticsProvider();
+    themeProvider = ThemeProvider();
+    await themeProvider.init();
+    localeProvider = MockLocaleProvider();
     setUpDefaultStubs();
   });
 
