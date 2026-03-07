@@ -62,22 +62,22 @@
 - [x] **FR-12.2.4**: Fix umlaut encoding everywhere — use a/o/u, never ae/oe/ue (Uber, Zahler, jahrlich, etc.)
 
 #### FR-12.3: UI Element Cleanup
-- [ ] **FR-12.3.1**: Remove unit badges (kWh, m³) from all app bar headers (unit shown with each value already)
-- [ ] **FR-12.3.2**: Remove all non-clickable info icons (settings "Über" section, smart plug "Sonstige" kWh)
-- [ ] **FR-12.3.3**: Remove too-long hints in meter reading input fields (no hint needed)
-- [ ] **FR-12.3.4**: Style date/time picker fields as outlined input fields (matching meter reading field styling)
-- [ ] **FR-12.3.5**: No pre-selected room when adding new smart plug
-- [ ] **FR-12.3.6**: No hint text in smart plug name field
-- [ ] **FR-12.3.7**: Remove interpolation method setting from settings (only linear, remove step function)
+- [x] **FR-12.3.1**: Remove unit badges (kWh, m³) from all app bar headers (unit shown with each value already)
+- [x] **FR-12.3.2**: Remove all non-clickable info icons (settings "Über" section, smart plug "Sonstige" kWh)
+- [x] **FR-12.3.3**: Remove too-long hints in meter reading input fields (no hint needed)
+- [x] **FR-12.3.4**: Style date/time picker fields as outlined input fields (matching meter reading field styling)
+- [x] **FR-12.3.5**: No pre-selected room when adding new smart plug
+- [x] **FR-12.3.6**: No hint text in smart plug name field
+- [x] **FR-12.3.7**: Remove interpolation method setting from settings (only linear, remove step function)
 
 #### FR-12.4: Dark Mode Fixes
 - [x] **FR-12.4.1**: Black text on Lemon Chiffon accent backgrounds (white text unreadable)
 - [ ] **FR-12.4.2**: Ensure all glass effects render correctly in both light and dark themes
-- [ ] **FR-12.4.3**: Smart plug detail: room subtitle readable in light theme (currently too small/thin)
+- [x] **FR-12.4.3**: Smart plug detail: room subtitle readable in light theme (currently too small/thin)
 
 #### FR-12.5: Water Screen Fixes
-- [ ] **FR-12.5.1**: Use filled icons everywhere (header AND entries) — cold water blue, hot water red, other gray
-- [ ] **FR-12.5.2**: Replace water type SegmentedButton with Dropdown (text wraps badly: "Kaltwe-/asar")
+- [x] **FR-12.5.1**: Use filled icons everywhere (header AND entries) — cold water blue, hot water red, other gray
+- [x] **FR-12.5.2**: Replace water type SegmentedButton with Dropdown (text wraps badly: "Kaltwe-/asar")
 
 #### FR-12.6: Analysis Screen Cleanup
 - [ ] **FR-12.6.1**: Remove "Tagesverlauf" (daily view) from all analysis screens (monthly readings only)
