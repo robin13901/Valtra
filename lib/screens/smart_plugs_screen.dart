@@ -43,10 +43,6 @@ class SmartPlugsScreen extends StatelessWidget {
             onPressed: () => _navigateToRooms(context),
             tooltip: l10n.manageRooms,
           ),
-          Chip(
-            label: Text(l10n.kWh),
-            backgroundColor: AppColors.electricityColor.withValues(alpha: 0.2),
-          ),
           const SizedBox(width: 8),
         ],
       ),
@@ -262,7 +258,7 @@ class _SmartPlugCardState extends State<_SmartPlugCard> {
                     Text(
                       widget.plugWithRoom.roomName,
                       style: theme.textTheme.bodyMedium?.copyWith(
-                        color: theme.colorScheme.onSurfaceVariant,
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
                     if (_latestConsumption != null) ...[

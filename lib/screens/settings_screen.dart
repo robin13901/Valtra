@@ -11,16 +11,11 @@ import '../l10n/app_localizations.dart';
 import '../providers/cost_config_provider.dart';
 import '../providers/interpolation_settings_provider.dart';
 import '../providers/theme_provider.dart';
-import '../services/interpolation/models.dart';
 import '../widgets/liquid_glass_widgets.dart';
 
 /// Settings screen with theme toggle, meter settings, and app info.
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
-
-  /// The meter type keys used for interpolation settings.
-  /// These match the string keys used by InterpolationSettingsProvider.
-  static const _meterTypes = ['electricity', 'gas', 'water', 'heating'];
 
   @override
   Widget build(BuildContext context) {
@@ -122,20 +117,6 @@ class SettingsScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _buildGasConversionField(context, l10n, settingsProvider),
-                const Divider(height: 24),
-                Text(
-                  l10n.interpolationMethodLabel,
-                  style: Theme.of(context).textTheme.bodyLarge,
-                ),
-                const SizedBox(height: 8),
-                ..._meterTypes.map(
-                  (type) => _buildInterpolationRow(
-                    context,
-                    l10n,
-                    settingsProvider,
-                    type,
-                  ),
-                ),
               ],
             ),
           ),
@@ -156,58 +137,6 @@ class SettingsScreen extends StatelessWidget {
       invalidNumberText: l10n.invalidNumber,
       onChanged: settingsProvider.setGasKwhFactor,
     );
-  }
-
-  Widget _buildInterpolationRow(
-    BuildContext context,
-    AppLocalizations l10n,
-    InterpolationSettingsProvider settingsProvider,
-    String meterType,
-  ) {
-    final method = settingsProvider.getMethodForMeterType(meterType);
-    final displayName = _meterTypeDisplayName(l10n, meterType);
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Row(
-        children: [
-          Expanded(child: Text(displayName)),
-          DropdownButton<InterpolationMethod>(
-            value: method,
-            onChanged: (newMethod) {
-              if (newMethod != null) {
-                settingsProvider.setMethodForMeterType(meterType, newMethod);
-              }
-            },
-            items: [
-              DropdownMenuItem(
-                value: InterpolationMethod.linear,
-                child: Text(l10n.linear),
-              ),
-              DropdownMenuItem(
-                value: InterpolationMethod.step,
-                child: Text(l10n.step),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  String _meterTypeDisplayName(AppLocalizations l10n, String meterType) {
-    switch (meterType) {
-      case 'electricity':
-        return l10n.electricity;
-      case 'gas':
-        return l10n.gas;
-      case 'water':
-        return l10n.water;
-      case 'heating':
-        return l10n.heating;
-      default:
-        return meterType;
-    }
   }
 
   Widget _buildCostConfigSection(BuildContext context, AppLocalizations l10n) {
@@ -251,10 +180,6 @@ class SettingsScreen extends StatelessWidget {
 
                   return ListTile(
                     contentPadding: EdgeInsets.zero,
-                    leading: Icon(
-                      Icons.info_outline,
-                      color: AppColors.ultraViolet,
-                    ),
                     title: Text(l10n.appVersion),
                     subtitle: Text(versionString),
                   );

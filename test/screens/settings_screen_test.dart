@@ -9,7 +9,6 @@ import 'package:valtra/providers/cost_config_provider.dart';
 import 'package:valtra/providers/interpolation_settings_provider.dart';
 import 'package:valtra/providers/theme_provider.dart';
 import 'package:valtra/screens/settings_screen.dart';
-import 'package:valtra/services/interpolation/models.dart';
 
 class MockCostConfigProvider extends Mock implements CostConfigProvider {}
 
@@ -121,32 +120,6 @@ void main() {
         expect(find.text('Default: 10.3 kWh/m³'), findsOneWidget);
       });
 
-      testWidgets('shows interpolation method label', (tester) async {
-        await tester.pumpWidget(buildSettingsScreen());
-        await tester.pumpAndSettle();
-
-        expect(find.text('Interpolation Method'), findsOneWidget);
-      });
-
-      testWidgets('shows meter type names for interpolation', (tester) async {
-        await tester.pumpWidget(buildSettingsScreen());
-        await tester.pumpAndSettle();
-
-        expect(find.text('Electricity'), findsOneWidget);
-        expect(find.text('Gas'), findsOneWidget);
-        expect(find.text('Water'), findsOneWidget);
-        expect(find.text('Heating'), findsOneWidget);
-      });
-
-      testWidgets('shows interpolation dropdowns with Linear default',
-          (tester) async {
-        await tester.pumpWidget(buildSettingsScreen());
-        await tester.pumpAndSettle();
-
-        // 4 meter types, each with a "Linear" dropdown value
-        expect(find.text('Linear'), findsNWidgets(4));
-      });
-
       testWidgets('shows About section header', (tester) async {
         await tester.pumpWidget(buildSettingsScreen());
         await tester.pumpAndSettle();
@@ -176,19 +149,6 @@ void main() {
         expect(find.text('Version'), findsOneWidget);
       });
 
-      testWidgets('shows info icon in About section', (tester) async {
-        await tester.pumpWidget(buildSettingsScreen());
-        await tester.pumpAndSettle();
-
-        await tester.scrollUntilVisible(
-          find.byIcon(Icons.info_outline),
-          200,
-          scrollable: find.byType(Scrollable).first,
-        );
-        await tester.pumpAndSettle();
-
-        expect(find.byIcon(Icons.info_outline), findsOneWidget);
-      });
     });
 
     group('theme toggle', () {
@@ -244,7 +204,7 @@ void main() {
         await tester.pumpWidget(buildSettingsScreen());
         await tester.pumpAndSettle();
 
-        final textField = find.byType(TextField);
+        final textField = find.byType(TextField).first;
         await tester.enterText(textField, '11.5');
         await tester.testTextInput.receiveAction(TextInputAction.done);
         await tester.pumpAndSettle();
@@ -256,7 +216,7 @@ void main() {
         await tester.pumpWidget(buildSettingsScreen());
         await tester.pumpAndSettle();
 
-        final textField = find.byType(TextField);
+        final textField = find.byType(TextField).first;
         await tester.enterText(textField, 'abc');
         await tester.testTextInput.receiveAction(TextInputAction.done);
         await tester.pumpAndSettle();
@@ -265,30 +225,6 @@ void main() {
       });
     });
 
-    group('interpolation method', () {
-      testWidgets('changing electricity method updates provider',
-          (tester) async {
-        await tester.pumpWidget(buildSettingsScreen());
-        await tester.pumpAndSettle();
-
-        // Find the first dropdown (electricity) and tap it
-        final dropdowns = find.byType(DropdownButton<InterpolationMethod>);
-        expect(dropdowns, findsNWidgets(4));
-
-        // Tap the first dropdown (electricity)
-        await tester.tap(dropdowns.first);
-        await tester.pumpAndSettle();
-
-        // Select "Step" from the dropdown menu
-        await tester.tap(find.text('Step').last);
-        await tester.pumpAndSettle();
-
-        expect(
-          settingsProvider.getMethodForMeterType('electricity'),
-          InterpolationMethod.step,
-        );
-      });
-    });
   });
 
   group('HomeScreen settings navigation', () {

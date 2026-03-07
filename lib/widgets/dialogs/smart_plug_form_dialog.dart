@@ -52,7 +52,7 @@ class _SmartPlugFormDialogState extends State<SmartPlugFormDialog> {
     super.initState();
     _nameController = TextEditingController(text: widget.plug?.name ?? '');
     _selectedRoomId =
-        widget.plug?.roomId ?? widget.initialRoomId ?? widget.rooms.firstOrNull?.id;
+        widget.plug?.roomId ?? widget.initialRoomId;
   }
 
   @override
@@ -76,7 +76,6 @@ class _SmartPlugFormDialogState extends State<SmartPlugFormDialog> {
               controller: _nameController,
               decoration: InputDecoration(
                 labelText: l10n.smartPlugName,
-                hintText: l10n.smartPlugNameHint,
               ),
               maxLength: 100,
               autofocus: true,

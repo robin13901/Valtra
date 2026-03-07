@@ -39,10 +39,6 @@ class GasScreen extends StatelessWidget {
             },
             tooltip: l10n.analyticsHub,
           ),
-          Chip(
-            label: Text(l10n.cubicMeters),
-            backgroundColor: AppColors.gasColor.withValues(alpha: 0.2),
-          ),
           const SizedBox(width: 8),
         ],
       ),

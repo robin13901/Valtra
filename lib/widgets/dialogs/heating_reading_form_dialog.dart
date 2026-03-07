@@ -65,19 +65,21 @@ class _HeatingReadingFormDialogState extends State<HeatingReadingFormDialog> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            ListTile(
-              contentPadding: EdgeInsets.zero,
-              leading: const Icon(Icons.calendar_today),
-              title: Text(l10n.dateAndTime),
-              subtitle: Text(_formatDateTime(_selectedDateTime)),
+            InkWell(
               onTap: _selectDateTime,
+              child: InputDecorator(
+                decoration: InputDecoration(
+                  labelText: l10n.dateAndTime,
+                  suffixIcon: const Icon(Icons.calendar_today),
+                ),
+                child: Text(_formatDateTime(_selectedDateTime)),
+              ),
             ),
             const SizedBox(height: 16),
             TextFormField(
               controller: _valueController,
               decoration: InputDecoration(
                 labelText: l10n.meterValue,
-                hintText: l10n.meterValueHint,
                 errorText: _externalError,
               ),
               keyboardType:

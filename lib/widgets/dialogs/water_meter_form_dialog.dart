@@ -78,36 +78,47 @@ class _WaterMeterFormDialogState extends State<WaterMeterFormDialog> {
             ),
             const SizedBox(height: 16),
             // Type selection
-            Text(
-              l10n.waterMeterType,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
-            ),
-            const SizedBox(height: 8),
-            SegmentedButton<WaterMeterType>(
-              segments: [
-                ButtonSegment(
+            DropdownButtonFormField<WaterMeterType>(
+              initialValue: _selectedType,
+              decoration: InputDecoration(
+                labelText: l10n.waterMeterType,
+              ),
+              items: [
+                DropdownMenuItem(
                   value: WaterMeterType.cold,
-                  label: Text(l10n.coldWater),
-                  icon: const Icon(Icons.water_drop_outlined),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.water_drop, color: Colors.blue),
+                      const SizedBox(width: 8),
+                      Text(l10n.coldWater),
+                    ],
+                  ),
                 ),
-                ButtonSegment(
+                DropdownMenuItem(
                   value: WaterMeterType.hot,
-                  label: Text(l10n.hotWater),
-                  icon: const Icon(Icons.water_drop),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.water_drop, color: Colors.red),
+                      const SizedBox(width: 8),
+                      Text(l10n.hotWater),
+                    ],
+                  ),
                 ),
-                ButtonSegment(
+                DropdownMenuItem(
                   value: WaterMeterType.other,
-                  label: Text(l10n.otherWater),
-                  icon: const Icon(Icons.category_outlined),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.water_drop, color: Colors.grey),
+                      const SizedBox(width: 8),
+                      Text(l10n.otherWater),
+                    ],
+                  ),
                 ),
               ],
-              selected: {_selectedType},
-              onSelectionChanged: (selection) {
-                setState(() {
-                  _selectedType = selection.first;
-                });
+              onChanged: (value) {
+                if (value != null) {
+                  setState(() => _selectedType = value);
+                }
               },
             ),
           ],

@@ -39,10 +39,6 @@ class ElectricityScreen extends StatelessWidget {
             },
             tooltip: l10n.analyticsHub,
           ),
-          Chip(
-            label: Text(l10n.kWh),
-            backgroundColor: AppColors.electricityColor.withValues(alpha: 0.2),
-          ),
           const SizedBox(width: 8),
         ],
       ),

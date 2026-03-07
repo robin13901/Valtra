@@ -66,12 +66,15 @@ class _ElectricityReadingFormDialogState
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Date & Time picker
-            ListTile(
-              contentPadding: EdgeInsets.zero,
-              leading: const Icon(Icons.calendar_today),
-              title: Text(l10n.dateAndTime),
-              subtitle: Text(_formatDateTime(_selectedDateTime)),
+            InkWell(
               onTap: _selectDateTime,
+              child: InputDecorator(
+                decoration: InputDecoration(
+                  labelText: l10n.dateAndTime,
+                  suffixIcon: const Icon(Icons.calendar_today),
+                ),
+                child: Text(_formatDateTime(_selectedDateTime)),
+              ),
             ),
             const SizedBox(height: 16),
             // Value input
@@ -79,7 +82,6 @@ class _ElectricityReadingFormDialogState
               controller: _valueController,
               decoration: InputDecoration(
                 labelText: l10n.meterValue,
-                hintText: l10n.meterValueHint,
                 suffixText: l10n.kWh,
                 errorText: _externalError,
               ),

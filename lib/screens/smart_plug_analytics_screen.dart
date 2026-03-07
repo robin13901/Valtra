@@ -394,20 +394,10 @@ class _SummaryCard extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           if (data.otherConsumption != null) ...[
-            Row(
-              children: [
-                Expanded(
-                  child: _SummaryRow(
-                    label: l10n.otherConsumption,
-                    value:
-                        '${ValtraNumberFormat.consumption(data.otherConsumption!, locale)} ${data.unit}',
-                  ),
-                ),
-                Tooltip(
-                  message: l10n.otherConsumptionExplanation,
-                  child: const Icon(Icons.info_outline, size: 18),
-                ),
-              ],
+            _SummaryRow(
+              label: l10n.otherConsumption,
+              value:
+                  '${ValtraNumberFormat.consumption(data.otherConsumption!, locale)} ${data.unit}',
             ),
           ] else ...[
             Text(

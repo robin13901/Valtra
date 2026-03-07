@@ -109,8 +109,10 @@ void main() {
           find.widgetWithText(TextFormField, 'Meter Name'), 'Test Meter');
       await tester.pumpAndSettle();
 
-      // Select hot water type
-      await tester.tap(find.text('Hot Water'));
+      // Select hot water type from dropdown
+      await tester.tap(find.byType(DropdownButtonFormField<WaterMeterType>));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Hot Water').last);
       await tester.pumpAndSettle();
 
       // Save
@@ -222,8 +224,10 @@ void main() {
           find.widgetWithText(TextFormField, 'Meter Name'), 'Irrigation');
       await tester.pumpAndSettle();
 
-      // Select other type
-      await tester.tap(find.text('Other'));
+      // Select other type from dropdown
+      await tester.tap(find.byType(DropdownButtonFormField<WaterMeterType>));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Other').last);
       await tester.pumpAndSettle();
 
       // Save

@@ -88,7 +88,13 @@ void main() {
           find.widgetWithText(TextFormField, 'Plug Name'), 'TV Plug');
       await tester.pumpAndSettle();
 
-      // Save (room should be auto-selected to first one)
+      // Select a room from the dropdown (no room pre-selected for new plugs)
+      await tester.tap(find.byType(DropdownButtonFormField<int>));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Living Room').last);
+      await tester.pumpAndSettle();
+
+      // Save
       await tester.tap(find.text('Save'));
       await tester.pumpAndSettle();
 
@@ -106,8 +112,8 @@ void main() {
       await tester.tap(find.text('Open Dialog'));
       await tester.pumpAndSettle();
 
-      // Open dropdown
-      await tester.tap(find.text('Living Room'));
+      // Open dropdown (no room pre-selected, so tap the dropdown widget)
+      await tester.tap(find.byType(DropdownButtonFormField<int>));
       await tester.pumpAndSettle();
 
       // Verify all rooms are shown in dropdown

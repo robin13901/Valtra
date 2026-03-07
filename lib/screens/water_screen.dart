@@ -41,10 +41,6 @@ class WaterScreen extends StatelessWidget {
             },
             tooltip: l10n.analyticsHub,
           ),
-          Chip(
-            label: Text(l10n.cubicMeters),
-            backgroundColor: AppColors.waterColor.withValues(alpha: 0.2),
-          ),
           const SizedBox(width: 8),
         ],
       ),
@@ -65,7 +61,7 @@ class WaterScreen extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(
-            Icons.water_drop_outlined,
+            Icons.water_drop,
             size: 64,
             color: Theme.of(context).colorScheme.onSurfaceVariant,
           ),
@@ -135,22 +131,22 @@ class _WaterMeterCardState extends State<_WaterMeterCard> {
   Color _getTypeColor(WaterMeterType type) {
     switch (type) {
       case WaterMeterType.cold:
-        return AppColors.waterColor;
+        return Colors.blue;
       case WaterMeterType.hot:
-        return AppColors.heatingColor;
+        return Colors.red;
       case WaterMeterType.other:
-        return AppColors.otherColor;
+        return Colors.grey;
     }
   }
 
   IconData _getTypeIcon(WaterMeterType type) {
     switch (type) {
       case WaterMeterType.cold:
-        return Icons.water_drop_outlined;
+        return Icons.water_drop;
       case WaterMeterType.hot:
         return Icons.water_drop;
       case WaterMeterType.other:
-        return Icons.category_outlined;
+        return Icons.water_drop;
     }
   }
 

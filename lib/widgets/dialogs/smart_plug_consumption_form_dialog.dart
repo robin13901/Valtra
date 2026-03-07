@@ -89,12 +89,15 @@ class _SmartPlugConsumptionFormDialogState
             ),
             const SizedBox(height: 16),
             // Date picker
-            ListTile(
-              contentPadding: EdgeInsets.zero,
-              leading: const Icon(Icons.calendar_today),
-              title: Text(l10n.intervalStart),
-              subtitle: Text(_formatDate(_selectedDate)),
+            InkWell(
               onTap: _selectDate,
+              child: InputDecorator(
+                decoration: InputDecoration(
+                  labelText: l10n.intervalStart,
+                  suffixIcon: const Icon(Icons.calendar_today),
+                ),
+                child: Text(_formatDate(_selectedDate)),
+              ),
             ),
             const SizedBox(height: 16),
             // Value input
