@@ -576,4 +576,46 @@ class AppLocalizationsDe extends AppLocalizations {
   String averageConsumption(String value, String unit) {
     return 'Durchschnitt: $value $unit';
   }
+
+  @override
+  String get yearlyAnalytics => 'Jahresanalyse';
+
+  @override
+  String get monthlyBreakdown => 'Monatsaufschlüsselung';
+
+  @override
+  String get yearOverYear => 'Jahresvergleich';
+
+  @override
+  String get previousYear => 'Vorheriges Jahr';
+
+  @override
+  String get nextYear => 'Nächstes Jahr';
+
+  @override
+  String get currentYear => 'Aktuelles Jahr';
+
+  @override
+  String totalForYear(String year) {
+    return 'Gesamt für $year';
+  }
+
+  @override
+  String changeFromLastYear(String change) {
+    return '$change% ggü. Vorjahr';
+  }
+
+  @override
+  String get exportCsv => 'CSV exportieren';
+
+  @override
+  String get exportAll => 'Alle Zähler exportieren';
+
+  @override
+  String get exportSuccess => 'Export bereit zum Teilen';
+
+  @override
+  String noYearlyData(String year) {
+    return 'Keine Daten für $year';
+  }
 }

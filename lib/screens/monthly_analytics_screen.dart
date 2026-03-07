@@ -5,9 +5,12 @@ import 'package:provider/provider.dart';
 import '../l10n/app_localizations.dart';
 import '../providers/analytics_provider.dart';
 import '../services/analytics/analytics_models.dart';
+import '../services/csv_export_service.dart';
+import '../services/share_service.dart';
 import '../widgets/charts/chart_legend.dart';
 import '../widgets/charts/consumption_line_chart.dart';
 import '../widgets/charts/monthly_bar_chart.dart';
+import 'yearly_analytics_screen.dart';
 
 class MonthlyAnalyticsScreen extends StatelessWidget {
   const MonthlyAnalyticsScreen({super.key});
@@ -23,6 +26,11 @@ class MonthlyAnalyticsScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text(_meterTypeLabel(l10n, provider.selectedMeterType)),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.calendar_view_month),
+            onPressed: () => _navigateToYearly(context, provider),
+            tooltip: l10n.yearlyAnalytics,
+          ),
           IconButton(
             icon: const Icon(Icons.date_range),
             onPressed: () => _pickDateRange(context),
@@ -97,6 +105,13 @@ class MonthlyAnalyticsScreen extends StatelessWidget {
                     ),
                   ],
                 ),
+      floatingActionButton: data != null && data.recentMonths.isNotEmpty
+          ? FloatingActionButton(
+              onPressed: () => _exportMonthlyCsv(context, data),
+              tooltip: l10n.exportCsv,
+              child: const Icon(Icons.file_download),
+            )
+          : null,
     );
   }
 
@@ -129,6 +144,34 @@ class MonthlyAnalyticsScreen extends StatelessWidget {
     );
     if (range != null) {
       provider.setCustomRange(range);
+    }
+  }
+
+  void _navigateToYearly(BuildContext context, AnalyticsProvider provider) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) =>
+            YearlyAnalyticsScreen(meterType: provider.selectedMeterType),
+      ),
+    );
+  }
+
+  Future<void> _exportMonthlyCsv(
+      BuildContext context, MonthlyAnalyticsData data) async {
+    final l10n = AppLocalizations.of(context)!;
+    const csvService = CsvExportService();
+    final shareService = ShareService();
+
+    final csv = csvService.exportMonthlyData(data);
+    final filename =
+        'valtra_${data.meterType.name}_${DateFormat('yyyy-MM').format(data.month)}.csv';
+
+    await shareService.shareCsvFile(csvContent: csv, filename: filename);
+
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.exportSuccess)),
+      );
     }
   }
 }

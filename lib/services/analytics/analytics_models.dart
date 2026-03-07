@@ -52,6 +52,27 @@ class MonthlyAnalyticsData {
   });
 }
 
+/// Complete data package for the yearly analytics screen.
+class YearlyAnalyticsData {
+  final MeterType meterType;
+  final int year;
+  final List<PeriodConsumption> monthlyBreakdown; // 12 months (bar chart)
+  final List<PeriodConsumption>? previousYearBreakdown; // 12 months (comparison)
+  final double? totalConsumption; // sum of monthlyBreakdown
+  final double? previousYearTotal; // sum of previousYearBreakdown
+  final String unit;
+
+  const YearlyAnalyticsData({
+    required this.meterType,
+    required this.year,
+    required this.monthlyBreakdown,
+    this.previousYearBreakdown,
+    this.totalConsumption,
+    this.previousYearTotal,
+    required this.unit,
+  });
+}
+
 /// Returns the brand color associated with a [MeterType].
 Color colorForMeterType(MeterType type) {
   switch (type) {

@@ -574,4 +574,46 @@ class AppLocalizationsEn extends AppLocalizations {
   String averageConsumption(String value, String unit) {
     return 'Average: $value $unit';
   }
+
+  @override
+  String get yearlyAnalytics => 'Yearly Analytics';
+
+  @override
+  String get monthlyBreakdown => 'Monthly Breakdown';
+
+  @override
+  String get yearOverYear => 'Year-over-Year';
+
+  @override
+  String get previousYear => 'Previous Year';
+
+  @override
+  String get nextYear => 'Next Year';
+
+  @override
+  String get currentYear => 'Current Year';
+
+  @override
+  String totalForYear(String year) {
+    return 'Total for $year';
+  }
+
+  @override
+  String changeFromLastYear(String change) {
+    return '$change% vs last year';
+  }
+
+  @override
+  String get exportCsv => 'Export CSV';
+
+  @override
+  String get exportAll => 'Export All Meters';
+
+  @override
+  String get exportSuccess => 'Export ready to share';
+
+  @override
+  String noYearlyData(String year) {
+    return 'No data for $year';
+  }
 }

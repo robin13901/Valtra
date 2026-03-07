@@ -205,5 +205,32 @@
       "value": {"type": "String"},
       "unit": {"type": "String"}
     }
+  },
+  "yearlyAnalytics": "Jahresanalyse",
+  "monthlyBreakdown": "Monatsaufschlüsselung",
+  "yearOverYear": "Jahresvergleich",
+  "previousYear": "Vorheriges Jahr",
+  "nextYear": "Nächstes Jahr",
+  "currentYear": "Aktuelles Jahr",
+  "totalForYear": "Gesamt für {year}",
+  "@totalForYear": {
+    "placeholders": {
+      "year": {"type": "String"}
+    }
+  },
+  "changeFromLastYear": "{change}% ggü. Vorjahr",
+  "@changeFromLastYear": {
+    "placeholders": {
+      "change": {"type": "String"}
+    }
+  },
+  "exportCsv": "CSV exportieren",
+  "exportAll": "Alle Zähler exportieren",
+  "exportSuccess": "Export bereit zum Teilen",
+  "noYearlyData": "Keine Daten für {year}",
+  "@noYearlyData": {
+    "placeholders": {
+      "year": {"type": "String"}
+    }
   }
 }

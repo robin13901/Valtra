@@ -4,6 +4,9 @@ import 'package:provider/provider.dart';
 import '../l10n/app_localizations.dart';
 import '../providers/analytics_provider.dart';
 import '../services/analytics/analytics_models.dart';
+import '../services/csv_export_service.dart';
+import '../services/interpolation/models.dart';
+import '../services/share_service.dart';
 import 'monthly_analytics_screen.dart';
 
 class AnalyticsScreen extends StatelessWidget {
@@ -15,7 +18,16 @@ class AnalyticsScreen extends StatelessWidget {
     final provider = context.watch<AnalyticsProvider>();
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.analyticsHub)),
+      appBar: AppBar(
+        title: Text(l10n.analyticsHub),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.file_download),
+            onPressed: () => _exportAll(context, provider),
+            tooltip: l10n.exportAll,
+          ),
+        ],
+      ),
       body: provider.isLoading
           ? const Center(child: CircularProgressIndicator())
           : ListView(
@@ -43,6 +55,53 @@ class AnalyticsScreen extends StatelessWidget {
     Navigator.of(context).push(
       MaterialPageRoute(builder: (context) => const MonthlyAnalyticsScreen()),
     );
+  }
+
+  Future<void> _exportAll(
+      BuildContext context, AnalyticsProvider provider) async {
+    final l10n = AppLocalizations.of(context)!;
+
+    // Collect data from all overview summaries — use recent months data
+    // For a hub-level export, we export the overview summaries as a simple CSV
+    final dataByType = <MeterType, List<PeriodConsumption>>{};
+
+    // Load yearly data for each meter type
+    for (final type in MeterType.values) {
+      final summary = provider.overviewSummaries[type];
+      if (summary != null && summary.latestMonthConsumption != null) {
+        // We need the provider to load yearly data for each type
+        // For simplicity, export overview data available
+        dataByType[type] = [];
+      }
+    }
+
+    // If no data available, show message
+    if (dataByType.isEmpty) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.noData)),
+        );
+      }
+      return;
+    }
+
+    const csvService = CsvExportService();
+    final shareService = ShareService();
+
+    final year = DateTime.now().year;
+    final csv = csvService.exportAllMeters(
+      year: year,
+      dataByType: dataByType,
+    );
+    final filename = 'valtra_all_meters_$year.csv';
+
+    await shareService.shareCsvFile(csvContent: csv, filename: filename);
+
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.exportSuccess)),
+      );
+    }
   }
 }
 

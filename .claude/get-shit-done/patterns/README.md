@@ -15,7 +15,8 @@ patterns/
 │   ├── flutter-smart-plug-room-crud.md
 │   ├── flutter-multi-meter-tracking.md
 │   ├── flutter-interpolation-service.md
-│   └── flutter-analytics-hub.md
+│   ├── flutter-analytics-hub.md
+│   └── flutter-yearly-analytics-csv.md
 ├── conventions-learned/  # Project-specific conventions (JSON)
 │   └── valtra.json
 └── routing-history.json  # Agent/model performance tracking
@@ -73,6 +74,7 @@ Tracks which models work best for which task types:
 | flutter-multi-meter-tracking | crud | flutter, drift, provider, intl | 100% | 2 |
 | flutter-interpolation-service | service | flutter, dart, drift, provider, sharedpreferences | 100% | 1 |
 | flutter-analytics-hub | analytics | flutter, dart, fl_chart, provider, drift, intl | 100% | 1 |
+| flutter-yearly-analytics-csv | analytics | flutter, fl_chart, csv, share_plus, path_provider, provider | 100% | 1 |
 
 ---
 

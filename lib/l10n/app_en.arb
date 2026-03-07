@@ -271,5 +271,32 @@
       "value": {"type": "String"},
       "unit": {"type": "String"}
     }
+  },
+  "yearlyAnalytics": "Yearly Analytics",
+  "monthlyBreakdown": "Monthly Breakdown",
+  "yearOverYear": "Year-over-Year",
+  "previousYear": "Previous Year",
+  "nextYear": "Next Year",
+  "currentYear": "Current Year",
+  "totalForYear": "Total for {year}",
+  "@totalForYear": {
+    "placeholders": {
+      "year": {"type": "String"}
+    }
+  },
+  "changeFromLastYear": "{change}% vs last year",
+  "@changeFromLastYear": {
+    "placeholders": {
+      "change": {"type": "String"}
+    }
+  },
+  "exportCsv": "Export CSV",
+  "exportAll": "Export All Meters",
+  "exportSuccess": "Export ready to share",
+  "noYearlyData": "No data for {year}",
+  "@noYearlyData": {
+    "placeholders": {
+      "year": {"type": "String"}
+    }
   }
 }

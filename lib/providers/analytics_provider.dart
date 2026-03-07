@@ -29,9 +29,11 @@ class AnalyticsProvider extends ChangeNotifier {
       DateTime(DateTime.now().year, DateTime.now().month, 1);
   MeterType _selectedMeterType = MeterType.electricity;
   DateTimeRange? _customRange; // null = use selectedMonth
+  int _selectedYear = DateTime.now().year;
 
   // Computed state
   MonthlyAnalyticsData? _monthlyData;
+  YearlyAnalyticsData? _yearlyData;
   Map<MeterType, MeterTypeSummary> _overviewSummaries = {};
   bool _isLoading = false;
 
@@ -57,6 +59,8 @@ class AnalyticsProvider extends ChangeNotifier {
   MeterType get selectedMeterType => _selectedMeterType;
   DateTimeRange? get customRange => _customRange;
   MonthlyAnalyticsData? get monthlyData => _monthlyData;
+  YearlyAnalyticsData? get yearlyData => _yearlyData;
+  int get selectedYear => _selectedYear;
   Map<MeterType, MeterTypeSummary> get overviewSummaries => _overviewSummaries;
   bool get isLoading => _isLoading;
 
@@ -68,6 +72,7 @@ class AnalyticsProvider extends ChangeNotifier {
     } else {
       _overviewSummaries = {};
       _monthlyData = null;
+      _yearlyData = null;
       notifyListeners();
     }
   }
@@ -97,6 +102,18 @@ class AnalyticsProvider extends ChangeNotifier {
     _customRange = null;
     notifyListeners();
     _loadMonthlyData();
+  }
+
+  void setSelectedYear(int year) {
+    _selectedYear = year;
+    notifyListeners();
+    _loadYearlyData();
+  }
+
+  void navigateYear(int delta) {
+    _selectedYear += delta;
+    notifyListeners();
+    _loadYearlyData();
   }
 
   /// Load overview summaries for all 4 meter types (analytics hub).
@@ -304,6 +321,112 @@ class AnalyticsProvider extends ChangeNotifier {
 
   String _getDisplayUnit(MeterType type) {
     return type == MeterType.gas ? 'kWh' : unitForMeterType(type);
+  }
+
+  /// Load yearly analytics data for selected meter type + year.
+  Future<void> _loadYearlyData() async {
+    if (_householdId == null) return;
+
+    _isLoading = true;
+    notifyListeners();
+
+    try {
+      final method =
+          _settingsProvider.getMethodForMeterType(_selectedMeterType.name);
+
+      // Current year: Jan 1 to Jan 1 of next year
+      final yearStart = DateTime(_selectedYear, 1, 1);
+      final yearEnd = DateTime(_selectedYear + 1, 1, 1);
+
+      final readingsPerMeter = await _getReadingsPerMeter(
+        _selectedMeterType,
+        yearStart,
+        yearEnd,
+      );
+
+      if (readingsPerMeter.isEmpty) {
+        _yearlyData = YearlyAnalyticsData(
+          meterType: _selectedMeterType,
+          year: _selectedYear,
+          monthlyBreakdown: [],
+          totalConsumption: null,
+          unit: _getDisplayUnit(_selectedMeterType),
+        );
+        _isLoading = false;
+        notifyListeners();
+        return;
+      }
+
+      // Monthly consumption for current year (12 bars)
+      var monthlyBreakdown = _aggregateMonthlyConsumption(
+        readingsPerMeter,
+        yearStart,
+        yearEnd,
+        method,
+      );
+
+      // Apply gas conversion if needed
+      if (_selectedMeterType == MeterType.gas) {
+        monthlyBreakdown = _gasConversionService.toKwhConsumptions(
+          monthlyBreakdown,
+          factor: _settingsProvider.gasKwhFactor,
+        );
+      }
+
+      final totalConsumption = monthlyBreakdown.isEmpty
+          ? null
+          : monthlyBreakdown.fold<double>(
+              0, (sum, p) => sum + p.consumption);
+
+      // Previous year data for comparison
+      final prevYearStart = DateTime(_selectedYear - 1, 1, 1);
+      final prevYearEnd = DateTime(_selectedYear, 1, 1);
+
+      final prevReadingsPerMeter = await _getReadingsPerMeter(
+        _selectedMeterType,
+        prevYearStart,
+        prevYearEnd,
+      );
+
+      List<PeriodConsumption>? prevBreakdown;
+      double? prevTotal;
+
+      if (prevReadingsPerMeter.isNotEmpty) {
+        prevBreakdown = _aggregateMonthlyConsumption(
+          prevReadingsPerMeter,
+          prevYearStart,
+          prevYearEnd,
+          method,
+        );
+        if (_selectedMeterType == MeterType.gas) {
+          prevBreakdown = _gasConversionService.toKwhConsumptions(
+            prevBreakdown,
+            factor: _settingsProvider.gasKwhFactor,
+          );
+        }
+        if (prevBreakdown.isNotEmpty) {
+          prevTotal = prevBreakdown.fold<double>(
+              0, (sum, p) => sum + p.consumption);
+        } else {
+          prevBreakdown = null;
+        }
+      }
+
+      _yearlyData = YearlyAnalyticsData(
+        meterType: _selectedMeterType,
+        year: _selectedYear,
+        monthlyBreakdown: monthlyBreakdown,
+        previousYearBreakdown: prevBreakdown,
+        totalConsumption: totalConsumption,
+        previousYearTotal: prevTotal,
+        unit: _getDisplayUnit(_selectedMeterType),
+      );
+    } catch (e) {
+      _yearlyData = null;
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
   }
 
   /// Get readings for a meter type, returning one list per physical meter.

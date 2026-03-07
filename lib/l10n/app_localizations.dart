@@ -1099,6 +1099,78 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Average: {value} {unit}'**
   String averageConsumption(String value, String unit);
+
+  /// No description provided for @yearlyAnalytics.
+  ///
+  /// In en, this message translates to:
+  /// **'Yearly Analytics'**
+  String get yearlyAnalytics;
+
+  /// No description provided for @monthlyBreakdown.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly Breakdown'**
+  String get monthlyBreakdown;
+
+  /// No description provided for @yearOverYear.
+  ///
+  /// In en, this message translates to:
+  /// **'Year-over-Year'**
+  String get yearOverYear;
+
+  /// No description provided for @previousYear.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous Year'**
+  String get previousYear;
+
+  /// No description provided for @nextYear.
+  ///
+  /// In en, this message translates to:
+  /// **'Next Year'**
+  String get nextYear;
+
+  /// No description provided for @currentYear.
+  ///
+  /// In en, this message translates to:
+  /// **'Current Year'**
+  String get currentYear;
+
+  /// No description provided for @totalForYear.
+  ///
+  /// In en, this message translates to:
+  /// **'Total for {year}'**
+  String totalForYear(String year);
+
+  /// No description provided for @changeFromLastYear.
+  ///
+  /// In en, this message translates to:
+  /// **'{change}% vs last year'**
+  String changeFromLastYear(String change);
+
+  /// No description provided for @exportCsv.
+  ///
+  /// In en, this message translates to:
+  /// **'Export CSV'**
+  String get exportCsv;
+
+  /// No description provided for @exportAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Export All Meters'**
+  String get exportAll;
+
+  /// No description provided for @exportSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Export ready to share'**
+  String get exportSuccess;
+
+  /// No description provided for @noYearlyData.
+  ///
+  /// In en, this message translates to:
+  /// **'No data for {year}'**
+  String noYearlyData(String year);
 }
 
 class _AppLocalizationsDelegate

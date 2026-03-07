@@ -6,7 +6,8 @@
       "Bash(flutter test test/screens/households_screen_test.dart --reporter expanded)",
       "Bash(flutter test)",
       "Bash(flutter analyze)",
-      "Bash(ls -d c:/SAPDevelop/Privat/Valtra/.planning/phases/*/)"
+      "Bash(ls -d c:/SAPDevelop/Privat/Valtra/.planning/phases/*/)",
+      "WebSearch"
     ]
   }
 }
