@@ -618,4 +618,49 @@ class AppLocalizationsDe extends AppLocalizations {
   String noYearlyData(String year) {
     return 'Keine Daten für $year';
   }
+
+  @override
+  String get smartPlugAnalytics => 'Smart-Plug-Analyse';
+
+  @override
+  String get consumptionByPlug => 'Verbrauch nach Steckdose';
+
+  @override
+  String get consumptionByRoom => 'Verbrauch nach Raum';
+
+  @override
+  String get otherConsumption => 'Sonstiger (nicht erfasst)';
+
+  @override
+  String get otherConsumptionExplanation =>
+      'Differenz zwischen Gesamtstrom und erfasstem Smart-Plug-Verbrauch';
+
+  @override
+  String get plugBreakdown => 'Aufschluesselung nach Steckdose';
+
+  @override
+  String get roomBreakdown => 'Aufschluesselung nach Raum';
+
+  @override
+  String get noSmartPlugData =>
+      'Keine Smart-Plug-Verbrauchsdaten fuer diesen Zeitraum.';
+
+  @override
+  String get noElectricityData =>
+      'Keine Stromablesungen zur Berechnung von \'Sonstiges\'.';
+
+  @override
+  String get totalTracked => 'Gesamt erfasst';
+
+  @override
+  String get totalElectricity => 'Gesamtstrom';
+
+  @override
+  String get periodMonthly => 'Monatlich';
+
+  @override
+  String get periodYearly => 'Jaehrlich';
+
+  @override
+  String get periodCustom => 'Benutzerdefiniert';
 }

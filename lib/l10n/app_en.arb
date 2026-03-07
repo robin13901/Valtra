@@ -298,5 +298,19 @@
     "placeholders": {
       "year": {"type": "String"}
     }
-  }
+  },
+  "smartPlugAnalytics": "Smart Plug Analytics",
+  "consumptionByPlug": "Consumption by Plug",
+  "consumptionByRoom": "Consumption by Room",
+  "otherConsumption": "Other (Untracked)",
+  "otherConsumptionExplanation": "Difference between total electricity and tracked smart plug consumption",
+  "plugBreakdown": "Plug Breakdown",
+  "roomBreakdown": "Room Breakdown",
+  "noSmartPlugData": "No smart plug consumption data for this period.",
+  "noElectricityData": "No electricity readings to calculate 'Other'.",
+  "totalTracked": "Total Tracked",
+  "totalElectricity": "Total Electricity",
+  "periodMonthly": "Monthly",
+  "periodYearly": "Yearly",
+  "periodCustom": "Custom"
 }

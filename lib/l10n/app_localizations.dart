@@ -1171,6 +1171,90 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No data for {year}'**
   String noYearlyData(String year);
+
+  /// No description provided for @smartPlugAnalytics.
+  ///
+  /// In en, this message translates to:
+  /// **'Smart Plug Analytics'**
+  String get smartPlugAnalytics;
+
+  /// No description provided for @consumptionByPlug.
+  ///
+  /// In en, this message translates to:
+  /// **'Consumption by Plug'**
+  String get consumptionByPlug;
+
+  /// No description provided for @consumptionByRoom.
+  ///
+  /// In en, this message translates to:
+  /// **'Consumption by Room'**
+  String get consumptionByRoom;
+
+  /// No description provided for @otherConsumption.
+  ///
+  /// In en, this message translates to:
+  /// **'Other (Untracked)'**
+  String get otherConsumption;
+
+  /// No description provided for @otherConsumptionExplanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Difference between total electricity and tracked smart plug consumption'**
+  String get otherConsumptionExplanation;
+
+  /// No description provided for @plugBreakdown.
+  ///
+  /// In en, this message translates to:
+  /// **'Plug Breakdown'**
+  String get plugBreakdown;
+
+  /// No description provided for @roomBreakdown.
+  ///
+  /// In en, this message translates to:
+  /// **'Room Breakdown'**
+  String get roomBreakdown;
+
+  /// No description provided for @noSmartPlugData.
+  ///
+  /// In en, this message translates to:
+  /// **'No smart plug consumption data for this period.'**
+  String get noSmartPlugData;
+
+  /// No description provided for @noElectricityData.
+  ///
+  /// In en, this message translates to:
+  /// **'No electricity readings to calculate \'Other\'.'**
+  String get noElectricityData;
+
+  /// No description provided for @totalTracked.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Tracked'**
+  String get totalTracked;
+
+  /// No description provided for @totalElectricity.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Electricity'**
+  String get totalElectricity;
+
+  /// No description provided for @periodMonthly.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly'**
+  String get periodMonthly;
+
+  /// No description provided for @periodYearly.
+  ///
+  /// In en, this message translates to:
+  /// **'Yearly'**
+  String get periodYearly;
+
+  /// No description provided for @periodCustom.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom'**
+  String get periodCustom;
 }
 
 class _AppLocalizationsDelegate

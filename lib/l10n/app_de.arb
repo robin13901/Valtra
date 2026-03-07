@@ -232,5 +232,19 @@
     "placeholders": {
       "year": {"type": "String"}
     }
-  }
+  },
+  "smartPlugAnalytics": "Smart-Plug-Analyse",
+  "consumptionByPlug": "Verbrauch nach Steckdose",
+  "consumptionByRoom": "Verbrauch nach Raum",
+  "otherConsumption": "Sonstiger (nicht erfasst)",
+  "otherConsumptionExplanation": "Differenz zwischen Gesamtstrom und erfasstem Smart-Plug-Verbrauch",
+  "plugBreakdown": "Aufschluesselung nach Steckdose",
+  "roomBreakdown": "Aufschluesselung nach Raum",
+  "noSmartPlugData": "Keine Smart-Plug-Verbrauchsdaten fuer diesen Zeitraum.",
+  "noElectricityData": "Keine Stromablesungen zur Berechnung von 'Sonstiges'.",
+  "totalTracked": "Gesamt erfasst",
+  "totalElectricity": "Gesamtstrom",
+  "periodMonthly": "Monatlich",
+  "periodYearly": "Jaehrlich",
+  "periodCustom": "Benutzerdefiniert"
 }

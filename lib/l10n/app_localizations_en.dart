@@ -616,4 +616,49 @@ class AppLocalizationsEn extends AppLocalizations {
   String noYearlyData(String year) {
     return 'No data for $year';
   }
+
+  @override
+  String get smartPlugAnalytics => 'Smart Plug Analytics';
+
+  @override
+  String get consumptionByPlug => 'Consumption by Plug';
+
+  @override
+  String get consumptionByRoom => 'Consumption by Room';
+
+  @override
+  String get otherConsumption => 'Other (Untracked)';
+
+  @override
+  String get otherConsumptionExplanation =>
+      'Difference between total electricity and tracked smart plug consumption';
+
+  @override
+  String get plugBreakdown => 'Plug Breakdown';
+
+  @override
+  String get roomBreakdown => 'Room Breakdown';
+
+  @override
+  String get noSmartPlugData =>
+      'No smart plug consumption data for this period.';
+
+  @override
+  String get noElectricityData =>
+      'No electricity readings to calculate \'Other\'.';
+
+  @override
+  String get totalTracked => 'Total Tracked';
+
+  @override
+  String get totalElectricity => 'Total Electricity';
+
+  @override
+  String get periodMonthly => 'Monthly';
+
+  @override
+  String get periodYearly => 'Yearly';
+
+  @override
+  String get periodCustom => 'Custom';
 }

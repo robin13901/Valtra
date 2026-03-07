@@ -18,6 +18,7 @@ import 'providers/heating_provider.dart';
 import 'providers/household_provider.dart';
 import 'providers/analytics_provider.dart';
 import 'providers/interpolation_settings_provider.dart';
+import 'providers/smart_plug_analytics_provider.dart';
 import 'providers/room_provider.dart';
 import 'providers/smart_plug_provider.dart';
 import 'providers/theme_provider.dart';
@@ -79,6 +80,15 @@ void main() async {
     settingsProvider: interpolationSettingsProvider,
   );
 
+  // Initialize smart plug analytics provider
+  final smartPlugAnalyticsProvider = SmartPlugAnalyticsProvider(
+    smartPlugDao: SmartPlugDao(database),
+    electricityDao: ElectricityDao(database),
+    roomDao: RoomDao(database),
+    interpolationService: InterpolationService(),
+    settingsProvider: interpolationSettingsProvider,
+  );
+
   // Connect providers to household changes
   if (householdProvider.selectedHouseholdId != null) {
     electricityProvider.setHouseholdId(householdProvider.selectedHouseholdId);
@@ -88,6 +98,7 @@ void main() async {
     gasProvider.setHouseholdId(householdProvider.selectedHouseholdId);
     heatingProvider.setHouseholdId(householdProvider.selectedHouseholdId);
     analyticsProvider.setHouseholdId(householdProvider.selectedHouseholdId);
+    smartPlugAnalyticsProvider.setHouseholdId(householdProvider.selectedHouseholdId);
   }
 
   runApp(ValtraApp(
@@ -102,6 +113,7 @@ void main() async {
     heatingProvider: heatingProvider,
     interpolationSettingsProvider: interpolationSettingsProvider,
     analyticsProvider: analyticsProvider,
+    smartPlugAnalyticsProvider: smartPlugAnalyticsProvider,
   ));
 }
 
@@ -117,6 +129,7 @@ class ValtraApp extends StatefulWidget {
   final HeatingProvider heatingProvider;
   final InterpolationSettingsProvider interpolationSettingsProvider;
   final AnalyticsProvider analyticsProvider;
+  final SmartPlugAnalyticsProvider smartPlugAnalyticsProvider;
 
   const ValtraApp({
     super.key,
@@ -131,6 +144,7 @@ class ValtraApp extends StatefulWidget {
     required this.heatingProvider,
     required this.interpolationSettingsProvider,
     required this.analyticsProvider,
+    required this.smartPlugAnalyticsProvider,
   });
 
   @override
@@ -160,6 +174,7 @@ class _ValtraAppState extends State<ValtraApp> {
     widget.gasProvider.setHouseholdId(householdId);
     widget.heatingProvider.setHouseholdId(householdId);
     widget.analyticsProvider.setHouseholdId(householdId);
+    widget.smartPlugAnalyticsProvider.setHouseholdId(householdId);
   }
 
   @override
@@ -187,6 +202,8 @@ class _ValtraAppState extends State<ValtraApp> {
             value: widget.interpolationSettingsProvider),
         ChangeNotifierProvider<AnalyticsProvider>.value(
             value: widget.analyticsProvider),
+        ChangeNotifierProvider<SmartPlugAnalyticsProvider>.value(
+            value: widget.smartPlugAnalyticsProvider),
       ],
       child: Consumer<ThemeProvider>(
         builder: (context, themeProvider, child) {
