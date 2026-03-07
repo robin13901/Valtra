@@ -3,8 +3,8 @@
 ## Current Status
 - **Milestone**: 3 - Polish & Enhancement (v0.3.0)
 - **Last Shipped**: v0.2.0 (2026-03-07)
-- **Current Phase**: 13 - Cost Tracking (COMPLETED)
-- **Next Phase**: 14 - UI/UX Polish & Data Entry
+- **Current Phase**: 14 - UI/UX Polish & Localization (IN PROGRESS — Plan 01 complete)
+- **Next Phase**: 15 - Data Model & Analytics Rework
 - **Last Updated**: 2026-03-07
 
 ## Completed Milestones
@@ -12,7 +12,7 @@
 - **Milestone 2**: Analytics & Visualization (v0.2.0) — 4 phases, 625 tests
 
 ## In Progress
-_None — Phase 13 complete, ready for Phase 14 planning_
+- **Phase 14**: UI/UX Polish & Localization — IN PROGRESS (Plan 01/07 complete, 2/14 tasks done)
 
 ## Blocked
 _None_
@@ -23,6 +23,8 @@ _None_
 | 2026-03-07 | — | Milestone 3 initialized | Created REQUIREMENTS.md, updated ROADMAP.md, reset STATE.md |
 | 2026-03-07 | 12 | Phase 12 completed | Settings & Configuration — 43 new tests (21 settings screen + 22 theme provider), 668 total. Dark mode audit fixed 11 hardcoded colors across 6 files. |
 | 2026-03-07 | 13 | Phase 13 completed | Cost Tracking — 39 new tests (27 service + 12 DAO), settings screen tests updated (+mock CostConfigProvider), 707 total. DB migration v1→v2, tiered pricing, cost display in analytics. |
+| 2026-03-07 | — | First device testing feedback | 31 items across all screens. Restructured phases: 14 (UI/UX Polish & Localization), 15 (Data Model & Analytics Rework), 16 (Backup, Testing & Docs). Major findings: umlaut encoding, German number formatting, interpolation rework, smart plug entry rework, heating meter room assignment, gas analysis in m³. |
+| 2026-03-07 | 14 | Plan 14-01 complete | Foundation Utilities — LocaleProvider, ValtraNumberFormat, 16 umlaut fixes, 4 new l10n keys, dark mode onSecondary fix. 52 new tests, 759 total. |
 
 ## Key Decisions (carried forward)
 1. **Local-first architecture** - Using Drift/SQLite for offline-capable data storage
@@ -35,15 +37,23 @@ _None_
 8. **Delta calculation** - Readings sorted newest first, deltas calculated from adjacent readings in list
 9. **Hierarchical CRUD** - Rooms contain SmartPlugs; indirect household query via JOIN; cascade delete with warning
 10. **Multi-meter water tracking** - Water meters support cold/hot/other types; readings scoped per meter with cascade delete
-11. **Heating meter location field** - Heating uses optional text field (location) instead of enum type; unit-less readings
-12. **Interpolation methods** - Linear (default for electricity/gas/water) + Step function (heating), configurable per meter type
+11. **Heating meter room assignment** - Heating meters assigned to rooms (mandatory, like smart plugs); location text field removed
+12. **Interpolation: linear only** - Step function removed; interpolated values calculated for 1st of each month at 00:00 from nearest real readings
 13. **Chart types** - Line + Bar + Pie using fl_chart
 14. **Analytics navigation** - Dedicated analytics hub from home + per-meter analytics buttons on each meter screen
 15. **CSV export** - via csv + share_plus packages, system share sheet
 16. **Separate SmartPlugAnalyticsProvider** - Smart plug analytics uses its own provider since data is pre-aggregated
 17. **Other consumption clamped** - max(0, totalElectricity - totalSmartPlug), null when no electricity data
+18. **Smart plug entry = monthly** - No interval type; simple month/year picker + kWh value per plug
+19. **Gas analysis in m³** - Display gas consumption in cubic meters as entered, not converted to kWh
+20. **German locale formatting** - Comma decimal, dot thousands, "Uhr" time suffix, proper umlauts (ä/ö/ü)
+21. **Two heating use-cases** - (a) Own gas meter: direct monthly readings; (b) Central gas meter + per-room heating meters showing energy ratio
+22. **No daily analysis** - Only monthly data entry, so daily views removed from all analysis screens
+23. **No custom date ranges** - Removed from all analysis screens; fixed monthly/yearly views only
+24. **In-app language toggle** - DE/EN switchable in settings, independent of device locale
 
-## Outstanding Questions
+25. **LocaleProvider null default** - Null locale = follow device, 'de' fallback for localeString
+26. **ValtraNumberFormat date init** - DateFormat requires initializeDateFormatting() before use; German time uses H:mm Uhr format
 _None at this time_
 
 ## Technical Debt
@@ -52,4 +62,4 @@ _None at this time_
 3. ~~**Hardcoded colors**~~ — Resolved in Phase 12 dark mode audit (11 fixes across 6 files)
 
 ## Next Actions
-_Run `/gsd:plan-phase 14` to plan Phase 14: UI/UX Polish & Data Entry._
+_Continue Phase 14: Execute Plan 14-02 (Settings Screen Language Toggle UI)._
