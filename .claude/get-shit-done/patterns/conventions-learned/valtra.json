@@ -61,7 +61,7 @@
       "services/analytics": ["analytics_models.dart", "analytics_helpers.dart"],
       "screens": ["{entity}s_screen.dart", "analytics_screen.dart", "monthly_analytics_screen.dart", "yearly_analytics_screen.dart"],
       "widgets": ["liquid_glass_widgets.dart", "{entity}_selector.dart"],
-      "widgets/charts": ["consumption_line_chart.dart", "monthly_bar_chart.dart", "chart_legend.dart", "year_comparison_chart.dart"],
+      "widgets/charts": ["consumption_line_chart.dart", "monthly_bar_chart.dart", "chart_legend.dart", "year_comparison_chart.dart", "consumption_pie_chart.dart"],
       "widgets/dialogs": ["{entity}_form_dialog.dart"],
       "l10n": ["app_en.arb", "app_de.arb"]
     },
@@ -71,9 +71,9 @@
       "providers": ["{entity}_provider_test.dart", "analytics_provider_yearly_test.dart"],
       "services": ["{conversion}_service_test.dart", "csv_export_service_test.dart"],
       "services/{domain}": ["models_test.dart", "{domain}_service_test.dart", "reading_converters_test.dart"],
-      "screens": ["{entity}s_screen_test.dart", "analytics_screen_test.dart", "monthly_analytics_screen_test.dart", "yearly_analytics_screen_test.dart"],
+      "screens": ["{entity}s_screen_test.dart", "analytics_screen_test.dart", "monthly_analytics_screen_test.dart", "yearly_analytics_screen_test.dart", "smart_plug_analytics_screen_test.dart"],
       "widgets": ["{entity}_form_dialog_test.dart", "{entity}_selector_test.dart"],
-      "widgets/charts": ["consumption_line_chart_test.dart", "monthly_bar_chart_test.dart", "chart_legend_test.dart", "year_comparison_chart_test.dart"]
+      "widgets/charts": ["consumption_line_chart_test.dart", "monthly_bar_chart_test.dart", "chart_legend_test.dart", "year_comparison_chart_test.dart", "consumption_pie_chart_test.dart"]
     }
   },
   "testing": {
@@ -126,6 +126,13 @@
     "Year navigation: disable forward arrow at current year with ternary onPressed",
     "Percentage change: guard division by zero when previousYearTotal is 0 or null",
     "12-month x-axis labels crowded on fl_chart - show every-other-month: skip if index % 2 != 0",
-    "Extend existing provider for yearly state rather than creating separate provider"
+    "Extend existing provider for yearly state rather than creating separate provider",
+    "Separate provider for pre-aggregated data (smart plugs) — different data flow than interpolated meter data",
+    "Other/residual calculation: clamp to max(0, total - tracked), null when no source data",
+    "Pie chart percentages: use (tracked + other) as denominator so slices sum to 100%",
+    "Grey slice (0xFF9E9E9E) for residual/Other category in pie charts",
+    "10-color palette for categorical data, wrap with modulo for > 10 entities",
+    "SegmentedButton for period selection (Material 3 standard)",
+    "PieChart donut shape: centerSpaceRadius 40, sectionsSpace 2, startDegreeOffset -90"
   ]
 }
