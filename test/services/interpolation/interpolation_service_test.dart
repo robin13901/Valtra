@@ -29,7 +29,6 @@ void main() {
         timeB: DateTime(2024, 5, 1),
         valueB: 400.0,
         targetTime: DateTime(2024, 2, 1),
-        method: InterpolationMethod.linear,
       );
 
       // Uses millisecond precision: Jan 1 to May 1, Jan 1 to Feb 1
@@ -74,30 +73,10 @@ void main() {
       expect(result, 100.0);
     });
 
-    test('step always returns valueA', () {
-      final result = service.interpolateAt(
-        timeA: DateTime(2024, 1, 1),
-        valueA: 100.0,
-        timeB: DateTime(2024, 2, 1),
-        valueB: 200.0,
-        targetTime: DateTime(2024, 1, 16),
-        method: InterpolationMethod.step,
-      );
-
-      expect(result, 100.0);
-    });
-
-    test('step at end still returns valueA', () {
-      final result = service.interpolateAt(
-        timeA: DateTime(2024, 1, 1),
-        valueA: 100.0,
-        timeB: DateTime(2024, 2, 1),
-        valueB: 200.0,
-        targetTime: DateTime(2024, 2, 1),
-        method: InterpolationMethod.step,
-      );
-
-      expect(result, 100.0);
+    test('no method parameter needed (linear only)', () {
+      // Verify that step method is no longer available
+      expect(InterpolationMethod.values.length, 1);
+      expect(InterpolationMethod.values.first, InterpolationMethod.linear);
     });
   });
 
@@ -114,7 +93,7 @@ void main() {
         rangeEnd: DateTime(2024, 5, 1),
       );
 
-      // Should get Feb 1, Mar 1, Apr 1 (not Jan 1—before first reading, not May 1—after last)
+      // Should get Feb 1, Mar 1, Apr 1 (not Jan 1--before first reading, not May 1--after last)
       expect(boundaries.length, 3);
       expect(boundaries[0].timestamp, DateTime(2024, 2, 1));
       expect(boundaries[1].timestamp, DateTime(2024, 3, 1));
@@ -261,7 +240,9 @@ void main() {
       expect(boundaries[1].timestamp, DateTime(2024, 5, 1));
     });
 
-    test('step method returns previous value for boundaries', () {
+    test('no method parameter accepted (linear only)', () {
+      // This test confirms the method parameter has been removed
+      // by successfully calling getMonthlyBoundaries without it
       final readings = <ReadingPoint>[
         (timestamp: DateTime(2024, 1, 1), value: 100.0),
         (timestamp: DateTime(2024, 3, 1), value: 300.0),
@@ -271,13 +252,15 @@ void main() {
         readings: readings,
         rangeStart: DateTime(2024, 1, 1),
         rangeEnd: DateTime(2024, 3, 1),
-        method: InterpolationMethod.step,
       );
 
       expect(boundaries.length, 3);
-      expect(boundaries[0].value, 100.0); // exact
-      expect(boundaries[1].value, 100.0); // step: returns valueA
-      expect(boundaries[2].value, 300.0); // exact
+      // Feb 1 linear interpolation: fraction = 31 days / 60 days
+      // (Jan has 31 days, leap year Feb has 29 days = 60 total)
+      final totalMs = DateTime(2024, 3, 1).difference(DateTime(2024, 1, 1)).inMilliseconds;
+      final targetMs = DateTime(2024, 2, 1).difference(DateTime(2024, 1, 1)).inMilliseconds;
+      final expected = 100.0 + (targetMs / totalMs) * 200.0;
+      expect(boundaries[1].value, closeTo(expected, 0.01));
     });
   });
 
@@ -294,7 +277,7 @@ void main() {
         rangeEnd: DateTime(2024, 4, 1),
       );
 
-      expect(consumption.length, 3); // Jan→Feb, Feb→Mar, Mar→Apr
+      expect(consumption.length, 3); // Jan->Feb, Feb->Mar, Mar->Apr
       expect(consumption[0].periodStart, DateTime(2024, 1, 1));
       expect(consumption[0].periodEnd, DateTime(2024, 2, 1));
       expect(consumption[2].periodEnd, DateTime(2024, 4, 1));
@@ -345,7 +328,7 @@ void main() {
         rangeEnd: DateTime(2024, 4, 1),
       );
 
-      expect(consumption.length, 1); // Feb 1 → Mar 1
+      expect(consumption.length, 1); // Feb 1 -> Mar 1
       expect(consumption[0].startInterpolated, true);
       expect(consumption[0].endInterpolated, true);
     });

@@ -808,4 +808,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get home => 'Home';
+
+  @override
+  String get interpolatedValue => 'Interpolated value';
+
+  @override
+  String get showInterpolatedValues => 'Show interpolated values';
+
+  @override
+  String get hideInterpolatedValues => 'Hide interpolated values';
 }

@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import '../database/daos/electricity_dao.dart';
 import '../database/daos/room_dao.dart';
 import '../database/daos/smart_plug_dao.dart';
-import '../providers/interpolation_settings_provider.dart';
 import '../services/analytics/analytics_models.dart';
 import '../services/interpolation/interpolation_service.dart';
 import '../services/interpolation/reading_converters.dart';
@@ -20,7 +19,6 @@ class SmartPlugAnalyticsProvider extends ChangeNotifier {
   final ElectricityDao _electricityDao;
   final RoomDao _roomDao;
   final InterpolationService _interpolationService;
-  final InterpolationSettingsProvider _settingsProvider;
 
   int? _householdId;
   SmartPlugAnalyticsData? _data;
@@ -35,12 +33,10 @@ class SmartPlugAnalyticsProvider extends ChangeNotifier {
     required ElectricityDao electricityDao,
     required RoomDao roomDao,
     required InterpolationService interpolationService,
-    required InterpolationSettingsProvider settingsProvider,
   })  : _smartPlugDao = smartPlugDao,
         _electricityDao = electricityDao,
         _roomDao = roomDao,
-        _interpolationService = interpolationService,
-        _settingsProvider = settingsProvider;
+        _interpolationService = interpolationService;
 
   // Getters
   int? get householdId => _householdId;
@@ -164,13 +160,10 @@ class SmartPlugAnalyticsProvider extends ChangeNotifier {
           householdId, from, to);
       if (electricityReadings.isNotEmpty) {
         final readingPoints = fromElectricityReadings(electricityReadings);
-        final method =
-            _settingsProvider.getMethodForMeterType('electricity');
         final monthly = _interpolationService.getMonthlyConsumption(
           readings: readingPoints,
           rangeStart: from,
           rangeEnd: to,
-          method: method,
         );
         totalElectricity =
             monthly.fold<double>(0, (sum, p) => sum + p.consumption);

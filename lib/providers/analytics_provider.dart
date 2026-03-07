@@ -128,7 +128,6 @@ class AnalyticsProvider extends ChangeNotifier {
       final summaries = <MeterType, MeterTypeSummary>{};
 
       for (final type in MeterType.values) {
-        final method = _settingsProvider.getMethodForMeterType(type.name);
         final readingsPerMeter =
             await _getReadingsPerMeter(type, rangeStart, rangeEnd);
 
@@ -146,7 +145,6 @@ class AnalyticsProvider extends ChangeNotifier {
           readingsPerMeter,
           rangeStart,
           rangeEnd,
-          method,
         );
 
         // Find current month consumption
@@ -215,9 +213,6 @@ class AnalyticsProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final method =
-          _settingsProvider.getMethodForMeterType(_selectedMeterType.name);
-
       // Determine date range for data
       final DateTime lineStart = _selectedMonth;
       final DateTime lineEnd =
@@ -258,7 +253,6 @@ class AnalyticsProvider extends ChangeNotifier {
         readingsPerMeter,
         lineStart,
         lineEnd,
-        method,
       );
 
       // Monthly consumption for bar chart
@@ -266,7 +260,6 @@ class AnalyticsProvider extends ChangeNotifier {
         readingsPerMeter,
         barStart,
         barEnd,
-        method,
       );
 
       // Apply gas conversion if needed
@@ -387,9 +380,6 @@ class AnalyticsProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final method =
-          _settingsProvider.getMethodForMeterType(_selectedMeterType.name);
-
       // Current year: Jan 1 to Jan 1 of next year
       final yearStart = DateTime(_selectedYear, 1, 1);
       final yearEnd = DateTime(_selectedYear + 1, 1, 1);
@@ -418,7 +408,6 @@ class AnalyticsProvider extends ChangeNotifier {
         readingsPerMeter,
         yearStart,
         yearEnd,
-        method,
       );
 
       // Apply gas conversion if needed
@@ -452,7 +441,6 @@ class AnalyticsProvider extends ChangeNotifier {
           prevReadingsPerMeter,
           prevYearStart,
           prevYearEnd,
-          method,
         );
         if (_selectedMeterType == MeterType.gas) {
           prevBreakdown = _gasConversionService.toKwhConsumptions(
@@ -570,7 +558,6 @@ class AnalyticsProvider extends ChangeNotifier {
     List<List<ReadingPoint>> readingsPerMeter,
     DateTime rangeStart,
     DateTime rangeEnd,
-    InterpolationMethod method,
   ) {
     if (readingsPerMeter.isEmpty) return [];
 
@@ -579,7 +566,6 @@ class AnalyticsProvider extends ChangeNotifier {
               readings: readings,
               rangeStart: rangeStart,
               rangeEnd: rangeEnd,
-              method: method,
             ))
         .toList();
 
@@ -618,7 +604,6 @@ class AnalyticsProvider extends ChangeNotifier {
     List<List<ReadingPoint>> readingsPerMeter,
     DateTime rangeStart,
     DateTime rangeEnd,
-    InterpolationMethod method,
   ) {
     if (readingsPerMeter.isEmpty) return [];
 
@@ -627,7 +612,6 @@ class AnalyticsProvider extends ChangeNotifier {
               readings: readings,
               rangeStart: rangeStart,
               rangeEnd: rangeEnd,
-              method: method,
             ))
         .toList();
 

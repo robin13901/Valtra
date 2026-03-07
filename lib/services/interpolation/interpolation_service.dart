@@ -3,22 +3,16 @@ import 'models.dart';
 /// Pure-logic interpolation engine for estimating meter values
 /// at arbitrary points in time between actual readings.
 class InterpolationService {
-  /// Single-point interpolation between two readings.
+  /// Single-point linear interpolation between two readings.
   ///
-  /// Linear: fraction = (target - tA) / (tB - tA); result = vA + fraction * (vB - vA)
-  /// Step: returns valueA (previous reading holds until next)
+  /// fraction = (target - tA) / (tB - tA); result = vA + fraction * (vB - vA)
   double interpolateAt({
     required DateTime timeA,
     required double valueA,
     required DateTime timeB,
     required double valueB,
     required DateTime targetTime,
-    InterpolationMethod method = InterpolationMethod.linear,
   }) {
-    if (method == InterpolationMethod.step) {
-      return valueA;
-    }
-
     final totalDuration = timeB.difference(timeA).inMilliseconds;
     if (totalDuration == 0) return valueA;
 
@@ -35,7 +29,6 @@ class InterpolationService {
     required List<ReadingPoint> readings,
     required DateTime rangeStart,
     required DateTime rangeEnd,
-    InterpolationMethod method = InterpolationMethod.linear,
   }) {
     if (readings.isEmpty) return [];
 
@@ -79,7 +72,6 @@ class InterpolationService {
           timeB: after.timestamp,
           valueB: after.value,
           targetTime: target,
-          method: method,
         );
         results.add(TimestampedValue(
           timestamp: target,
@@ -98,13 +90,11 @@ class InterpolationService {
     required List<ReadingPoint> readings,
     required DateTime rangeStart,
     required DateTime rangeEnd,
-    InterpolationMethod method = InterpolationMethod.linear,
   }) {
     final boundaries = getMonthlyBoundaries(
       readings: readings,
       rangeStart: rangeStart,
       rangeEnd: rangeEnd,
-      method: method,
     );
 
     if (boundaries.length < 2) return [];

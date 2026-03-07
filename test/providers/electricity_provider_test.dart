@@ -181,5 +181,96 @@ void main() {
       provider.setHouseholdId(householdId);
       expect(provider.householdId, householdId);
     });
+
+    test('showInterpolatedValues defaults to false', () {
+      expect(provider.showInterpolatedValues, false);
+    });
+
+    test('toggleInterpolatedValues flips the state', () {
+      expect(provider.showInterpolatedValues, false);
+      provider.toggleInterpolatedValues();
+      expect(provider.showInterpolatedValues, true);
+      provider.toggleInterpolatedValues();
+      expect(provider.showInterpolatedValues, false);
+    });
+
+    test('toggleInterpolatedValues notifies listeners', () {
+      var notified = false;
+      provider.addListener(() => notified = true);
+
+      provider.toggleInterpolatedValues();
+
+      expect(notified, true);
+    });
+
+    test('displayItems returns real items when toggle is off', () async {
+      provider.setHouseholdId(householdId);
+      await Future.delayed(const Duration(milliseconds: 50));
+
+      final now = DateTime.now();
+      await provider.addReading(now.subtract(const Duration(days: 2)), 1000.0);
+      await provider.addReading(now.subtract(const Duration(days: 1)), 1100.0);
+      await Future.delayed(const Duration(milliseconds: 100));
+
+      final items = provider.displayItems;
+      expect(items.length, 2);
+      expect(items.every((i) => !i.isInterpolated), true);
+      expect(items.every((i) => i.readingId != null), true);
+    });
+
+    test('displayItems includes interpolated values when toggle is on', () async {
+      provider.setHouseholdId(householdId);
+      await Future.delayed(const Duration(milliseconds: 50));
+
+      // Add readings spanning multiple months to generate interpolated boundaries
+      await provider.addReading(DateTime(2024, 1, 15), 1000.0);
+      await provider.addReading(DateTime(2024, 4, 15), 1300.0);
+      await Future.delayed(const Duration(milliseconds: 100));
+
+      provider.toggleInterpolatedValues();
+      final items = provider.displayItems;
+
+      // Should have 2 real + some interpolated (Feb 1, Mar 1, Apr 1)
+      expect(items.length, greaterThan(2));
+
+      final interpolated = items.where((i) => i.isInterpolated).toList();
+      expect(interpolated.isNotEmpty, true);
+
+      // All interpolated items should be on 1st of month at 00:00
+      for (final item in interpolated) {
+        expect(item.timestamp.day, 1);
+        expect(item.timestamp.hour, 0);
+        expect(item.timestamp.minute, 0);
+        expect(item.readingId, isNull);
+      }
+
+      // Items should be sorted newest first
+      for (var i = 0; i < items.length - 1; i++) {
+        expect(
+          items[i].timestamp.isAfter(items[i + 1].timestamp) ||
+              items[i].timestamp == items[i + 1].timestamp,
+          true,
+        );
+      }
+    });
+
+    test('displayItems returns empty when no readings', () {
+      provider.setHouseholdId(householdId);
+      expect(provider.displayItems, isEmpty);
+    });
+
+    test('displayItems with toggle on but <2 readings shows real only', () async {
+      provider.setHouseholdId(householdId);
+      await Future.delayed(const Duration(milliseconds: 50));
+
+      await provider.addReading(DateTime(2024, 1, 15), 1000.0);
+      await Future.delayed(const Duration(milliseconds: 100));
+
+      provider.toggleInterpolatedValues();
+      final items = provider.displayItems;
+
+      expect(items.length, 1);
+      expect(items.first.isInterpolated, false);
+    });
   });
 }

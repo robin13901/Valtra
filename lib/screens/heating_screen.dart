@@ -10,6 +10,7 @@ import '../providers/heating_provider.dart';
 import '../providers/locale_provider.dart';
 import '../screens/monthly_analytics_screen.dart';
 import '../services/analytics/analytics_models.dart';
+import '../services/interpolation/models.dart';
 import '../services/number_format_service.dart';
 import '../widgets/dialogs/heating_meter_form_dialog.dart';
 import '../widgets/dialogs/heating_reading_form_dialog.dart';
@@ -30,6 +31,17 @@ class HeatingScreen extends StatelessWidget {
         context: context,
         title: l10n.heatingMeters,
         actions: [
+          IconButton(
+            icon: Icon(
+              provider.showInterpolatedValues
+                  ? Icons.visibility
+                  : Icons.visibility_off,
+            ),
+            onPressed: () => provider.toggleInterpolatedValues(),
+            tooltip: provider.showInterpolatedValues
+                ? l10n.hideInterpolatedValues
+                : l10n.showInterpolatedValues,
+          ),
           IconButton(
             icon: const Icon(Icons.analytics),
             onPressed: () {
@@ -121,6 +133,7 @@ class _HeatingMeterCardState extends State<_HeatingMeterCard> {
     final theme = Theme.of(context);
     final provider = context.watch<HeatingProvider>();
     final readings = provider.getReadingsWithDeltas(widget.meter.id);
+    final displayItems = provider.getDisplayItems(widget.meter.id);
     final locale = context.watch<LocaleProvider>().localeString;
 
     return GlassCard(
@@ -241,7 +254,9 @@ class _HeatingMeterCardState extends State<_HeatingMeterCard> {
           // Expanded readings section
           if (_isExpanded) ...[
             const Divider(height: 1),
-            _buildReadingsSection(context, l10n, readings),
+            provider.showInterpolatedValues
+                ? _buildDisplayItemsSection(context, l10n, displayItems)
+                : _buildReadingsSection(context, l10n, readings),
           ],
         ],
       ),
@@ -370,6 +385,178 @@ class _HeatingMeterCardState extends State<_HeatingMeterCard> {
                             l10n.delete,
                             style: TextStyle(
                                 color: theme.colorScheme.error),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        const SizedBox(height: 8),
+      ],
+    );
+  }
+
+  Widget _buildDisplayItemsSection(
+    BuildContext context,
+    AppLocalizations l10n,
+    List<ReadingDisplayItem> items,
+  ) {
+    final theme = Theme.of(context);
+    final locale = context.watch<LocaleProvider>().localeString;
+    final dateFormatter = DateFormat('dd.MM.yyyy HH:mm');
+
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          child: Row(
+            children: [
+              Text(
+                l10n.heatingReadings,
+                style: theme.textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              const Spacer(),
+              TextButton.icon(
+                onPressed: () => _addReading(context),
+                icon: const Icon(Icons.add, size: 18),
+                label: Text(l10n.addHeatingReading),
+              ),
+            ],
+          ),
+        ),
+        if (items.isEmpty)
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Text(
+              l10n.noHeatingReadings,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
+          )
+        else
+          ListView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: items.length,
+            itemBuilder: (context, index) {
+              final item = items[index];
+
+              if (item.isInterpolated) {
+                return ListTile(
+                  tileColor: AppColors.ultraViolet.withValues(alpha: 0.08),
+                  leading: Icon(
+                    Icons.thermostat,
+                    color: AppColors.ultraViolet.withValues(alpha: 0.6),
+                  ),
+                  title: Text(
+                    ValtraNumberFormat.consumption(item.value, locale),
+                    style: theme.textTheme.bodyLarge?.copyWith(
+                      fontWeight: FontWeight.w500,
+                      color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
+                    ),
+                  ),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        dateFormatter.format(item.timestamp),
+                        style: theme.textTheme.bodySmall,
+                      ),
+                      Container(
+                        margin: const EdgeInsets.only(top: 2),
+                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+                        decoration: BoxDecoration(
+                          color: AppColors.ultraViolet.withValues(alpha: 0.2),
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: Text(
+                          l10n.interpolated,
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: AppColors.ultraViolet,
+                            fontWeight: FontWeight.w500,
+                            fontSize: 10,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              }
+
+              return ListTile(
+                leading: const Icon(
+                  Icons.thermostat,
+                  color: AppColors.heatingColor,
+                ),
+                title: Text(
+                  ValtraNumberFormat.consumption(item.value, locale),
+                  style: theme.textTheme.bodyLarge?.copyWith(
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                subtitle: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      dateFormatter.format(item.timestamp),
+                      style: theme.textTheme.bodySmall,
+                    ),
+                    if (item.delta != null)
+                      Text(
+                        l10n.heatingConsumptionSince(
+                            ValtraNumberFormat.consumption(item.delta!, locale)),
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: AppColors.heatingColor,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      )
+                    else
+                      Text(
+                        l10n.firstReading,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                  ],
+                ),
+                trailing: PopupMenuButton<String>(
+                  onSelected: (value) {
+                    if (value == 'edit') {
+                      _editReadingById(context, item.readingId!);
+                    } else if (value == 'delete') {
+                      _deleteReadingById(context, item.readingId!);
+                    }
+                  },
+                  itemBuilder: (context) => [
+                    PopupMenuItem(
+                      value: 'edit',
+                      child: Row(
+                        children: [
+                          const Icon(Icons.edit, size: 20),
+                          const SizedBox(width: 8),
+                          Text(l10n.edit),
+                        ],
+                      ),
+                    ),
+                    PopupMenuItem(
+                      value: 'delete',
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.delete,
+                            color: theme.colorScheme.error,
+                            size: 20,
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            l10n.delete,
+                            style: TextStyle(color: theme.colorScheme.error),
                           ),
                         ],
                       ),
@@ -520,6 +707,50 @@ class _HeatingMeterCardState extends State<_HeatingMeterCard> {
 
   Future<void> _deleteReading(
       BuildContext context, HeatingReading reading) async {
+    await _deleteReadingById(context, reading.id);
+  }
+
+  Future<void> _editReadingById(BuildContext context, int readingId) async {
+    final provider = context.read<HeatingProvider>();
+    final l10n = AppLocalizations.of(context)!;
+    final locale = context.read<LocaleProvider>().localeString;
+
+    final readings = provider.getReadingsWithDeltas(widget.meter.id);
+    final readingWithDelta = readings.firstWhere((r) => r.reading.id == readingId);
+    final reading = readingWithDelta.reading;
+
+    final result = await HeatingReadingFormDialog.show(
+      context,
+      reading: reading,
+    );
+    if (result == null || !context.mounted) return;
+
+    final error = await provider.validateReading(
+      widget.meter.id,
+      result.value,
+      result.timestamp,
+      excludeId: reading.id,
+    );
+
+    if (error != null && context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n.heatingReadingMustBeGreaterOrEqual(
+              ValtraNumberFormat.consumption(error, locale))),
+          backgroundColor: Theme.of(context).colorScheme.error,
+        ),
+      );
+      return;
+    }
+
+    await provider.updateReading(
+      reading.id,
+      result.timestamp,
+      result.value,
+    );
+  }
+
+  Future<void> _deleteReadingById(BuildContext context, int readingId) async {
     final l10n = AppLocalizations.of(context)!;
     final provider = context.read<HeatingProvider>();
 
@@ -545,7 +776,7 @@ class _HeatingMeterCardState extends State<_HeatingMeterCard> {
     );
 
     if (confirmed == true && context.mounted) {
-      await provider.deleteReading(reading.id);
+      await provider.deleteReading(readingId);
     }
   }
 }

@@ -811,4 +811,13 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get home => 'Start';
+
+  @override
+  String get interpolatedValue => 'Interpolierter Wert';
+
+  @override
+  String get showInterpolatedValues => 'Interpolierte Werte anzeigen';
+
+  @override
+  String get hideInterpolatedValues => 'Interpolierte Werte ausblenden';
 }

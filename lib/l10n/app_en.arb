@@ -375,5 +375,8 @@
   "language": "Language",
   "languageDE": "German",
   "languageEN": "English",
-  "home": "Home"
+  "home": "Home",
+  "interpolatedValue": "Interpolated value",
+  "showInterpolatedValues": "Show interpolated values",
+  "hideInterpolatedValues": "Hide interpolated values"
 }

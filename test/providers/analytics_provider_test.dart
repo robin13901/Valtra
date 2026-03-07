@@ -64,8 +64,6 @@ void main() {
     mockCostConfigProvider = MockCostConfigProvider();
 
     // Default stubs for settings provider
-    when(() => mockSettingsProvider.getMethodForMeterType(any()))
-        .thenReturn(InterpolationMethod.linear);
     when(() => mockSettingsProvider.gasKwhFactor).thenReturn(10.3);
 
     // Default stubs for cost config provider
@@ -474,7 +472,6 @@ void main() {
             readings: any(named: 'readings'),
             rangeStart: any(named: 'rangeStart'),
             rangeEnd: any(named: 'rangeEnd'),
-            method: any(named: 'method'),
           )).thenReturn(<PeriodConsumption>[]);
 
       // Stub gas conversion
@@ -520,7 +517,6 @@ void main() {
             readings: any(named: 'readings'),
             rangeStart: any(named: 'rangeStart'),
             rangeEnd: any(named: 'rangeEnd'),
-            method: any(named: 'method'),
           )).thenReturn([
         TimestampedValue(
             timestamp: DateTime(2024, 6, 1),
@@ -532,7 +528,6 @@ void main() {
             readings: any(named: 'readings'),
             rangeStart: any(named: 'rangeStart'),
             rangeEnd: any(named: 'rangeEnd'),
-            method: any(named: 'method'),
           )).thenReturn(<PeriodConsumption>[]);
 
       when(() => mockGasConversionService.toKwh(any(),
@@ -589,7 +584,6 @@ void main() {
             readings: any(named: 'readings'),
             rangeStart: any(named: 'rangeStart'),
             rangeEnd: any(named: 'rangeEnd'),
-            method: any(named: 'method'),
           )).thenReturn([
         TimestampedValue(
             timestamp: DateTime(2024, 6, 1),
@@ -601,7 +595,6 @@ void main() {
             readings: any(named: 'readings'),
             rangeStart: any(named: 'rangeStart'),
             rangeEnd: any(named: 'rangeEnd'),
-            method: any(named: 'method'),
           )).thenReturn(<PeriodConsumption>[]);
 
       provider.setHouseholdId(1);

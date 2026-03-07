@@ -1537,6 +1537,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Home'**
   String get home;
+
+  /// No description provided for @interpolatedValue.
+  ///
+  /// In en, this message translates to:
+  /// **'Interpolated value'**
+  String get interpolatedValue;
+
+  /// No description provided for @showInterpolatedValues.
+  ///
+  /// In en, this message translates to:
+  /// **'Show interpolated values'**
+  String get showInterpolatedValues;
+
+  /// No description provided for @hideInterpolatedValues.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide interpolated values'**
+  String get hideInterpolatedValues;
 }
 
 class _AppLocalizationsDelegate

@@ -6,6 +6,8 @@ import 'package:flutter/foundation.dart';
 import '../database/app_database.dart';
 import '../database/daos/water_dao.dart';
 import '../database/tables.dart';
+import '../services/interpolation/interpolation_service.dart';
+import '../services/interpolation/models.dart';
 
 /// Represents a reading with its calculated delta from the previous reading.
 class WaterReadingWithDelta {
@@ -18,6 +20,7 @@ class WaterReadingWithDelta {
 /// Manages water meter and reading state including CRUD operations and delta calculations.
 class WaterProvider extends ChangeNotifier {
   final WaterDao _dao;
+  final InterpolationService _interpolationService;
 
   List<WaterMeter> _meters = [];
   final Map<int, List<WaterReading>> _readingsByMeter = {};
@@ -26,8 +29,20 @@ class WaterProvider extends ChangeNotifier {
   int? _householdId;
   int? _selectedMeterId;
   StreamSubscription<List<WaterMeter>>? _metersSubscription;
+  bool _showInterpolatedValues = false;
 
-  WaterProvider(this._dao);
+  WaterProvider(this._dao, {InterpolationService? interpolationService})
+      : _interpolationService =
+            interpolationService ?? InterpolationService();
+
+  /// Whether interpolated values are currently shown in the reading list.
+  bool get showInterpolatedValues => _showInterpolatedValues;
+
+  /// Toggle showing/hiding interpolated boundary values in the reading list.
+  void toggleInterpolatedValues() {
+    _showInterpolatedValues = !_showInterpolatedValues;
+    notifyListeners();
+  }
 
   /// List of all water meters for the current household.
   List<WaterMeter> get meters => List.unmodifiable(_meters);
@@ -183,15 +198,68 @@ class WaterProvider extends ChangeNotifier {
     return result;
   }
 
+  /// Gets display items for a meter that may include interpolated values.
+  List<ReadingDisplayItem> getDisplayItems(int meterId) {
+    final readings = _readingsByMeter[meterId] ?? [];
+    if (readings.isEmpty) return [];
+
+    final realItems = <ReadingDisplayItem>[];
+    for (var i = 0; i < readings.length; i++) {
+      final current = readings[i];
+      final previous = i + 1 < readings.length ? readings[i + 1] : null;
+      final delta = previous != null
+          ? current.valueCubicMeters - previous.valueCubicMeters
+          : null;
+
+      realItems.add(ReadingDisplayItem(
+        timestamp: current.timestamp,
+        value: current.valueCubicMeters,
+        isInterpolated: false,
+        delta: delta,
+        readingId: current.id,
+      ));
+    }
+
+    if (!_showInterpolatedValues || readings.length < 2) {
+      return realItems;
+    }
+
+    final readingPoints = readings
+        .map((r) => (timestamp: r.timestamp, value: r.valueCubicMeters))
+        .toList();
+    readingPoints.sort((a, b) => a.timestamp.compareTo(b.timestamp));
+
+    final oldest = readingPoints.first.timestamp;
+    final newest = readingPoints.last.timestamp;
+    final rangeStart = DateTime(oldest.year, oldest.month, 1);
+    final rangeEnd = DateTime(newest.year, newest.month + 1, 1);
+
+    final boundaries = _interpolationService.getMonthlyBoundaries(
+      readings: readingPoints,
+      rangeStart: rangeStart,
+      rangeEnd: rangeEnd,
+    );
+
+    final interpolatedItems = boundaries
+        .where((b) => b.isInterpolated)
+        .map((b) => ReadingDisplayItem(
+              timestamp: b.timestamp,
+              value: b.value,
+              isInterpolated: true,
+            ))
+        .toList();
+
+    final merged = [...realItems, ...interpolatedItems];
+    merged.sort((a, b) => b.timestamp.compareTo(a.timestamp));
+    return merged;
+  }
+
   /// Gets the latest reading for a water meter.
   Future<WaterReading?> getLatestReading(int meterId) {
     return _dao.getLatestReading(meterId);
   }
 
   /// Validates a reading value against surrounding readings.
-  ///
-  /// Returns the boundary value as a raw double if invalid, null if valid.
-  /// When editing (excludeId provided), finds the previous reading relative to that reading.
   Future<double?> validateReading(
     int meterId,
     double value,

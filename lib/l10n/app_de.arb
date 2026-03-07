@@ -309,5 +309,8 @@
   "language": "Sprache",
   "languageDE": "Deutsch",
   "languageEN": "Englisch",
-  "home": "Start"
+  "home": "Start",
+  "interpolatedValue": "Interpolierter Wert",
+  "showInterpolatedValues": "Interpolierte Werte anzeigen",
+  "hideInterpolatedValues": "Interpolierte Werte ausblenden"
 }

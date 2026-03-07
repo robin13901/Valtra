@@ -5,6 +5,8 @@ import 'package:flutter/foundation.dart';
 
 import '../database/app_database.dart';
 import '../database/daos/gas_dao.dart';
+import '../services/interpolation/interpolation_service.dart';
+import '../services/interpolation/models.dart';
 
 /// Represents a reading with its calculated delta from the previous reading.
 class GasReadingWithDelta {
@@ -17,12 +19,25 @@ class GasReadingWithDelta {
 /// Manages gas reading state including CRUD operations and delta calculations.
 class GasProvider extends ChangeNotifier {
   final GasDao _dao;
+  final InterpolationService _interpolationService;
 
   List<GasReading> _readings = [];
   int? _householdId;
   StreamSubscription<List<GasReading>>? _readingsSubscription;
+  bool _showInterpolatedValues = false;
 
-  GasProvider(this._dao);
+  GasProvider(this._dao, {InterpolationService? interpolationService})
+      : _interpolationService =
+            interpolationService ?? InterpolationService();
+
+  /// Whether interpolated values are currently shown in the reading list.
+  bool get showInterpolatedValues => _showInterpolatedValues;
+
+  /// Toggle showing/hiding interpolated boundary values in the reading list.
+  void toggleInterpolatedValues() {
+    _showInterpolatedValues = !_showInterpolatedValues;
+    notifyListeners();
+  }
 
   /// List of all readings for the current household (newest first).
   List<GasReading> get readings => List.unmodifiable(_readings);
@@ -48,6 +63,61 @@ class GasProvider extends ChangeNotifier {
     }
 
     return result;
+  }
+
+  /// List of display items that may include interpolated boundary values.
+  List<ReadingDisplayItem> get displayItems {
+    if (_readings.isEmpty) return [];
+
+    final realItems = <ReadingDisplayItem>[];
+    for (var i = 0; i < _readings.length; i++) {
+      final current = _readings[i];
+      final previous = i + 1 < _readings.length ? _readings[i + 1] : null;
+      final delta = previous != null
+          ? current.valueCubicMeters - previous.valueCubicMeters
+          : null;
+
+      realItems.add(ReadingDisplayItem(
+        timestamp: current.timestamp,
+        value: current.valueCubicMeters,
+        isInterpolated: false,
+        delta: delta,
+        readingId: current.id,
+      ));
+    }
+
+    if (!_showInterpolatedValues || _readings.length < 2) {
+      return realItems;
+    }
+
+    final readingPoints = _readings
+        .map((r) => (timestamp: r.timestamp, value: r.valueCubicMeters))
+        .toList();
+    readingPoints.sort((a, b) => a.timestamp.compareTo(b.timestamp));
+
+    final oldest = readingPoints.first.timestamp;
+    final newest = readingPoints.last.timestamp;
+    final rangeStart = DateTime(oldest.year, oldest.month, 1);
+    final rangeEnd = DateTime(newest.year, newest.month + 1, 1);
+
+    final boundaries = _interpolationService.getMonthlyBoundaries(
+      readings: readingPoints,
+      rangeStart: rangeStart,
+      rangeEnd: rangeEnd,
+    );
+
+    final interpolatedItems = boundaries
+        .where((b) => b.isInterpolated)
+        .map((b) => ReadingDisplayItem(
+              timestamp: b.timestamp,
+              value: b.value,
+              isInterpolated: true,
+            ))
+        .toList();
+
+    final merged = [...realItems, ...interpolatedItems];
+    merged.sort((a, b) => b.timestamp.compareTo(a.timestamp));
+    return merged;
   }
 
   /// The currently selected household ID.
@@ -103,9 +173,6 @@ class GasProvider extends ChangeNotifier {
   }
 
   /// Validates a reading value against the previous reading.
-  ///
-  /// Returns the boundary value as a raw double if invalid, null if valid.
-  /// When editing (excludeId provided), finds the previous reading relative to that reading.
   Future<double?> validateReading(
     double value,
     DateTime timestamp, {
@@ -113,17 +180,14 @@ class GasProvider extends ChangeNotifier {
   }) async {
     if (_householdId == null) return null;
 
-    // Get the reading immediately before this timestamp
     final previous = await _dao.getPreviousReading(_householdId!, timestamp);
 
-    // If there's a previous reading and it's not the one we're editing
     if (previous != null && previous.id != excludeId) {
       if (value < previous.valueCubicMeters) {
         return previous.valueCubicMeters;
       }
     }
 
-    // Also check if there's a next reading that would become invalid
     if (excludeId != null) {
       final next = await _dao.getNextReading(_householdId!, timestamp);
       if (next != null &&

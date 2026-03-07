@@ -112,10 +112,77 @@ void main() {
   });
 
   group('InterpolationMethod', () {
-    test('has linear and step values', () {
+    test('has only linear value (step removed)', () {
       expect(InterpolationMethod.values, contains(InterpolationMethod.linear));
-      expect(InterpolationMethod.values, contains(InterpolationMethod.step));
-      expect(InterpolationMethod.values.length, 2);
+      expect(InterpolationMethod.values.length, 1);
+    });
+  });
+
+  group('ReadingDisplayItem', () {
+    test('constructs with required fields', () {
+      final item = ReadingDisplayItem(
+        timestamp: DateTime(2024, 1, 1),
+        value: 100.0,
+        isInterpolated: false,
+        delta: 50.0,
+        readingId: 42,
+      );
+
+      expect(item.timestamp, DateTime(2024, 1, 1));
+      expect(item.value, 100.0);
+      expect(item.isInterpolated, false);
+      expect(item.delta, 50.0);
+      expect(item.readingId, 42);
+    });
+
+    test('constructs interpolated item without delta and readingId', () {
+      final item = ReadingDisplayItem(
+        timestamp: DateTime(2024, 2, 1),
+        value: 150.0,
+        isInterpolated: true,
+      );
+
+      expect(item.isInterpolated, true);
+      expect(item.delta, isNull);
+      expect(item.readingId, isNull);
+    });
+
+    test('equality works correctly', () {
+      final a = ReadingDisplayItem(
+        timestamp: DateTime(2024, 1, 1),
+        value: 100.0,
+        isInterpolated: false,
+        delta: 50.0,
+        readingId: 1,
+      );
+      final b = ReadingDisplayItem(
+        timestamp: DateTime(2024, 1, 1),
+        value: 100.0,
+        isInterpolated: false,
+        delta: 50.0,
+        readingId: 1,
+      );
+      final c = ReadingDisplayItem(
+        timestamp: DateTime(2024, 2, 1),
+        value: 150.0,
+        isInterpolated: true,
+      );
+
+      expect(a, equals(b));
+      expect(a.hashCode, b.hashCode);
+      expect(a, isNot(equals(c)));
+    });
+
+    test('toString returns descriptive string', () {
+      final item = ReadingDisplayItem(
+        timestamp: DateTime(2024, 1, 1),
+        value: 100.0,
+        isInterpolated: true,
+      );
+
+      expect(item.toString(), contains('ReadingDisplayItem'));
+      expect(item.toString(), contains('100.0'));
+      expect(item.toString(), contains('true'));
     });
   });
 }

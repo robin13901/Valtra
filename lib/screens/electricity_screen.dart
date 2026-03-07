@@ -3,13 +3,13 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../app_theme.dart';
-import '../database/app_database.dart';
 import '../l10n/app_localizations.dart';
 import '../providers/analytics_provider.dart';
 import '../providers/electricity_provider.dart';
 import '../providers/locale_provider.dart';
 import '../screens/monthly_analytics_screen.dart';
 import '../services/analytics/analytics_models.dart';
+import '../services/interpolation/models.dart';
 import '../services/number_format_service.dart';
 import '../widgets/dialogs/electricity_reading_form_dialog.dart';
 import '../widgets/liquid_glass_widgets.dart';
@@ -22,13 +22,24 @@ class ElectricityScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final provider = context.watch<ElectricityProvider>();
-    final readings = provider.readingsWithDeltas;
+    final items = provider.displayItems;
 
     return Scaffold(
       appBar: buildGlassAppBar(
         context: context,
         title: l10n.electricity,
         actions: [
+          IconButton(
+            icon: Icon(
+              provider.showInterpolatedValues
+                  ? Icons.visibility
+                  : Icons.visibility_off,
+            ),
+            onPressed: () => provider.toggleInterpolatedValues(),
+            tooltip: provider.showInterpolatedValues
+                ? l10n.hideInterpolatedValues
+                : l10n.showInterpolatedValues,
+          ),
           IconButton(
             icon: const Icon(Icons.analytics),
             onPressed: () {
@@ -42,18 +53,23 @@ class ElectricityScreen extends StatelessWidget {
           const SizedBox(width: 8),
         ],
       ),
-      body: readings.isEmpty
+      body: items.isEmpty
           ? _buildEmptyState(context, l10n)
           : ListView.builder(
               padding: const EdgeInsets.all(16),
-              itemCount: readings.length,
+              itemCount: items.length,
               itemBuilder: (context, index) {
-                final item = readings[index];
+                final item = items[index];
+                if (item.isInterpolated) {
+                  return _InterpolatedReadingCard(
+                    item: item,
+                    unit: l10n.kWh,
+                  );
+                }
                 return _ReadingCard(
-                  reading: item.reading,
-                  deltaKwh: item.deltaKwh,
-                  onTap: () => _editReading(context, item.reading),
-                  onDelete: () => _deleteReading(context, item.reading),
+                  item: item,
+                  onTap: () => _editReading(context, item.readingId!),
+                  onDelete: () => _deleteReading(context, item.readingId!),
                 );
               },
             ),
@@ -124,13 +140,12 @@ class ElectricityScreen extends StatelessWidget {
     await provider.addReading(result.timestamp, result.valueKwh);
   }
 
-  Future<void> _editReading(
-    BuildContext context,
-    ElectricityReading reading,
-  ) async {
+  Future<void> _editReading(BuildContext context, int readingId) async {
     final provider = context.read<ElectricityProvider>();
     final l10n = AppLocalizations.of(context)!;
     final locale = context.read<LocaleProvider>().localeString;
+
+    final reading = provider.readings.firstWhere((r) => r.id == readingId);
 
     final result = await ElectricityReadingFormDialog.show(
       context,
@@ -166,10 +181,7 @@ class ElectricityScreen extends StatelessWidget {
     await provider.updateReading(reading.id, result.timestamp, result.valueKwh);
   }
 
-  Future<void> _deleteReading(
-    BuildContext context,
-    ElectricityReading reading,
-  ) async {
+  Future<void> _deleteReading(BuildContext context, int readingId) async {
     final l10n = AppLocalizations.of(context)!;
     final provider = context.read<ElectricityProvider>();
 
@@ -195,21 +207,19 @@ class ElectricityScreen extends StatelessWidget {
     );
 
     if (confirmed == true) {
-      await provider.deleteReading(reading.id);
+      await provider.deleteReading(readingId);
     }
   }
 }
 
 /// Card displaying a single electricity reading.
 class _ReadingCard extends StatelessWidget {
-  final ElectricityReading reading;
-  final double? deltaKwh;
+  final ReadingDisplayItem item;
   final VoidCallback onTap;
   final VoidCallback onDelete;
 
   const _ReadingCard({
-    required this.reading,
-    this.deltaKwh,
+    required this.item,
     required this.onTap,
     required this.onDelete,
   });
@@ -243,7 +253,7 @@ class _ReadingCard extends StatelessWidget {
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      dateFormatter.format(reading.timestamp),
+                      dateFormatter.format(item.timestamp),
                       style: theme.textTheme.bodyMedium?.copyWith(
                         color: theme.colorScheme.onSurfaceVariant,
                       ),
@@ -287,7 +297,7 @@ class _ReadingCard extends StatelessWidget {
                   ),
                   const SizedBox(width: 8),
                   Text(
-                    '${ValtraNumberFormat.consumption(reading.valueKwh, locale)} ${l10n.kWh}',
+                    '${ValtraNumberFormat.consumption(item.value, locale)} ${l10n.kWh}',
                     style: theme.textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -295,9 +305,9 @@ class _ReadingCard extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 8),
-              if (deltaKwh != null)
+              if (item.delta != null)
                 Text(
-                  l10n.consumptionSince(ValtraNumberFormat.consumption(deltaKwh!, locale)),
+                  l10n.consumptionSince(ValtraNumberFormat.consumption(item.delta!, locale)),
                   style: theme.textTheme.bodyMedium?.copyWith(
                     color: AppColors.electricityColor,
                     fontWeight: FontWeight.w500,
@@ -313,6 +323,92 @@ class _ReadingCard extends StatelessWidget {
                 ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Card displaying an interpolated reading value (non-editable).
+class _InterpolatedReadingCard extends StatelessWidget {
+  final ReadingDisplayItem item;
+  final String unit;
+
+  const _InterpolatedReadingCard({
+    required this.item,
+    required this.unit,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    final locale = context.watch<LocaleProvider>().localeString;
+
+    final dateFormatter = DateFormat('dd.MM.yyyy HH:mm');
+
+    return GlassCard(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: EdgeInsets.zero,
+      color: AppColors.ultraViolet.withValues(alpha: 0.10),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(
+                  Icons.calendar_today,
+                  size: 16,
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    dateFormatter.format(item.timestamp),
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: AppColors.ultraViolet.withValues(alpha: 0.2),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    l10n.interpolated,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: AppColors.ultraViolet,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            const Divider(),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                Icon(
+                  Icons.electric_bolt,
+                  color: AppColors.ultraViolet.withValues(alpha: 0.6),
+                  size: 24,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  '${ValtraNumberFormat.consumption(item.value, locale)} $unit',
+                  style: theme.textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
+                  ),
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );

@@ -4,7 +4,6 @@ import 'package:valtra/database/app_database.dart';
 import 'package:valtra/database/daos/electricity_dao.dart';
 import 'package:valtra/database/daos/room_dao.dart';
 import 'package:valtra/database/daos/smart_plug_dao.dart';
-import 'package:valtra/providers/interpolation_settings_provider.dart';
 import 'package:valtra/providers/smart_plug_analytics_provider.dart';
 import 'package:valtra/services/analytics/analytics_models.dart';
 import 'package:valtra/services/interpolation/interpolation_service.dart';
@@ -19,9 +18,6 @@ class MockRoomDao extends Mock implements RoomDao {}
 
 class MockInterpolationService extends Mock implements InterpolationService {}
 
-class MockInterpolationSettingsProvider extends Mock
-    implements InterpolationSettingsProvider {}
-
 // Mock data classes for Drift-generated types
 class _MockSmartPlug extends Mock implements SmartPlug {}
 
@@ -34,7 +30,6 @@ void main() {
   late MockElectricityDao mockElectricityDao;
   late MockRoomDao mockRoomDao;
   late MockInterpolationService mockInterpolationService;
-  late MockInterpolationSettingsProvider mockSettingsProvider;
   late SmartPlugAnalyticsProvider provider;
 
   setUpAll(() {
@@ -48,18 +43,12 @@ void main() {
     mockElectricityDao = MockElectricityDao();
     mockRoomDao = MockRoomDao();
     mockInterpolationService = MockInterpolationService();
-    mockSettingsProvider = MockInterpolationSettingsProvider();
-
-    // Default stubs
-    when(() => mockSettingsProvider.getMethodForMeterType(any()))
-        .thenReturn(InterpolationMethod.linear);
 
     provider = SmartPlugAnalyticsProvider(
       smartPlugDao: mockSmartPlugDao,
       electricityDao: mockElectricityDao,
       roomDao: mockRoomDao,
       interpolationService: mockInterpolationService,
-      settingsProvider: mockSettingsProvider,
     );
   });
 
@@ -153,7 +142,6 @@ void main() {
           readings: any(named: 'readings'),
           rangeStart: any(named: 'rangeStart'),
           rangeEnd: any(named: 'rangeEnd'),
-          method: any(named: 'method'),
         )).thenReturn([
       PeriodConsumption(
         periodStart: DateTime(2026, 2, 1),

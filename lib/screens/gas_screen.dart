@@ -3,13 +3,13 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../app_theme.dart';
-import '../database/app_database.dart';
 import '../l10n/app_localizations.dart';
 import '../providers/analytics_provider.dart';
 import '../providers/gas_provider.dart';
 import '../providers/locale_provider.dart';
 import '../screens/monthly_analytics_screen.dart';
 import '../services/analytics/analytics_models.dart';
+import '../services/interpolation/models.dart';
 import '../services/number_format_service.dart';
 import '../widgets/dialogs/gas_reading_form_dialog.dart';
 import '../widgets/liquid_glass_widgets.dart';
@@ -22,13 +22,24 @@ class GasScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final provider = context.watch<GasProvider>();
-    final readings = provider.readingsWithDeltas;
+    final items = provider.displayItems;
 
     return Scaffold(
       appBar: buildGlassAppBar(
         context: context,
         title: l10n.gas,
         actions: [
+          IconButton(
+            icon: Icon(
+              provider.showInterpolatedValues
+                  ? Icons.visibility
+                  : Icons.visibility_off,
+            ),
+            onPressed: () => provider.toggleInterpolatedValues(),
+            tooltip: provider.showInterpolatedValues
+                ? l10n.hideInterpolatedValues
+                : l10n.showInterpolatedValues,
+          ),
           IconButton(
             icon: const Icon(Icons.analytics),
             onPressed: () {
@@ -42,18 +53,24 @@ class GasScreen extends StatelessWidget {
           const SizedBox(width: 8),
         ],
       ),
-      body: readings.isEmpty
+      body: items.isEmpty
           ? _buildEmptyState(context, l10n)
           : ListView.builder(
               padding: const EdgeInsets.all(16),
-              itemCount: readings.length,
+              itemCount: items.length,
               itemBuilder: (context, index) {
-                final item = readings[index];
+                final item = items[index];
+                if (item.isInterpolated) {
+                  return _InterpolatedReadingCard(
+                    item: item,
+                    unit: l10n.cubicMeters,
+                    icon: Icons.local_fire_department,
+                  );
+                }
                 return _GasReadingCard(
-                  reading: item.reading,
-                  deltaCubicMeters: item.deltaCubicMeters,
-                  onTap: () => _editReading(context, item.reading),
-                  onDelete: () => _deleteReading(context, item.reading),
+                  item: item,
+                  onTap: () => _editReading(context, item.readingId!),
+                  onDelete: () => _deleteReading(context, item.readingId!),
                 );
               },
             ),
@@ -96,7 +113,6 @@ class GasScreen extends StatelessWidget {
     final result = await GasReadingFormDialog.show(context);
     if (result == null) return;
 
-    // Validate against previous reading
     final validationError = await provider.validateReading(
       result.valueCubicMeters,
       result.timestamp,
@@ -124,13 +140,12 @@ class GasScreen extends StatelessWidget {
     await provider.addReading(result.timestamp, result.valueCubicMeters);
   }
 
-  Future<void> _editReading(
-    BuildContext context,
-    GasReading reading,
-  ) async {
+  Future<void> _editReading(BuildContext context, int readingId) async {
     final provider = context.read<GasProvider>();
     final l10n = AppLocalizations.of(context)!;
     final locale = context.read<LocaleProvider>().localeString;
+
+    final reading = provider.readings.firstWhere((r) => r.id == readingId);
 
     final result = await GasReadingFormDialog.show(
       context,
@@ -138,7 +153,6 @@ class GasScreen extends StatelessWidget {
     );
     if (result == null) return;
 
-    // Validate against previous/next readings
     final validationError = await provider.validateReading(
       result.valueCubicMeters,
       result.timestamp,
@@ -168,10 +182,7 @@ class GasScreen extends StatelessWidget {
         reading.id, result.timestamp, result.valueCubicMeters);
   }
 
-  Future<void> _deleteReading(
-    BuildContext context,
-    GasReading reading,
-  ) async {
+  Future<void> _deleteReading(BuildContext context, int readingId) async {
     final l10n = AppLocalizations.of(context)!;
     final provider = context.read<GasProvider>();
 
@@ -197,21 +208,19 @@ class GasScreen extends StatelessWidget {
     );
 
     if (confirmed == true) {
-      await provider.deleteReading(reading.id);
+      await provider.deleteReading(readingId);
     }
   }
 }
 
 /// Card displaying a single gas reading.
 class _GasReadingCard extends StatelessWidget {
-  final GasReading reading;
-  final double? deltaCubicMeters;
+  final ReadingDisplayItem item;
   final VoidCallback onTap;
   final VoidCallback onDelete;
 
   const _GasReadingCard({
-    required this.reading,
-    this.deltaCubicMeters,
+    required this.item,
     required this.onTap,
     required this.onDelete,
   });
@@ -245,7 +254,7 @@ class _GasReadingCard extends StatelessWidget {
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      dateFormatter.format(reading.timestamp),
+                      dateFormatter.format(item.timestamp),
                       style: theme.textTheme.bodyMedium?.copyWith(
                         color: theme.colorScheme.onSurfaceVariant,
                       ),
@@ -289,7 +298,7 @@ class _GasReadingCard extends StatelessWidget {
                   ),
                   const SizedBox(width: 8),
                   Text(
-                    '${ValtraNumberFormat.consumption(reading.valueCubicMeters, locale)} ${l10n.cubicMeters}',
+                    '${ValtraNumberFormat.consumption(item.value, locale)} ${l10n.cubicMeters}',
                     style: theme.textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -297,10 +306,10 @@ class _GasReadingCard extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 8),
-              if (deltaCubicMeters != null)
+              if (item.delta != null)
                 Text(
                   l10n.gasConsumptionSince(
-                      ValtraNumberFormat.consumption(deltaCubicMeters!, locale)),
+                      ValtraNumberFormat.consumption(item.delta!, locale)),
                   style: theme.textTheme.bodyMedium?.copyWith(
                     color: AppColors.gasColor,
                     fontWeight: FontWeight.w500,
@@ -316,6 +325,94 @@ class _GasReadingCard extends StatelessWidget {
                 ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Card displaying an interpolated reading value (non-editable).
+class _InterpolatedReadingCard extends StatelessWidget {
+  final ReadingDisplayItem item;
+  final String unit;
+  final IconData icon;
+
+  const _InterpolatedReadingCard({
+    required this.item,
+    required this.unit,
+    required this.icon,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    final locale = context.watch<LocaleProvider>().localeString;
+
+    final dateFormatter = DateFormat('dd.MM.yyyy HH:mm');
+
+    return GlassCard(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: EdgeInsets.zero,
+      color: AppColors.ultraViolet.withValues(alpha: 0.10),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(
+                  Icons.calendar_today,
+                  size: 16,
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    dateFormatter.format(item.timestamp),
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: AppColors.ultraViolet.withValues(alpha: 0.2),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    l10n.interpolated,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: AppColors.ultraViolet,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            const Divider(),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                Icon(
+                  icon,
+                  color: AppColors.ultraViolet.withValues(alpha: 0.6),
+                  size: 24,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  '${ValtraNumberFormat.consumption(item.value, locale)} $unit',
+                  style: theme.textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
+                  ),
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );

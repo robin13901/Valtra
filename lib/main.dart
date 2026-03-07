@@ -103,7 +103,6 @@ void main() async {
     electricityDao: ElectricityDao(database),
     roomDao: RoomDao(database),
     interpolationService: InterpolationService(),
-    settingsProvider: interpolationSettingsProvider,
   );
 
   // Connect providers to household changes

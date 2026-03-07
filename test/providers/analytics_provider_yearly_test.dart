@@ -62,8 +62,6 @@ void main() {
     mockCostConfigProvider = MockCostConfigProvider();
 
     // Default stubs for settings provider
-    when(() => mockSettingsProvider.getMethodForMeterType(any()))
-        .thenReturn(InterpolationMethod.linear);
     when(() => mockSettingsProvider.gasKwhFactor).thenReturn(10.3);
 
     // Default stubs for cost config provider
@@ -427,7 +425,6 @@ void main() {
             readings: any(named: 'readings'),
             rangeStart: any(named: 'rangeStart'),
             rangeEnd: any(named: 'rangeEnd'),
-            method: any(named: 'method'),
           )).thenReturn(breakdown);
 
       provider.setHouseholdId(1);
@@ -470,7 +467,6 @@ void main() {
             readings: any(named: 'readings'),
             rangeStart: any(named: 'rangeStart'),
             rangeEnd: any(named: 'rangeEnd'),
-            method: any(named: 'method'),
           )).thenReturn(breakdown);
 
       provider.setHouseholdId(1);
@@ -512,7 +508,6 @@ void main() {
             readings: any(named: 'readings'),
             rangeStart: any(named: 'rangeStart'),
             rangeEnd: any(named: 'rangeEnd'),
-            method: any(named: 'method'),
           )).thenReturn(breakdown);
 
       provider.setHouseholdId(1);
@@ -557,7 +552,6 @@ void main() {
             readings: any(named: 'readings'),
             rangeStart: any(named: 'rangeStart'),
             rangeEnd: any(named: 'rangeEnd'),
-            method: any(named: 'method'),
           )).thenAnswer((invocation) {
         callCount++;
         // First call is for current year, second for previous year
@@ -601,7 +595,6 @@ void main() {
             readings: any(named: 'readings'),
             rangeStart: any(named: 'rangeStart'),
             rangeEnd: any(named: 'rangeEnd'),
-            method: any(named: 'method'),
           )).thenAnswer((invocation) {
         callCount++;
         return callCount <= 1 ? currentBreakdown : prevBreakdown;
@@ -649,7 +642,6 @@ void main() {
             readings: any(named: 'readings'),
             rangeStart: any(named: 'rangeStart'),
             rangeEnd: any(named: 'rangeEnd'),
-            method: any(named: 'method'),
           )).thenReturn(currentBreakdown);
 
       provider.setHouseholdId(1);
@@ -687,7 +679,6 @@ void main() {
             readings: any(named: 'readings'),
             rangeStart: any(named: 'rangeStart'),
             rangeEnd: any(named: 'rangeEnd'),
-            method: any(named: 'method'),
           )).thenAnswer((invocation) {
         callCount++;
         // First call returns data, second returns empty
@@ -732,7 +723,6 @@ void main() {
             readings: any(named: 'readings'),
             rangeStart: any(named: 'rangeStart'),
             rangeEnd: any(named: 'rangeEnd'),
-            method: any(named: 'method'),
           )).thenReturn(breakdown);
 
       // Stub gas conversion
@@ -781,7 +771,6 @@ void main() {
             readings: any(named: 'readings'),
             rangeStart: any(named: 'rangeStart'),
             rangeEnd: any(named: 'rangeEnd'),
-            method: any(named: 'method'),
           )).thenReturn(breakdown);
 
       final convertedBreakdown =
@@ -830,7 +819,6 @@ void main() {
             readings: any(named: 'readings'),
             rangeStart: any(named: 'rangeStart'),
             rangeEnd: any(named: 'rangeEnd'),
-            method: any(named: 'method'),
           )).thenReturn(breakdown);
 
       provider.setHouseholdId(1);
@@ -870,7 +858,6 @@ void main() {
             readings: any(named: 'readings'),
             rangeStart: any(named: 'rangeStart'),
             rangeEnd: any(named: 'rangeEnd'),
-            method: any(named: 'method'),
           )).thenReturn(rawBreakdown);
 
       // Each month 10 * 10.3 = 103, total = 103 * 12 = 1236
