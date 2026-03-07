@@ -1531,6 +1531,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'per month'**
   String get perMonth;
+
+  /// No description provided for @monthlyProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly Progress'**
+  String get monthlyProgress;
+
+  /// No description provided for @language.
+  ///
+  /// In en, this message translates to:
+  /// **'Language'**
+  String get language;
+
+  /// No description provided for @languageDE.
+  ///
+  /// In en, this message translates to:
+  /// **'German'**
+  String get languageDE;
+
+  /// No description provided for @languageEN.
+  ///
+  /// In en, this message translates to:
+  /// **'English'**
+  String get languageEN;
 }
 
 class _AppLocalizationsDelegate

@@ -636,14 +636,14 @@ class AppLocalizationsDe extends AppLocalizations {
       'Differenz zwischen Gesamtstrom und erfasstem Smart-Plug-Verbrauch';
 
   @override
-  String get plugBreakdown => 'Aufschluesselung nach Steckdose';
+  String get plugBreakdown => 'Aufschlüsselung nach Steckdose';
 
   @override
-  String get roomBreakdown => 'Aufschluesselung nach Raum';
+  String get roomBreakdown => 'Aufschlüsselung nach Raum';
 
   @override
   String get noSmartPlugData =>
-      'Keine Smart-Plug-Verbrauchsdaten fuer diesen Zeitraum.';
+      'Keine Smart-Plug-Verbrauchsdaten für diesen Zeitraum.';
 
   @override
   String get noElectricityData =>
@@ -659,7 +659,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get periodMonthly => 'Monatlich';
 
   @override
-  String get periodYearly => 'Jaehrlich';
+  String get periodYearly => 'Jährlich';
 
   @override
   String get periodCustom => 'Benutzerdefiniert';
@@ -680,7 +680,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get themeSystem => 'System';
 
   @override
-  String get meterSettings => 'Zaehlereinstellungen';
+  String get meterSettings => 'Zählereinstellungen';
 
   @override
   String get gasKwhConversionFactor => 'Gas kWh-Umrechnungsfaktor';
@@ -692,7 +692,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get interpolationMethodLabel => 'Interpolationsmethode';
 
   @override
-  String get aboutSection => 'Ueber';
+  String get aboutSection => 'Über';
 
   @override
   String get appVersion => 'Version';
@@ -701,7 +701,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get settingsUpdated => 'Einstellungen aktualisiert';
 
   @override
-  String get invalidNumber => 'Bitte gueltige Zahl eingeben';
+  String get invalidNumber => 'Bitte gültige Zahl eingeben';
 
   @override
   String get costConfiguration => 'Kosteneinstellungen';
@@ -713,10 +713,10 @@ class AppLocalizationsDe extends AppLocalizations {
   String get unitPrice => 'Preis pro Einheit';
 
   @override
-  String get standingCharge => 'Grundgebuehr';
+  String get standingCharge => 'Grundgebühr';
 
   @override
-  String get standingChargePerMonth => 'Grundgebuehr (pro Monat)';
+  String get standingChargePerMonth => 'Grundgebühr (pro Monat)';
 
   @override
   String get priceTiers => 'Preisstufen';
@@ -736,7 +736,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get tierRate => 'Tarif';
 
   @override
-  String get addTier => 'Stufe hinzufuegen';
+  String get addTier => 'Stufe hinzufügen';
 
   @override
   String get removeTier => 'Stufe entfernen';
@@ -745,19 +745,19 @@ class AppLocalizationsDe extends AppLocalizations {
   String get maxTiersReached => 'Maximal 3 Stufen';
 
   @override
-  String get validFrom => 'Gueltig ab';
+  String get validFrom => 'Gültig ab';
 
   @override
-  String get currency => 'Waehrung';
+  String get currency => 'Währung';
 
   @override
-  String get estimatedCost => 'Geschaetzte Kosten';
+  String get estimatedCost => 'Geschätzte Kosten';
 
   @override
   String get monthlyCost => 'Monatliche Kosten';
 
   @override
-  String get yearlyCost => 'Jaehrliche Kosten';
+  String get yearlyCost => 'Jährliche Kosten';
 
   @override
   String get totalCost => 'Gesamtkosten';
@@ -772,15 +772,15 @@ class AppLocalizationsDe extends AppLocalizations {
   String get editCostConfig => 'Preise bearbeiten';
 
   @override
-  String get deleteCostConfig => 'Preise loeschen';
+  String get deleteCostConfig => 'Preise löschen';
 
   @override
   String deleteCostConfigConfirm(String meterType) {
-    return 'Kosteneinstellung fuer $meterType loeschen?';
+    return 'Kosteneinstellung für $meterType löschen?';
   }
 
   @override
-  String get costSummary => 'Kostenuebersicht';
+  String get costSummary => 'Kostenübersicht';
 
   @override
   String costComparison(String change) {
@@ -804,8 +804,20 @@ class AppLocalizationsDe extends AppLocalizations {
   String get costConfigSaved => 'Kosteneinstellung gespeichert';
 
   @override
-  String get costConfigDeleted => 'Kosteneinstellung geloescht';
+  String get costConfigDeleted => 'Kosteneinstellung gelöscht';
 
   @override
   String get perMonth => 'pro Monat';
+
+  @override
+  String get monthlyProgress => 'Monatsverlauf';
+
+  @override
+  String get language => 'Sprache';
+
+  @override
+  String get languageDE => 'Deutsch';
+
+  @override
+  String get languageEN => 'Englisch';
 }

@@ -94,7 +94,7 @@ class AppTheme {
         primary: AppColors.ultraViolet,
         onPrimary: Colors.white,
         secondary: AppColors.lemonChiffon,
-        onSecondary: AppColors.darkOnSurface,
+        onSecondary: Colors.black,
         surface: AppColors.darkSurface,
         onSurface: AppColors.darkOnSurface,
         error: AppColors.darkError,

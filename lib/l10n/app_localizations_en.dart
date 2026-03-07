@@ -805,4 +805,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get perMonth => 'per month';
+
+  @override
+  String get monthlyProgress => 'Monthly Progress';
+
+  @override
+  String get language => 'Language';
+
+  @override
+  String get languageDE => 'German';
+
+  @override
+  String get languageEN => 'English';
 }

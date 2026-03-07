@@ -374,5 +374,9 @@
   "saveCostConfig": "Save",
   "costConfigSaved": "Cost configuration saved",
   "costConfigDeleted": "Cost configuration deleted",
-  "perMonth": "per month"
+  "perMonth": "per month",
+  "monthlyProgress": "Monthly Progress",
+  "language": "Language",
+  "languageDE": "German",
+  "languageEN": "English"
 }
