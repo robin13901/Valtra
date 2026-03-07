@@ -11,12 +11,16 @@ class MeterTypeSummary {
   final double? latestMonthConsumption; // null if insufficient data
   final bool hasInterpolation;
   final String unit; // 'kWh', 'm³', 'units'
+  final double? latestMonthCost; // null if no cost config
+  final String? currencySymbol; // '€'
 
   const MeterTypeSummary({
     required this.meterType,
     required this.latestMonthConsumption,
     required this.hasInterpolation,
     required this.unit,
+    this.latestMonthCost,
+    this.currencySymbol,
   });
 }
 
@@ -41,6 +45,9 @@ class MonthlyAnalyticsData {
   final List<PeriodConsumption> recentMonths; // bar chart (last 6 months)
   final double? totalConsumption; // sum for selected month
   final String unit;
+  final double? totalCost; // null if no cost config
+  final String? currencySymbol;
+  final List<double?>? periodCosts; // cost per period (parallel to recentMonths)
 
   const MonthlyAnalyticsData({
     required this.meterType,
@@ -49,6 +56,9 @@ class MonthlyAnalyticsData {
     required this.recentMonths,
     required this.totalConsumption,
     required this.unit,
+    this.totalCost,
+    this.currencySymbol,
+    this.periodCosts,
   });
 }
 
@@ -61,6 +71,9 @@ class YearlyAnalyticsData {
   final double? totalConsumption; // sum of monthlyBreakdown
   final double? previousYearTotal; // sum of previousYearBreakdown
   final String unit;
+  final double? totalCost; // null if no cost config
+  final double? previousYearTotalCost; // for YoY comparison
+  final String? currencySymbol;
 
   const YearlyAnalyticsData({
     required this.meterType,
@@ -70,6 +83,9 @@ class YearlyAnalyticsData {
     this.totalConsumption,
     this.previousYearTotal,
     required this.unit,
+    this.totalCost,
+    this.previousYearTotalCost,
+    this.currencySymbol,
   });
 }
 

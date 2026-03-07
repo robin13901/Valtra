@@ -6,7 +6,9 @@ import 'package:valtra/database/daos/electricity_dao.dart';
 import 'package:valtra/database/daos/gas_dao.dart';
 import 'package:valtra/database/daos/heating_dao.dart';
 import 'package:valtra/database/daos/water_dao.dart';
+import 'package:valtra/database/tables.dart';
 import 'package:valtra/providers/analytics_provider.dart';
+import 'package:valtra/providers/cost_config_provider.dart';
 import 'package:valtra/providers/interpolation_settings_provider.dart';
 import 'package:valtra/services/analytics/analytics_models.dart';
 import 'package:valtra/services/gas_conversion_service.dart';
@@ -31,6 +33,8 @@ class MockGasConversionService extends Mock implements GasConversionService {}
 class MockInterpolationSettingsProvider extends Mock
     implements InterpolationSettingsProvider {}
 
+class MockCostConfigProvider extends Mock implements CostConfigProvider {}
+
 void main() {
   late MockElectricityDao mockElectricityDao;
   late MockGasDao mockGasDao;
@@ -39,6 +43,7 @@ void main() {
   late MockInterpolationService mockInterpolationService;
   late MockGasConversionService mockGasConversionService;
   late MockInterpolationSettingsProvider mockSettingsProvider;
+  late MockCostConfigProvider mockCostConfigProvider;
   late AnalyticsProvider provider;
 
   setUpAll(() {
@@ -46,6 +51,7 @@ void main() {
     registerFallbackValue(InterpolationMethod.linear);
     registerFallbackValue(DateTime(2024));
     registerFallbackValue(<ReadingPoint>[]);
+    registerFallbackValue(CostMeterType.electricity);
   });
 
   setUp(() {
@@ -56,11 +62,22 @@ void main() {
     mockInterpolationService = MockInterpolationService();
     mockGasConversionService = MockGasConversionService();
     mockSettingsProvider = MockInterpolationSettingsProvider();
+    mockCostConfigProvider = MockCostConfigProvider();
 
     // Default stubs for settings provider
     when(() => mockSettingsProvider.getMethodForMeterType(any()))
         .thenReturn(InterpolationMethod.linear);
     when(() => mockSettingsProvider.gasKwhFactor).thenReturn(10.3);
+
+    // Default stubs for cost config provider
+    when(() => mockCostConfigProvider.calculateCost(
+          meterType: any(named: 'meterType'),
+          consumption: any(named: 'consumption'),
+          periodStart: any(named: 'periodStart'),
+          periodEnd: any(named: 'periodEnd'),
+        )).thenReturn(null);
+    when(() => mockCostConfigProvider.getActiveConfig(any(), any()))
+        .thenReturn(null);
 
     provider = AnalyticsProvider(
       electricityDao: mockElectricityDao,
@@ -70,6 +87,7 @@ void main() {
       interpolationService: mockInterpolationService,
       gasConversionService: mockGasConversionService,
       settingsProvider: mockSettingsProvider,
+      costConfigProvider: mockCostConfigProvider,
     );
   });
 

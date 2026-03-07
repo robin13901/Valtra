@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../app_theme.dart';
 import '../l10n/app_localizations.dart';
 import '../providers/analytics_provider.dart';
 import '../services/analytics/analytics_models.dart';
@@ -99,6 +100,9 @@ class _YearlyAnalyticsScreenState extends State<YearlyAnalyticsScreen> {
           unit: data.unit,
           year: data.year,
           color: color,
+          totalCost: data.totalCost,
+          previousYearTotalCost: data.previousYearTotalCost,
+          currencySymbol: data.currencySymbol,
         ),
         const SizedBox(height: 24),
 
@@ -232,6 +236,9 @@ class _YearlySummaryCard extends StatelessWidget {
   final String unit;
   final int year;
   final Color color;
+  final double? totalCost;
+  final double? previousYearTotalCost;
+  final String? currencySymbol;
 
   const _YearlySummaryCard({
     required this.totalConsumption,
@@ -239,6 +246,9 @@ class _YearlySummaryCard extends StatelessWidget {
     required this.unit,
     required this.year,
     required this.color,
+    this.totalCost,
+    this.previousYearTotalCost,
+    this.currencySymbol,
   });
 
   @override
@@ -267,6 +277,15 @@ class _YearlySummaryCard extends StatelessWidget {
               const SizedBox(height: 8),
               _buildChangeText(context, l10n),
             ],
+            if (totalCost != null) ...[
+              const SizedBox(height: 8),
+              Text(
+                '~${currencySymbol ?? '\u20AC'}${totalCost!.toStringAsFixed(2)}',
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
+              ),
+            ],
           ],
         ),
       ),
@@ -282,7 +301,9 @@ class _YearlySummaryCard extends StatelessWidget {
     return Text(
       l10n.changeFromLastYear(changeText),
       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            color: change > 0 ? Colors.red : Colors.green,
+            color: change > 0
+                ? Theme.of(context).colorScheme.error
+                : AppColors.successColor,
           ),
     );
   }

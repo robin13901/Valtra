@@ -1255,6 +1255,282 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Custom'**
   String get periodCustom;
+
+  /// No description provided for @appearance.
+  ///
+  /// In en, this message translates to:
+  /// **'Appearance'**
+  String get appearance;
+
+  /// No description provided for @themeMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Theme'**
+  String get themeMode;
+
+  /// No description provided for @themeLight.
+  ///
+  /// In en, this message translates to:
+  /// **'Light'**
+  String get themeLight;
+
+  /// No description provided for @themeDark.
+  ///
+  /// In en, this message translates to:
+  /// **'Dark'**
+  String get themeDark;
+
+  /// No description provided for @themeSystem.
+  ///
+  /// In en, this message translates to:
+  /// **'System'**
+  String get themeSystem;
+
+  /// No description provided for @meterSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Meter Settings'**
+  String get meterSettings;
+
+  /// No description provided for @gasKwhConversionFactor.
+  ///
+  /// In en, this message translates to:
+  /// **'Gas kWh Conversion Factor'**
+  String get gasKwhConversionFactor;
+
+  /// No description provided for @gasKwhConversionHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Default: 10.3 kWh/m³'**
+  String get gasKwhConversionHint;
+
+  /// No description provided for @interpolationMethodLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Interpolation Method'**
+  String get interpolationMethodLabel;
+
+  /// No description provided for @aboutSection.
+  ///
+  /// In en, this message translates to:
+  /// **'About'**
+  String get aboutSection;
+
+  /// No description provided for @appVersion.
+  ///
+  /// In en, this message translates to:
+  /// **'Version'**
+  String get appVersion;
+
+  /// No description provided for @settingsUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings updated'**
+  String get settingsUpdated;
+
+  /// No description provided for @invalidNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a valid number'**
+  String get invalidNumber;
+
+  /// No description provided for @costConfiguration.
+  ///
+  /// In en, this message translates to:
+  /// **'Cost Configuration'**
+  String get costConfiguration;
+
+  /// No description provided for @costTracking.
+  ///
+  /// In en, this message translates to:
+  /// **'Cost Tracking'**
+  String get costTracking;
+
+  /// No description provided for @unitPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Unit Price'**
+  String get unitPrice;
+
+  /// No description provided for @standingCharge.
+  ///
+  /// In en, this message translates to:
+  /// **'Standing Charge'**
+  String get standingCharge;
+
+  /// No description provided for @standingChargePerMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'Standing Charge (per month)'**
+  String get standingChargePerMonth;
+
+  /// No description provided for @priceTiers.
+  ///
+  /// In en, this message translates to:
+  /// **'Price Tiers'**
+  String get priceTiers;
+
+  /// No description provided for @tier.
+  ///
+  /// In en, this message translates to:
+  /// **'Tier'**
+  String get tier;
+
+  /// No description provided for @tierLimit.
+  ///
+  /// In en, this message translates to:
+  /// **'Up to {limit} {unit}'**
+  String tierLimit(String limit, String unit);
+
+  /// No description provided for @tierUnlimited.
+  ///
+  /// In en, this message translates to:
+  /// **'Remaining'**
+  String get tierUnlimited;
+
+  /// No description provided for @tierRate.
+  ///
+  /// In en, this message translates to:
+  /// **'Rate'**
+  String get tierRate;
+
+  /// No description provided for @addTier.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Tier'**
+  String get addTier;
+
+  /// No description provided for @removeTier.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove Tier'**
+  String get removeTier;
+
+  /// No description provided for @maxTiersReached.
+  ///
+  /// In en, this message translates to:
+  /// **'Maximum 3 tiers'**
+  String get maxTiersReached;
+
+  /// No description provided for @validFrom.
+  ///
+  /// In en, this message translates to:
+  /// **'Valid From'**
+  String get validFrom;
+
+  /// No description provided for @currency.
+  ///
+  /// In en, this message translates to:
+  /// **'Currency'**
+  String get currency;
+
+  /// No description provided for @estimatedCost.
+  ///
+  /// In en, this message translates to:
+  /// **'Estimated Cost'**
+  String get estimatedCost;
+
+  /// No description provided for @monthlyCost.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly Cost'**
+  String get monthlyCost;
+
+  /// No description provided for @yearlyCost.
+  ///
+  /// In en, this message translates to:
+  /// **'Yearly Cost'**
+  String get yearlyCost;
+
+  /// No description provided for @totalCost.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Cost'**
+  String get totalCost;
+
+  /// No description provided for @noCostConfig.
+  ///
+  /// In en, this message translates to:
+  /// **'No pricing configured'**
+  String get noCostConfig;
+
+  /// No description provided for @addCostConfig.
+  ///
+  /// In en, this message translates to:
+  /// **'Configure Pricing'**
+  String get addCostConfig;
+
+  /// No description provided for @editCostConfig.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Pricing'**
+  String get editCostConfig;
+
+  /// No description provided for @deleteCostConfig.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Pricing'**
+  String get deleteCostConfig;
+
+  /// No description provided for @deleteCostConfigConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete cost configuration for {meterType}?'**
+  String deleteCostConfigConfirm(String meterType);
+
+  /// No description provided for @costSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Cost Summary'**
+  String get costSummary;
+
+  /// No description provided for @costComparison.
+  ///
+  /// In en, this message translates to:
+  /// **'{change}% vs last year'**
+  String costComparison(String change);
+
+  /// No description provided for @pricePerKwh.
+  ///
+  /// In en, this message translates to:
+  /// **'€/kWh'**
+  String get pricePerKwh;
+
+  /// No description provided for @pricePerCubicMeter.
+  ///
+  /// In en, this message translates to:
+  /// **'€/m³'**
+  String get pricePerCubicMeter;
+
+  /// No description provided for @costNotConfigured.
+  ///
+  /// In en, this message translates to:
+  /// **'Configure pricing in Settings to see costs'**
+  String get costNotConfigured;
+
+  /// No description provided for @saveCostConfig.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get saveCostConfig;
+
+  /// No description provided for @costConfigSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Cost configuration saved'**
+  String get costConfigSaved;
+
+  /// No description provided for @costConfigDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Cost configuration deleted'**
+  String get costConfigDeleted;
+
+  /// No description provided for @perMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'per month'**
+  String get perMonth;
 }
 
 class _AppLocalizationsDelegate

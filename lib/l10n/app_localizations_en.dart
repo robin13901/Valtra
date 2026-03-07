@@ -661,4 +661,148 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get periodCustom => 'Custom';
+
+  @override
+  String get appearance => 'Appearance';
+
+  @override
+  String get themeMode => 'Theme';
+
+  @override
+  String get themeLight => 'Light';
+
+  @override
+  String get themeDark => 'Dark';
+
+  @override
+  String get themeSystem => 'System';
+
+  @override
+  String get meterSettings => 'Meter Settings';
+
+  @override
+  String get gasKwhConversionFactor => 'Gas kWh Conversion Factor';
+
+  @override
+  String get gasKwhConversionHint => 'Default: 10.3 kWh/m³';
+
+  @override
+  String get interpolationMethodLabel => 'Interpolation Method';
+
+  @override
+  String get aboutSection => 'About';
+
+  @override
+  String get appVersion => 'Version';
+
+  @override
+  String get settingsUpdated => 'Settings updated';
+
+  @override
+  String get invalidNumber => 'Please enter a valid number';
+
+  @override
+  String get costConfiguration => 'Cost Configuration';
+
+  @override
+  String get costTracking => 'Cost Tracking';
+
+  @override
+  String get unitPrice => 'Unit Price';
+
+  @override
+  String get standingCharge => 'Standing Charge';
+
+  @override
+  String get standingChargePerMonth => 'Standing Charge (per month)';
+
+  @override
+  String get priceTiers => 'Price Tiers';
+
+  @override
+  String get tier => 'Tier';
+
+  @override
+  String tierLimit(String limit, String unit) {
+    return 'Up to $limit $unit';
+  }
+
+  @override
+  String get tierUnlimited => 'Remaining';
+
+  @override
+  String get tierRate => 'Rate';
+
+  @override
+  String get addTier => 'Add Tier';
+
+  @override
+  String get removeTier => 'Remove Tier';
+
+  @override
+  String get maxTiersReached => 'Maximum 3 tiers';
+
+  @override
+  String get validFrom => 'Valid From';
+
+  @override
+  String get currency => 'Currency';
+
+  @override
+  String get estimatedCost => 'Estimated Cost';
+
+  @override
+  String get monthlyCost => 'Monthly Cost';
+
+  @override
+  String get yearlyCost => 'Yearly Cost';
+
+  @override
+  String get totalCost => 'Total Cost';
+
+  @override
+  String get noCostConfig => 'No pricing configured';
+
+  @override
+  String get addCostConfig => 'Configure Pricing';
+
+  @override
+  String get editCostConfig => 'Edit Pricing';
+
+  @override
+  String get deleteCostConfig => 'Delete Pricing';
+
+  @override
+  String deleteCostConfigConfirm(String meterType) {
+    return 'Delete cost configuration for $meterType?';
+  }
+
+  @override
+  String get costSummary => 'Cost Summary';
+
+  @override
+  String costComparison(String change) {
+    return '$change% vs last year';
+  }
+
+  @override
+  String get pricePerKwh => '€/kWh';
+
+  @override
+  String get pricePerCubicMeter => '€/m³';
+
+  @override
+  String get costNotConfigured => 'Configure pricing in Settings to see costs';
+
+  @override
+  String get saveCostConfig => 'Save';
+
+  @override
+  String get costConfigSaved => 'Cost configuration saved';
+
+  @override
+  String get costConfigDeleted => 'Cost configuration deleted';
+
+  @override
+  String get perMonth => 'per month';
 }

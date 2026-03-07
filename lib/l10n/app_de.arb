@@ -246,5 +246,67 @@
   "totalElectricity": "Gesamtstrom",
   "periodMonthly": "Monatlich",
   "periodYearly": "Jaehrlich",
-  "periodCustom": "Benutzerdefiniert"
+  "periodCustom": "Benutzerdefiniert",
+  "appearance": "Darstellung",
+  "themeMode": "Design",
+  "themeLight": "Hell",
+  "themeDark": "Dunkel",
+  "themeSystem": "System",
+  "meterSettings": "Zaehlereinstellungen",
+  "gasKwhConversionFactor": "Gas kWh-Umrechnungsfaktor",
+  "gasKwhConversionHint": "Standard: 10,3 kWh/m³",
+  "interpolationMethodLabel": "Interpolationsmethode",
+  "aboutSection": "Ueber",
+  "appVersion": "Version",
+  "settingsUpdated": "Einstellungen aktualisiert",
+  "invalidNumber": "Bitte gueltige Zahl eingeben",
+  "costConfiguration": "Kosteneinstellungen",
+  "costTracking": "Kostenverfolgung",
+  "unitPrice": "Preis pro Einheit",
+  "standingCharge": "Grundgebuehr",
+  "standingChargePerMonth": "Grundgebuehr (pro Monat)",
+  "priceTiers": "Preisstufen",
+  "tier": "Stufe",
+  "tierLimit": "Bis {limit} {unit}",
+  "@tierLimit": {
+    "placeholders": {
+      "limit": {"type": "String"},
+      "unit": {"type": "String"}
+    }
+  },
+  "tierUnlimited": "Rest",
+  "tierRate": "Tarif",
+  "addTier": "Stufe hinzufuegen",
+  "removeTier": "Stufe entfernen",
+  "maxTiersReached": "Maximal 3 Stufen",
+  "validFrom": "Gueltig ab",
+  "currency": "Waehrung",
+  "estimatedCost": "Geschaetzte Kosten",
+  "monthlyCost": "Monatliche Kosten",
+  "yearlyCost": "Jaehrliche Kosten",
+  "totalCost": "Gesamtkosten",
+  "noCostConfig": "Keine Preise konfiguriert",
+  "addCostConfig": "Preise konfigurieren",
+  "editCostConfig": "Preise bearbeiten",
+  "deleteCostConfig": "Preise loeschen",
+  "deleteCostConfigConfirm": "Kosteneinstellung fuer {meterType} loeschen?",
+  "@deleteCostConfigConfirm": {
+    "placeholders": {
+      "meterType": {"type": "String"}
+    }
+  },
+  "costSummary": "Kostenuebersicht",
+  "costComparison": "{change}% gg. Vorjahr",
+  "@costComparison": {
+    "placeholders": {
+      "change": {"type": "String"}
+    }
+  },
+  "pricePerKwh": "\u20AC/kWh",
+  "pricePerCubicMeter": "\u20AC/m\u00B3",
+  "costNotConfigured": "Preise in Einstellungen konfigurieren, um Kosten zu sehen",
+  "saveCostConfig": "Speichern",
+  "costConfigSaved": "Kosteneinstellung gespeichert",
+  "costConfigDeleted": "Kosteneinstellung geloescht",
+  "perMonth": "pro Monat"
 }

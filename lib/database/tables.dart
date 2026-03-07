@@ -94,3 +94,23 @@ class SmartPlugConsumptions extends Table {
   DateTimeColumn get intervalStart => dateTime()();
   RealColumn get valueKwh => real()();
 }
+
+/// Meter types that support cost tracking (heating excluded — unit-less)
+enum CostMeterType { electricity, gas, water }
+
+/// Cost configuration per meter type per household
+@DataClassName('CostConfig')
+class CostConfigs extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  IntColumn get householdId => integer().references(Households, #id)();
+  IntColumn get meterType => intEnum<CostMeterType>()();
+  RealColumn get unitPrice => real()();
+  RealColumn get standingCharge =>
+      real().withDefault(const Constant(0.0))();
+  TextColumn get priceTiers => text().nullable()();
+  TextColumn get currencySymbol =>
+      text().withDefault(const Constant('\u20AC'))();
+  DateTimeColumn get validFrom => dateTime()();
+  DateTimeColumn get createdAt =>
+      dateTime().withDefault(currentDateAndTime)();
+}

@@ -5,6 +5,8 @@ import '../database/daos/gas_dao.dart';
 import '../database/daos/heating_dao.dart';
 import '../database/daos/water_dao.dart';
 import '../providers/interpolation_settings_provider.dart';
+import '../providers/cost_config_provider.dart';
+import '../database/tables.dart';
 import '../services/analytics/analytics_models.dart';
 import '../services/gas_conversion_service.dart';
 import '../services/interpolation/interpolation_service.dart';
@@ -23,6 +25,7 @@ class AnalyticsProvider extends ChangeNotifier {
   final InterpolationService _interpolationService;
   final GasConversionService _gasConversionService;
   final InterpolationSettingsProvider _settingsProvider;
+  final CostConfigProvider _costConfigProvider;
 
   int? _householdId;
   DateTime _selectedMonth =
@@ -45,13 +48,15 @@ class AnalyticsProvider extends ChangeNotifier {
     required InterpolationService interpolationService,
     required GasConversionService gasConversionService,
     required InterpolationSettingsProvider settingsProvider,
+    required CostConfigProvider costConfigProvider,
   })  : _electricityDao = electricityDao,
         _gasDao = gasDao,
         _waterDao = waterDao,
         _heatingDao = heatingDao,
         _interpolationService = interpolationService,
         _gasConversionService = gasConversionService,
-        _settingsProvider = settingsProvider;
+        _settingsProvider = settingsProvider,
+        _costConfigProvider = costConfigProvider;
 
   // Getters
   int? get householdId => _householdId;
@@ -175,11 +180,30 @@ class AnalyticsProvider extends ChangeNotifier {
           );
         }
 
+        // Calculate cost for current month if config exists
+        double? latestMonthCost;
+        String? currencySymbol;
+        final costMeterType = _toCostMeterType(type);
+        if (costMeterType != null && currentConsumption != null) {
+          final costResult = _costConfigProvider.calculateCost(
+            meterType: costMeterType,
+            consumption: currentConsumption,
+            periodStart: currentMonthStart,
+            periodEnd: DateTime(now.year, now.month + 1, 1),
+          );
+          if (costResult != null) {
+            latestMonthCost = costResult.totalCost;
+            currencySymbol = costResult.currencySymbol;
+          }
+        }
+
         summaries[type] = MeterTypeSummary(
           meterType: type,
           latestMonthConsumption: currentConsumption,
           hasInterpolation: hasInterpolation,
           unit: type == MeterType.gas ? 'kWh' : unitForMeterType(type),
+          latestMonthCost: latestMonthCost,
+          currencySymbol: currencySymbol,
         );
       }
 
@@ -303,6 +327,34 @@ class AnalyticsProvider extends ChangeNotifier {
               ))
           .toList();
 
+      // Calculate cost per period and total cost
+      final periodCosts = monthlyConsumption
+          .map((p) => _calculatePeriodCost(p, _selectedMeterType))
+          .toList();
+      final totalCost = _calculatePeriodCost(
+        PeriodConsumption(
+          periodStart: lineStart,
+          periodEnd: lineEnd,
+          startValue: 0,
+          endValue: 0,
+          consumption: totalConsumption ?? 0,
+          startInterpolated: false,
+          endInterpolated: false,
+        ),
+        _selectedMeterType,
+      );
+
+      // Get currency symbol from active config
+      String? currencySymbol;
+      final costMeterType = _toCostMeterType(_selectedMeterType);
+      if (costMeterType != null) {
+        final config = _costConfigProvider.getActiveConfig(
+          costMeterType,
+          _selectedMonth,
+        );
+        currencySymbol = config?.currencySymbol;
+      }
+
       _monthlyData = MonthlyAnalyticsData(
         meterType: _selectedMeterType,
         month: _selectedMonth,
@@ -310,6 +362,9 @@ class AnalyticsProvider extends ChangeNotifier {
         recentMonths: monthlyConsumption,
         totalConsumption: totalConsumption,
         unit: _getDisplayUnit(_selectedMeterType),
+        totalCost: totalConsumption != null ? totalCost : null,
+        currencySymbol: currencySymbol,
+        periodCosts: periodCosts,
       );
     } catch (e) {
       _monthlyData = null;
@@ -321,6 +376,35 @@ class AnalyticsProvider extends ChangeNotifier {
 
   String _getDisplayUnit(MeterType type) {
     return type == MeterType.gas ? 'kWh' : unitForMeterType(type);
+  }
+
+  /// Map MeterType to CostMeterType (heating has no cost tracking).
+  CostMeterType? _toCostMeterType(MeterType type) {
+    switch (type) {
+      case MeterType.electricity:
+        return CostMeterType.electricity;
+      case MeterType.gas:
+        return CostMeterType.gas;
+      case MeterType.water:
+        return CostMeterType.water;
+      case MeterType.heating:
+        return null;
+    }
+  }
+
+  /// Calculate cost for a single period using active config.
+  double? _calculatePeriodCost(
+      PeriodConsumption period, MeterType meterType) {
+    final costMeterType = _toCostMeterType(meterType);
+    if (costMeterType == null) return null;
+
+    final result = _costConfigProvider.calculateCost(
+      meterType: costMeterType,
+      consumption: period.consumption,
+      periodStart: period.periodStart,
+      periodEnd: period.periodEnd,
+    );
+    return result?.totalCost;
   }
 
   /// Load yearly analytics data for selected meter type + year.
@@ -412,6 +496,38 @@ class AnalyticsProvider extends ChangeNotifier {
         }
       }
 
+      // Calculate yearly cost totals
+      double? totalCost;
+      double? prevYearTotalCost;
+      String? currencySymbol;
+      final costMeterType = _toCostMeterType(_selectedMeterType);
+      if (costMeterType != null && monthlyBreakdown.isNotEmpty) {
+        final costs = monthlyBreakdown
+            .map((p) => _calculatePeriodCost(p, _selectedMeterType))
+            .toList();
+        if (costs.any((c) => c != null)) {
+          totalCost = costs
+              .where((c) => c != null)
+              .fold<double>(0, (sum, c) => sum + c!);
+        }
+        final config = _costConfigProvider.getActiveConfig(
+          costMeterType,
+          yearStart,
+        );
+        currencySymbol = config?.currencySymbol;
+
+        if (prevBreakdown != null && prevBreakdown.isNotEmpty) {
+          final prevCosts = prevBreakdown
+              .map((p) => _calculatePeriodCost(p, _selectedMeterType))
+              .toList();
+          if (prevCosts.any((c) => c != null)) {
+            prevYearTotalCost = prevCosts
+                .where((c) => c != null)
+                .fold<double>(0, (sum, c) => sum + c!);
+          }
+        }
+      }
+
       _yearlyData = YearlyAnalyticsData(
         meterType: _selectedMeterType,
         year: _selectedYear,
@@ -420,6 +536,9 @@ class AnalyticsProvider extends ChangeNotifier {
         totalConsumption: totalConsumption,
         previousYearTotal: prevTotal,
         unit: _getDisplayUnit(_selectedMeterType),
+        totalCost: totalCost,
+        previousYearTotalCost: prevYearTotalCost,
+        currencySymbol: currencySymbol,
       );
     } catch (e) {
       _yearlyData = null;

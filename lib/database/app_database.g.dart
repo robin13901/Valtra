@@ -3072,6 +3072,576 @@ class SmartPlugConsumptionsCompanion
   }
 }
 
+class $CostConfigsTable extends CostConfigs
+    with TableInfo<$CostConfigsTable, CostConfig> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $CostConfigsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _householdIdMeta = const VerificationMeta(
+    'householdId',
+  );
+  @override
+  late final GeneratedColumn<int> householdId = GeneratedColumn<int>(
+    'household_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES households (id)',
+    ),
+  );
+  @override
+  late final GeneratedColumnWithTypeConverter<CostMeterType, int> meterType =
+      GeneratedColumn<int>(
+        'meter_type',
+        aliasedName,
+        false,
+        type: DriftSqlType.int,
+        requiredDuringInsert: true,
+      ).withConverter<CostMeterType>($CostConfigsTable.$convertermeterType);
+  static const VerificationMeta _unitPriceMeta = const VerificationMeta(
+    'unitPrice',
+  );
+  @override
+  late final GeneratedColumn<double> unitPrice = GeneratedColumn<double>(
+    'unit_price',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _standingChargeMeta = const VerificationMeta(
+    'standingCharge',
+  );
+  @override
+  late final GeneratedColumn<double> standingCharge = GeneratedColumn<double>(
+    'standing_charge',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0.0),
+  );
+  static const VerificationMeta _priceTiersMeta = const VerificationMeta(
+    'priceTiers',
+  );
+  @override
+  late final GeneratedColumn<String> priceTiers = GeneratedColumn<String>(
+    'price_tiers',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _currencySymbolMeta = const VerificationMeta(
+    'currencySymbol',
+  );
+  @override
+  late final GeneratedColumn<String> currencySymbol = GeneratedColumn<String>(
+    'currency_symbol',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('\u20AC'),
+  );
+  static const VerificationMeta _validFromMeta = const VerificationMeta(
+    'validFrom',
+  );
+  @override
+  late final GeneratedColumn<DateTime> validFrom = GeneratedColumn<DateTime>(
+    'valid_from',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    householdId,
+    meterType,
+    unitPrice,
+    standingCharge,
+    priceTiers,
+    currencySymbol,
+    validFrom,
+    createdAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'cost_configs';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<CostConfig> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('household_id')) {
+      context.handle(
+        _householdIdMeta,
+        householdId.isAcceptableOrUnknown(
+          data['household_id']!,
+          _householdIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_householdIdMeta);
+    }
+    if (data.containsKey('unit_price')) {
+      context.handle(
+        _unitPriceMeta,
+        unitPrice.isAcceptableOrUnknown(data['unit_price']!, _unitPriceMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_unitPriceMeta);
+    }
+    if (data.containsKey('standing_charge')) {
+      context.handle(
+        _standingChargeMeta,
+        standingCharge.isAcceptableOrUnknown(
+          data['standing_charge']!,
+          _standingChargeMeta,
+        ),
+      );
+    }
+    if (data.containsKey('price_tiers')) {
+      context.handle(
+        _priceTiersMeta,
+        priceTiers.isAcceptableOrUnknown(data['price_tiers']!, _priceTiersMeta),
+      );
+    }
+    if (data.containsKey('currency_symbol')) {
+      context.handle(
+        _currencySymbolMeta,
+        currencySymbol.isAcceptableOrUnknown(
+          data['currency_symbol']!,
+          _currencySymbolMeta,
+        ),
+      );
+    }
+    if (data.containsKey('valid_from')) {
+      context.handle(
+        _validFromMeta,
+        validFrom.isAcceptableOrUnknown(data['valid_from']!, _validFromMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_validFromMeta);
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  CostConfig map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return CostConfig(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      householdId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}household_id'],
+      )!,
+      meterType: $CostConfigsTable.$convertermeterType.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.int,
+          data['${effectivePrefix}meter_type'],
+        )!,
+      ),
+      unitPrice: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}unit_price'],
+      )!,
+      standingCharge: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}standing_charge'],
+      )!,
+      priceTiers: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}price_tiers'],
+      ),
+      currencySymbol: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}currency_symbol'],
+      )!,
+      validFrom: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}valid_from'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+    );
+  }
+
+  @override
+  $CostConfigsTable createAlias(String alias) {
+    return $CostConfigsTable(attachedDatabase, alias);
+  }
+
+  static JsonTypeConverter2<CostMeterType, int, int> $convertermeterType =
+      const EnumIndexConverter<CostMeterType>(CostMeterType.values);
+}
+
+class CostConfig extends DataClass implements Insertable<CostConfig> {
+  final int id;
+  final int householdId;
+  final CostMeterType meterType;
+  final double unitPrice;
+  final double standingCharge;
+  final String? priceTiers;
+  final String currencySymbol;
+  final DateTime validFrom;
+  final DateTime createdAt;
+  const CostConfig({
+    required this.id,
+    required this.householdId,
+    required this.meterType,
+    required this.unitPrice,
+    required this.standingCharge,
+    this.priceTiers,
+    required this.currencySymbol,
+    required this.validFrom,
+    required this.createdAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['household_id'] = Variable<int>(householdId);
+    {
+      map['meter_type'] = Variable<int>(
+        $CostConfigsTable.$convertermeterType.toSql(meterType),
+      );
+    }
+    map['unit_price'] = Variable<double>(unitPrice);
+    map['standing_charge'] = Variable<double>(standingCharge);
+    if (!nullToAbsent || priceTiers != null) {
+      map['price_tiers'] = Variable<String>(priceTiers);
+    }
+    map['currency_symbol'] = Variable<String>(currencySymbol);
+    map['valid_from'] = Variable<DateTime>(validFrom);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    return map;
+  }
+
+  CostConfigsCompanion toCompanion(bool nullToAbsent) {
+    return CostConfigsCompanion(
+      id: Value(id),
+      householdId: Value(householdId),
+      meterType: Value(meterType),
+      unitPrice: Value(unitPrice),
+      standingCharge: Value(standingCharge),
+      priceTiers: priceTiers == null && nullToAbsent
+          ? const Value.absent()
+          : Value(priceTiers),
+      currencySymbol: Value(currencySymbol),
+      validFrom: Value(validFrom),
+      createdAt: Value(createdAt),
+    );
+  }
+
+  factory CostConfig.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return CostConfig(
+      id: serializer.fromJson<int>(json['id']),
+      householdId: serializer.fromJson<int>(json['householdId']),
+      meterType: $CostConfigsTable.$convertermeterType.fromJson(
+        serializer.fromJson<int>(json['meterType']),
+      ),
+      unitPrice: serializer.fromJson<double>(json['unitPrice']),
+      standingCharge: serializer.fromJson<double>(json['standingCharge']),
+      priceTiers: serializer.fromJson<String?>(json['priceTiers']),
+      currencySymbol: serializer.fromJson<String>(json['currencySymbol']),
+      validFrom: serializer.fromJson<DateTime>(json['validFrom']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'householdId': serializer.toJson<int>(householdId),
+      'meterType': serializer.toJson<int>(
+        $CostConfigsTable.$convertermeterType.toJson(meterType),
+      ),
+      'unitPrice': serializer.toJson<double>(unitPrice),
+      'standingCharge': serializer.toJson<double>(standingCharge),
+      'priceTiers': serializer.toJson<String?>(priceTiers),
+      'currencySymbol': serializer.toJson<String>(currencySymbol),
+      'validFrom': serializer.toJson<DateTime>(validFrom),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+    };
+  }
+
+  CostConfig copyWith({
+    int? id,
+    int? householdId,
+    CostMeterType? meterType,
+    double? unitPrice,
+    double? standingCharge,
+    Value<String?> priceTiers = const Value.absent(),
+    String? currencySymbol,
+    DateTime? validFrom,
+    DateTime? createdAt,
+  }) => CostConfig(
+    id: id ?? this.id,
+    householdId: householdId ?? this.householdId,
+    meterType: meterType ?? this.meterType,
+    unitPrice: unitPrice ?? this.unitPrice,
+    standingCharge: standingCharge ?? this.standingCharge,
+    priceTiers: priceTiers.present ? priceTiers.value : this.priceTiers,
+    currencySymbol: currencySymbol ?? this.currencySymbol,
+    validFrom: validFrom ?? this.validFrom,
+    createdAt: createdAt ?? this.createdAt,
+  );
+  CostConfig copyWithCompanion(CostConfigsCompanion data) {
+    return CostConfig(
+      id: data.id.present ? data.id.value : this.id,
+      householdId: data.householdId.present
+          ? data.householdId.value
+          : this.householdId,
+      meterType: data.meterType.present ? data.meterType.value : this.meterType,
+      unitPrice: data.unitPrice.present ? data.unitPrice.value : this.unitPrice,
+      standingCharge: data.standingCharge.present
+          ? data.standingCharge.value
+          : this.standingCharge,
+      priceTiers: data.priceTiers.present
+          ? data.priceTiers.value
+          : this.priceTiers,
+      currencySymbol: data.currencySymbol.present
+          ? data.currencySymbol.value
+          : this.currencySymbol,
+      validFrom: data.validFrom.present ? data.validFrom.value : this.validFrom,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CostConfig(')
+          ..write('id: $id, ')
+          ..write('householdId: $householdId, ')
+          ..write('meterType: $meterType, ')
+          ..write('unitPrice: $unitPrice, ')
+          ..write('standingCharge: $standingCharge, ')
+          ..write('priceTiers: $priceTiers, ')
+          ..write('currencySymbol: $currencySymbol, ')
+          ..write('validFrom: $validFrom, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    householdId,
+    meterType,
+    unitPrice,
+    standingCharge,
+    priceTiers,
+    currencySymbol,
+    validFrom,
+    createdAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is CostConfig &&
+          other.id == this.id &&
+          other.householdId == this.householdId &&
+          other.meterType == this.meterType &&
+          other.unitPrice == this.unitPrice &&
+          other.standingCharge == this.standingCharge &&
+          other.priceTiers == this.priceTiers &&
+          other.currencySymbol == this.currencySymbol &&
+          other.validFrom == this.validFrom &&
+          other.createdAt == this.createdAt);
+}
+
+class CostConfigsCompanion extends UpdateCompanion<CostConfig> {
+  final Value<int> id;
+  final Value<int> householdId;
+  final Value<CostMeterType> meterType;
+  final Value<double> unitPrice;
+  final Value<double> standingCharge;
+  final Value<String?> priceTiers;
+  final Value<String> currencySymbol;
+  final Value<DateTime> validFrom;
+  final Value<DateTime> createdAt;
+  const CostConfigsCompanion({
+    this.id = const Value.absent(),
+    this.householdId = const Value.absent(),
+    this.meterType = const Value.absent(),
+    this.unitPrice = const Value.absent(),
+    this.standingCharge = const Value.absent(),
+    this.priceTiers = const Value.absent(),
+    this.currencySymbol = const Value.absent(),
+    this.validFrom = const Value.absent(),
+    this.createdAt = const Value.absent(),
+  });
+  CostConfigsCompanion.insert({
+    this.id = const Value.absent(),
+    required int householdId,
+    required CostMeterType meterType,
+    required double unitPrice,
+    this.standingCharge = const Value.absent(),
+    this.priceTiers = const Value.absent(),
+    this.currencySymbol = const Value.absent(),
+    required DateTime validFrom,
+    this.createdAt = const Value.absent(),
+  }) : householdId = Value(householdId),
+       meterType = Value(meterType),
+       unitPrice = Value(unitPrice),
+       validFrom = Value(validFrom);
+  static Insertable<CostConfig> custom({
+    Expression<int>? id,
+    Expression<int>? householdId,
+    Expression<int>? meterType,
+    Expression<double>? unitPrice,
+    Expression<double>? standingCharge,
+    Expression<String>? priceTiers,
+    Expression<String>? currencySymbol,
+    Expression<DateTime>? validFrom,
+    Expression<DateTime>? createdAt,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (householdId != null) 'household_id': householdId,
+      if (meterType != null) 'meter_type': meterType,
+      if (unitPrice != null) 'unit_price': unitPrice,
+      if (standingCharge != null) 'standing_charge': standingCharge,
+      if (priceTiers != null) 'price_tiers': priceTiers,
+      if (currencySymbol != null) 'currency_symbol': currencySymbol,
+      if (validFrom != null) 'valid_from': validFrom,
+      if (createdAt != null) 'created_at': createdAt,
+    });
+  }
+
+  CostConfigsCompanion copyWith({
+    Value<int>? id,
+    Value<int>? householdId,
+    Value<CostMeterType>? meterType,
+    Value<double>? unitPrice,
+    Value<double>? standingCharge,
+    Value<String?>? priceTiers,
+    Value<String>? currencySymbol,
+    Value<DateTime>? validFrom,
+    Value<DateTime>? createdAt,
+  }) {
+    return CostConfigsCompanion(
+      id: id ?? this.id,
+      householdId: householdId ?? this.householdId,
+      meterType: meterType ?? this.meterType,
+      unitPrice: unitPrice ?? this.unitPrice,
+      standingCharge: standingCharge ?? this.standingCharge,
+      priceTiers: priceTiers ?? this.priceTiers,
+      currencySymbol: currencySymbol ?? this.currencySymbol,
+      validFrom: validFrom ?? this.validFrom,
+      createdAt: createdAt ?? this.createdAt,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (householdId.present) {
+      map['household_id'] = Variable<int>(householdId.value);
+    }
+    if (meterType.present) {
+      map['meter_type'] = Variable<int>(
+        $CostConfigsTable.$convertermeterType.toSql(meterType.value),
+      );
+    }
+    if (unitPrice.present) {
+      map['unit_price'] = Variable<double>(unitPrice.value);
+    }
+    if (standingCharge.present) {
+      map['standing_charge'] = Variable<double>(standingCharge.value);
+    }
+    if (priceTiers.present) {
+      map['price_tiers'] = Variable<String>(priceTiers.value);
+    }
+    if (currencySymbol.present) {
+      map['currency_symbol'] = Variable<String>(currencySymbol.value);
+    }
+    if (validFrom.present) {
+      map['valid_from'] = Variable<DateTime>(validFrom.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CostConfigsCompanion(')
+          ..write('id: $id, ')
+          ..write('householdId: $householdId, ')
+          ..write('meterType: $meterType, ')
+          ..write('unitPrice: $unitPrice, ')
+          ..write('standingCharge: $standingCharge, ')
+          ..write('priceTiers: $priceTiers, ')
+          ..write('currencySymbol: $currencySymbol, ')
+          ..write('validFrom: $validFrom, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -3089,6 +3659,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $SmartPlugsTable smartPlugs = $SmartPlugsTable(this);
   late final $SmartPlugConsumptionsTable smartPlugConsumptions =
       $SmartPlugConsumptionsTable(this);
+  late final $CostConfigsTable costConfigs = $CostConfigsTable(this);
   late final HouseholdDao householdDao = HouseholdDao(this as AppDatabase);
   late final ElectricityDao electricityDao = ElectricityDao(
     this as AppDatabase,
@@ -3098,6 +3669,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final RoomDao roomDao = RoomDao(this as AppDatabase);
   late final SmartPlugDao smartPlugDao = SmartPlugDao(this as AppDatabase);
   late final WaterDao waterDao = WaterDao(this as AppDatabase);
+  late final CostConfigDao costConfigDao = CostConfigDao(this as AppDatabase);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -3113,6 +3685,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     rooms,
     smartPlugs,
     smartPlugConsumptions,
+    costConfigs,
   ];
 }
 
@@ -3239,6 +3812,27 @@ final class $$HouseholdsTableReferences
     ).filter((f) => f.householdId.id.sqlEquals($_itemColumn<int>('id')!));
 
     final cache = $_typedResult.readTableOrNull(_roomsRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<$CostConfigsTable, List<CostConfig>>
+  _costConfigsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.costConfigs,
+    aliasName: $_aliasNameGenerator(
+      db.households.id,
+      db.costConfigs.householdId,
+    ),
+  );
+
+  $$CostConfigsTableProcessedTableManager get costConfigsRefs {
+    final manager = $$CostConfigsTableTableManager(
+      $_db,
+      $_db.costConfigs,
+    ).filter((f) => f.householdId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_costConfigsRefsTable($_db));
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: cache),
     );
@@ -3390,6 +3984,31 @@ class $$HouseholdsTableFilterComposer
           }) => $$RoomsTableFilterComposer(
             $db: $db,
             $table: $db.rooms,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> costConfigsRefs(
+    Expression<bool> Function($$CostConfigsTableFilterComposer f) f,
+  ) {
+    final $$CostConfigsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.costConfigs,
+      getReferencedColumn: (t) => t.householdId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$CostConfigsTableFilterComposer(
+            $db: $db,
+            $table: $db.costConfigs,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -3578,6 +4197,31 @@ class $$HouseholdsTableAnnotationComposer
     );
     return f(composer);
   }
+
+  Expression<T> costConfigsRefs<T extends Object>(
+    Expression<T> Function($$CostConfigsTableAnnotationComposer a) f,
+  ) {
+    final $$CostConfigsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.costConfigs,
+      getReferencedColumn: (t) => t.householdId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$CostConfigsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.costConfigs,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $$HouseholdsTableTableManager
@@ -3599,6 +4243,7 @@ class $$HouseholdsTableTableManager
             bool waterMetersRefs,
             bool heatingMetersRefs,
             bool roomsRefs,
+            bool costConfigsRefs,
           })
         > {
   $$HouseholdsTableTableManager(_$AppDatabase db, $HouseholdsTable table)
@@ -3651,6 +4296,7 @@ class $$HouseholdsTableTableManager
                 waterMetersRefs = false,
                 heatingMetersRefs = false,
                 roomsRefs = false,
+                costConfigsRefs = false,
               }) {
                 return PrefetchHooks(
                   db: db,
@@ -3660,6 +4306,7 @@ class $$HouseholdsTableTableManager
                     if (waterMetersRefs) db.waterMeters,
                     if (heatingMetersRefs) db.heatingMeters,
                     if (roomsRefs) db.rooms,
+                    if (costConfigsRefs) db.costConfigs,
                   ],
                   addJoins: null,
                   getPrefetchedDataCallback: (items) async {
@@ -3769,6 +4416,27 @@ class $$HouseholdsTableTableManager
                               ),
                           typedResults: items,
                         ),
+                      if (costConfigsRefs)
+                        await $_getPrefetchedData<
+                          Household,
+                          $HouseholdsTable,
+                          CostConfig
+                        >(
+                          currentTable: table,
+                          referencedTable: $$HouseholdsTableReferences
+                              ._costConfigsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$HouseholdsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).costConfigsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.householdId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
                     ];
                   },
                 );
@@ -3795,6 +4463,7 @@ typedef $$HouseholdsTableProcessedTableManager =
         bool waterMetersRefs,
         bool heatingMetersRefs,
         bool roomsRefs,
+        bool costConfigsRefs,
       })
     >;
 typedef $$ElectricityReadingsTableCreateCompanionBuilder =
@@ -6882,6 +7551,402 @@ typedef $$SmartPlugConsumptionsTableProcessedTableManager =
       SmartPlugConsumption,
       PrefetchHooks Function({bool smartPlugId})
     >;
+typedef $$CostConfigsTableCreateCompanionBuilder =
+    CostConfigsCompanion Function({
+      Value<int> id,
+      required int householdId,
+      required CostMeterType meterType,
+      required double unitPrice,
+      Value<double> standingCharge,
+      Value<String?> priceTiers,
+      Value<String> currencySymbol,
+      required DateTime validFrom,
+      Value<DateTime> createdAt,
+    });
+typedef $$CostConfigsTableUpdateCompanionBuilder =
+    CostConfigsCompanion Function({
+      Value<int> id,
+      Value<int> householdId,
+      Value<CostMeterType> meterType,
+      Value<double> unitPrice,
+      Value<double> standingCharge,
+      Value<String?> priceTiers,
+      Value<String> currencySymbol,
+      Value<DateTime> validFrom,
+      Value<DateTime> createdAt,
+    });
+
+final class $$CostConfigsTableReferences
+    extends BaseReferences<_$AppDatabase, $CostConfigsTable, CostConfig> {
+  $$CostConfigsTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static $HouseholdsTable _householdIdTable(_$AppDatabase db) =>
+      db.households.createAlias(
+        $_aliasNameGenerator(db.costConfigs.householdId, db.households.id),
+      );
+
+  $$HouseholdsTableProcessedTableManager get householdId {
+    final $_column = $_itemColumn<int>('household_id')!;
+
+    final manager = $$HouseholdsTableTableManager(
+      $_db,
+      $_db.households,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_householdIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$CostConfigsTableFilterComposer
+    extends Composer<_$AppDatabase, $CostConfigsTable> {
+  $$CostConfigsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnWithTypeConverterFilters<CostMeterType, CostMeterType, int>
+  get meterType => $composableBuilder(
+    column: $table.meterType,
+    builder: (column) => ColumnWithTypeConverterFilters(column),
+  );
+
+  ColumnFilters<double> get unitPrice => $composableBuilder(
+    column: $table.unitPrice,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get standingCharge => $composableBuilder(
+    column: $table.standingCharge,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get priceTiers => $composableBuilder(
+    column: $table.priceTiers,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get currencySymbol => $composableBuilder(
+    column: $table.currencySymbol,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get validFrom => $composableBuilder(
+    column: $table.validFrom,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$HouseholdsTableFilterComposer get householdId {
+    final $$HouseholdsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.householdId,
+      referencedTable: $db.households,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$HouseholdsTableFilterComposer(
+            $db: $db,
+            $table: $db.households,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$CostConfigsTableOrderingComposer
+    extends Composer<_$AppDatabase, $CostConfigsTable> {
+  $$CostConfigsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get meterType => $composableBuilder(
+    column: $table.meterType,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get unitPrice => $composableBuilder(
+    column: $table.unitPrice,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get standingCharge => $composableBuilder(
+    column: $table.standingCharge,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get priceTiers => $composableBuilder(
+    column: $table.priceTiers,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get currencySymbol => $composableBuilder(
+    column: $table.currencySymbol,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get validFrom => $composableBuilder(
+    column: $table.validFrom,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$HouseholdsTableOrderingComposer get householdId {
+    final $$HouseholdsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.householdId,
+      referencedTable: $db.households,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$HouseholdsTableOrderingComposer(
+            $db: $db,
+            $table: $db.households,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$CostConfigsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $CostConfigsTable> {
+  $$CostConfigsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumnWithTypeConverter<CostMeterType, int> get meterType =>
+      $composableBuilder(column: $table.meterType, builder: (column) => column);
+
+  GeneratedColumn<double> get unitPrice =>
+      $composableBuilder(column: $table.unitPrice, builder: (column) => column);
+
+  GeneratedColumn<double> get standingCharge => $composableBuilder(
+    column: $table.standingCharge,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get priceTiers => $composableBuilder(
+    column: $table.priceTiers,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get currencySymbol => $composableBuilder(
+    column: $table.currencySymbol,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get validFrom =>
+      $composableBuilder(column: $table.validFrom, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  $$HouseholdsTableAnnotationComposer get householdId {
+    final $$HouseholdsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.householdId,
+      referencedTable: $db.households,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$HouseholdsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.households,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$CostConfigsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $CostConfigsTable,
+          CostConfig,
+          $$CostConfigsTableFilterComposer,
+          $$CostConfigsTableOrderingComposer,
+          $$CostConfigsTableAnnotationComposer,
+          $$CostConfigsTableCreateCompanionBuilder,
+          $$CostConfigsTableUpdateCompanionBuilder,
+          (CostConfig, $$CostConfigsTableReferences),
+          CostConfig,
+          PrefetchHooks Function({bool householdId})
+        > {
+  $$CostConfigsTableTableManager(_$AppDatabase db, $CostConfigsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$CostConfigsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$CostConfigsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$CostConfigsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<int> householdId = const Value.absent(),
+                Value<CostMeterType> meterType = const Value.absent(),
+                Value<double> unitPrice = const Value.absent(),
+                Value<double> standingCharge = const Value.absent(),
+                Value<String?> priceTiers = const Value.absent(),
+                Value<String> currencySymbol = const Value.absent(),
+                Value<DateTime> validFrom = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+              }) => CostConfigsCompanion(
+                id: id,
+                householdId: householdId,
+                meterType: meterType,
+                unitPrice: unitPrice,
+                standingCharge: standingCharge,
+                priceTiers: priceTiers,
+                currencySymbol: currencySymbol,
+                validFrom: validFrom,
+                createdAt: createdAt,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required int householdId,
+                required CostMeterType meterType,
+                required double unitPrice,
+                Value<double> standingCharge = const Value.absent(),
+                Value<String?> priceTiers = const Value.absent(),
+                Value<String> currencySymbol = const Value.absent(),
+                required DateTime validFrom,
+                Value<DateTime> createdAt = const Value.absent(),
+              }) => CostConfigsCompanion.insert(
+                id: id,
+                householdId: householdId,
+                meterType: meterType,
+                unitPrice: unitPrice,
+                standingCharge: standingCharge,
+                priceTiers: priceTiers,
+                currencySymbol: currencySymbol,
+                validFrom: validFrom,
+                createdAt: createdAt,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$CostConfigsTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({householdId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (householdId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.householdId,
+                                referencedTable: $$CostConfigsTableReferences
+                                    ._householdIdTable(db),
+                                referencedColumn: $$CostConfigsTableReferences
+                                    ._householdIdTable(db)
+                                    .id,
+                              )
+                              as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$CostConfigsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $CostConfigsTable,
+      CostConfig,
+      $$CostConfigsTableFilterComposer,
+      $$CostConfigsTableOrderingComposer,
+      $$CostConfigsTableAnnotationComposer,
+      $$CostConfigsTableCreateCompanionBuilder,
+      $$CostConfigsTableUpdateCompanionBuilder,
+      (CostConfig, $$CostConfigsTableReferences),
+      CostConfig,
+      PrefetchHooks Function({bool householdId})
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -6906,4 +7971,6 @@ class $AppDatabaseManager {
       $$SmartPlugsTableTableManager(_db, _db.smartPlugs);
   $$SmartPlugConsumptionsTableTableManager get smartPlugConsumptions =>
       $$SmartPlugConsumptionsTableTableManager(_db, _db.smartPlugConsumptions);
+  $$CostConfigsTableTableManager get costConfigs =>
+      $$CostConfigsTableTableManager(_db, _db.costConfigs);
 }

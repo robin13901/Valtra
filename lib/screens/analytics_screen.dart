@@ -238,8 +238,11 @@ class _MeterOverviewCard extends StatelessWidget {
 
     final value = summary!.latestMonthConsumption!.toStringAsFixed(1);
     final unit = summary!.unit;
+    final costText = summary!.latestMonthCost != null
+        ? '  ~${summary!.currencySymbol ?? '\u20AC'}${summary!.latestMonthCost!.toStringAsFixed(2)}'
+        : '';
     return Text(
-      '$value $unit',
+      '$value $unit$costText',
       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
             color: colorForMeterType(meterType),
             fontWeight: FontWeight.w600,

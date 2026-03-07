@@ -1,5 +1,6 @@
 import 'package:drift/drift.dart';
 
+import 'daos/cost_config_dao.dart';
 import 'daos/electricity_dao.dart';
 import 'daos/gas_dao.dart';
 import 'daos/heating_dao.dart';
@@ -22,6 +23,7 @@ part 'app_database.g.dart';
   Rooms,
   SmartPlugs,
   SmartPlugConsumptions,
+  CostConfigs,
 ], daos: [
   HouseholdDao,
   ElectricityDao,
@@ -30,16 +32,22 @@ part 'app_database.g.dart';
   RoomDao,
   SmartPlugDao,
   WaterDao,
+  CostConfigDao,
 ])
 class AppDatabase extends _$AppDatabase {
   AppDatabase(super.e);
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
         onCreate: (m) async => await m.createAll(),
+        onUpgrade: (m, from, to) async {
+          if (from < 2) {
+            await m.createTable(costConfigs);
+          }
+        },
       );
 
   /// Provides access to household CRUD operations.
@@ -69,4 +77,8 @@ class AppDatabase extends _$AppDatabase {
   /// Provides access to heating meter and reading CRUD operations.
   @override
   HeatingDao get heatingDao => HeatingDao(this);
+
+  /// Provides access to cost configuration CRUD operations.
+  @override
+  CostConfigDao get costConfigDao => CostConfigDao(this);
 }

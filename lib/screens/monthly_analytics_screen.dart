@@ -59,6 +59,8 @@ class MonthlyAnalyticsScreen extends StatelessWidget {
                       totalConsumption: data.totalConsumption,
                       unit: data.unit,
                       color: color,
+                      totalCost: data.totalCost,
+                      currencySymbol: data.currencySymbol,
                     ),
                     const SizedBox(height: 24),
 
@@ -229,11 +231,15 @@ class _ConsumptionSummaryCard extends StatelessWidget {
   final double? totalConsumption;
   final String unit;
   final Color color;
+  final double? totalCost;
+  final String? currencySymbol;
 
   const _ConsumptionSummaryCard({
     required this.totalConsumption,
     required this.unit,
     required this.color,
+    this.totalCost,
+    this.currencySymbol,
   });
 
   @override
@@ -256,6 +262,15 @@ class _ConsumptionSummaryCard extends StatelessWidget {
                     fontWeight: FontWeight.bold,
                   ),
             ),
+            if (totalCost != null) ...[
+              const SizedBox(height: 4),
+              Text(
+                '~${currencySymbol ?? '\u20AC'}${totalCost!.toStringAsFixed(2)}',
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
+              ),
+            ],
           ],
         ),
       ),

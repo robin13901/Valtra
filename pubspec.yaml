@@ -54,6 +54,7 @@ dependencies:
   # Utils
   intl: ^0.20.2
   shared_preferences: ^2.2.3
+  package_info_plus: ^8.0.0
 
   # Export
   csv: ^6.0.0

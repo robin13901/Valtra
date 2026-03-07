@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'app_theme.dart';
 import 'database/app_database.dart';
 import 'database/connection/shared.dart';
+import 'database/daos/cost_config_dao.dart';
 import 'database/daos/electricity_dao.dart';
 import 'database/daos/gas_dao.dart';
 import 'database/daos/heating_dao.dart';
@@ -17,6 +18,7 @@ import 'providers/gas_provider.dart';
 import 'providers/heating_provider.dart';
 import 'providers/household_provider.dart';
 import 'providers/analytics_provider.dart';
+import 'providers/cost_config_provider.dart';
 import 'providers/interpolation_settings_provider.dart';
 import 'providers/smart_plug_analytics_provider.dart';
 import 'providers/room_provider.dart';
@@ -27,8 +29,10 @@ import 'screens/analytics_screen.dart';
 import 'screens/electricity_screen.dart';
 import 'screens/gas_screen.dart';
 import 'screens/heating_screen.dart';
+import 'screens/settings_screen.dart';
 import 'screens/smart_plugs_screen.dart';
 import 'screens/water_screen.dart';
+import 'services/cost_calculation_service.dart';
 import 'services/gas_conversion_service.dart';
 import 'services/interpolation/interpolation_service.dart';
 import 'widgets/household_selector.dart';
@@ -69,6 +73,12 @@ void main() async {
   final interpolationSettingsProvider = InterpolationSettingsProvider();
   await interpolationSettingsProvider.init();
 
+  // Initialize cost config provider
+  final costConfigProvider = CostConfigProvider(
+    costConfigDao: CostConfigDao(database),
+    costCalculationService: const CostCalculationService(),
+  );
+
   // Initialize analytics provider
   final analyticsProvider = AnalyticsProvider(
     electricityDao: ElectricityDao(database),
@@ -78,6 +88,7 @@ void main() async {
     interpolationService: InterpolationService(),
     gasConversionService: GasConversionService(),
     settingsProvider: interpolationSettingsProvider,
+    costConfigProvider: costConfigProvider,
   );
 
   // Initialize smart plug analytics provider
@@ -99,6 +110,7 @@ void main() async {
     heatingProvider.setHouseholdId(householdProvider.selectedHouseholdId);
     analyticsProvider.setHouseholdId(householdProvider.selectedHouseholdId);
     smartPlugAnalyticsProvider.setHouseholdId(householdProvider.selectedHouseholdId);
+    costConfigProvider.setHouseholdId(householdProvider.selectedHouseholdId);
   }
 
   runApp(ValtraApp(
@@ -114,6 +126,7 @@ void main() async {
     interpolationSettingsProvider: interpolationSettingsProvider,
     analyticsProvider: analyticsProvider,
     smartPlugAnalyticsProvider: smartPlugAnalyticsProvider,
+    costConfigProvider: costConfigProvider,
   ));
 }
 
@@ -130,6 +143,7 @@ class ValtraApp extends StatefulWidget {
   final InterpolationSettingsProvider interpolationSettingsProvider;
   final AnalyticsProvider analyticsProvider;
   final SmartPlugAnalyticsProvider smartPlugAnalyticsProvider;
+  final CostConfigProvider costConfigProvider;
 
   const ValtraApp({
     super.key,
@@ -145,6 +159,7 @@ class ValtraApp extends StatefulWidget {
     required this.interpolationSettingsProvider,
     required this.analyticsProvider,
     required this.smartPlugAnalyticsProvider,
+    required this.costConfigProvider,
   });
 
   @override
@@ -175,6 +190,7 @@ class _ValtraAppState extends State<ValtraApp> {
     widget.heatingProvider.setHouseholdId(householdId);
     widget.analyticsProvider.setHouseholdId(householdId);
     widget.smartPlugAnalyticsProvider.setHouseholdId(householdId);
+    widget.costConfigProvider.setHouseholdId(householdId);
   }
 
   @override
@@ -204,6 +220,8 @@ class _ValtraAppState extends State<ValtraApp> {
             value: widget.analyticsProvider),
         ChangeNotifierProvider<SmartPlugAnalyticsProvider>.value(
             value: widget.smartPlugAnalyticsProvider),
+        ChangeNotifierProvider<CostConfigProvider>.value(
+            value: widget.costConfigProvider),
       ],
       child: Consumer<ThemeProvider>(
         builder: (context, themeProvider, child) {
@@ -230,8 +248,6 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final themeProvider = context.watch<ThemeProvider>();
-    final isDark = themeProvider.isDark(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -239,9 +255,12 @@ class HomeScreen extends StatelessWidget {
         actions: [
           const HouseholdSelector(),
           IconButton(
-            icon: Icon(isDark ? Icons.light_mode : Icons.dark_mode),
-            onPressed: () => themeProvider.toggleTheme(),
-            tooltip: isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode',
+            icon: const Icon(Icons.settings),
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute(
+                  builder: (context) => const SettingsScreen()),
+            ),
+            tooltip: l10n.settings,
           ),
         ],
       ),

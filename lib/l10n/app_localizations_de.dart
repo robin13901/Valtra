@@ -663,4 +663,149 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get periodCustom => 'Benutzerdefiniert';
+
+  @override
+  String get appearance => 'Darstellung';
+
+  @override
+  String get themeMode => 'Design';
+
+  @override
+  String get themeLight => 'Hell';
+
+  @override
+  String get themeDark => 'Dunkel';
+
+  @override
+  String get themeSystem => 'System';
+
+  @override
+  String get meterSettings => 'Zaehlereinstellungen';
+
+  @override
+  String get gasKwhConversionFactor => 'Gas kWh-Umrechnungsfaktor';
+
+  @override
+  String get gasKwhConversionHint => 'Standard: 10,3 kWh/m³';
+
+  @override
+  String get interpolationMethodLabel => 'Interpolationsmethode';
+
+  @override
+  String get aboutSection => 'Ueber';
+
+  @override
+  String get appVersion => 'Version';
+
+  @override
+  String get settingsUpdated => 'Einstellungen aktualisiert';
+
+  @override
+  String get invalidNumber => 'Bitte gueltige Zahl eingeben';
+
+  @override
+  String get costConfiguration => 'Kosteneinstellungen';
+
+  @override
+  String get costTracking => 'Kostenverfolgung';
+
+  @override
+  String get unitPrice => 'Preis pro Einheit';
+
+  @override
+  String get standingCharge => 'Grundgebuehr';
+
+  @override
+  String get standingChargePerMonth => 'Grundgebuehr (pro Monat)';
+
+  @override
+  String get priceTiers => 'Preisstufen';
+
+  @override
+  String get tier => 'Stufe';
+
+  @override
+  String tierLimit(String limit, String unit) {
+    return 'Bis $limit $unit';
+  }
+
+  @override
+  String get tierUnlimited => 'Rest';
+
+  @override
+  String get tierRate => 'Tarif';
+
+  @override
+  String get addTier => 'Stufe hinzufuegen';
+
+  @override
+  String get removeTier => 'Stufe entfernen';
+
+  @override
+  String get maxTiersReached => 'Maximal 3 Stufen';
+
+  @override
+  String get validFrom => 'Gueltig ab';
+
+  @override
+  String get currency => 'Waehrung';
+
+  @override
+  String get estimatedCost => 'Geschaetzte Kosten';
+
+  @override
+  String get monthlyCost => 'Monatliche Kosten';
+
+  @override
+  String get yearlyCost => 'Jaehrliche Kosten';
+
+  @override
+  String get totalCost => 'Gesamtkosten';
+
+  @override
+  String get noCostConfig => 'Keine Preise konfiguriert';
+
+  @override
+  String get addCostConfig => 'Preise konfigurieren';
+
+  @override
+  String get editCostConfig => 'Preise bearbeiten';
+
+  @override
+  String get deleteCostConfig => 'Preise loeschen';
+
+  @override
+  String deleteCostConfigConfirm(String meterType) {
+    return 'Kosteneinstellung fuer $meterType loeschen?';
+  }
+
+  @override
+  String get costSummary => 'Kostenuebersicht';
+
+  @override
+  String costComparison(String change) {
+    return '$change% gg. Vorjahr';
+  }
+
+  @override
+  String get pricePerKwh => '€/kWh';
+
+  @override
+  String get pricePerCubicMeter => '€/m³';
+
+  @override
+  String get costNotConfigured =>
+      'Preise in Einstellungen konfigurieren, um Kosten zu sehen';
+
+  @override
+  String get saveCostConfig => 'Speichern';
+
+  @override
+  String get costConfigSaved => 'Kosteneinstellung gespeichert';
+
+  @override
+  String get costConfigDeleted => 'Kosteneinstellung geloescht';
+
+  @override
+  String get perMonth => 'pro Monat';
 }

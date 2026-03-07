@@ -312,5 +312,67 @@
   "totalElectricity": "Total Electricity",
   "periodMonthly": "Monthly",
   "periodYearly": "Yearly",
-  "periodCustom": "Custom"
+  "periodCustom": "Custom",
+  "appearance": "Appearance",
+  "themeMode": "Theme",
+  "themeLight": "Light",
+  "themeDark": "Dark",
+  "themeSystem": "System",
+  "meterSettings": "Meter Settings",
+  "gasKwhConversionFactor": "Gas kWh Conversion Factor",
+  "gasKwhConversionHint": "Default: 10.3 kWh/m³",
+  "interpolationMethodLabel": "Interpolation Method",
+  "aboutSection": "About",
+  "appVersion": "Version",
+  "settingsUpdated": "Settings updated",
+  "invalidNumber": "Please enter a valid number",
+  "costConfiguration": "Cost Configuration",
+  "costTracking": "Cost Tracking",
+  "unitPrice": "Unit Price",
+  "standingCharge": "Standing Charge",
+  "standingChargePerMonth": "Standing Charge (per month)",
+  "priceTiers": "Price Tiers",
+  "tier": "Tier",
+  "tierLimit": "Up to {limit} {unit}",
+  "@tierLimit": {
+    "placeholders": {
+      "limit": {"type": "String"},
+      "unit": {"type": "String"}
+    }
+  },
+  "tierUnlimited": "Remaining",
+  "tierRate": "Rate",
+  "addTier": "Add Tier",
+  "removeTier": "Remove Tier",
+  "maxTiersReached": "Maximum 3 tiers",
+  "validFrom": "Valid From",
+  "currency": "Currency",
+  "estimatedCost": "Estimated Cost",
+  "monthlyCost": "Monthly Cost",
+  "yearlyCost": "Yearly Cost",
+  "totalCost": "Total Cost",
+  "noCostConfig": "No pricing configured",
+  "addCostConfig": "Configure Pricing",
+  "editCostConfig": "Edit Pricing",
+  "deleteCostConfig": "Delete Pricing",
+  "deleteCostConfigConfirm": "Delete cost configuration for {meterType}?",
+  "@deleteCostConfigConfirm": {
+    "placeholders": {
+      "meterType": {"type": "String"}
+    }
+  },
+  "costSummary": "Cost Summary",
+  "costComparison": "{change}% vs last year",
+  "@costComparison": {
+    "placeholders": {
+      "change": {"type": "String"}
+    }
+  },
+  "pricePerKwh": "\u20AC/kWh",
+  "pricePerCubicMeter": "\u20AC/m\u00B3",
+  "costNotConfigured": "Configure pricing in Settings to see costs",
+  "saveCostConfig": "Save",
+  "costConfigSaved": "Cost configuration saved",
+  "costConfigDeleted": "Cost configuration deleted",
+  "perMonth": "per month"
 }
