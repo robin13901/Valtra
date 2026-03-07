@@ -27,6 +27,8 @@ class AppColors {
   static const gasColor = Color(0xFFFF8C42);
   static const waterColor = Color(0xFF6BC5F8);
   static const heatingColor = Color(0xFFFF6B6B);
+  static const otherColor = Color(0xFF9E9E9E);
+  static const successColor = Color(0xFF4CAF50);
 }
 
 /// App theme configuration

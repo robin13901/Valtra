@@ -7,7 +7,7 @@
   },
   "framework": {
     "name": "flutter",
-    "patterns": ["provider", "drift", "material3", "sharedpreferences", "fl_chart", "csv", "share_plus", "path_provider"]
+    "patterns": ["provider", "drift", "material3", "sharedpreferences", "fl_chart", "csv", "share_plus", "path_provider", "package_info_plus"]
   },
   "naming": {
     "files": {
@@ -59,7 +59,7 @@
       "services": ["{conversion}_service.dart", "csv_export_service.dart", "share_service.dart"],
       "services/{domain}": ["models.dart", "{domain}_service.dart", "reading_converters.dart"],
       "services/analytics": ["analytics_models.dart", "analytics_helpers.dart"],
-      "screens": ["{entity}s_screen.dart", "analytics_screen.dart", "monthly_analytics_screen.dart", "yearly_analytics_screen.dart"],
+      "screens": ["{entity}s_screen.dart", "settings_screen.dart", "analytics_screen.dart", "monthly_analytics_screen.dart", "yearly_analytics_screen.dart"],
       "widgets": ["liquid_glass_widgets.dart", "{entity}_selector.dart"],
       "widgets/charts": ["consumption_line_chart.dart", "monthly_bar_chart.dart", "chart_legend.dart", "year_comparison_chart.dart", "consumption_pie_chart.dart"],
       "widgets/dialogs": ["{entity}_form_dialog.dart"],
@@ -133,6 +133,20 @@
     "Grey slice (0xFF9E9E9E) for residual/Other category in pie charts",
     "10-color palette for categorical data, wrap with modulo for > 10 entities",
     "SegmentedButton for period selection (Material 3 standard)",
-    "PieChart donut shape: centerSpaceRadius 40, sectionsSpace 2, startDegreeOffset -90"
+    "PieChart donut shape: centerSpaceRadius 40, sectionsSpace 2, startDegreeOffset -90",
+    "SegmentedButton<ThemeMode> for 3-way theme toggle (Material 3) — wrap value in Set",
+    "Dark mode audit: grep Colors.white/black/grey + Color(0x, replace with Theme.of(context).colorScheme or AppColors",
+    "Settings TextField: use StatefulWidget with own TextEditingController to avoid cursor loss on provider rebuild",
+    "PackageInfo.fromPlatform() is async — wrap in FutureBuilder with loading placeholder",
+    "SegmentedButton icons not findable via find.byIcon in widget tests — use find.byType(SegmentedButton<T>) instead",
+    "ListView scroll in tests: use tester.drag(find.byType(ListView), Offset(0, -500)) not scrollUntilVisible (multiple Scrollable issue)",
+    "Centralize utility colors (otherColor, successColor) in AppColors rather than inline Color() constructors",
+    "PriceTier.fromJson: cast via (json['key'] as num?)?.toDouble() — JSON ints aren't doubles in Dart",
+    "scrollUntilVisible() for tests where content shifts due to new sections — drag with fixed offset breaks",
+    "registerFallbackValue() in setUpAll for custom enum/DateTime types used with any() matcher",
+    "CostConfig generated data class lives in app_database.g.dart — import app_database.dart not just tables.dart",
+    "DB migration: use m.createTable(newTable) in onUpgrade, not raw SQL — Drift handles column types",
+    "Pure service pattern: const constructor, no DB/UI imports, all methods take explicit params — 100% unit testable",
+    "Cost is computed not stored: derive from consumption × rate at query time to avoid data sync issues"
   ]
 }

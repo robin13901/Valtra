@@ -46,7 +46,8 @@ class GlassBottomNav extends StatelessWidget {
           elevation: 0,
           selectedItemColor:
               isDark ? AppColors.lemonChiffon : AppColors.ultraViolet,
-          unselectedItemColor: isDark ? Colors.white70 : Colors.black54,
+          unselectedItemColor:
+              Theme.of(context).colorScheme.onSurfaceVariant,
         ),
       ),
     );

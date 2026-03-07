@@ -59,7 +59,7 @@ class ConsumptionLineChart extends StatelessWidget {
             getDotPainter: (spot, pct, bar, idx) => FlDotCirclePainter(
               radius: 4,
               color: primaryColor,
-              strokeColor: Colors.white,
+              strokeColor: Theme.of(context).colorScheme.surface,
               strokeWidth: 1.5,
             ),
           ),
@@ -82,7 +82,7 @@ class ConsumptionLineChart extends StatelessWidget {
               show: true,
               getDotPainter: (spot, pct, bar, idx) => FlDotCirclePainter(
                 radius: 3,
-                color: Colors.white,
+                color: Theme.of(context).colorScheme.surface,
                 strokeColor: primaryColor.withValues(alpha: 0.5),
                 strokeWidth: 2,
               ),

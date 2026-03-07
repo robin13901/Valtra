@@ -132,9 +132,9 @@ class _WaterMeterCardState extends State<_WaterMeterCard> {
       case WaterMeterType.cold:
         return AppColors.waterColor;
       case WaterMeterType.hot:
-        return Colors.redAccent;
+        return AppColors.heatingColor;
       case WaterMeterType.other:
-        return Colors.grey;
+        return AppColors.otherColor;
     }
   }
 

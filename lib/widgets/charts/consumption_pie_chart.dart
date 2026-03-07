@@ -31,10 +31,10 @@ class ConsumptionPieChart extends StatelessWidget {
                   color: s.color,
                   title: '${s.percentage.toStringAsFixed(1)}%',
                   radius: 80,
-                  titleStyle: const TextStyle(
+                  titleStyle: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
-                    color: Colors.white,
+                    color: Theme.of(context).colorScheme.surface,
                   ),
                 ))
             .toList(),

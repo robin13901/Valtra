@@ -157,7 +157,8 @@
       "common_deviations": [
         "Use csv package ListToCsvConverter - handles quoting/escaping automatically",
         "Const constructor + static const converter for stateless service",
-        "Conditional 'Previous Year' column when data exists"
+        "Conditional 'Previous Year' column when data exists",
+        "Optional cost column: conditional header + if (hasCost) in row builder"
       ]
     },
     "share-service": {
@@ -171,5 +172,69 @@
       ]
     }
   },
-  "updated_at": "2026-03-07T13:00:00Z"
+  "settings-screen": {
+      "best_model": "opus",
+      "average_duration": "1-2h",
+      "success_rate": 100,
+      "sample_size": 1,
+      "common_deviations": [
+        "SegmentedButton<ThemeMode> for 3-way theme toggle — requires Set wrapper",
+        "StatefulWidget for TextField to manage TextEditingController lifecycle",
+        "PackageInfo.fromPlatform() async — use FutureBuilder with placeholder",
+        "SegmentedButton icons not findable via find.byIcon — use find.byType",
+        "ListView scroll in tests: use tester.drag not scrollUntilVisible (multiple Scrollable issue)"
+      ]
+    },
+    "dark-mode-audit": {
+      "best_model": "opus",
+      "average_duration": "30min",
+      "success_rate": 100,
+      "sample_size": 1,
+      "common_deviations": [
+        "Colors.white in fl_chart dot painters — getDotPainter needs context parameter",
+        "Colors.white70/Colors.black54 in glass widgets — use colorScheme.onSurfaceVariant",
+        "Colors.redAccent/Colors.green semantic colors — add AppColors.heatingColor/successColor",
+        "inline Color(0xFF...) constants — extract to named AppColors"
+      ]
+    },
+    "cost-tracking-service": {
+      "best_model": "opus",
+      "average_duration": "2-3h",
+      "success_rate": 100,
+      "sample_size": 1,
+      "common_deviations": [
+        "JSON num → double casting: (json['key'] as num?)?.toDouble()",
+        "Tiered pricing: cumulative tiers, last tier has null limit (unlimited)",
+        "Standing charge pro-rating: standingCharge * (daysInPeriod / daysInMonth)",
+        "Negative consumption clamped to 0",
+        "Empty/null tiers JSON → fall back to flat unitPrice"
+      ]
+    },
+    "cost-config-settings-ui": {
+      "best_model": "opus",
+      "average_duration": "1h",
+      "success_rate": 100,
+      "sample_size": 1,
+      "common_deviations": [
+        "Adding new section to settings pushes existing sections off-viewport in tests",
+        "scrollUntilVisible() more robust than fixed tester.drag offset",
+        "registerFallbackValue() needed for custom types used with any() matcher",
+        "StatefulWidget _CostConfigCard per meter type with own TextEditingControllers",
+        "didUpdateWidget to sync controllers when config ID changes"
+      ]
+    },
+    "drift-schema-migration": {
+      "best_model": "opus",
+      "average_duration": "30min",
+      "success_rate": 100,
+      "sample_size": 1,
+      "common_deviations": [
+        "Use m.createTable(newTable) in onUpgrade — Drift handles column types",
+        "Generated CostConfig class in app_database.g.dart — import app_database.dart",
+        "intEnum<T>() for enum columns in table definition",
+        "Text column with .withDefault(const Constant('€')) for currency symbol"
+      ]
+    }
+  },
+  "updated_at": "2026-03-07T18:00:00Z"
 }

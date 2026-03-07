@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
+import '../app_theme.dart';
 import '../l10n/app_localizations.dart';
 import '../providers/smart_plug_analytics_provider.dart';
 import '../services/analytics/analytics_models.dart';
@@ -157,7 +158,7 @@ class SmartPlugAnalyticsScreen extends StatelessWidget {
         label: 'Other',
         value: data.otherConsumption!,
         percentage: (data.otherConsumption! / total) * 100,
-        color: const Color(0xFF9E9E9E),
+        color: AppColors.otherColor,
       ));
     }
     return slices;
@@ -179,7 +180,7 @@ class SmartPlugAnalyticsScreen extends StatelessWidget {
         label: 'Other',
         value: data.otherConsumption!,
         percentage: (data.otherConsumption! / total) * 100,
-        color: const Color(0xFF9E9E9E),
+        color: AppColors.otherColor,
       ));
     }
     return slices;

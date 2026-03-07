@@ -3,7 +3,8 @@
 ## Current Status
 - **Milestone**: 3 - Polish & Enhancement (v0.3.0)
 - **Last Shipped**: v0.2.0 (2026-03-07)
-- **Current Phase**: 12 - Settings & Configuration (not started)
+- **Current Phase**: 13 - Cost Tracking (COMPLETED)
+- **Next Phase**: 14 - UI/UX Polish & Data Entry
 - **Last Updated**: 2026-03-07
 
 ## Completed Milestones
@@ -11,7 +12,7 @@
 - **Milestone 2**: Analytics & Visualization (v0.2.0) — 4 phases, 625 tests
 
 ## In Progress
-_None — milestone initialized, ready for Phase 12 planning_
+_None — Phase 13 complete, ready for Phase 14 planning_
 
 ## Blocked
 _None_
@@ -20,6 +21,8 @@ _None_
 | Date | Phase | Action | Notes |
 |------|-------|--------|-------|
 | 2026-03-07 | — | Milestone 3 initialized | Created REQUIREMENTS.md, updated ROADMAP.md, reset STATE.md |
+| 2026-03-07 | 12 | Phase 12 completed | Settings & Configuration — 43 new tests (21 settings screen + 22 theme provider), 668 total. Dark mode audit fixed 11 hardcoded colors across 6 files. |
+| 2026-03-07 | 13 | Phase 13 completed | Cost Tracking — 39 new tests (27 service + 12 DAO), settings screen tests updated (+mock CostConfigProvider), 707 total. DB migration v1→v2, tiered pricing, cost display in analytics. |
 
 ## Key Decisions (carried forward)
 1. **Local-first architecture** - Using Drift/SQLite for offline-capable data storage
@@ -46,7 +49,7 @@ _None at this time_
 ## Technical Debt
 1. **LiquidGlass integration** - Using standard Flutter glass-style widgets instead of full liquid_glass_renderer integration
 2. **NFR-3.3**: Test coverage not measured with Codecov yet (target: Milestone 3, Phase 15)
-3. **Hardcoded colors** - Some screens may have hardcoded color values; needs audit during Phase 12
+3. ~~**Hardcoded colors**~~ — Resolved in Phase 12 dark mode audit (11 fixes across 6 files)
 
 ## Next Actions
-_Run `/gsd:plan-phase 12` to plan Phase 12: Settings & Configuration._
+_Run `/gsd:plan-phase 14` to plan Phase 14: UI/UX Polish & Data Entry._
