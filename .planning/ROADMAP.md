@@ -54,15 +54,11 @@
 ### Phase 11: Smart Plug Analytics
 **Requirements**: FR-7.4, FR-9.2
 **Dependencies**: Phase 9 (analytics infrastructure), Phase 4 DAO aggregation methods
-- [ ] Create `SmartPlugAnalyticsScreen` with period selection (monthly/yearly/custom)
-- [ ] Build pie chart for consumption by individual smart plug (fl_chart)
-- [ ] Build pie chart for consumption by room
-- [ ] Calculate and display "Other" consumption (total electricity minus total smart plug)
-- [ ] Add detailed list view with per-plug and per-room breakdown
-- [ ] Time period filtering for all smart plug analytics
-- [ ] Wire into analytics hub and smart plug screen navigation
-- [ ] Comprehensive unit and widget tests
-- [ ] Localize all new strings (EN + DE)
+**Plans:** 2 plans
+
+Plans:
+- [ ] 11-01-PLAN.md — Data models, SmartPlugAnalyticsProvider, ConsumptionPieChart widget (Wave 1)
+- [ ] 11-02-PLAN.md — SmartPlugAnalyticsScreen, navigation wiring, localization, provider registration (Wave 2)
 
 ---
 
@@ -110,5 +106,5 @@ Phase 12 (UI Polish) ───► Phase 13 (Data Entry) ───► Phase 14 (T
 ## Current Status
 - **Completed**: Milestone 1 (v0.1.0), Phases 8-10 (Interpolation, Analytics Hub, Yearly + CSV)
 - **Active Milestone**: 2 - Analytics & Visualization (v0.2.0)
-- **Next Phase**: Phase 11 - Smart Plug Analytics
+- **Active Phase**: Phase 11 - Smart Plug Analytics (PLANNED)
 - **Blockers**: None
