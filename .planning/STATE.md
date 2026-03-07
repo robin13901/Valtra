@@ -2,7 +2,7 @@
 
 ## Current Status
 - **Milestone**: 2 - Analytics & Visualization (v0.2.0)
-- **Phase**: Phase 10 - Yearly Analytics & CSV Export (COMPLETED)
+- **Phase**: Phase 11 - Smart Plug Analytics (IN PROGRESS - Plan 01 complete)
 - **Last Updated**: 2026-03-07
 
 ## Completed Phases (Milestone 1)
@@ -18,10 +18,10 @@
 - **Phase 8**: Interpolation Engine & Gas kWh Conversion (COMPLETED)
 - **Phase 9**: Analytics Hub & Monthly Analytics (COMPLETED)
 - **Phase 10**: Yearly Analytics & CSV Export (COMPLETED)
-- **Phase 11**: Smart Plug Analytics (NOT STARTED)
+- **Phase 11**: Smart Plug Analytics (IN PROGRESS - Plan 01 complete)
 
 ## In Progress
-_None_
+- **Phase 11, Plan 01**: Data layer & pie chart widget (COMPLETED - 31 tests, 2 tasks)
 
 ## Blocked
 _None_
@@ -33,6 +33,7 @@ _None_
 | 2026-03-07 | 8 | Phase 8 completed | Interpolation engine, gas kWh conversion, DAO range queries — 395 tests, 0 issues |
 | 2026-03-07 | 9 | Phase 9 completed | Analytics hub, monthly analytics with fl_chart, month navigation, custom date ranges — 497 tests, 0 issues |
 | 2026-03-07 | 10 | Phase 10 completed | Yearly analytics, year-over-year comparison, CSV export, share service — ~81 new tests |
+| 2026-03-07 | 11 | Plan 01 completed | Data models, SmartPlugAnalyticsProvider, ConsumptionPieChart — 31 new tests, 609 total, 0 analyze issues |
 
 ## Key Decisions (Milestone 2)
 1. **Interpolation methods**: Linear (default for electricity/gas/water) + Step function (heating), configurable per meter type
@@ -41,6 +42,8 @@ _None_
 4. **Time periods**: Monthly calendar + custom date range selection
 5. **CSV export**: via csv + share_plus packages, system share sheet
 6. **Carry-forward included**: Gas kWh conversion (FR-5.3) and smart plug aggregation UI (FR-3.5/3.6)
+7. **Separate SmartPlugAnalyticsProvider**: Smart plug analytics uses its own provider (not AnalyticsProvider) since data is pre-aggregated
+8. **Other consumption clamped**: max(0, totalElectricity - totalSmartPlug), null when no electricity data
 
 ## Key Decisions (Milestone 1 — carried forward)
 1. **Local-first architecture** - Using Drift/SQLite for offline-capable data storage
@@ -63,4 +66,4 @@ _None at this time_
 2. **NFR-3.3**: Test coverage not measured with Codecov yet (deferred to Milestone 3)
 
 ## Next Actions
-1. Run `/gsd:plan-phase 11` to plan the Smart Plug Analytics phase
+1. Execute Phase 11 Plan 02: Smart Plug Analytics Screen (navigation, UI wiring)
