@@ -7,6 +7,7 @@ import '../providers/analytics_provider.dart';
 import '../services/analytics/analytics_models.dart';
 import '../services/csv_export_service.dart';
 import '../services/share_service.dart';
+import '../widgets/liquid_glass_widgets.dart';
 import '../widgets/charts/chart_legend.dart';
 import '../widgets/charts/monthly_bar_chart.dart';
 import '../widgets/charts/year_comparison_chart.dart';
@@ -39,9 +40,9 @@ class _YearlyAnalyticsScreenState extends State<YearlyAnalyticsScreen> {
     final color = colorForMeterType(widget.meterType);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-            '${_meterTypeLabel(l10n, widget.meterType)} - ${l10n.yearlyAnalytics}'),
+      appBar: buildGlassAppBar(
+        context: context,
+        title: '${_meterTypeLabel(l10n, widget.meterType)} - ${l10n.yearlyAnalytics}',
       ),
       body: provider.isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -49,10 +50,11 @@ class _YearlyAnalyticsScreenState extends State<YearlyAnalyticsScreen> {
               ? Center(child: Text(l10n.noData))
               : _buildContent(context, data, color, l10n, provider),
       floatingActionButton: data != null && data.monthlyBreakdown.isNotEmpty
-          ? FloatingActionButton(
+          ? buildGlassFAB(
+              context: context,
+              icon: Icons.file_download,
               onPressed: () => _exportCsv(context, data),
               tooltip: l10n.exportCsv,
-              child: const Icon(Icons.file_download),
             )
           : null,
     );
@@ -254,40 +256,37 @@ class _YearlySummaryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          children: [
-            Text(l10n.totalForYear(year.toString()),
-                style: Theme.of(context).textTheme.bodyMedium),
+    return GlassCard(
+      child: Column(
+        children: [
+          Text(l10n.totalForYear(year.toString()),
+              style: Theme.of(context).textTheme.bodyMedium),
+          const SizedBox(height: 8),
+          Text(
+            totalConsumption != null
+                ? '${totalConsumption!.toStringAsFixed(1)} $unit'
+                : '\u2014',
+            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                  color: color,
+                  fontWeight: FontWeight.bold,
+                ),
+          ),
+          if (totalConsumption != null &&
+              previousYearTotal != null &&
+              previousYearTotal! > 0) ...[
+            const SizedBox(height: 8),
+            _buildChangeText(context, l10n),
+          ],
+          if (totalCost != null) ...[
             const SizedBox(height: 8),
             Text(
-              totalConsumption != null
-                  ? '${totalConsumption!.toStringAsFixed(1)} $unit'
-                  : '\u2014',
-              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                    color: color,
-                    fontWeight: FontWeight.bold,
+              '~${currencySymbol ?? '\u20AC'}${totalCost!.toStringAsFixed(2)}',
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
             ),
-            if (totalConsumption != null &&
-                previousYearTotal != null &&
-                previousYearTotal! > 0) ...[
-              const SizedBox(height: 8),
-              _buildChangeText(context, l10n),
-            ],
-            if (totalCost != null) ...[
-              const SizedBox(height: 8),
-              Text(
-                '~${currencySymbol ?? '\u20AC'}${totalCost!.toStringAsFixed(2)}',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    ),
-              ),
-            ],
           ],
-        ),
+        ],
       ),
     );
   }

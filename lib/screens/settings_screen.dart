@@ -12,6 +12,7 @@ import '../providers/cost_config_provider.dart';
 import '../providers/interpolation_settings_provider.dart';
 import '../providers/theme_provider.dart';
 import '../services/interpolation/models.dart';
+import '../widgets/liquid_glass_widgets.dart';
 
 /// Settings screen with theme toggle, meter settings, and app info.
 class SettingsScreen extends StatelessWidget {
@@ -26,7 +27,7 @@ class SettingsScreen extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.settings)),
+      appBar: buildGlassAppBar(context: context, title: l10n.settings),
       body: ListView(
         padding: const EdgeInsets.symmetric(vertical: 8),
         children: [
@@ -64,45 +65,42 @@ class SettingsScreen extends StatelessWidget {
         _buildSectionHeader(context, l10n.appearance),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Card(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    l10n.themeMode,
-                    style: Theme.of(context).textTheme.bodyLarge,
+          child: GlassCard(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  l10n.themeMode,
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
+                const SizedBox(height: 12),
+                SizedBox(
+                  width: double.infinity,
+                  child: SegmentedButton<ThemeMode>(
+                    segments: [
+                      ButtonSegment(
+                        value: ThemeMode.light,
+                        label: Text(l10n.themeLight),
+                        icon: const Icon(Icons.light_mode),
+                      ),
+                      ButtonSegment(
+                        value: ThemeMode.dark,
+                        label: Text(l10n.themeDark),
+                        icon: const Icon(Icons.dark_mode),
+                      ),
+                      ButtonSegment(
+                        value: ThemeMode.system,
+                        label: Text(l10n.themeSystem),
+                        icon: const Icon(Icons.brightness_auto),
+                      ),
+                    ],
+                    selected: {themeProvider.themeMode},
+                    onSelectionChanged: (selected) {
+                      themeProvider.setThemeMode(selected.first);
+                    },
                   ),
-                  const SizedBox(height: 12),
-                  SizedBox(
-                    width: double.infinity,
-                    child: SegmentedButton<ThemeMode>(
-                      segments: [
-                        ButtonSegment(
-                          value: ThemeMode.light,
-                          label: Text(l10n.themeLight),
-                          icon: const Icon(Icons.light_mode),
-                        ),
-                        ButtonSegment(
-                          value: ThemeMode.dark,
-                          label: Text(l10n.themeDark),
-                          icon: const Icon(Icons.dark_mode),
-                        ),
-                        ButtonSegment(
-                          value: ThemeMode.system,
-                          label: Text(l10n.themeSystem),
-                          icon: const Icon(Icons.brightness_auto),
-                        ),
-                      ],
-                      selected: {themeProvider.themeMode},
-                      onSelectionChanged: (selected) {
-                        themeProvider.setThemeMode(selected.first);
-                      },
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),
@@ -119,29 +117,26 @@ class SettingsScreen extends StatelessWidget {
         _buildSectionHeader(context, l10n.meterSettings),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Card(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildGasConversionField(context, l10n, settingsProvider),
-                  const Divider(height: 24),
-                  Text(
-                    l10n.interpolationMethodLabel,
-                    style: Theme.of(context).textTheme.bodyLarge,
+          child: GlassCard(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildGasConversionField(context, l10n, settingsProvider),
+                const Divider(height: 24),
+                Text(
+                  l10n.interpolationMethodLabel,
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
+                const SizedBox(height: 8),
+                ..._meterTypes.map(
+                  (type) => _buildInterpolationRow(
+                    context,
+                    l10n,
+                    settingsProvider,
+                    type,
                   ),
-                  const SizedBox(height: 8),
-                  ..._meterTypes.map(
-                    (type) => _buildInterpolationRow(
-                      context,
-                      l10n,
-                      settingsProvider,
-                      type,
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),
@@ -244,10 +239,8 @@ class SettingsScreen extends StatelessWidget {
         _buildSectionHeader(context, l10n.aboutSection),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Card(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: FutureBuilder<PackageInfo>(
+          child: GlassCard(
+            child: FutureBuilder<PackageInfo>(
                 future: PackageInfo.fromPlatform(),
                 builder: (context, snapshot) {
                   final version = snapshot.data?.version ?? '...';
@@ -267,7 +260,6 @@ class SettingsScreen extends StatelessWidget {
                   );
                 },
               ),
-            ),
           ),
         ),
       ],
@@ -534,10 +526,8 @@ class _CostConfigCardState extends State<_CostConfigCard> {
   Widget build(BuildContext context) {
     final hasConfig = widget.config != null;
 
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
+    return GlassCard(
+      child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
@@ -613,7 +603,6 @@ class _CostConfigCardState extends State<_CostConfigCard> {
             ),
           ],
         ),
-      ),
     );
   }
 }

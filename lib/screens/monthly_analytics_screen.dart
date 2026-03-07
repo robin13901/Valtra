@@ -7,6 +7,7 @@ import '../providers/analytics_provider.dart';
 import '../services/analytics/analytics_models.dart';
 import '../services/csv_export_service.dart';
 import '../services/share_service.dart';
+import '../widgets/liquid_glass_widgets.dart';
 import '../widgets/charts/chart_legend.dart';
 import '../widgets/charts/consumption_line_chart.dart';
 import '../widgets/charts/monthly_bar_chart.dart';
@@ -23,8 +24,9 @@ class MonthlyAnalyticsScreen extends StatelessWidget {
     final color = colorForMeterType(provider.selectedMeterType);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(_meterTypeLabel(l10n, provider.selectedMeterType)),
+      appBar: buildGlassAppBar(
+        context: context,
+        title: _meterTypeLabel(l10n, provider.selectedMeterType),
         actions: [
           IconButton(
             icon: const Icon(Icons.calendar_view_month),
@@ -108,10 +110,11 @@ class MonthlyAnalyticsScreen extends StatelessWidget {
                   ],
                 ),
       floatingActionButton: data != null && data.recentMonths.isNotEmpty
-          ? FloatingActionButton(
+          ? buildGlassFAB(
+              context: context,
+              icon: Icons.file_download,
               onPressed: () => _exportMonthlyCsv(context, data),
               tooltip: l10n.exportCsv,
-              child: const Icon(Icons.file_download),
             )
           : null,
     );
@@ -245,34 +248,31 @@ class _ConsumptionSummaryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          children: [
-            Text(l10n.totalConsumption,
-                style: Theme.of(context).textTheme.bodyMedium),
-            const SizedBox(height: 8),
+    return GlassCard(
+      child: Column(
+        children: [
+          Text(l10n.totalConsumption,
+              style: Theme.of(context).textTheme.bodyMedium),
+          const SizedBox(height: 8),
+          Text(
+            totalConsumption != null
+                ? '${totalConsumption!.toStringAsFixed(1)} $unit'
+                : '\u2014',
+            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                  color: color,
+                  fontWeight: FontWeight.bold,
+                ),
+          ),
+          if (totalCost != null) ...[
+            const SizedBox(height: 4),
             Text(
-              totalConsumption != null
-                  ? '${totalConsumption!.toStringAsFixed(1)} $unit'
-                  : '\u2014',
-              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                    color: color,
-                    fontWeight: FontWeight.bold,
+              '~${currencySymbol ?? '\u20AC'}${totalCost!.toStringAsFixed(2)}',
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
             ),
-            if (totalCost != null) ...[
-              const SizedBox(height: 4),
-              Text(
-                '~${currencySymbol ?? '\u20AC'}${totalCost!.toStringAsFixed(2)}',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    ),
-              ),
-            ],
           ],
-        ),
+        ],
       ),
     );
   }

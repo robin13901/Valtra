@@ -7,6 +7,7 @@ import '../l10n/app_localizations.dart';
 import '../providers/smart_plug_analytics_provider.dart';
 import '../services/analytics/analytics_models.dart';
 import '../widgets/charts/consumption_pie_chart.dart';
+import '../widgets/liquid_glass_widgets.dart';
 
 /// Screen displaying smart plug analytics with pie charts and breakdown lists.
 class SmartPlugAnalyticsScreen extends StatelessWidget {
@@ -18,8 +19,9 @@ class SmartPlugAnalyticsScreen extends StatelessWidget {
     final provider = context.watch<SmartPlugAnalyticsProvider>();
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.smartPlugAnalytics),
+      appBar: buildGlassAppBar(
+        context: context,
+        title: l10n.smartPlugAnalytics,
         actions: [
           if (provider.period == AnalyticsPeriod.custom)
             IconButton(
@@ -368,50 +370,47 @@ class _SummaryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _SummaryRow(
-              label: l10n.totalTracked,
-              value: '${data.totalSmartPlug.toStringAsFixed(1)} ${data.unit}',
-            ),
-            const SizedBox(height: 8),
-            _SummaryRow(
-              label: l10n.totalElectricity,
-              value: data.totalElectricity != null
-                  ? '${data.totalElectricity!.toStringAsFixed(1)} ${data.unit}'
-                  : '\u2014',
-            ),
-            const SizedBox(height: 8),
-            if (data.otherConsumption != null) ...[
-              Row(
-                children: [
-                  Expanded(
-                    child: _SummaryRow(
-                      label: l10n.otherConsumption,
-                      value:
-                          '${data.otherConsumption!.toStringAsFixed(1)} ${data.unit}',
-                    ),
+    return GlassCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _SummaryRow(
+            label: l10n.totalTracked,
+            value: '${data.totalSmartPlug.toStringAsFixed(1)} ${data.unit}',
+          ),
+          const SizedBox(height: 8),
+          _SummaryRow(
+            label: l10n.totalElectricity,
+            value: data.totalElectricity != null
+                ? '${data.totalElectricity!.toStringAsFixed(1)} ${data.unit}'
+                : '\u2014',
+          ),
+          const SizedBox(height: 8),
+          if (data.otherConsumption != null) ...[
+            Row(
+              children: [
+                Expanded(
+                  child: _SummaryRow(
+                    label: l10n.otherConsumption,
+                    value:
+                        '${data.otherConsumption!.toStringAsFixed(1)} ${data.unit}',
                   ),
-                  Tooltip(
-                    message: l10n.otherConsumptionExplanation,
-                    child: const Icon(Icons.info_outline, size: 18),
+                ),
+                Tooltip(
+                  message: l10n.otherConsumptionExplanation,
+                  child: const Icon(Icons.info_outline, size: 18),
+                ),
+              ],
+            ),
+          ] else ...[
+            Text(
+              l10n.noElectricityData,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
-                ],
-              ),
-            ] else ...[
-              Text(
-                l10n.noElectricityData,
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    ),
-              ),
-            ],
+            ),
           ],
-        ),
+        ],
       ),
     );
   }

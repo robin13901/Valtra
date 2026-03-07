@@ -8,6 +8,7 @@ import '../services/analytics/analytics_models.dart';
 import '../services/csv_export_service.dart';
 import '../services/interpolation/models.dart';
 import '../services/share_service.dart';
+import '../widgets/liquid_glass_widgets.dart';
 import 'monthly_analytics_screen.dart';
 import 'smart_plug_analytics_screen.dart';
 
@@ -20,8 +21,9 @@ class AnalyticsScreen extends StatelessWidget {
     final provider = context.watch<AnalyticsProvider>();
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.analyticsHub),
+      appBar: buildGlassAppBar(
+        context: context,
+        title: l10n.analyticsHub,
         actions: [
           IconButton(
             icon: const Icon(Icons.file_download),
@@ -52,10 +54,11 @@ class AnalyticsScreen extends StatelessWidget {
                 Text(l10n.smartPlugAnalytics,
                     style: Theme.of(context).textTheme.headlineSmall),
                 const SizedBox(height: 8),
-                Card(
-                  clipBehavior: Clip.antiAlias,
+                GlassCard(
+                  padding: EdgeInsets.zero,
                   child: InkWell(
                     onTap: () => _navigateToSmartPlugAnalytics(context),
+                    borderRadius: BorderRadius.circular(16),
                     child: Padding(
                       padding: const EdgeInsets.all(16),
                       child: Row(
@@ -188,10 +191,11 @@ class _MeterOverviewCard extends StatelessWidget {
     final icon = iconForMeterType(meterType);
     final label = _meterTypeLabel(l10n, meterType);
 
-    return Card(
-      clipBehavior: Clip.antiAlias,
+    return GlassCard(
+      padding: EdgeInsets.zero,
       child: InkWell(
         onTap: onTap,
+        borderRadius: BorderRadius.circular(16),
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Row(
