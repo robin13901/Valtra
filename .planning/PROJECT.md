@@ -44,19 +44,22 @@ Managing utility consumption across multiple households requires manual tracking
 - Full EN/DE localization (140 keys)
 - Architecture: Drift DAOs -> Provider state management -> Material 3 + LiquidGlass UI
 
-### Next Milestone Goals: v0.2.0 - Analytics & Visualization
-- Interpolation engine for monthly boundary values
-- Monthly and yearly analytics screens with charts
-- Smart plug analytics with pie charts (by plug, by room, "Other")
-- Consumption trend visualization with fl_chart
+### Active: v0.2.0 - Analytics & Visualization
+- **Phase 8**: Interpolation engine (linear + step, configurable per meter) + gas kWh conversion
+- **Phase 9**: Analytics hub (home access) + monthly analytics with line/bar charts + custom date ranges
+- **Phase 10**: Yearly analytics with year-over-year comparison + CSV export (share_plus)
+- **Phase 11**: Smart plug analytics with pie charts (by plug, by room, "Other")
+- **Carry-forward**: Gas kWh display (FR-5.3), smart plug aggregation UI (FR-3.5/3.6)
+- **New dependencies**: csv, share_plus packages
 
 ## Success Criteria
 1. ~~All meter types can be recorded with timestamps~~ (v0.1.0)
-2. Smart plug data aggregates correctly by room (v0.2.0)
-3. Interpolation produces accurate monthly values (v0.2.0)
+2. Smart plug data aggregates correctly by room with pie chart visualization (v0.2.0)
+3. Interpolation produces accurate monthly boundary values with configurable methods (v0.2.0)
 4. ~~Multi-household data remains properly isolated~~ (v0.1.0)
-5. Analytics views show meaningful consumption insights (v0.2.0)
-6. 80%+ test coverage maintained (v0.3.0)
+5. Analytics views show meaningful consumption insights with line/bar/pie charts (v0.2.0)
+6. CSV export works for all meter types via system share sheet (v0.2.0)
+7. 80%+ test coverage maintained (v0.3.0)
 
 ## Repository
 - Location: c:\SAPDevelop\Privat\Valtra

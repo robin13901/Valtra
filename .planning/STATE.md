@@ -1,11 +1,11 @@
 # Valtra - Project State
 
 ## Current Status
-- **Milestone**: 1 - Core Foundation (v0.1.0) — COMPLETE
-- **Phase**: Phase 7 - COMPLETED (final phase of Milestone 1)
+- **Milestone**: 2 - Analytics & Visualization (v0.2.0)
+- **Phase**: Phase 8 - Interpolation Engine & Gas kWh Conversion (NOT STARTED)
 - **Last Updated**: 2026-03-07
 
-## Completed Phases
+## Completed Phases (Milestone 1)
 - **Phase 1**: Project Setup & Architecture (COMPLETED)
 - **Phase 2**: Household Management (COMPLETED)
 - **Phase 3**: Electricity Tracking (COMPLETED)
@@ -13,6 +13,12 @@
 - **Phase 5**: Water Tracking (COMPLETED)
 - **Phase 6**: Gas Tracking (COMPLETED)
 - **Phase 7**: Heating Tracking (COMPLETED)
+
+## Milestone 2 Phases
+- **Phase 8**: Interpolation Engine & Gas kWh Conversion (NOT STARTED)
+- **Phase 9**: Analytics Hub & Monthly Analytics (NOT STARTED)
+- **Phase 10**: Yearly Analytics & CSV Export (NOT STARTED)
+- **Phase 11**: Smart Plug Analytics (NOT STARTED)
 
 ## In Progress
 _None_
@@ -23,30 +29,17 @@ _None_
 ## Session History
 | Date | Phase | Action | Notes |
 |------|-------|--------|-------|
-| 2026-03-06 | - | Project initialized | Created PROJECT.md, REQUIREMENTS.md, ROADMAP.md |
-| 2026-03-06 | 1 | Phase planned | Created PLAN.md with 10 tasks |
-| 2026-03-06 | 1 | Phase executed | All 10 tasks completed, 12 tests passing |
-| 2026-03-06 | 2 | Phase executed | All 10 tasks completed, 42 tests passing |
-| 2026-03-06 | 2 | Phase verified | 8/8 UAT tests passed |
-| 2026-03-06 | 2 | Patterns captured | flutter-household-crud pattern saved |
-| 2026-03-06 | 3 | Phase executed | All 10 tasks completed, 77 tests passing |
-| 2026-03-06 | 3 | Phase verified | 5/5 UAT tests passed |
-| 2026-03-06 | 3 | Patterns captured | flutter-meter-reading-crud pattern saved |
-| 2026-03-06 | 4 | Phase executed | All 16 tasks completed, 138 tests passing |
-| 2026-03-06 | 4 | Phase verified | 5/5 UAT tests passed |
-| 2026-03-06 | 4 | Patterns captured | flutter-smart-plug-room-crud pattern saved |
-| 2026-03-06 | 5 | Phase executed | All 9 tasks completed, 204 tests passing |
-| 2026-03-06 | 5 | Phase verified | 6/6 UAT tests passed |
-| 2026-03-06 | 5 | Patterns captured | flutter-multi-meter-tracking pattern saved |
-| 2026-03-06 | 6 | Phase executed | All 10 tasks completed, 241 tests passing |
-| 2026-03-06 | 6 | Phase verified | 6/6 UAT tests passed |
-| 2026-03-06 | 6 | Patterns captured | flutter-meter-reading-crud pattern updated (2nd use) |
-| 2026-03-07 | 7 | Phase planned | Created PLAN.md with 11 tasks |
-| 2026-03-07 | 7 | Phase executed | All 11 tasks completed, 313 tests passing |
-| 2026-03-07 | 7 | Phase verified | 7/7 UAT tests passed |
-| 2026-03-07 | 7 | Patterns captured | flutter-multi-meter-tracking pattern updated (2nd use) |
+| 2026-03-07 | — | Milestone 2 initialized | Created REQUIREMENTS.md, updated ROADMAP.md, reset STATE.md |
 
-## Key Decisions
+## Key Decisions (Milestone 2)
+1. **Interpolation methods**: Linear (default for electricity/gas/water) + Step function (heating), configurable per meter type
+2. **Chart types**: Line + Bar + Pie using fl_chart
+3. **Analytics navigation**: Dedicated analytics hub from home + per-meter analytics buttons on each meter screen
+4. **Time periods**: Monthly calendar + custom date range selection
+5. **CSV export**: via csv + share_plus packages, system share sheet
+6. **Carry-forward included**: Gas kWh conversion (FR-5.3) and smart plug aggregation UI (FR-3.5/3.6)
+
+## Key Decisions (Milestone 1 — carried forward)
 1. **Local-first architecture** - Using Drift/SQLite for offline-capable data storage
 2. **LiquidGlass UI** - Adopting glassmorphism aesthetic from XFin reference
 3. **Color scheme** - Ultra Violet (#5F4A8B) primary, Lemon Chiffon (#FEFACD) accent
@@ -64,6 +57,7 @@ _None at this time_
 
 ## Technical Debt
 1. **LiquidGlass integration** - Using standard Flutter glass-style widgets instead of full liquid_glass_renderer integration
+2. **NFR-3.3**: Test coverage not measured with Codecov yet (deferred to Milestone 3)
 
 ## Next Actions
-1. Milestone 1 complete — run `/gsd:complete-milestone` or `/gsd:plan-phase 8` to start Milestone 2 (Analytics & Visualization)
+1. Run `/gsd:plan-phase 8` to plan the Interpolation Engine & Gas kWh Conversion phase
