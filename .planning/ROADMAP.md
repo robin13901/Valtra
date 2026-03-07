@@ -48,7 +48,7 @@ Plans:
 - [x] 14-01-PLAN.md — Foundations: LocaleProvider, ValtraNumberFormat, umlaut fixes, dark mode fix
 - [x] 14-02-PLAN.md — Home screen rewrite with GlassBottomNav, LocaleProvider wiring
 - [x] 14-03-PLAN.md — Glass widgets rollout to all 13 screens
-- [ ] 14-04-PLAN.md — Number formatting cascade across all screens and charts
+- [x] 14-04-PLAN.md -- Number formatting cascade across all screens and charts
 - [ ] 14-05-PLAN.md — UI element cleanup (badges, icons, hints, pickers, water/smart plug fixes)
 - [ ] 14-06-PLAN.md — Analysis screen cleanup (remove daily view, custom range, rename tab)
 - [ ] 14-07-PLAN.md — Language toggle in settings, full test suite verification
