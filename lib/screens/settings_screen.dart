@@ -10,6 +10,7 @@ import '../database/tables.dart';
 import '../l10n/app_localizations.dart';
 import '../providers/cost_config_provider.dart';
 import '../providers/interpolation_settings_provider.dart';
+import '../providers/locale_provider.dart';
 import '../providers/theme_provider.dart';
 import '../widgets/liquid_glass_widgets.dart';
 
@@ -27,6 +28,8 @@ class SettingsScreen extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 8),
         children: [
           _buildThemeSection(context, l10n),
+          const SizedBox(height: 8),
+          _buildLanguageSection(context, l10n),
           const SizedBox(height: 8),
           _buildMeterSettingsSection(context, l10n),
           const SizedBox(height: 8),
@@ -96,6 +99,44 @@ class SettingsScreen extends StatelessWidget {
                   ),
                 ),
               ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildLanguageSection(BuildContext context, AppLocalizations l10n) {
+    final localeProvider = context.watch<LocaleProvider>();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildSectionHeader(context, l10n.language),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: GlassCard(
+            child: SizedBox(
+              width: double.infinity,
+              child: SegmentedButton<String>(
+                segments: [
+                  ButtonSegment(
+                    value: 'de',
+                    label: Text(l10n.languageDE),
+                    icon: const Icon(Icons.language),
+                  ),
+                  ButtonSegment(
+                    value: 'en',
+                    label: Text(l10n.languageEN),
+                  ),
+                ],
+                selected: {localeProvider.localeString},
+                onSelectionChanged: (selected) {
+                  context
+                      .read<LocaleProvider>()
+                      .setLocale(Locale(selected.first));
+                },
+              ),
             ),
           ),
         ),

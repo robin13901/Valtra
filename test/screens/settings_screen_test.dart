@@ -7,15 +7,32 @@ import 'package:valtra/database/tables.dart';
 import 'package:valtra/l10n/app_localizations.dart';
 import 'package:valtra/providers/cost_config_provider.dart';
 import 'package:valtra/providers/interpolation_settings_provider.dart';
+import 'package:valtra/providers/locale_provider.dart';
 import 'package:valtra/providers/theme_provider.dart';
 import 'package:valtra/screens/settings_screen.dart';
 
 class MockCostConfigProvider extends Mock implements CostConfigProvider {}
 
+class MockLocaleProvider extends ChangeNotifier implements LocaleProvider {
+  String _localeString = 'en';
+  @override
+  String get localeString => _localeString;
+  @override
+  Locale? get locale => Locale(_localeString);
+  @override
+  Future<void> init() async {}
+  @override
+  Future<void> setLocale(Locale l) async {
+    _localeString = l.languageCode;
+    notifyListeners();
+  }
+}
+
 void main() {
   late ThemeProvider themeProvider;
   late InterpolationSettingsProvider settingsProvider;
   late MockCostConfigProvider costConfigProvider;
+  late MockLocaleProvider localeProvider;
 
   setUpAll(() {
     registerFallbackValue(CostMeterType.electricity);
@@ -32,10 +49,12 @@ void main() {
         ChangeNotifierProvider<CostConfigProvider>.value(
           value: costConfigProvider,
         ),
+        ChangeNotifierProvider<LocaleProvider>.value(value: localeProvider),
       ],
       child: MaterialApp(
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('en'),
         themeMode: initialTheme ?? themeProvider.themeMode,
         home: const SettingsScreen(),
       ),
@@ -54,6 +73,7 @@ void main() {
     when(() => costConfigProvider.configs).thenReturn([]);
     when(() => costConfigProvider.hasCostConfigs).thenReturn(false);
     when(() => costConfigProvider.householdId).thenReturn(null);
+    localeProvider = MockLocaleProvider();
   });
 
   group('SettingsScreen', () {
@@ -99,6 +119,31 @@ void main() {
         );
       });
 
+      testWidgets('shows Language section header', (tester) async {
+        await tester.pumpWidget(buildSettingsScreen());
+        await tester.pumpAndSettle();
+
+        expect(find.text('Language'), findsOneWidget);
+      });
+
+      testWidgets('shows language SegmentedButton', (tester) async {
+        await tester.pumpWidget(buildSettingsScreen());
+        await tester.pumpAndSettle();
+
+        expect(
+          find.byType(SegmentedButton<String>),
+          findsOneWidget,
+        );
+      });
+
+      testWidgets('shows German and English language options', (tester) async {
+        await tester.pumpWidget(buildSettingsScreen());
+        await tester.pumpAndSettle();
+
+        expect(find.text('German'), findsOneWidget);
+        expect(find.text('English'), findsOneWidget);
+      });
+
       testWidgets('shows Meter Settings section header', (tester) async {
         await tester.pumpWidget(buildSettingsScreen());
         await tester.pumpAndSettle();
@@ -117,7 +162,7 @@ void main() {
         await tester.pumpWidget(buildSettingsScreen());
         await tester.pumpAndSettle();
 
-        expect(find.text('Default: 10.3 kWh/m³'), findsOneWidget);
+        expect(find.text('Default: 10.3 kWh/m\u00b3'), findsOneWidget);
       });
 
       testWidgets('shows About section header', (tester) async {
@@ -148,7 +193,6 @@ void main() {
 
         expect(find.text('Version'), findsOneWidget);
       });
-
     });
 
     group('theme toggle', () {
@@ -184,6 +228,41 @@ void main() {
       });
     });
 
+    group('language toggle', () {
+      testWidgets('tapping German calls setLocale with de', (tester) async {
+        await tester.pumpWidget(buildSettingsScreen());
+        await tester.pumpAndSettle();
+
+        await tester.tap(find.text('German'));
+        await tester.pumpAndSettle();
+
+        expect(localeProvider.localeString, 'de');
+      });
+
+      testWidgets('tapping English calls setLocale with en', (tester) async {
+        // Start with de selected
+        await localeProvider.setLocale(const Locale('de'));
+        await tester.pumpWidget(buildSettingsScreen());
+        await tester.pumpAndSettle();
+
+        await tester.tap(find.text('English'));
+        await tester.pumpAndSettle();
+
+        expect(localeProvider.localeString, 'en');
+      });
+
+      testWidgets('shows current locale as selected', (tester) async {
+        await localeProvider.setLocale(const Locale('de'));
+        await tester.pumpWidget(buildSettingsScreen());
+        await tester.pumpAndSettle();
+
+        // SegmentedButton should exist with de selected
+        final segmentedButton = tester
+            .widget<SegmentedButton<String>>(find.byType(SegmentedButton<String>));
+        expect(segmentedButton.selected, {'de'});
+      });
+    });
+
     group('gas conversion factor', () {
       testWidgets('shows current gas factor value', (tester) async {
         await tester.pumpWidget(buildSettingsScreen());
@@ -193,11 +272,11 @@ void main() {
         expect(find.text('10.3'), findsOneWidget);
       });
 
-      testWidgets('shows kWh/m³ suffix', (tester) async {
+      testWidgets('shows kWh/m\u00b3 suffix', (tester) async {
         await tester.pumpWidget(buildSettingsScreen());
         await tester.pumpAndSettle();
 
-        expect(find.text('kWh/m³'), findsOneWidget);
+        expect(find.text('kWh/m\u00b3'), findsOneWidget);
       });
 
       testWidgets('entering valid factor updates provider', (tester) async {
@@ -224,7 +303,6 @@ void main() {
         expect(find.text('Please enter a valid number'), findsOneWidget);
       });
     });
-
   });
 
   group('HomeScreen settings navigation', () {
@@ -243,10 +321,12 @@ void main() {
             ChangeNotifierProvider<CostConfigProvider>.value(
               value: costConfigProvider,
             ),
+            ChangeNotifierProvider<LocaleProvider>.value(value: localeProvider),
           ],
           child: MaterialApp(
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
+            locale: const Locale('en'),
             home: Builder(
               builder: (context) {
                 return Scaffold(
