@@ -11,8 +11,8 @@
 - **Milestone 1**: Core Foundation (v0.1.0) — 7 phases, 313 tests
 - **Milestone 2**: Analytics & Visualization (v0.2.0) — 4 phases, 625 tests
 
-## In Progress
-- **Phase 14**: UI/UX Polish & Localization -- COMPLETE (Plan 07/07 complete, 14/14 tasks done)
+## Completed (this milestone)
+- **Phase 14**: UI/UX Polish & Localization — 7 plans, 4 waves, 765 tests
 
 ## Blocked
 _None_

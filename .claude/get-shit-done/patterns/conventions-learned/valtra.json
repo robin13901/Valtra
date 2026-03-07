@@ -147,6 +147,20 @@
     "CostConfig generated data class lives in app_database.g.dart — import app_database.dart not just tables.dart",
     "DB migration: use m.createTable(newTable) in onUpgrade, not raw SQL — Drift handles column types",
     "Pure service pattern: const constructor, no DB/UI imports, all methods take explicit params — 100% unit testable",
-    "Cost is computed not stored: derive from consumption × rate at query time to avoid data sync issues"
+    "Cost is computed not stored: derive from consumption × rate at query time to avoid data sync issues",
+    "Glass widgets (buildGlassAppBar, buildGlassFAB, GlassCard) need ThemeProvider in test widget tree — use shared mock helper",
+    "buildGlassAppBar has no bottom: param — combine title + subtitle into single title string",
+    "DateFormat requires initializeDateFormatting() before first use — call in test setUpAll and app main()",
+    "Centralize number formatting in static utility class (ValtraNumberFormat) — screens format, providers return raw values",
+    "Chart widgets accept optional locale parameter with 'de' default for backward compat",
+    "Bottom nav shortcut bar pattern: push screens via Navigator.push, reset index to 0 on return — avoids nested Scaffolds",
+    "Consumer2<ThemeProvider, LocaleProvider> wraps MaterialApp for dual reactive binding",
+    "Deferred test fix pattern: when multi-plan phase breaks tests, fix ALL in final integration plan rather than per-plan",
+    "DropdownButtonFormField over SegmentedButton for options with long translated text (avoids wrapping)",
+    "InputDecorator + InkWell for styled date/time picker fields matching text field aesthetics",
+    "Water type semantic colors: blue=cold, red=hot, grey=other (using Colors.* not AppColors)",
+    "Feature removal order: screens (UI) first, providers (data) second, ARB (l10n) third, tests last",
+    "Shared MockLocaleProvider defaults to 'en' for consistent English-format test assertions",
+    "SegmentedButton<String> for binary language toggle (DE/EN) — Material 3 standard pattern"
   ]
 }
