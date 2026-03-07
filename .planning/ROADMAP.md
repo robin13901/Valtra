@@ -56,21 +56,17 @@ Plans:
 ### Phase 15: Data Model & Analytics Rework
 **Requirements**: FR-13 (Data Model & Analytics Rework)
 **Dependencies**: Phase 14 (UI cleanup complete)
-- [ ] Rework interpolation: calculate values for 1st of each month at 00:00 from nearest real readings
-- [ ] Add toggle to show/hide interpolated values in readings list (default: hidden)
-- [ ] Color-code interpolated values when visible in list
-- [ ] Monthly consumption based on interpolated month-boundary differences
-- [ ] Rework smart plug entry: month/year picker + value field (remove interval type + start date)
-- [ ] Database migration: add room_id FK to heating meters, remove location field
-- [ ] Heating meters: mandatory room assignment (like smart plugs), grouped by room
-- [ ] Support two heating use-cases: own gas meter vs. central meter + per-room heating ratios
-- [ ] Gas analysis: display in m³ (not kWh conversion)
-- [ ] Yearly analysis: extrapolate to year-end, show previous year comparison, monthly breakdown
-- [ ] Quick entry mode: batch-add readings without closing dialog
-- [ ] Reading validation: new >= previous for cumulative meters
-- [ ] Delete confirmation dialogs for readings
-- [ ] Localize all new strings (EN + DE)
-- [ ] Comprehensive tests for interpolation, smart plug entry, heating rework
+**Plans:** 8 plans
+
+Plans:
+- [ ] 15-01-PLAN.md — Interpolation rework: cleanup step function, toggle visibility, color-code interpolated values
+- [ ] 15-02-PLAN.md — Smart plug data layer: remove interval type, month-based schema, DAO + provider updates
+- [ ] 15-03-PLAN.md — Smart plug UI layer: month/year picker form, consumption screen rework
+- [ ] 15-04-PLAN.md — Heating meter data layer: room FK, heating type + ratio, DAO + provider + analytics
+- [ ] 15-05-PLAN.md — Heating meter UI layer: room dropdown, heating type selector, group-by-room screen
+- [ ] 15-06-PLAN.md — Gas analysis fix (m³ not kWh) & yearly analysis rework (extrapolation, previous year)
+- [ ] 15-07-PLAN.md — Data entry enhancements: quick entry mode, real-time validation, shared delete confirmation
+- [ ] 15-08-PLAN.md — DB migration v2→v3 consolidation, integration testing, project state update
 
 ### Phase 16: Backup, Testing & Documentation
 **Requirements**: FR-14 (Backup & Restore), NFR-10 (Testing)
@@ -102,6 +98,11 @@ Milestone 1 (v0.1.0) --> Milestone 2 (v0.2.0) --> Milestone 3 (v0.3.0)
                                       |-- Wave 4: Plan 07 (language toggle, final verification)
                                         |
                                     Phase 15 (Data Model & Analytics Rework)
+                                      |-- Wave 1: Plan 01 (interpolation rework)
+                                      |-- Wave 2a: Plan 02, 04 (smart plug + heating data layer)
+                                      |-- Wave 2b: Plan 03, 05 (smart plug + heating UI layer)
+                                      |-- Wave 3: Plan 06, 07 (gas/yearly analysis + data entry)
+                                      |-- Wave 4: Plan 08 (DB migration, integration, cleanup)
                                         |
                                     Phase 16 (Backup, Testing & Docs)
 ```
@@ -109,6 +110,6 @@ Milestone 1 (v0.1.0) --> Milestone 2 (v0.2.0) --> Milestone 3 (v0.3.0)
 ## Current Status
 - **Completed**: Milestone 1 (v0.1.0), Milestone 2 (v0.2.0)
 - **Active Milestone**: 3 - Polish & Enhancement (v0.3.0)
-- **Active Phase**: 14 - UI/UX Polish & Localization (COMPLETE -- 7/7 plans, 765 tests)
-- **Next Phase**: 15 - Data Model & Analytics Rework
+- **Active Phase**: 15 - Data Model & Analytics Rework (PLANNED — 0/8 plans)
+- **Next Phase**: 16 - Backup, Testing & Documentation
 - **Blockers**: None
