@@ -2,25 +2,47 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../l10n/app_localizations.dart';
 import '../../database/app_database.dart';
+import 'reading_form_base.dart';
 
 /// Dialog for creating or editing a heating reading.
 ///
 /// When [reading] is null, the dialog operates in create mode.
 /// When [reading] is provided, the dialog operates in edit mode
 /// and pre-fills the form with existing values.
+///
+/// [previousValue] shows the previous reading as reference and enables
+/// real-time validation (value must be >= previous).
+/// [nextValue] is used in edit mode to validate the upper bound.
 class HeatingReadingFormDialog extends StatefulWidget {
   final HeatingReading? reading;
+  final double? previousValue;
+  final double? nextValue;
+  final Future<void> Function(HeatingReadingFormData data)? onSaveCallback;
 
-  const HeatingReadingFormDialog({super.key, this.reading});
+  const HeatingReadingFormDialog({
+    super.key,
+    this.reading,
+    this.previousValue,
+    this.nextValue,
+    this.onSaveCallback,
+  });
 
   /// Shows the dialog and returns the form data if saved, or null if cancelled.
   static Future<HeatingReadingFormData?> show(
     BuildContext context, {
     HeatingReading? reading,
+    double? previousValue,
+    double? nextValue,
+    Future<void> Function(HeatingReadingFormData data)? onSaveCallback,
   }) {
     return showDialog<HeatingReadingFormData>(
       context: context,
-      builder: (context) => HeatingReadingFormDialog(reading: reading),
+      builder: (context) => HeatingReadingFormDialog(
+        reading: reading,
+        previousValue: previousValue,
+        nextValue: nextValue,
+        onSaveCallback: onSaveCallback,
+      ),
     );
   }
 
@@ -29,13 +51,16 @@ class HeatingReadingFormDialog extends StatefulWidget {
       _HeatingReadingFormDialogState();
 }
 
-class _HeatingReadingFormDialogState extends State<HeatingReadingFormDialog> {
+class _HeatingReadingFormDialogState extends State<HeatingReadingFormDialog>
+    with QuickEntryMixin {
   final _formKey = GlobalKey<FormState>();
   late final TextEditingController _valueController;
   late DateTime _selectedDateTime;
   String? _externalError;
+  String? _validationError;
 
-  bool get isEditing => widget.reading != null;
+  @override
+  bool get isEditMode => widget.reading != null;
 
   @override
   void initState() {
@@ -43,22 +68,60 @@ class _HeatingReadingFormDialogState extends State<HeatingReadingFormDialog> {
     _valueController = TextEditingController(
       text: widget.reading?.value.toString() ?? '',
     );
+    _valueController.addListener(_onValueChanged);
     _selectedDateTime = widget.reading?.timestamp ?? DateTime.now();
   }
 
   @override
   void dispose() {
+    _valueController.removeListener(_onValueChanged);
     _valueController.dispose();
     super.dispose();
   }
+
+  @override
+  void clearValueField() {
+    _valueController.clear();
+    setState(() {
+      _validationError = null;
+      _externalError = null;
+    });
+  }
+
+  void _onValueChanged() {
+    final text = _valueController.text.trim();
+    if (text.isEmpty) {
+      setState(() => _validationError = null);
+      return;
+    }
+    final parsed = double.tryParse(text);
+    if (parsed == null) return;
+
+    final l10n = AppLocalizations.of(context)!;
+    String? error;
+
+    if (widget.previousValue != null && parsed < widget.previousValue!) {
+      error = l10n.readingTooLow('${widget.previousValue!}');
+    }
+    if (widget.nextValue != null && parsed > widget.nextValue!) {
+      error = 'Must be <= ${widget.nextValue!}';
+    }
+
+    setState(() => _validationError = error);
+  }
+
+  bool get _hasValidationError => _validationError != null;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
 
     return AlertDialog(
-      title: Text(
-          isEditing ? l10n.editHeatingReading : l10n.addHeatingReading),
+      title: Text(quickEntryTitle(
+        l10n,
+        l10n.addHeatingReading,
+        l10n.editHeatingReading,
+      )),
       content: Form(
         key: _formKey,
         child: Column(
@@ -76,18 +139,29 @@ class _HeatingReadingFormDialogState extends State<HeatingReadingFormDialog> {
               ),
             ),
             const SizedBox(height: 16),
+            // Previous value reference
+            if (widget.previousValue != null)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: Text(
+                  l10n.previousReading('${widget.previousValue!}'),
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
+                ),
+              ),
             TextFormField(
               controller: _valueController,
               decoration: InputDecoration(
                 labelText: l10n.meterValue,
-                errorText: _externalError,
+                errorText: _validationError ?? _externalError,
               ),
               keyboardType:
                   const TextInputType.numberWithOptions(decimal: true),
               inputFormatters: [
                 FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
               ],
-              autofocus: !isEditing,
+              autofocus: !isEditMode,
               validator: (value) {
                 if (value == null || value.trim().isEmpty) {
                   return l10n.readingMustBePositive;
@@ -99,19 +173,15 @@ class _HeatingReadingFormDialogState extends State<HeatingReadingFormDialog> {
                 return null;
               },
             ),
+            buildSuccessIndicator(l10n),
           ],
         ),
       ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(null),
-          child: Text(l10n.cancel),
-        ),
-        FilledButton(
-          onPressed: _onSave,
-          child: Text(l10n.save),
-        ),
-      ],
+      actions: buildQuickEntryActions(
+        l10n,
+        onSavePressed: _hasValidationError ? null : _onSave,
+        onCancelPressed: () => Navigator.of(context).pop(null),
+      ),
     );
   }
 
@@ -146,16 +216,30 @@ class _HeatingReadingFormDialogState extends State<HeatingReadingFormDialog> {
     });
   }
 
-  void _onSave() {
+  Future<void> _onSave() async {
     setState(() => _externalError = null);
 
     if (_formKey.currentState!.validate()) {
       final value = double.parse(_valueController.text.trim());
-
-      Navigator.of(context).pop(HeatingReadingFormData(
+      final data = HeatingReadingFormData(
         timestamp: _selectedDateTime,
         value: value,
-      ));
+      );
+
+      if (widget.onSaveCallback != null) {
+        await widget.onSaveCallback!(data);
+      }
+
+      if (handlePostSave()) {
+        setState(() {
+          _selectedDateTime = DateTime.now();
+        });
+        return;
+      }
+
+      if (mounted) {
+        Navigator.of(context).pop(data);
+      }
     }
   }
 }

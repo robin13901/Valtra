@@ -385,5 +385,45 @@
   "heatingRatio": "Heating ratio (%)",
   "heatingRatioHint": "Share of total heating energy",
   "heatingRatioRequired": "Heating ratio is required",
-  "heatingRatioInvalid": "Must be between 1 and 100"
+  "heatingRatioInvalid": "Must be between 1 and 100",
+  "saveAndNext": "Save & next",
+  "previousReading": "Previous: {value}",
+  "@previousReading": {
+    "placeholders": {
+      "value": {"type": "String"}
+    }
+  },
+  "readingTooLow": "Must be >= {value}",
+  "@readingTooLow": {
+    "placeholders": {
+      "value": {"type": "String"}
+    }
+  },
+  "addReadingCount": "Add reading ({count})",
+  "@addReadingCount": {
+    "placeholders": {
+      "count": {"type": "String"}
+    }
+  },
+  "deleteConfirmTitle": "Delete {item}?",
+  "@deleteConfirmTitle": {
+    "placeholders": {
+      "item": {"type": "String"}
+    }
+  },
+  "deleteCannotUndo": "This action cannot be undone.",
+  "saved": "Saved",
+  "projected": "Projected",
+  "projectedTotal": "Projected total: {value}",
+  "@projectedTotal": {
+    "placeholders": {
+      "value": {"type": "String"}
+    }
+  },
+  "basedOnMonths": "Based on {count} months",
+  "@basedOnMonths": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  }
 }

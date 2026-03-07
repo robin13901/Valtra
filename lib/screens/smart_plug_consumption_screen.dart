@@ -7,6 +7,7 @@ import '../l10n/app_localizations.dart';
 import '../providers/locale_provider.dart';
 import '../providers/smart_plug_provider.dart';
 import '../services/number_format_service.dart';
+import '../widgets/dialogs/confirm_delete_dialog.dart';
 import '../widgets/dialogs/smart_plug_consumption_form_dialog.dart';
 import '../widgets/liquid_glass_widgets.dart';
 
@@ -173,28 +174,12 @@ class _SmartPlugConsumptionScreenState
     final l10n = AppLocalizations.of(context)!;
     final provider = context.read<SmartPlugProvider>();
 
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(l10n.deleteConsumption),
-        content: Text(l10n.deleteConsumptionConfirm),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(false),
-            child: Text(l10n.cancel),
-          ),
-          FilledButton(
-            style: FilledButton.styleFrom(
-              backgroundColor: Theme.of(ctx).colorScheme.error,
-            ),
-            onPressed: () => Navigator.of(ctx).pop(true),
-            child: Text(l10n.delete),
-          ),
-        ],
-      ),
+    final confirmed = await ConfirmDeleteDialog.show(
+      context,
+      itemLabel: l10n.consumption,
     );
 
-    if (confirmed == true && context.mounted) {
+    if (confirmed && context.mounted) {
       await provider.deleteConsumption(consumption.id);
     }
   }

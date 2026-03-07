@@ -2,25 +2,47 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../l10n/app_localizations.dart';
 import '../../database/app_database.dart';
+import 'reading_form_base.dart';
 
 /// Dialog for creating or editing a gas reading.
 ///
 /// When [reading] is null, the dialog operates in create mode.
 /// When [reading] is provided, the dialog operates in edit mode
 /// and pre-fills the form with existing values.
+///
+/// [previousValue] shows the previous reading as reference and enables
+/// real-time validation (value must be >= previous).
+/// [nextValue] is used in edit mode to validate the upper bound.
 class GasReadingFormDialog extends StatefulWidget {
   final GasReading? reading;
+  final double? previousValue;
+  final double? nextValue;
+  final Future<void> Function(GasReadingFormData data)? onSaveCallback;
 
-  const GasReadingFormDialog({super.key, this.reading});
+  const GasReadingFormDialog({
+    super.key,
+    this.reading,
+    this.previousValue,
+    this.nextValue,
+    this.onSaveCallback,
+  });
 
   /// Shows the dialog and returns the form data if saved, or null if cancelled.
   static Future<GasReadingFormData?> show(
     BuildContext context, {
     GasReading? reading,
+    double? previousValue,
+    double? nextValue,
+    Future<void> Function(GasReadingFormData data)? onSaveCallback,
   }) {
     return showDialog<GasReadingFormData>(
       context: context,
-      builder: (context) => GasReadingFormDialog(reading: reading),
+      builder: (context) => GasReadingFormDialog(
+        reading: reading,
+        previousValue: previousValue,
+        nextValue: nextValue,
+        onSaveCallback: onSaveCallback,
+      ),
     );
   }
 
@@ -28,13 +50,16 @@ class GasReadingFormDialog extends StatefulWidget {
   State<GasReadingFormDialog> createState() => _GasReadingFormDialogState();
 }
 
-class _GasReadingFormDialogState extends State<GasReadingFormDialog> {
+class _GasReadingFormDialogState extends State<GasReadingFormDialog>
+    with QuickEntryMixin {
   final _formKey = GlobalKey<FormState>();
   late final TextEditingController _valueController;
   late DateTime _selectedDateTime;
   String? _externalError;
+  String? _validationError;
 
-  bool get isEditing => widget.reading != null;
+  @override
+  bool get isEditMode => widget.reading != null;
 
   @override
   void initState() {
@@ -42,21 +67,60 @@ class _GasReadingFormDialogState extends State<GasReadingFormDialog> {
     _valueController = TextEditingController(
       text: widget.reading?.valueCubicMeters.toString() ?? '',
     );
+    _valueController.addListener(_onValueChanged);
     _selectedDateTime = widget.reading?.timestamp ?? DateTime.now();
   }
 
   @override
   void dispose() {
+    _valueController.removeListener(_onValueChanged);
     _valueController.dispose();
     super.dispose();
   }
+
+  @override
+  void clearValueField() {
+    _valueController.clear();
+    setState(() {
+      _validationError = null;
+      _externalError = null;
+    });
+  }
+
+  void _onValueChanged() {
+    final text = _valueController.text.trim();
+    if (text.isEmpty) {
+      setState(() => _validationError = null);
+      return;
+    }
+    final parsed = double.tryParse(text);
+    if (parsed == null) return;
+
+    final l10n = AppLocalizations.of(context)!;
+    String? error;
+
+    if (widget.previousValue != null && parsed < widget.previousValue!) {
+      error = l10n.readingTooLow('${widget.previousValue!} m\u00B3');
+    }
+    if (widget.nextValue != null && parsed > widget.nextValue!) {
+      error = 'Must be <= ${widget.nextValue!} m\u00B3';
+    }
+
+    setState(() => _validationError = error);
+  }
+
+  bool get _hasValidationError => _validationError != null;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
 
     return AlertDialog(
-      title: Text(isEditing ? l10n.editGasReading : l10n.addGasReading),
+      title: Text(quickEntryTitle(
+        l10n,
+        l10n.addGasReading,
+        l10n.editGasReading,
+      )),
       content: Form(
         key: _formKey,
         child: Column(
@@ -75,20 +139,31 @@ class _GasReadingFormDialogState extends State<GasReadingFormDialog> {
               ),
             ),
             const SizedBox(height: 16),
+            // Previous value reference
+            if (widget.previousValue != null)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: Text(
+                  l10n.previousReading('${widget.previousValue!} m\u00B3'),
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
+                ),
+              ),
             // Value input
             TextFormField(
               controller: _valueController,
               decoration: InputDecoration(
                 labelText: l10n.meterValue,
                 suffixText: l10n.cubicMeters,
-                errorText: _externalError,
+                errorText: _validationError ?? _externalError,
               ),
               keyboardType:
                   const TextInputType.numberWithOptions(decimal: true),
               inputFormatters: [
                 FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
               ],
-              autofocus: !isEditing,
+              autofocus: !isEditMode,
               validator: (value) {
                 if (value == null || value.trim().isEmpty) {
                   return l10n.readingMustBePositive;
@@ -100,19 +175,15 @@ class _GasReadingFormDialogState extends State<GasReadingFormDialog> {
                 return null;
               },
             ),
+            buildSuccessIndicator(l10n),
           ],
         ),
       ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(null),
-          child: Text(l10n.cancel),
-        ),
-        FilledButton(
-          onPressed: _onSave,
-          child: Text(l10n.save),
-        ),
-      ],
+      actions: buildQuickEntryActions(
+        l10n,
+        onSavePressed: _hasValidationError ? null : _onSave,
+        onCancelPressed: () => Navigator.of(context).pop(null),
+      ),
     );
   }
 
@@ -147,16 +218,30 @@ class _GasReadingFormDialogState extends State<GasReadingFormDialog> {
     });
   }
 
-  void _onSave() {
+  Future<void> _onSave() async {
     setState(() => _externalError = null);
 
     if (_formKey.currentState!.validate()) {
       final value = double.parse(_valueController.text.trim());
-
-      Navigator.of(context).pop(GasReadingFormData(
+      final data = GasReadingFormData(
         timestamp: _selectedDateTime,
         valueCubicMeters: value,
-      ));
+      );
+
+      if (widget.onSaveCallback != null) {
+        await widget.onSaveCallback!(data);
+      }
+
+      if (handlePostSave()) {
+        setState(() {
+          _selectedDateTime = DateTime.now();
+        });
+        return;
+      }
+
+      if (mounted) {
+        Navigator.of(context).pop(data);
+      }
     }
   }
 

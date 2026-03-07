@@ -14,6 +14,7 @@ import '../screens/rooms_screen.dart';
 import '../services/analytics/analytics_models.dart';
 import '../services/interpolation/models.dart';
 import '../services/number_format_service.dart';
+import '../widgets/dialogs/confirm_delete_dialog.dart';
 import '../widgets/dialogs/heating_meter_form_dialog.dart';
 import '../widgets/dialogs/heating_reading_form_dialog.dart';
 import '../widgets/liquid_glass_widgets.dart';
@@ -866,28 +867,12 @@ class _HeatingMeterCardState extends State<_HeatingMeterCard> {
     final l10n = AppLocalizations.of(context)!;
     final provider = context.read<HeatingProvider>();
 
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(l10n.deleteHeatingReading),
-        content: Text(l10n.deleteHeatingReadingConfirm),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(false),
-            child: Text(l10n.cancel),
-          ),
-          FilledButton(
-            style: FilledButton.styleFrom(
-              backgroundColor: Theme.of(ctx).colorScheme.error,
-            ),
-            onPressed: () => Navigator.of(ctx).pop(true),
-            child: Text(l10n.delete),
-          ),
-        ],
-      ),
+    final confirmed = await ConfirmDeleteDialog.show(
+      context,
+      itemLabel: l10n.heatingReading,
     );
 
-    if (confirmed == true && context.mounted) {
+    if (confirmed && context.mounted) {
       await provider.deleteReading(readingId);
     }
   }

@@ -11,6 +11,7 @@ import '../screens/monthly_analytics_screen.dart';
 import '../services/analytics/analytics_models.dart';
 import '../services/interpolation/models.dart';
 import '../services/number_format_service.dart';
+import '../widgets/dialogs/confirm_delete_dialog.dart';
 import '../widgets/dialogs/electricity_reading_form_dialog.dart';
 import '../widgets/liquid_glass_widgets.dart';
 
@@ -185,28 +186,12 @@ class ElectricityScreen extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     final provider = context.read<ElectricityProvider>();
 
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(l10n.deleteElectricityReading),
-        content: Text(l10n.deleteReadingConfirm),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(false),
-            child: Text(l10n.cancel),
-          ),
-          FilledButton(
-            style: FilledButton.styleFrom(
-              backgroundColor: Theme.of(ctx).colorScheme.error,
-            ),
-            onPressed: () => Navigator.of(ctx).pop(true),
-            child: Text(l10n.delete),
-          ),
-        ],
-      ),
+    final confirmed = await ConfirmDeleteDialog.show(
+      context,
+      itemLabel: l10n.electricityReading,
     );
 
-    if (confirmed == true) {
+    if (confirmed) {
       await provider.deleteReading(readingId);
     }
   }

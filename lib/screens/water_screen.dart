@@ -13,6 +13,7 @@ import '../screens/monthly_analytics_screen.dart';
 import '../services/analytics/analytics_models.dart';
 import '../services/interpolation/models.dart';
 import '../services/number_format_service.dart';
+import '../widgets/dialogs/confirm_delete_dialog.dart';
 import '../widgets/dialogs/water_meter_form_dialog.dart';
 import '../widgets/dialogs/water_reading_form_dialog.dart';
 import '../widgets/liquid_glass_widgets.dart';
@@ -775,28 +776,12 @@ class _WaterMeterCardState extends State<_WaterMeterCard> {
     final l10n = AppLocalizations.of(context)!;
     final provider = context.read<WaterProvider>();
 
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(l10n.deleteWaterReading),
-        content: Text(l10n.deleteReadingConfirm),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(false),
-            child: Text(l10n.cancel),
-          ),
-          FilledButton(
-            style: FilledButton.styleFrom(
-              backgroundColor: Theme.of(ctx).colorScheme.error,
-            ),
-            onPressed: () => Navigator.of(ctx).pop(true),
-            child: Text(l10n.delete),
-          ),
-        ],
-      ),
+    final confirmed = await ConfirmDeleteDialog.show(
+      context,
+      itemLabel: l10n.waterReading,
     );
 
-    if (confirmed == true && context.mounted) {
+    if (confirmed && context.mounted) {
       await provider.deleteReading(readingId);
     }
   }

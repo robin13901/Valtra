@@ -319,5 +319,45 @@
   "heatingRatio": "Heizanteil (%)",
   "heatingRatioHint": "Anteil an der Gesamtheizenergie",
   "heatingRatioRequired": "Heizanteil ist erforderlich",
-  "heatingRatioInvalid": "Muss zwischen 1 und 100 liegen"
+  "heatingRatioInvalid": "Muss zwischen 1 und 100 liegen",
+  "saveAndNext": "Speichern & weiter",
+  "previousReading": "Vorheriger Wert: {value}",
+  "@previousReading": {
+    "placeholders": {
+      "value": {"type": "String"}
+    }
+  },
+  "readingTooLow": "Muss >= {value} sein",
+  "@readingTooLow": {
+    "placeholders": {
+      "value": {"type": "String"}
+    }
+  },
+  "addReadingCount": "Ablesung hinzuf\u00fcgen ({count})",
+  "@addReadingCount": {
+    "placeholders": {
+      "count": {"type": "String"}
+    }
+  },
+  "deleteConfirmTitle": "{item} l\u00f6schen?",
+  "@deleteConfirmTitle": {
+    "placeholders": {
+      "item": {"type": "String"}
+    }
+  },
+  "deleteCannotUndo": "Diese Aktion kann nicht r\u00fcckg\u00e4ngig gemacht werden.",
+  "saved": "Gespeichert",
+  "projected": "Hochgerechnet",
+  "projectedTotal": "Hochgerechnet: {value}",
+  "@projectedTotal": {
+    "placeholders": {
+      "value": {"type": "String"}
+    }
+  },
+  "basedOnMonths": "Basierend auf {count} Monaten",
+  "@basedOnMonths": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  }
 }

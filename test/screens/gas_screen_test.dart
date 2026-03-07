@@ -198,10 +198,10 @@ void main() {
               await tester.pumpAndSettle();
 
               // Confirmation dialog should appear
-              expect(find.text('Delete Reading'), findsOneWidget);
+              expect(find.text('Delete Gas Reading?'), findsOneWidget);
               expect(
                   find.text(
-                      'Are you sure you want to delete this reading?'),
+                      'This action cannot be undone.'),
                   findsOneWidget);
 
               // Cancel
