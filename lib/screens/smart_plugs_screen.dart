@@ -10,6 +10,7 @@ import '../providers/room_provider.dart';
 import '../providers/smart_plug_provider.dart';
 import '../widgets/dialogs/smart_plug_form_dialog.dart';
 import 'rooms_screen.dart';
+import 'smart_plug_analytics_screen.dart';
 import 'smart_plug_consumption_screen.dart';
 
 /// Screen displaying smart plugs organized by room.
@@ -26,6 +27,14 @@ class SmartPlugsScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text(l10n.smartPlugs),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.pie_chart),
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute(
+                  builder: (context) => const SmartPlugAnalyticsScreen()),
+            ),
+            tooltip: l10n.smartPlugAnalytics,
+          ),
           IconButton(
             icon: const Icon(Icons.meeting_room),
             onPressed: () => _navigateToRooms(context),

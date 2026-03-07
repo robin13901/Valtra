@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../app_theme.dart';
 import '../l10n/app_localizations.dart';
 import '../providers/analytics_provider.dart';
 import '../services/analytics/analytics_models.dart';
@@ -8,6 +9,7 @@ import '../services/csv_export_service.dart';
 import '../services/interpolation/models.dart';
 import '../services/share_service.dart';
 import 'monthly_analytics_screen.dart';
+import 'smart_plug_analytics_screen.dart';
 
 class AnalyticsScreen extends StatelessWidget {
   const AnalyticsScreen({super.key});
@@ -44,6 +46,62 @@ class AnalyticsScreen extends StatelessWidget {
                         onTap: () => _navigateToMonthly(context, type),
                       ),
                     )),
+                const SizedBox(height: 16),
+                const Divider(),
+                const SizedBox(height: 16),
+                Text(l10n.smartPlugAnalytics,
+                    style: Theme.of(context).textTheme.headlineSmall),
+                const SizedBox(height: 8),
+                Card(
+                  clipBehavior: Clip.antiAlias,
+                  child: InkWell(
+                    onTap: () => _navigateToSmartPlugAnalytics(context),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 48,
+                            height: 48,
+                            decoration: BoxDecoration(
+                              color: AppColors.electricityColor
+                                  .withValues(alpha: 0.15),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Icon(Icons.pie_chart,
+                                color: AppColors.electricityColor, size: 28),
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(l10n.smartPlugAnalytics,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleMedium),
+                                const SizedBox(height: 4),
+                                Text(l10n.consumptionByPlug,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium
+                                        ?.copyWith(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .onSurfaceVariant,
+                                        )),
+                              ],
+                            ),
+                          ),
+                          Icon(Icons.chevron_right,
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onSurfaceVariant),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
               ],
             ),
     );
@@ -54,6 +112,13 @@ class AnalyticsScreen extends StatelessWidget {
     provider.setSelectedMeterType(meterType);
     Navigator.of(context).push(
       MaterialPageRoute(builder: (context) => const MonthlyAnalyticsScreen()),
+    );
+  }
+
+  void _navigateToSmartPlugAnalytics(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+          builder: (context) => const SmartPlugAnalyticsScreen()),
     );
   }
 
