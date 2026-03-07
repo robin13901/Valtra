@@ -114,3 +114,88 @@ String unitForMeterType(MeterType type) {
       return 'units';
   }
 }
+
+// ============== Smart Plug Analytics Models ==============
+
+/// Period selection for smart plug analytics.
+enum AnalyticsPeriod { monthly, yearly, custom }
+
+/// A single slice of data for rendering in a pie chart.
+class PieSliceData {
+  final String label;
+  final double value;
+  final double percentage;
+  final Color color;
+
+  const PieSliceData({
+    required this.label,
+    required this.value,
+    required this.percentage,
+    required this.color,
+  });
+}
+
+/// Per-plug consumption breakdown.
+class PlugConsumption {
+  final int plugId;
+  final String plugName;
+  final String roomName;
+  final double consumption;
+  final Color color;
+
+  const PlugConsumption({
+    required this.plugId,
+    required this.plugName,
+    required this.roomName,
+    required this.consumption,
+    required this.color,
+  });
+}
+
+/// Per-room consumption breakdown.
+class RoomConsumption {
+  final int roomId;
+  final String roomName;
+  final double consumption;
+  final Color color;
+
+  const RoomConsumption({
+    required this.roomId,
+    required this.roomName,
+    required this.consumption,
+    required this.color,
+  });
+}
+
+/// Complete data package for the smart plug analytics screen.
+class SmartPlugAnalyticsData {
+  final List<PlugConsumption> byPlug;
+  final List<RoomConsumption> byRoom;
+  final double totalSmartPlug;
+  final double? totalElectricity; // null if no electricity readings
+  final double? otherConsumption; // null if totalElectricity is null; clamped to >= 0
+  final String unit; // always 'kWh'
+
+  const SmartPlugAnalyticsData({
+    required this.byPlug,
+    required this.byRoom,
+    required this.totalSmartPlug,
+    this.totalElectricity,
+    this.otherConsumption,
+    this.unit = 'kWh',
+  });
+}
+
+/// Distinct colors for pie chart slices (up to 10 plugs/rooms).
+const List<Color> pieChartColors = [
+  Color(0xFF5F4A8B), // ultra violet (brand)
+  Color(0xFFFFD93D), // electricity yellow
+  Color(0xFF6BC5F8), // water blue
+  Color(0xFFFF8C42), // gas orange
+  Color(0xFFFF6B6B), // heating red
+  Color(0xFF4ECDC4), // teal
+  Color(0xFF95E1D3), // mint
+  Color(0xFFF38181), // salmon
+  Color(0xFFAA96DA), // lavender
+  Color(0xFFFCBFB7), // blush
+];
