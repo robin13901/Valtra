@@ -64,7 +64,7 @@ Plans:
 - [x] 15-03-PLAN.md — Smart plug UI layer: month/year picker form, consumption screen rework
 - [ ] 15-04-PLAN.md — Heating meter data layer: room FK, heating type + ratio, DAO + provider + analytics
 - [ ] 15-05-PLAN.md — Heating meter UI layer: room dropdown, heating type selector, group-by-room screen
-- [ ] 15-06-PLAN.md — Gas analysis fix (m³ not kWh) & yearly analysis rework (extrapolation, previous year)
+- [x] 15-06-PLAN.md — Gas analysis fix (m3 not kWh) & yearly analysis rework (extrapolation, previous year)
 - [ ] 15-07-PLAN.md — Data entry enhancements: quick entry mode, real-time validation, shared delete confirmation
 - [ ] 15-08-PLAN.md — DB migration v2→v3 consolidation, integration testing, project state update
 
@@ -110,6 +110,6 @@ Milestone 1 (v0.1.0) --> Milestone 2 (v0.2.0) --> Milestone 3 (v0.3.0)
 ## Current Status
 - **Completed**: Milestone 1 (v0.1.0), Milestone 2 (v0.2.0)
 - **Active Milestone**: 3 - Polish & Enhancement (v0.3.0)
-- **Active Phase**: 15 - Data Model & Analytics Rework (IN PROGRESS — 3/8 plans)
+- **Active Phase**: 15 - Data Model & Analytics Rework (IN PROGRESS -- 4/8 plans)
 - **Next Phase**: 16 - Backup, Testing & Documentation
 - **Blockers**: None

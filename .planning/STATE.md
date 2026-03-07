@@ -4,7 +4,7 @@
 - **Milestone**: 3 - Polish & Enhancement (v0.3.0)
 - **Last Shipped**: v0.2.0 (2026-03-07)
 - **Current Phase**: 15 - Data Model & Analytics Rework (IN PROGRESS)
-- **Current Plan**: 15-04
+- **Current Plan**: 15-07
 - **Last Updated**: 2026-03-07
 
 ## Completed Milestones
@@ -34,6 +34,7 @@ _None_
 | 2026-03-07 | 15 | Plan 15-01 complete | Interpolation Rework -- Removed step interpolation, added toggle to show/hide interpolated values in reading lists, color-coded interpolated entries with Ultra Violet tint. ReadingDisplayItem model, displayItems getters on all 4 providers, GlassCard color param. 6 new tests, 771 total. |
 | 2026-03-07 | 15 | Plan 15-02 complete | Smart Plug Data Layer -- Removed ConsumptionInterval enum, renamed intervalStart to month, simplified provider API (locale-based labels, duplicate month check). Updated form dialog (month picker), screens, and all tests. 788 tests passing, 0 analyze issues. |
 | 2026-03-07 | 15 | Plan 15-03 complete | Smart Plug UI Layer -- Replaced date picker with month/year dropdown selectors, added duplicate month warning, simplified consumption card to single-row format, removed 6 unused l10n keys, added 3 new. 808 tests passing, 0 analyze issues. |
+| 2026-03-07 | 15 | Plan 15-06 complete | Gas Analysis Fix & Yearly Extrapolation -- Gas analytics displays raw m3 (not kWh), conversion retained for cost only. Added year-end extrapolation with projected total, extrapolated bars with distinct style. 13 new interpolation service tests, 4 new screen tests. 842 tests passing, 0 analyze issues. |
 
 ## Key Decisions (carried forward)
 1. **Local-first architecture** - Using Drift/SQLite for offline-capable data storage
@@ -88,4 +89,4 @@ _None_
 4. ~~**Screen test ThemeProvider gap**~~ -- Resolved in Plan 14-07 (all 81 test failures fixed)
 
 ## Next Actions
-_Plan 15-03 complete. Continue with Plan 15-04._
+_Plan 15-06 complete. Continue with Plan 15-07._
