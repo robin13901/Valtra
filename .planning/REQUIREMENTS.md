@@ -48,9 +48,9 @@
 ### FR-12: UI/UX Polish & Localization
 
 #### FR-12.1: Home Screen Cleanup
-- [ ] **FR-12.1.1**: Remove divider before Analyse button (direct placement)
-- [ ] **FR-12.1.2**: Remove non-functional FAB on home screen
-- [ ] **FR-12.1.3**: Apply GlassBottomNav as primary navigation (replacing current home screen chips)
+- [x] **FR-12.1.1**: Remove divider before Analyse button (direct placement)
+- [x] **FR-12.1.2**: Remove non-functional FAB on home screen
+- [x] **FR-12.1.3**: Apply GlassBottomNav as primary navigation (replacing current home screen chips)
 - [ ] **FR-12.1.4**: Apply buildGlassFAB to all screens with floating action buttons
 - [ ] **FR-12.1.5**: Apply GlassCard to all list items and summary cards
 - [ ] **FR-12.1.6**: Apply buildGlassAppBar to all screens
