@@ -4,8 +4,10 @@ import 'package:provider/provider.dart';
 
 import '../app_theme.dart';
 import '../l10n/app_localizations.dart';
+import '../providers/locale_provider.dart';
 import '../providers/smart_plug_analytics_provider.dart';
 import '../services/analytics/analytics_models.dart';
+import '../services/number_format_service.dart';
 import '../widgets/charts/consumption_pie_chart.dart';
 import '../widgets/liquid_glass_widgets.dart';
 
@@ -98,6 +100,8 @@ class SmartPlugAnalyticsScreen extends StatelessWidget {
     SmartPlugAnalyticsData data,
     AppLocalizations l10n,
   ) {
+    final locale = context.watch<LocaleProvider>().localeString;
+
     return [
       // Consumption by Plug section
       Text(l10n.consumptionByPlug,
@@ -108,6 +112,7 @@ class SmartPlugAnalyticsScreen extends StatelessWidget {
         child: ConsumptionPieChart(
           slices: _buildPlugSlices(data),
           unit: data.unit,
+          locale: locale,
         ),
       ),
       const SizedBox(height: 24),
@@ -121,26 +126,27 @@ class SmartPlugAnalyticsScreen extends StatelessWidget {
         child: ConsumptionPieChart(
           slices: _buildRoomSlices(data),
           unit: data.unit,
+          locale: locale,
         ),
       ),
       const SizedBox(height: 24),
 
       // Summary card
-      _SummaryCard(data: data, l10n: l10n),
+      _SummaryCard(data: data, l10n: l10n, locale: locale),
       const SizedBox(height: 24),
 
       // Plug Breakdown list
       Text(l10n.plugBreakdown,
           style: Theme.of(context).textTheme.titleMedium),
       const SizedBox(height: 8),
-      ...data.byPlug.map((plug) => _PlugBreakdownItem(plug: plug)),
+      ...data.byPlug.map((plug) => _PlugBreakdownItem(plug: plug, locale: locale)),
       const SizedBox(height: 24),
 
       // Room Breakdown list
       Text(l10n.roomBreakdown,
           style: Theme.of(context).textTheme.titleMedium),
       const SizedBox(height: 8),
-      ...data.byRoom.map((room) => _RoomBreakdownItem(room: room)),
+      ...data.byRoom.map((room) => _RoomBreakdownItem(room: room, locale: locale)),
     ];
   }
 
@@ -365,8 +371,9 @@ class _CustomRangeDisplay extends StatelessWidget {
 class _SummaryCard extends StatelessWidget {
   final SmartPlugAnalyticsData data;
   final AppLocalizations l10n;
+  final String locale;
 
-  const _SummaryCard({required this.data, required this.l10n});
+  const _SummaryCard({required this.data, required this.l10n, required this.locale});
 
   @override
   Widget build(BuildContext context) {
@@ -376,13 +383,13 @@ class _SummaryCard extends StatelessWidget {
         children: [
           _SummaryRow(
             label: l10n.totalTracked,
-            value: '${data.totalSmartPlug.toStringAsFixed(1)} ${data.unit}',
+            value: '${ValtraNumberFormat.consumption(data.totalSmartPlug, locale)} ${data.unit}',
           ),
           const SizedBox(height: 8),
           _SummaryRow(
             label: l10n.totalElectricity,
             value: data.totalElectricity != null
-                ? '${data.totalElectricity!.toStringAsFixed(1)} ${data.unit}'
+                ? '${ValtraNumberFormat.consumption(data.totalElectricity!, locale)} ${data.unit}'
                 : '\u2014',
           ),
           const SizedBox(height: 8),
@@ -393,7 +400,7 @@ class _SummaryCard extends StatelessWidget {
                   child: _SummaryRow(
                     label: l10n.otherConsumption,
                     value:
-                        '${data.otherConsumption!.toStringAsFixed(1)} ${data.unit}',
+                        '${ValtraNumberFormat.consumption(data.otherConsumption!, locale)} ${data.unit}',
                   ),
                 ),
                 Tooltip(
@@ -442,8 +449,9 @@ class _SummaryRow extends StatelessWidget {
 
 class _PlugBreakdownItem extends StatelessWidget {
   final PlugConsumption plug;
+  final String locale;
 
-  const _PlugBreakdownItem({required this.plug});
+  const _PlugBreakdownItem({required this.plug, required this.locale});
 
   @override
   Widget build(BuildContext context) {
@@ -459,7 +467,7 @@ class _PlugBreakdownItem extends StatelessWidget {
       title: Text(plug.plugName),
       subtitle: Text(plug.roomName),
       trailing: Text(
-        '${plug.consumption.toStringAsFixed(1)} kWh',
+        '${ValtraNumberFormat.consumption(plug.consumption, locale)} kWh',
         style: Theme.of(context)
             .textTheme
             .bodyMedium
@@ -471,8 +479,9 @@ class _PlugBreakdownItem extends StatelessWidget {
 
 class _RoomBreakdownItem extends StatelessWidget {
   final RoomConsumption room;
+  final String locale;
 
-  const _RoomBreakdownItem({required this.room});
+  const _RoomBreakdownItem({required this.room, required this.locale});
 
   @override
   Widget build(BuildContext context) {
@@ -487,7 +496,7 @@ class _RoomBreakdownItem extends StatelessWidget {
       ),
       title: Text(room.roomName),
       trailing: Text(
-        '${room.consumption.toStringAsFixed(1)} kWh',
+        '${ValtraNumberFormat.consumption(room.consumption, locale)} kWh',
         style: Theme.of(context)
             .textTheme
             .bodyMedium

@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 
 import '../../l10n/app_localizations.dart';
 import '../../services/analytics/analytics_models.dart';
+import '../../services/number_format_service.dart';
 
 /// A line chart displaying consumption data points over a date range.
 ///
@@ -15,6 +16,7 @@ class ConsumptionLineChart extends StatelessWidget {
   final DateTime rangeEnd;
   final Color primaryColor;
   final String unit;
+  final String locale;
 
   const ConsumptionLineChart({
     super.key,
@@ -23,6 +25,7 @@ class ConsumptionLineChart extends StatelessWidget {
     required this.rangeEnd,
     required this.primaryColor,
     required this.unit,
+    this.locale = 'de',
   });
 
   @override
@@ -113,7 +116,7 @@ class ConsumptionLineChart extends StatelessWidget {
               final date =
                   DateTime.fromMillisecondsSinceEpoch(spot.x.toInt());
               final dateStr = DateFormat.MMMd().format(date);
-              final valueStr = spot.y.toStringAsFixed(1);
+              final valueStr = ValtraNumberFormat.consumption(spot.y, locale);
               return LineTooltipItem(
                 '$dateStr\n$valueStr $unit',
                 TextStyle(

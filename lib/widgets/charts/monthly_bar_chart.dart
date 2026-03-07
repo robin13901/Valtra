@@ -4,12 +4,14 @@ import 'package:intl/intl.dart';
 
 import '../../l10n/app_localizations.dart';
 import '../../services/interpolation/models.dart';
+import '../../services/number_format_service.dart';
 
 class MonthlyBarChart extends StatelessWidget {
   final List<PeriodConsumption> periods;
   final Color primaryColor;
   final String unit;
   final DateTime? highlightMonth;
+  final String locale;
 
   const MonthlyBarChart({
     super.key,
@@ -17,6 +19,7 @@ class MonthlyBarChart extends StatelessWidget {
     required this.primaryColor,
     required this.unit,
     this.highlightMonth,
+    this.locale = 'de',
   });
 
   @override
@@ -76,7 +79,7 @@ class MonthlyBarChart extends StatelessWidget {
             final period = periods[group.x.toInt()];
             final monthName = DateFormat.yMMM().format(period.periodStart);
             return BarTooltipItem(
-              '$monthName\n${rod.toY.toStringAsFixed(1)} $unit',
+              '$monthName\n${ValtraNumberFormat.consumption(rod.toY, locale)} $unit',
               TextStyle(color: primaryColor, fontWeight: FontWeight.bold),
             );
           },

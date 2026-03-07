@@ -4,8 +4,10 @@ import 'package:provider/provider.dart';
 
 import '../l10n/app_localizations.dart';
 import '../providers/analytics_provider.dart';
+import '../providers/locale_provider.dart';
 import '../services/analytics/analytics_models.dart';
 import '../services/csv_export_service.dart';
+import '../services/number_format_service.dart';
 import '../services/share_service.dart';
 import '../widgets/liquid_glass_widgets.dart';
 import '../widgets/charts/chart_legend.dart';
@@ -22,6 +24,7 @@ class MonthlyAnalyticsScreen extends StatelessWidget {
     final provider = context.watch<AnalyticsProvider>();
     final data = provider.monthlyData;
     final color = colorForMeterType(provider.selectedMeterType);
+    final locale = context.watch<LocaleProvider>().localeString;
 
     return Scaffold(
       appBar: buildGlassAppBar(
@@ -63,6 +66,7 @@ class MonthlyAnalyticsScreen extends StatelessWidget {
                       color: color,
                       totalCost: data.totalCost,
                       currencySymbol: data.currencySymbol,
+                      locale: locale,
                     ),
                     const SizedBox(height: 24),
 
@@ -81,6 +85,7 @@ class MonthlyAnalyticsScreen extends StatelessWidget {
                                 provider.selectedMonth.month + 1, 0),
                         primaryColor: color,
                         unit: data.unit,
+                        locale: locale,
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -105,6 +110,7 @@ class MonthlyAnalyticsScreen extends StatelessWidget {
                         primaryColor: color,
                         unit: data.unit,
                         highlightMonth: provider.selectedMonth,
+                        locale: locale,
                       ),
                     ),
                   ],
@@ -236,6 +242,7 @@ class _ConsumptionSummaryCard extends StatelessWidget {
   final Color color;
   final double? totalCost;
   final String? currencySymbol;
+  final String locale;
 
   const _ConsumptionSummaryCard({
     required this.totalConsumption,
@@ -243,6 +250,7 @@ class _ConsumptionSummaryCard extends StatelessWidget {
     required this.color,
     this.totalCost,
     this.currencySymbol,
+    required this.locale,
   });
 
   @override
@@ -256,7 +264,7 @@ class _ConsumptionSummaryCard extends StatelessWidget {
           const SizedBox(height: 8),
           Text(
             totalConsumption != null
-                ? '${totalConsumption!.toStringAsFixed(1)} $unit'
+                ? '${ValtraNumberFormat.consumption(totalConsumption!, locale)} $unit'
                 : '\u2014',
             style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                   color: color,
@@ -266,7 +274,7 @@ class _ConsumptionSummaryCard extends StatelessWidget {
           if (totalCost != null) ...[
             const SizedBox(height: 4),
             Text(
-              '~${currencySymbol ?? '\u20AC'}${totalCost!.toStringAsFixed(2)}',
+              '~${currencySymbol ?? '\u20AC'}${ValtraNumberFormat.currency(totalCost!, locale)}',
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
                     color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),

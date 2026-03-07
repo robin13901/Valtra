@@ -4,8 +4,10 @@ import 'package:provider/provider.dart';
 import '../app_theme.dart';
 import '../l10n/app_localizations.dart';
 import '../providers/analytics_provider.dart';
+import '../providers/locale_provider.dart';
 import '../services/analytics/analytics_models.dart';
 import '../services/csv_export_service.dart';
+import '../services/number_format_service.dart';
 import '../services/share_service.dart';
 import '../widgets/liquid_glass_widgets.dart';
 import '../widgets/charts/chart_legend.dart';
@@ -67,6 +69,8 @@ class _YearlyAnalyticsScreenState extends State<YearlyAnalyticsScreen> {
     AppLocalizations l10n,
     AnalyticsProvider provider,
   ) {
+    final locale = context.watch<LocaleProvider>().localeString;
+
     if (data.monthlyBreakdown.isEmpty) {
       return Center(
         child: Column(
@@ -105,6 +109,7 @@ class _YearlyAnalyticsScreenState extends State<YearlyAnalyticsScreen> {
           totalCost: data.totalCost,
           previousYearTotalCost: data.previousYearTotalCost,
           currencySymbol: data.currencySymbol,
+          locale: locale,
         ),
         const SizedBox(height: 24),
 
@@ -118,6 +123,7 @@ class _YearlyAnalyticsScreenState extends State<YearlyAnalyticsScreen> {
             periods: data.monthlyBreakdown,
             primaryColor: color,
             unit: data.unit,
+            locale: locale,
           ),
         ),
         const SizedBox(height: 24),
@@ -135,6 +141,7 @@ class _YearlyAnalyticsScreenState extends State<YearlyAnalyticsScreen> {
               previousYear: data.previousYearBreakdown,
               primaryColor: color,
               unit: data.unit,
+              locale: locale,
             ),
           ),
           const SizedBox(height: 8),
@@ -241,6 +248,7 @@ class _YearlySummaryCard extends StatelessWidget {
   final double? totalCost;
   final double? previousYearTotalCost;
   final String? currencySymbol;
+  final String locale;
 
   const _YearlySummaryCard({
     required this.totalConsumption,
@@ -251,6 +259,7 @@ class _YearlySummaryCard extends StatelessWidget {
     this.totalCost,
     this.previousYearTotalCost,
     this.currencySymbol,
+    required this.locale,
   });
 
   @override
@@ -264,7 +273,7 @@ class _YearlySummaryCard extends StatelessWidget {
           const SizedBox(height: 8),
           Text(
             totalConsumption != null
-                ? '${totalConsumption!.toStringAsFixed(1)} $unit'
+                ? '${ValtraNumberFormat.consumption(totalConsumption!, locale)} $unit'
                 : '\u2014',
             style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                   color: color,
@@ -280,7 +289,7 @@ class _YearlySummaryCard extends StatelessWidget {
           if (totalCost != null) ...[
             const SizedBox(height: 8),
             Text(
-              '~${currencySymbol ?? '\u20AC'}${totalCost!.toStringAsFixed(2)}',
+              '~${currencySymbol ?? '\u20AC'}${ValtraNumberFormat.currency(totalCost!, locale)}',
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
                     color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
@@ -295,7 +304,7 @@ class _YearlySummaryCard extends StatelessWidget {
     final change =
         ((totalConsumption! - previousYearTotal!) / previousYearTotal!) * 100;
     final prefix = change >= 0 ? '+' : '';
-    final changeText = '$prefix${change.toStringAsFixed(1)}';
+    final changeText = '$prefix${ValtraNumberFormat.consumption(change, locale)}';
 
     return Text(
       l10n.changeFromLastYear(changeText),

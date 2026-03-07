@@ -4,9 +4,11 @@ import 'package:provider/provider.dart';
 import '../app_theme.dart';
 import '../l10n/app_localizations.dart';
 import '../providers/analytics_provider.dart';
+import '../providers/locale_provider.dart';
 import '../services/analytics/analytics_models.dart';
 import '../services/csv_export_service.dart';
 import '../services/interpolation/models.dart';
+import '../services/number_format_service.dart';
 import '../services/share_service.dart';
 import '../widgets/liquid_glass_widgets.dart';
 import 'monthly_analytics_screen.dart';
@@ -240,10 +242,11 @@ class _MeterOverviewCard extends StatelessWidget {
       );
     }
 
-    final value = summary!.latestMonthConsumption!.toStringAsFixed(1);
+    final locale = context.watch<LocaleProvider>().localeString;
+    final value = ValtraNumberFormat.consumption(summary!.latestMonthConsumption!, locale);
     final unit = summary!.unit;
     final costText = summary!.latestMonthCost != null
-        ? '  ~${summary!.currencySymbol ?? '\u20AC'}${summary!.latestMonthCost!.toStringAsFixed(2)}'
+        ? '  ~${summary!.currencySymbol ?? '\u20AC'}${ValtraNumberFormat.currency(summary!.latestMonthCost!, locale)}'
         : '';
     return Text(
       '$value $unit$costText',

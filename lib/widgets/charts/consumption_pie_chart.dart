@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import '../../l10n/app_localizations.dart';
 import '../../services/analytics/analytics_models.dart';
+import '../../services/number_format_service.dart';
 
 /// Reusable pie chart for consumption breakdown.
 ///
@@ -11,11 +12,13 @@ import '../../services/analytics/analytics_models.dart';
 class ConsumptionPieChart extends StatelessWidget {
   final List<PieSliceData> slices;
   final String unit;
+  final String locale;
 
   const ConsumptionPieChart({
     super.key,
     required this.slices,
     required this.unit,
+    this.locale = 'de',
   });
 
   @override
@@ -29,7 +32,7 @@ class ConsumptionPieChart extends StatelessWidget {
             .map((s) => PieChartSectionData(
                   value: s.value,
                   color: s.color,
-                  title: '${s.percentage.toStringAsFixed(1)}%',
+                  title: '${ValtraNumberFormat.consumption(s.percentage, locale)}%',
                   radius: 80,
                   titleStyle: TextStyle(
                     fontSize: 12,

@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 
 import '../../l10n/app_localizations.dart';
 import '../../services/interpolation/models.dart';
+import '../../services/number_format_service.dart';
 
 /// A line chart overlaying current year vs previous year monthly consumption.
 class YearComparisonChart extends StatelessWidget {
@@ -11,6 +12,7 @@ class YearComparisonChart extends StatelessWidget {
   final List<PeriodConsumption>? previousYear;
   final Color primaryColor;
   final String unit;
+  final String locale;
 
   const YearComparisonChart({
     super.key,
@@ -18,6 +20,7 @@ class YearComparisonChart extends StatelessWidget {
     this.previousYear,
     required this.primaryColor,
     required this.unit,
+    this.locale = 'de',
   });
 
   @override
@@ -127,7 +130,7 @@ class YearComparisonChart extends StatelessWidget {
               final monthName = index < currentYear.length
                   ? DateFormat.MMM().format(currentYear[index].periodStart)
                   : '';
-              final valueStr = spot.y.toStringAsFixed(1);
+              final valueStr = ValtraNumberFormat.consumption(spot.y, locale);
               return LineTooltipItem(
                 '$monthName\n$valueStr $unit',
                 TextStyle(
