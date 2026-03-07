@@ -41,7 +41,6 @@ void main() {
         .thenReturn(DateTime(2026, 3, 1));
     when(() => mockProvider.selectedMeterType)
         .thenReturn(MeterType.electricity);
-    when(() => mockProvider.customRange).thenReturn(null);
     when(() => mockProvider.monthlyData).thenReturn(null);
     when(() => mockProvider.householdId).thenReturn(1);
   }

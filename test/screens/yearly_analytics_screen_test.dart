@@ -83,7 +83,6 @@ void main() {
     when(() => provider.overviewSummaries).thenReturn({});
     when(() => provider.householdId).thenReturn(1);
     when(() => provider.selectedMonth).thenReturn(DateTime(2026, 3, 1));
-    when(() => provider.customRange).thenReturn(null);
 
     // Void method stubs
     when(() => provider.setSelectedMeterType(any())).thenReturn(null);

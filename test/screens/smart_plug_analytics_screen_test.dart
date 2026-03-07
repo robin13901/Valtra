@@ -84,7 +84,6 @@ void main() {
     when(() => mockProvider.period).thenReturn(period);
     when(() => mockProvider.selectedMonth).thenReturn(DateTime(2026, 3, 1));
     when(() => mockProvider.selectedYear).thenReturn(2026);
-    when(() => mockProvider.customRange).thenReturn(null);
     when(() => mockProvider.householdId).thenReturn(1);
   }
 
@@ -137,7 +136,7 @@ void main() {
     });
 
     testWidgets(
-        'renders SegmentedButton with three segments (Monthly, Yearly, Custom)',
+        'renders SegmentedButton with two segments (Monthly, Yearly)',
         (tester) async {
       setUpDefaultStubs(data: createSampleData());
 
@@ -146,7 +145,6 @@ void main() {
 
       expect(find.text('Monthly'), findsOneWidget);
       expect(find.text('Yearly'), findsOneWidget);
-      expect(find.text('Custom'), findsOneWidget);
     });
 
     testWidgets('tapping "Yearly" segment calls setPeriod',

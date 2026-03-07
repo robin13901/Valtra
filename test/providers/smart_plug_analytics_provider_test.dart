@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:valtra/database/app_database.dart';
@@ -196,9 +195,6 @@ void main() {
       expect(provider.selectedYear, DateTime.now().year);
     });
 
-    test('customRange is null', () {
-      expect(provider.customRange, isNull);
-    });
   });
 
   group('setHouseholdId', () {
@@ -385,26 +381,6 @@ void main() {
           .called(greaterThanOrEqualTo(2));
     });
 
-    test('setPeriod(custom) + setCustomRange changes date range and reloads',
-        () async {
-      stubEmptyData();
-
-      provider.setHouseholdId(1);
-      await Future.delayed(const Duration(milliseconds: 50));
-
-      provider.setPeriod(AnalyticsPeriod.custom);
-      provider.setCustomRange(DateTimeRange(
-        start: DateTime(2026, 1, 1),
-        end: DateTime(2026, 6, 1),
-      ));
-
-      await Future.delayed(const Duration(milliseconds: 100));
-
-      expect(provider.period, AnalyticsPeriod.custom);
-      expect(provider.customRange, isNotNull);
-      verify(() => mockSmartPlugDao.getSmartPlugsForHousehold(1))
-          .called(greaterThanOrEqualTo(2));
-    });
   });
 
   group('month navigation', () {

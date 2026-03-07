@@ -80,7 +80,6 @@ void main() {
     when(() => mockProvider.selectedMonth).thenReturn(testMonth);
     when(() => mockProvider.selectedMeterType)
         .thenReturn(MeterType.electricity);
-    when(() => mockProvider.customRange).thenReturn(null);
     when(() => mockProvider.monthlyData).thenReturn(testData);
     when(() => mockProvider.overviewSummaries).thenReturn({});
     when(() => mockProvider.isLoading).thenReturn(false);
@@ -119,26 +118,19 @@ void main() {
       expect(find.text('250.0 kWh'), findsOneWidget);
     });
 
-    testWidgets('shows daily trends section title', (tester) async {
+    testWidgets('shows monthly progress section title', (tester) async {
       await tester.pumpWidget(buildSubject());
       await tester.pumpAndSettle();
 
-      expect(find.text('Daily Trends'), findsOneWidget);
-    });
-
-    testWidgets('shows monthly comparison section title', (tester) async {
-      await tester.pumpWidget(buildSubject());
-      await tester.pumpAndSettle();
-
-      // Scroll down to reveal the monthly comparison section
+      // Scroll down to reveal the monthly progress section
       await tester.scrollUntilVisible(
-        find.text('Monthly Comparison'),
+        find.text('Monthly Progress'),
         200,
         scrollable: find.byType(Scrollable).first,
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('Monthly Comparison'), findsOneWidget);
+      expect(find.text('Monthly Progress'), findsOneWidget);
     });
 
     testWidgets('shows noData when data is null', (tester) async {
@@ -159,12 +151,5 @@ void main() {
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
     });
 
-    testWidgets('date range picker button is in AppBar', (tester) async {
-      await tester.pumpWidget(buildSubject());
-      await tester.pumpAndSettle();
-
-      expect(find.byIcon(Icons.date_range), findsOneWidget);
-      expect(find.byTooltip('Custom Date Range'), findsOneWidget);
-    });
   });
 }

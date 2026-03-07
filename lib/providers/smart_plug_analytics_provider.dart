@@ -29,7 +29,6 @@ class SmartPlugAnalyticsProvider extends ChangeNotifier {
   DateTime _selectedMonth =
       DateTime(DateTime.now().year, DateTime.now().month, 1);
   int _selectedYear = DateTime.now().year;
-  DateTimeRange? _customRange;
 
   SmartPlugAnalyticsProvider({
     required SmartPlugDao smartPlugDao,
@@ -50,7 +49,6 @@ class SmartPlugAnalyticsProvider extends ChangeNotifier {
   AnalyticsPeriod get period => _period;
   DateTime get selectedMonth => _selectedMonth;
   int get selectedYear => _selectedYear;
-  DateTimeRange? get customRange => _customRange;
 
   void setHouseholdId(int? id) {
     _householdId = id;
@@ -71,7 +69,6 @@ class SmartPlugAnalyticsProvider extends ChangeNotifier {
 
   void setSelectedMonth(DateTime month) {
     _selectedMonth = DateTime(month.year, month.month, 1);
-    _customRange = null;
     notifyListeners();
     loadData();
   }
@@ -79,7 +76,6 @@ class SmartPlugAnalyticsProvider extends ChangeNotifier {
   void navigateMonth(int delta) {
     _selectedMonth =
         DateTime(_selectedMonth.year, _selectedMonth.month + delta, 1);
-    _customRange = null;
     notifyListeners();
     loadData();
   }
@@ -92,12 +88,6 @@ class SmartPlugAnalyticsProvider extends ChangeNotifier {
 
   void navigateYear(int delta) {
     _selectedYear += delta;
-    notifyListeners();
-    loadData();
-  }
-
-  void setCustomRange(DateTimeRange? range) {
-    _customRange = range;
     notifyListeners();
     loadData();
   }
@@ -121,14 +111,6 @@ class SmartPlugAnalyticsProvider extends ChangeNotifier {
         case AnalyticsPeriod.yearly:
           from = DateTime(_selectedYear, 1, 1);
           to = DateTime(_selectedYear + 1, 1, 1);
-        case AnalyticsPeriod.custom:
-          if (_customRange == null) {
-            _isLoading = false;
-            notifyListeners();
-            return;
-          }
-          from = _customRange!.start;
-          to = _customRange!.end;
       }
 
       // 2. Get all plugs and rooms for household

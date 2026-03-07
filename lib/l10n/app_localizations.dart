@@ -1028,24 +1028,6 @@ abstract class AppLocalizations {
   /// **'Monthly Analytics'**
   String get monthlyAnalytics;
 
-  /// No description provided for @dailyTrends.
-  ///
-  /// In en, this message translates to:
-  /// **'Daily Trends'**
-  String get dailyTrends;
-
-  /// No description provided for @monthlyComparison.
-  ///
-  /// In en, this message translates to:
-  /// **'Monthly Comparison'**
-  String get monthlyComparison;
-
-  /// No description provided for @customDateRange.
-  ///
-  /// In en, this message translates to:
-  /// **'Custom Date Range'**
-  String get customDateRange;
-
   /// No description provided for @totalConsumption.
   ///
   /// In en, this message translates to:
@@ -1249,12 +1231,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Yearly'**
   String get periodYearly;
-
-  /// No description provided for @periodCustom.
-  ///
-  /// In en, this message translates to:
-  /// **'Custom'**
-  String get periodCustom;
 
   /// No description provided for @appearance.
   ///

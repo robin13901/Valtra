@@ -533,15 +533,6 @@ class AppLocalizationsDe extends AppLocalizations {
   String get monthlyAnalytics => 'Monatsanalyse';
 
   @override
-  String get dailyTrends => 'Tagesverlauf';
-
-  @override
-  String get monthlyComparison => 'Monatsvergleich';
-
-  @override
-  String get customDateRange => 'Eigener Zeitraum';
-
-  @override
   String get totalConsumption => 'Gesamtverbrauch';
 
   @override
@@ -660,9 +651,6 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get periodYearly => 'Jährlich';
-
-  @override
-  String get periodCustom => 'Benutzerdefiniert';
 
   @override
   String get appearance => 'Darstellung';

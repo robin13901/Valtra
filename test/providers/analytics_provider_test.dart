@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:valtra/database/app_database.dart';
@@ -105,10 +104,6 @@ void main() {
       expect(provider.selectedMeterType, MeterType.electricity);
     });
 
-    test('customRange is null', () {
-      expect(provider.customRange, isNull);
-    });
-
     test('monthlyData is null', () {
       expect(provider.monthlyData, isNull);
     });
@@ -192,26 +187,6 @@ void main() {
       expect(provider.selectedMonth, DateTime(2024, 6, 1));
     });
 
-    test('clears custom range', () {
-      _stubEmptyDaos(
-        mockElectricityDao,
-        mockGasDao,
-        mockWaterDao,
-        mockHeatingDao,
-      );
-
-      // First set a custom range
-      provider.setCustomRange(DateTimeRange(
-        start: DateTime(2024, 1, 1),
-        end: DateTime(2024, 3, 1),
-      ));
-
-      // Then set month, which should clear it
-      provider.setSelectedMonth(DateTime(2024, 6, 1));
-
-      expect(provider.customRange, isNull);
-    });
-
     test('notifies listeners', () {
       _stubEmptyDaos(
         mockElectricityDao,
@@ -257,63 +232,6 @@ void main() {
       provider.setSelectedMeterType(MeterType.water);
 
       expect(notified, true);
-    });
-  });
-
-  group('setCustomRange', () {
-    test('stores range', () {
-      _stubEmptyDaos(
-        mockElectricityDao,
-        mockGasDao,
-        mockWaterDao,
-        mockHeatingDao,
-      );
-
-      final range = DateTimeRange(
-        start: DateTime(2024, 1, 1),
-        end: DateTime(2024, 6, 1),
-      );
-
-      provider.setCustomRange(range);
-
-      expect(provider.customRange, range);
-    });
-
-    test('notifies listeners', () {
-      _stubEmptyDaos(
-        mockElectricityDao,
-        mockGasDao,
-        mockWaterDao,
-        mockHeatingDao,
-      );
-
-      var notified = false;
-      provider.addListener(() => notified = true);
-
-      provider.setCustomRange(DateTimeRange(
-        start: DateTime(2024, 1, 1),
-        end: DateTime(2024, 6, 1),
-      ));
-
-      expect(notified, true);
-    });
-
-    test('can be cleared to null', () {
-      _stubEmptyDaos(
-        mockElectricityDao,
-        mockGasDao,
-        mockWaterDao,
-        mockHeatingDao,
-      );
-
-      provider.setCustomRange(DateTimeRange(
-        start: DateTime(2024, 1, 1),
-        end: DateTime(2024, 6, 1),
-      ));
-
-      provider.setCustomRange(null);
-
-      expect(provider.customRange, isNull);
     });
   });
 
@@ -377,24 +295,6 @@ void main() {
       provider.navigateMonth(-1);
 
       expect(provider.selectedMonth, DateTime(2023, 12, 1));
-    });
-
-    test('clears custom range', () {
-      _stubEmptyDaos(
-        mockElectricityDao,
-        mockGasDao,
-        mockWaterDao,
-        mockHeatingDao,
-      );
-
-      provider.setCustomRange(DateTimeRange(
-        start: DateTime(2024, 1, 1),
-        end: DateTime(2024, 3, 1),
-      ));
-
-      provider.navigateMonth(1);
-
-      expect(provider.customRange, isNull);
     });
 
     test('notifies listeners', () {

@@ -134,7 +134,7 @@ String unitForMeterType(MeterType type) {
 // ============== Smart Plug Analytics Models ==============
 
 /// Period selection for smart plug analytics.
-enum AnalyticsPeriod { monthly, yearly, custom }
+enum AnalyticsPeriod { monthly, yearly }
 
 /// A single slice of data for rendering in a pie chart.
 class PieSliceData {

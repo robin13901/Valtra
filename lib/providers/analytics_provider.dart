@@ -31,7 +31,6 @@ class AnalyticsProvider extends ChangeNotifier {
   DateTime _selectedMonth =
       DateTime(DateTime.now().year, DateTime.now().month, 1);
   MeterType _selectedMeterType = MeterType.electricity;
-  DateTimeRange? _customRange; // null = use selectedMonth
   int _selectedYear = DateTime.now().year;
 
   // Computed state
@@ -62,7 +61,6 @@ class AnalyticsProvider extends ChangeNotifier {
   int? get householdId => _householdId;
   DateTime get selectedMonth => _selectedMonth;
   MeterType get selectedMeterType => _selectedMeterType;
-  DateTimeRange? get customRange => _customRange;
   MonthlyAnalyticsData? get monthlyData => _monthlyData;
   YearlyAnalyticsData? get yearlyData => _yearlyData;
   int get selectedYear => _selectedYear;
@@ -84,7 +82,6 @@ class AnalyticsProvider extends ChangeNotifier {
 
   void setSelectedMonth(DateTime month) {
     _selectedMonth = DateTime(month.year, month.month, 1);
-    _customRange = null;
     notifyListeners();
     _loadMonthlyData();
   }
@@ -95,16 +92,9 @@ class AnalyticsProvider extends ChangeNotifier {
     _loadMonthlyData();
   }
 
-  void setCustomRange(DateTimeRange? range) {
-    _customRange = range;
-    notifyListeners();
-    _loadMonthlyData();
-  }
-
   void navigateMonth(int delta) {
     _selectedMonth =
         DateTime(_selectedMonth.year, _selectedMonth.month + delta, 1);
-    _customRange = null;
     notifyListeners();
     _loadMonthlyData();
   }
@@ -228,17 +218,10 @@ class AnalyticsProvider extends ChangeNotifier {
       final method =
           _settingsProvider.getMethodForMeterType(_selectedMeterType.name);
 
-      // Determine date range for line chart
-      final DateTime lineStart;
-      final DateTime lineEnd;
-      if (_customRange != null) {
-        lineStart = _customRange!.start;
-        lineEnd = _customRange!.end;
-      } else {
-        lineStart = _selectedMonth;
-        lineEnd =
-            DateTime(_selectedMonth.year, _selectedMonth.month + 1, 1);
-      }
+      // Determine date range for data
+      final DateTime lineStart = _selectedMonth;
+      final DateTime lineEnd =
+          DateTime(_selectedMonth.year, _selectedMonth.month + 1, 1);
 
       // Bar chart range: 6 months back from selected month
       final barStart =
@@ -294,24 +277,13 @@ class AnalyticsProvider extends ChangeNotifier {
         );
       }
 
-      // Calculate total consumption for the selected month/range
+      // Calculate total consumption for the selected month
       double? totalConsumption;
-      if (_customRange != null) {
-        // For custom range, sum all monthly consumption in range
-        totalConsumption = monthlyConsumption
-            .where((p) =>
-                !p.periodStart.isBefore(lineStart) &&
-                    p.periodEnd.isBefore(lineEnd) ||
-                p.periodEnd.isAtSameMomentAs(lineEnd))
-            .fold<double>(0, (sum, p) => sum + p.consumption);
-      } else {
-        // For single month, find the period matching selected month
-        for (final period in monthlyConsumption) {
-          if (period.periodStart.year == _selectedMonth.year &&
-              period.periodStart.month == _selectedMonth.month) {
-            totalConsumption = period.consumption;
-            break;
-          }
+      for (final period in monthlyConsumption) {
+        if (period.periodStart.year == _selectedMonth.year &&
+            period.periodStart.month == _selectedMonth.month) {
+          totalConsumption = period.consumption;
+          break;
         }
       }
 

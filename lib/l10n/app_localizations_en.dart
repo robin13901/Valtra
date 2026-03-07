@@ -531,15 +531,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get monthlyAnalytics => 'Monthly Analytics';
 
   @override
-  String get dailyTrends => 'Daily Trends';
-
-  @override
-  String get monthlyComparison => 'Monthly Comparison';
-
-  @override
-  String get customDateRange => 'Custom Date Range';
-
-  @override
   String get totalConsumption => 'Total Consumption';
 
   @override
@@ -658,9 +649,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get periodYearly => 'Yearly';
-
-  @override
-  String get periodCustom => 'Custom';
 
   @override
   String get appearance => 'Appearance';
