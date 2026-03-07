@@ -103,7 +103,41 @@
         "Cascade delete with warning dialog",
         "Grouped display by parent entity"
       ]
+    },
+    "flutter-analytics-provider": {
+      "best_model": "opus",
+      "average_duration": "1-2h",
+      "success_rate": 100,
+      "sample_size": 1,
+      "common_deviations": [
+        "Multi-meter aggregation: interpolate per-meter independently then sum",
+        "Gas conversion applied post-aggregation in provider layer",
+        "Custom range must be cleared on month navigation",
+        "Overview needs wider lookback (6 months) than detail view"
+      ]
+    },
+    "fl-chart-visualization": {
+      "best_model": "opus",
+      "average_duration": "1h",
+      "success_rate": 100,
+      "sample_size": 1,
+      "common_deviations": [
+        "BarChartGroupData.x requires int - use sequential index",
+        "FlSpot.nullSpot for line gaps - guard with .any() before rendering",
+        "No built-in legend - build custom ChartLegend widget",
+        "Widget tests can't inspect CustomPainter canvas - test data transformation instead"
+      ]
+    },
+    "flutter-analytics-screen": {
+      "best_model": "opus",
+      "average_duration": "45min",
+      "success_rate": 100,
+      "sample_size": 1,
+      "common_deviations": [
+        "Hub screen with context.watch, detail screens with context.read for navigation",
+        "Date range picker requires MaterialApp ancestor in widget tests"
+      ]
     }
   },
-  "updated_at": "2026-03-06T14:00:00Z"
+  "updated_at": "2026-03-07T12:00:00Z"
 }

@@ -159,4 +159,23 @@ class HeatingDao extends DatabaseAccessor<AppDatabase>
           ..limit(1))
         .getSingleOrNull();
   }
+
+  /// Gets all readings within a date range plus the immediately surrounding
+  /// readings (one before rangeStart, one after rangeEnd) for interpolation.
+  Future<List<HeatingReading>> getReadingsForRange(
+    int heatingMeterId,
+    DateTime rangeStart,
+    DateTime rangeEnd,
+  ) async {
+    final before = await getPreviousReading(heatingMeterId, rangeStart);
+    final after = await getNextReading(heatingMeterId, rangeEnd);
+    final inRange = await (select(heatingReadings)
+          ..where((r) =>
+              r.heatingMeterId.equals(heatingMeterId) &
+              r.timestamp.isBiggerOrEqualValue(rangeStart) &
+              r.timestamp.isSmallerOrEqualValue(rangeEnd))
+          ..orderBy([(r) => OrderingTerm.asc(r.timestamp)]))
+        .get();
+    return [?before, ...inRange, ?after];
+  }
 }

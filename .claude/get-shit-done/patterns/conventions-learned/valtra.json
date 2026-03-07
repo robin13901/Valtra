@@ -1,13 +1,13 @@
 {
   "project": "valtra",
-  "captured_at": "2026-03-06",
+  "captured_at": "2026-03-07",
   "language": {
     "primary": "dart",
     "version": "^3.10.0"
   },
   "framework": {
     "name": "flutter",
-    "patterns": ["provider", "drift", "material3", "sharedpreferences"]
+    "patterns": ["provider", "drift", "material3", "sharedpreferences", "fl_chart"]
   },
   "naming": {
     "files": {
@@ -55,9 +55,13 @@
     "lib": {
       "database": ["tables.dart", "app_database.dart", "connection/native.dart"],
       "database/daos": ["{entity}_dao.dart"],
-      "providers": ["theme_provider.dart", "{entity}_provider.dart"],
-      "screens": ["{entity}s_screen.dart"],
+      "providers": ["theme_provider.dart", "{entity}_provider.dart", "{domain}_settings_provider.dart"],
+      "services": ["{conversion}_service.dart"],
+      "services/{domain}": ["models.dart", "{domain}_service.dart", "reading_converters.dart"],
+      "services/analytics": ["analytics_models.dart", "analytics_helpers.dart"],
+      "screens": ["{entity}s_screen.dart", "analytics_screen.dart", "monthly_analytics_screen.dart"],
       "widgets": ["liquid_glass_widgets.dart", "{entity}_selector.dart"],
+      "widgets/charts": ["consumption_line_chart.dart", "monthly_bar_chart.dart", "chart_legend.dart"],
       "widgets/dialogs": ["{entity}_form_dialog.dart"],
       "l10n": ["app_en.arb", "app_de.arb"]
     },
@@ -65,8 +69,11 @@
       "helpers": ["test_database.dart", "test_utils.dart"],
       "database": ["tables_test.dart", "{entity}_dao_test.dart"],
       "providers": ["{entity}_provider_test.dart"],
-      "screens": ["{entity}s_screen_test.dart"],
-      "widgets": ["{entity}_form_dialog_test.dart", "{entity}_selector_test.dart"]
+      "services": ["{conversion}_service_test.dart"],
+      "services/{domain}": ["models_test.dart", "{domain}_service_test.dart", "reading_converters_test.dart"],
+      "screens": ["{entity}s_screen_test.dart", "analytics_screen_test.dart", "monthly_analytics_screen_test.dart"],
+      "widgets": ["{entity}_form_dialog_test.dart", "{entity}_selector_test.dart"],
+      "widgets/charts": ["consumption_line_chart_test.dart", "monthly_bar_chart_test.dart", "chart_legend_test.dart"]
     }
   },
   "testing": {
@@ -100,6 +107,16 @@
     "JOIN queries return JoinedRow - use r.readTable(entity) to extract correct table",
     "Cascade delete requires transaction() for atomicity",
     "Grouped lists need sorted keys for consistent ordering",
-    "Check parent list before showing child form dialog - show snackbar if empty"
+    "Check parent list before showing child form dialog - show snackbar if empty",
+    "Use null-aware elements [?x] instead of [if (x != null) x] to satisfy use_null_aware_elements lint",
+    "Interpolation tests need millisecond precision - use inMilliseconds in both code and test expectations",
+    "Self-init provider pattern: call await provider.init() in main() before runApp()",
+    "ARB parameterized strings need @key metadata block with placeholders object",
+    "fl_chart BarChartGroupData.x requires int - use sequential index, map to month labels in titles",
+    "fl_chart has no built-in legend - build custom ChartLegend widget",
+    "Multi-meter aggregation: interpolate per-meter independently, then sum - never merge raw readings",
+    "FlSpot.nullSpot creates line gaps - guard with .any((s) => s != FlSpot.nullSpot) before rendering",
+    "Custom date range + month navigation: navigateMonth() must clear customRange",
+    "fl_chart widget tests: can't inspect canvas - focus on data transformation and widget-renders-without-crash"
   ]
 }

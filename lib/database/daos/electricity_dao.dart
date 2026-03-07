@@ -89,4 +89,23 @@ class ElectricityDao extends DatabaseAccessor<AppDatabase>
           ..limit(1))
         .getSingleOrNull();
   }
+
+  /// Gets all readings within a date range plus the immediately surrounding
+  /// readings (one before rangeStart, one after rangeEnd) for interpolation.
+  Future<List<ElectricityReading>> getReadingsForRange(
+    int householdId,
+    DateTime rangeStart,
+    DateTime rangeEnd,
+  ) async {
+    final before = await getPreviousReading(householdId, rangeStart);
+    final after = await getNextReading(householdId, rangeEnd);
+    final inRange = await (select(electricityReadings)
+          ..where((r) =>
+              r.householdId.equals(householdId) &
+              r.timestamp.isBiggerOrEqualValue(rangeStart) &
+              r.timestamp.isSmallerOrEqualValue(rangeEnd))
+          ..orderBy([(r) => OrderingTerm.asc(r.timestamp)]))
+        .get();
+    return [?before, ...inRange, ?after];
+  }
 }

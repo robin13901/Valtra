@@ -428,6 +428,106 @@ void main() {
     });
   });
 
+  group('WaterDao - getReadingsForRange', () {
+    late int meterId;
+
+    setUp(() async {
+      meterId = await dao.insertMeter(WaterMetersCompanion.insert(
+        householdId: householdId,
+        name: 'Range Test Meter',
+        type: WaterMeterType.cold,
+      ));
+    });
+
+    test('returns readings inside range plus before and after', () async {
+      // Before range
+      await dao.insertReading(WaterReadingsCompanion.insert(
+        waterMeterId: meterId,
+        timestamp: DateTime(2024, 1, 1),
+        valueCubicMeters: 100.0,
+      ));
+      // Inside range
+      await dao.insertReading(WaterReadingsCompanion.insert(
+        waterMeterId: meterId,
+        timestamp: DateTime(2024, 1, 15),
+        valueCubicMeters: 150.0,
+      ));
+      await dao.insertReading(WaterReadingsCompanion.insert(
+        waterMeterId: meterId,
+        timestamp: DateTime(2024, 1, 20),
+        valueCubicMeters: 175.0,
+      ));
+      // After range
+      await dao.insertReading(WaterReadingsCompanion.insert(
+        waterMeterId: meterId,
+        timestamp: DateTime(2024, 2, 15),
+        valueCubicMeters: 250.0,
+      ));
+
+      final results = await dao.getReadingsForRange(
+        meterId,
+        DateTime(2024, 1, 10),
+        DateTime(2024, 1, 31),
+      );
+
+      expect(results.length, 4);
+      expect(results[0].valueCubicMeters, 100.0); // before
+      expect(results[1].valueCubicMeters, 150.0); // in-range
+      expect(results[2].valueCubicMeters, 175.0); // in-range
+      expect(results[3].valueCubicMeters, 250.0); // after
+    });
+
+    test('returns empty list when no readings exist', () async {
+      final results = await dao.getReadingsForRange(
+        meterId,
+        DateTime(2024, 1, 10),
+        DateTime(2024, 1, 31),
+      );
+
+      expect(results, isEmpty);
+    });
+
+    test('returns only before reading when no in-range or after', () async {
+      await dao.insertReading(WaterReadingsCompanion.insert(
+        waterMeterId: meterId,
+        timestamp: DateTime(2024, 1, 1),
+        valueCubicMeters: 100.0,
+      ));
+
+      final results = await dao.getReadingsForRange(
+        meterId,
+        DateTime(2024, 1, 10),
+        DateTime(2024, 1, 31),
+      );
+
+      expect(results.length, 1);
+      expect(results[0].valueCubicMeters, 100.0);
+    });
+
+    test('includes reading on exact boundary', () async {
+      await dao.insertReading(WaterReadingsCompanion.insert(
+        waterMeterId: meterId,
+        timestamp: DateTime(2024, 1, 10),
+        valueCubicMeters: 120.0,
+      ));
+      await dao.insertReading(WaterReadingsCompanion.insert(
+        waterMeterId: meterId,
+        timestamp: DateTime(2024, 1, 31),
+        valueCubicMeters: 180.0,
+      ));
+
+      final results = await dao.getReadingsForRange(
+        meterId,
+        DateTime(2024, 1, 10),
+        DateTime(2024, 1, 31),
+      );
+
+      expect(results.length, 2);
+      expect(results[0].valueCubicMeters, 120.0);
+      expect(results[1].valueCubicMeters, 180.0);
+    });
+  });
+
   group('WaterDao - Meter Isolation', () {
     test('readings are filtered by meter', () async {
       final meter1Id = await dao.insertMeter(WaterMetersCompanion.insert(

@@ -158,4 +158,23 @@ class WaterDao extends DatabaseAccessor<AppDatabase> with _$WaterDaoMixin {
           ..limit(1))
         .getSingleOrNull();
   }
+
+  /// Gets all readings within a date range plus the immediately surrounding
+  /// readings (one before rangeStart, one after rangeEnd) for interpolation.
+  Future<List<WaterReading>> getReadingsForRange(
+    int waterMeterId,
+    DateTime rangeStart,
+    DateTime rangeEnd,
+  ) async {
+    final before = await getPreviousReading(waterMeterId, rangeStart);
+    final after = await getNextReading(waterMeterId, rangeEnd);
+    final inRange = await (select(waterReadings)
+          ..where((r) =>
+              r.waterMeterId.equals(waterMeterId) &
+              r.timestamp.isBiggerOrEqualValue(rangeStart) &
+              r.timestamp.isSmallerOrEqualValue(rangeEnd))
+          ..orderBy([(r) => OrderingTerm.asc(r.timestamp)]))
+        .get();
+    return [?before, ...inRange, ?after];
+  }
 }
