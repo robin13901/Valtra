@@ -6,7 +6,10 @@ import '../app_theme.dart';
 import '../database/app_database.dart';
 import '../database/tables.dart';
 import '../l10n/app_localizations.dart';
+import '../providers/analytics_provider.dart';
 import '../providers/water_provider.dart';
+import '../screens/monthly_analytics_screen.dart';
+import '../services/analytics/analytics_models.dart';
 import '../widgets/dialogs/water_meter_form_dialog.dart';
 import '../widgets/dialogs/water_reading_form_dialog.dart';
 
@@ -24,6 +27,16 @@ class WaterScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text(l10n.waterMeters),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.analytics),
+            onPressed: () {
+              context.read<AnalyticsProvider>().setSelectedMeterType(MeterType.water);
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => const MonthlyAnalyticsScreen()),
+              );
+            },
+            tooltip: l10n.analyticsHub,
+          ),
           Chip(
             label: Text(l10n.cubicMeters),
             backgroundColor: AppColors.waterColor.withValues(alpha: 0.2),

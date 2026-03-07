@@ -139,5 +139,71 @@
   "deleteHeatingReadingConfirm": "Möchten Sie diese Ablesung wirklich löschen?",
   "noHeatingReadings": "Noch keine Ablesungen. Fügen Sie Ihre erste Zählerablesung hinzu!",
   "heatingConsumptionSince": "+{value} Einheiten seit letzter Ablesung",
-  "heatingReadingMustBeGreaterOrEqual": "Der Wert muss >= {previousValue} sein"
+  "heatingReadingMustBeGreaterOrEqual": "Der Wert muss >= {previousValue} sein",
+  "interpolation": "Interpolation",
+  "interpolationMethod": "Interpolationsmethode",
+  "linear": "Linear",
+  "step": "Stufenfunktion",
+  "interpolated": "Interpoliert",
+  "actual": "Tatsächlich",
+  "gasKwhConversion": "Gas kWh-Umrechnung",
+  "gasConversionFactor": "Umrechnungsfaktor",
+  "gasKwhPerCubicMeter": "{value} kWh/m³",
+  "@gasKwhPerCubicMeter": {
+    "placeholders": {
+      "value": {"type": "String"}
+    }
+  },
+  "gasValueKwh": "{value} kWh",
+  "@gasValueKwh": {
+    "placeholders": {
+      "value": {"type": "String"}
+    }
+  },
+  "gasConsumptionKwh": "+{value} kWh seit vorheriger Ablesung",
+  "@gasConsumptionKwh": {
+    "placeholders": {
+      "value": {"type": "String"}
+    }
+  },
+  "defaultGasConversionFactor": "Standard: 10,3 kWh/m³ (deutsches Erdgas)",
+  "analyticsHub": "Analyse",
+  "consumptionOverview": "Verbrauchsübersicht",
+  "monthlyAnalytics": "Monatsanalyse",
+  "dailyTrends": "Tagesverlauf",
+  "monthlyComparison": "Monatsvergleich",
+  "customDateRange": "Eigener Zeitraum",
+  "totalConsumption": "Gesamtverbrauch",
+  "noAnalyticsData": "Nicht genügend Daten für Analysen. Fügen Sie weitere Ablesungen hinzu!",
+  "consumptionValue": "{value} {unit}",
+  "@consumptionValue": {
+    "placeholders": {
+      "value": {"type": "String"},
+      "unit": {"type": "String"}
+    }
+  },
+  "monthlyConsumptionValue": "{value} {unit} im {month}",
+  "@monthlyConsumptionValue": {
+    "placeholders": {
+      "value": {"type": "String"},
+      "unit": {"type": "String"},
+      "month": {"type": "String"}
+    }
+  },
+  "analyticsFor": "Analyse für {meterType}",
+  "@analyticsFor": {
+    "placeholders": {
+      "meterType": {"type": "String"}
+    }
+  },
+  "previousMonth": "Vorheriger Monat",
+  "nextMonth": "Nächster Monat",
+  "recentMonths": "Letzte Monate",
+  "averageConsumption": "Durchschnitt: {value} {unit}",
+  "@averageConsumption": {
+    "placeholders": {
+      "value": {"type": "String"},
+      "unit": {"type": "String"}
+    }
+  }
 }

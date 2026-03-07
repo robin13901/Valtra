@@ -5,7 +5,10 @@ import 'package:provider/provider.dart';
 import '../app_theme.dart';
 import '../database/app_database.dart';
 import '../l10n/app_localizations.dart';
+import '../providers/analytics_provider.dart';
 import '../providers/electricity_provider.dart';
+import '../screens/monthly_analytics_screen.dart';
+import '../services/analytics/analytics_models.dart';
 import '../widgets/dialogs/electricity_reading_form_dialog.dart';
 
 /// Screen displaying electricity readings with add/edit/delete functionality.
@@ -22,6 +25,16 @@ class ElectricityScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text(l10n.electricity),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.analytics),
+            onPressed: () {
+              context.read<AnalyticsProvider>().setSelectedMeterType(MeterType.electricity);
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => const MonthlyAnalyticsScreen()),
+              );
+            },
+            tooltip: l10n.analyticsHub,
+          ),
           Chip(
             label: Text(l10n.kWh),
             backgroundColor: AppColors.electricityColor.withValues(alpha: 0.2),

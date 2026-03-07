@@ -16,15 +16,20 @@ import 'providers/electricity_provider.dart';
 import 'providers/gas_provider.dart';
 import 'providers/heating_provider.dart';
 import 'providers/household_provider.dart';
+import 'providers/analytics_provider.dart';
+import 'providers/interpolation_settings_provider.dart';
 import 'providers/room_provider.dart';
 import 'providers/smart_plug_provider.dart';
 import 'providers/theme_provider.dart';
 import 'providers/water_provider.dart';
+import 'screens/analytics_screen.dart';
 import 'screens/electricity_screen.dart';
 import 'screens/gas_screen.dart';
 import 'screens/heating_screen.dart';
 import 'screens/smart_plugs_screen.dart';
 import 'screens/water_screen.dart';
+import 'services/gas_conversion_service.dart';
+import 'services/interpolation/interpolation_service.dart';
 import 'widgets/household_selector.dart';
 
 void main() async {
@@ -59,6 +64,21 @@ void main() async {
   // Initialize heating provider
   final heatingProvider = HeatingProvider(HeatingDao(database));
 
+  // Initialize interpolation settings provider
+  final interpolationSettingsProvider = InterpolationSettingsProvider();
+  await interpolationSettingsProvider.init();
+
+  // Initialize analytics provider
+  final analyticsProvider = AnalyticsProvider(
+    electricityDao: ElectricityDao(database),
+    gasDao: GasDao(database),
+    waterDao: WaterDao(database),
+    heatingDao: HeatingDao(database),
+    interpolationService: InterpolationService(),
+    gasConversionService: GasConversionService(),
+    settingsProvider: interpolationSettingsProvider,
+  );
+
   // Connect providers to household changes
   if (householdProvider.selectedHouseholdId != null) {
     electricityProvider.setHouseholdId(householdProvider.selectedHouseholdId);
@@ -67,6 +87,7 @@ void main() async {
     waterProvider.setHouseholdId(householdProvider.selectedHouseholdId);
     gasProvider.setHouseholdId(householdProvider.selectedHouseholdId);
     heatingProvider.setHouseholdId(householdProvider.selectedHouseholdId);
+    analyticsProvider.setHouseholdId(householdProvider.selectedHouseholdId);
   }
 
   runApp(ValtraApp(
@@ -79,6 +100,8 @@ void main() async {
     waterProvider: waterProvider,
     gasProvider: gasProvider,
     heatingProvider: heatingProvider,
+    interpolationSettingsProvider: interpolationSettingsProvider,
+    analyticsProvider: analyticsProvider,
   ));
 }
 
@@ -92,6 +115,8 @@ class ValtraApp extends StatefulWidget {
   final WaterProvider waterProvider;
   final GasProvider gasProvider;
   final HeatingProvider heatingProvider;
+  final InterpolationSettingsProvider interpolationSettingsProvider;
+  final AnalyticsProvider analyticsProvider;
 
   const ValtraApp({
     super.key,
@@ -104,6 +129,8 @@ class ValtraApp extends StatefulWidget {
     required this.waterProvider,
     required this.gasProvider,
     required this.heatingProvider,
+    required this.interpolationSettingsProvider,
+    required this.analyticsProvider,
   });
 
   @override
@@ -132,6 +159,7 @@ class _ValtraAppState extends State<ValtraApp> {
     widget.waterProvider.setHouseholdId(householdId);
     widget.gasProvider.setHouseholdId(householdId);
     widget.heatingProvider.setHouseholdId(householdId);
+    widget.analyticsProvider.setHouseholdId(householdId);
   }
 
   @override
@@ -155,6 +183,10 @@ class _ValtraAppState extends State<ValtraApp> {
             value: widget.gasProvider),
         ChangeNotifierProvider<HeatingProvider>.value(
             value: widget.heatingProvider),
+        ChangeNotifierProvider<InterpolationSettingsProvider>.value(
+            value: widget.interpolationSettingsProvider),
+        ChangeNotifierProvider<AnalyticsProvider>.value(
+            value: widget.analyticsProvider),
       ],
       child: Consumer<ThemeProvider>(
         builder: (context, themeProvider, child) {
@@ -254,6 +286,16 @@ class HomeScreen extends StatelessWidget {
               l10n.heating,
               AppColors.heatingColor,
               onTap: () => _navigateToHeating(context),
+            ),
+            const SizedBox(height: 16),
+            const Divider(),
+            const SizedBox(height: 8),
+            _buildCategoryChip(
+              context,
+              Icons.analytics,
+              l10n.analyticsHub,
+              AppColors.ultraViolet,
+              onTap: () => _navigateToAnalytics(context),
             ),
           ],
         ),
@@ -398,6 +440,22 @@ class HomeScreen extends StatelessWidget {
 
     Navigator.of(context).push(
       MaterialPageRoute(builder: (context) => const HeatingScreen()),
+    );
+  }
+
+  void _navigateToAnalytics(BuildContext context) {
+    final householdProvider = context.read<HouseholdProvider>();
+    if (householdProvider.selectedHousehold == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.selectHousehold),
+        ),
+      );
+      return;
+    }
+
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (context) => const AnalyticsScreen()),
     );
   }
 }

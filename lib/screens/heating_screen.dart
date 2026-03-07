@@ -5,7 +5,10 @@ import 'package:provider/provider.dart';
 import '../app_theme.dart';
 import '../database/app_database.dart';
 import '../l10n/app_localizations.dart';
+import '../providers/analytics_provider.dart';
 import '../providers/heating_provider.dart';
+import '../screens/monthly_analytics_screen.dart';
+import '../services/analytics/analytics_models.dart';
 import '../widgets/dialogs/heating_meter_form_dialog.dart';
 import '../widgets/dialogs/heating_reading_form_dialog.dart';
 
@@ -22,6 +25,18 @@ class HeatingScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.heatingMeters),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.analytics),
+            onPressed: () {
+              context.read<AnalyticsProvider>().setSelectedMeterType(MeterType.heating);
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => const MonthlyAnalyticsScreen()),
+              );
+            },
+            tooltip: l10n.analyticsHub,
+          ),
+        ],
       ),
       body: meters.isEmpty
           ? _buildEmptyState(context, l10n)

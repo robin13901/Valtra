@@ -937,6 +937,168 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Value must be >= {previousValue}'**
   String heatingReadingMustBeGreaterOrEqual(String previousValue);
+
+  /// No description provided for @interpolation.
+  ///
+  /// In en, this message translates to:
+  /// **'Interpolation'**
+  String get interpolation;
+
+  /// No description provided for @interpolationMethod.
+  ///
+  /// In en, this message translates to:
+  /// **'Interpolation Method'**
+  String get interpolationMethod;
+
+  /// No description provided for @linear.
+  ///
+  /// In en, this message translates to:
+  /// **'Linear'**
+  String get linear;
+
+  /// No description provided for @step.
+  ///
+  /// In en, this message translates to:
+  /// **'Step'**
+  String get step;
+
+  /// No description provided for @interpolated.
+  ///
+  /// In en, this message translates to:
+  /// **'Interpolated'**
+  String get interpolated;
+
+  /// No description provided for @actual.
+  ///
+  /// In en, this message translates to:
+  /// **'Actual'**
+  String get actual;
+
+  /// No description provided for @gasKwhConversion.
+  ///
+  /// In en, this message translates to:
+  /// **'Gas kWh Conversion'**
+  String get gasKwhConversion;
+
+  /// No description provided for @gasConversionFactor.
+  ///
+  /// In en, this message translates to:
+  /// **'Conversion Factor'**
+  String get gasConversionFactor;
+
+  /// No description provided for @gasKwhPerCubicMeter.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} kWh/m³'**
+  String gasKwhPerCubicMeter(String value);
+
+  /// No description provided for @gasValueKwh.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} kWh'**
+  String gasValueKwh(String value);
+
+  /// No description provided for @gasConsumptionKwh.
+  ///
+  /// In en, this message translates to:
+  /// **'+{value} kWh since previous'**
+  String gasConsumptionKwh(String value);
+
+  /// No description provided for @defaultGasConversionFactor.
+  ///
+  /// In en, this message translates to:
+  /// **'Default: 10.3 kWh/m³ (German natural gas)'**
+  String get defaultGasConversionFactor;
+
+  /// No description provided for @analyticsHub.
+  ///
+  /// In en, this message translates to:
+  /// **'Analytics'**
+  String get analyticsHub;
+
+  /// No description provided for @consumptionOverview.
+  ///
+  /// In en, this message translates to:
+  /// **'Consumption Overview'**
+  String get consumptionOverview;
+
+  /// No description provided for @monthlyAnalytics.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly Analytics'**
+  String get monthlyAnalytics;
+
+  /// No description provided for @dailyTrends.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily Trends'**
+  String get dailyTrends;
+
+  /// No description provided for @monthlyComparison.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly Comparison'**
+  String get monthlyComparison;
+
+  /// No description provided for @customDateRange.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom Date Range'**
+  String get customDateRange;
+
+  /// No description provided for @totalConsumption.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Consumption'**
+  String get totalConsumption;
+
+  /// No description provided for @noAnalyticsData.
+  ///
+  /// In en, this message translates to:
+  /// **'Not enough data for analytics. Add more readings!'**
+  String get noAnalyticsData;
+
+  /// No description provided for @consumptionValue.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} {unit}'**
+  String consumptionValue(String value, String unit);
+
+  /// No description provided for @monthlyConsumptionValue.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} {unit} in {month}'**
+  String monthlyConsumptionValue(String value, String unit, String month);
+
+  /// No description provided for @analyticsFor.
+  ///
+  /// In en, this message translates to:
+  /// **'Analytics for {meterType}'**
+  String analyticsFor(String meterType);
+
+  /// No description provided for @previousMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous Month'**
+  String get previousMonth;
+
+  /// No description provided for @nextMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'Next Month'**
+  String get nextMonth;
+
+  /// No description provided for @recentMonths.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent Months'**
+  String get recentMonths;
+
+  /// No description provided for @averageConsumption.
+  ///
+  /// In en, this message translates to:
+  /// **'Average: {value} {unit}'**
+  String averageConsumption(String value, String unit);
 }
 
 class _AppLocalizationsDelegate

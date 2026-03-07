@@ -477,4 +477,101 @@ class AppLocalizationsEn extends AppLocalizations {
   String heatingReadingMustBeGreaterOrEqual(String previousValue) {
     return 'Value must be >= $previousValue';
   }
+
+  @override
+  String get interpolation => 'Interpolation';
+
+  @override
+  String get interpolationMethod => 'Interpolation Method';
+
+  @override
+  String get linear => 'Linear';
+
+  @override
+  String get step => 'Step';
+
+  @override
+  String get interpolated => 'Interpolated';
+
+  @override
+  String get actual => 'Actual';
+
+  @override
+  String get gasKwhConversion => 'Gas kWh Conversion';
+
+  @override
+  String get gasConversionFactor => 'Conversion Factor';
+
+  @override
+  String gasKwhPerCubicMeter(String value) {
+    return '$value kWh/m³';
+  }
+
+  @override
+  String gasValueKwh(String value) {
+    return '$value kWh';
+  }
+
+  @override
+  String gasConsumptionKwh(String value) {
+    return '+$value kWh since previous';
+  }
+
+  @override
+  String get defaultGasConversionFactor =>
+      'Default: 10.3 kWh/m³ (German natural gas)';
+
+  @override
+  String get analyticsHub => 'Analytics';
+
+  @override
+  String get consumptionOverview => 'Consumption Overview';
+
+  @override
+  String get monthlyAnalytics => 'Monthly Analytics';
+
+  @override
+  String get dailyTrends => 'Daily Trends';
+
+  @override
+  String get monthlyComparison => 'Monthly Comparison';
+
+  @override
+  String get customDateRange => 'Custom Date Range';
+
+  @override
+  String get totalConsumption => 'Total Consumption';
+
+  @override
+  String get noAnalyticsData =>
+      'Not enough data for analytics. Add more readings!';
+
+  @override
+  String consumptionValue(String value, String unit) {
+    return '$value $unit';
+  }
+
+  @override
+  String monthlyConsumptionValue(String value, String unit, String month) {
+    return '$value $unit in $month';
+  }
+
+  @override
+  String analyticsFor(String meterType) {
+    return 'Analytics for $meterType';
+  }
+
+  @override
+  String get previousMonth => 'Previous Month';
+
+  @override
+  String get nextMonth => 'Next Month';
+
+  @override
+  String get recentMonths => 'Recent Months';
+
+  @override
+  String averageConsumption(String value, String unit) {
+    return 'Average: $value $unit';
+  }
 }

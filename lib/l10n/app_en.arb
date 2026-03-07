@@ -205,5 +205,71 @@
     "placeholders": {
       "previousValue": {"type": "String"}
     }
+  },
+  "interpolation": "Interpolation",
+  "interpolationMethod": "Interpolation Method",
+  "linear": "Linear",
+  "step": "Step",
+  "interpolated": "Interpolated",
+  "actual": "Actual",
+  "gasKwhConversion": "Gas kWh Conversion",
+  "gasConversionFactor": "Conversion Factor",
+  "gasKwhPerCubicMeter": "{value} kWh/m³",
+  "@gasKwhPerCubicMeter": {
+    "placeholders": {
+      "value": {"type": "String"}
+    }
+  },
+  "gasValueKwh": "{value} kWh",
+  "@gasValueKwh": {
+    "placeholders": {
+      "value": {"type": "String"}
+    }
+  },
+  "gasConsumptionKwh": "+{value} kWh since previous",
+  "@gasConsumptionKwh": {
+    "placeholders": {
+      "value": {"type": "String"}
+    }
+  },
+  "defaultGasConversionFactor": "Default: 10.3 kWh/m³ (German natural gas)",
+  "analyticsHub": "Analytics",
+  "consumptionOverview": "Consumption Overview",
+  "monthlyAnalytics": "Monthly Analytics",
+  "dailyTrends": "Daily Trends",
+  "monthlyComparison": "Monthly Comparison",
+  "customDateRange": "Custom Date Range",
+  "totalConsumption": "Total Consumption",
+  "noAnalyticsData": "Not enough data for analytics. Add more readings!",
+  "consumptionValue": "{value} {unit}",
+  "@consumptionValue": {
+    "placeholders": {
+      "value": {"type": "String"},
+      "unit": {"type": "String"}
+    }
+  },
+  "monthlyConsumptionValue": "{value} {unit} in {month}",
+  "@monthlyConsumptionValue": {
+    "placeholders": {
+      "value": {"type": "String"},
+      "unit": {"type": "String"},
+      "month": {"type": "String"}
+    }
+  },
+  "analyticsFor": "Analytics for {meterType}",
+  "@analyticsFor": {
+    "placeholders": {
+      "meterType": {"type": "String"}
+    }
+  },
+  "previousMonth": "Previous Month",
+  "nextMonth": "Next Month",
+  "recentMonths": "Recent Months",
+  "averageConsumption": "Average: {value} {unit}",
+  "@averageConsumption": {
+    "placeholders": {
+      "value": {"type": "String"},
+      "unit": {"type": "String"}
+    }
   }
 }

@@ -5,7 +5,10 @@ import 'package:provider/provider.dart';
 import '../app_theme.dart';
 import '../database/app_database.dart';
 import '../l10n/app_localizations.dart';
+import '../providers/analytics_provider.dart';
 import '../providers/gas_provider.dart';
+import '../screens/monthly_analytics_screen.dart';
+import '../services/analytics/analytics_models.dart';
 import '../widgets/dialogs/gas_reading_form_dialog.dart';
 
 /// Screen displaying gas readings with add/edit/delete functionality.
@@ -22,6 +25,16 @@ class GasScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text(l10n.gas),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.analytics),
+            onPressed: () {
+              context.read<AnalyticsProvider>().setSelectedMeterType(MeterType.gas);
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => const MonthlyAnalyticsScreen()),
+              );
+            },
+            tooltip: l10n.analyticsHub,
+          ),
           Chip(
             label: Text(l10n.cubicMeters),
             backgroundColor: AppColors.gasColor.withValues(alpha: 0.2),
