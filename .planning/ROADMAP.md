@@ -51,7 +51,7 @@ Plans:
 - [x] 14-04-PLAN.md -- Number formatting cascade across all screens and charts
 - [x] 14-05-PLAN.md -- UI element cleanup (badges, icons, hints, pickers, water/smart plug fixes)
 - [x] 14-06-PLAN.md -- Analysis screen cleanup (remove daily view, custom range, rename tab)
-- [ ] 14-07-PLAN.md — Language toggle in settings, full test suite verification
+- [x] 14-07-PLAN.md -- Language toggle in settings, full test suite verification (765 tests, 0 failures)
 
 ### Phase 15: Data Model & Analytics Rework
 **Requirements**: FR-13 (Data Model & Analytics Rework)
@@ -109,5 +109,6 @@ Milestone 1 (v0.1.0) --> Milestone 2 (v0.2.0) --> Milestone 3 (v0.3.0)
 ## Current Status
 - **Completed**: Milestone 1 (v0.1.0), Milestone 2 (v0.2.0)
 - **Active Milestone**: 3 - Polish & Enhancement (v0.3.0)
-- **Active Phase**: 14 - UI/UX Polish & Localization (IN PROGRESS -- Plan 06/07 complete)
+- **Active Phase**: 14 - UI/UX Polish & Localization (COMPLETE -- 7/7 plans, 765 tests)
+- **Next Phase**: 15 - Data Model & Analytics Rework
 - **Blockers**: None

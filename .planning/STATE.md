@@ -3,7 +3,7 @@
 ## Current Status
 - **Milestone**: 3 - Polish & Enhancement (v0.3.0)
 - **Last Shipped**: v0.2.0 (2026-03-07)
-- **Current Phase**: 14 - UI/UX Polish & Localization (IN PROGRESS -- Plan 06 complete)
+- **Current Phase**: 14 - UI/UX Polish & Localization (COMPLETE)
 - **Next Phase**: 15 - Data Model & Analytics Rework
 - **Last Updated**: 2026-03-07
 
@@ -12,7 +12,7 @@
 - **Milestone 2**: Analytics & Visualization (v0.2.0) — 4 phases, 625 tests
 
 ## In Progress
-- **Phase 14**: UI/UX Polish & Localization -- IN PROGRESS (Plan 06/07 complete, 12/14 tasks done)
+- **Phase 14**: UI/UX Polish & Localization -- COMPLETE (Plan 07/07 complete, 14/14 tasks done)
 
 ## Blocked
 _None_
@@ -30,6 +30,7 @@ _None_
 | 2026-03-07 | 14 | Plan 14-04 complete | Number Formatting Cascade -- ValtraNumberFormat wired to all 18 display files: 6 meter screens, 4 analytics screens, 4 chart widgets, 4 providers. Providers return raw doubles, screens format with locale. Zero hardcoded 'en' patterns remaining. 694 passing, 83 pre-existing screen test failures. |
 | 2026-03-07 | 14 | Plan 14-05 complete | UI Element Cleanup -- Removed unit badge chips (4 screens), info icons (2 files), interpolation settings, too-long hints. Styled date/time pickers as InputDecorator (5 dialogs). Water type DropdownButtonFormField, filled water icons. Smart plug no pre-selection. 689 passing, 83 pre-existing screen test failures. |
 | 2026-03-07 | 14 | Plan 14-06 complete | Analytics Cleanup -- Removed daily trends view, custom date range feature, "Benutzerdefiniert" tab. Renamed Monatsvergleich to Monatsverlauf. AnalyticsPeriod enum reduced to {monthly, yearly}. 4 l10n keys removed, 10 obsolete tests removed. 681 passing, 81 pre-existing screen test failures. |
+| 2026-03-07 | 14 | Plan 14-07 complete | Language Toggle & Test Fixes -- Language toggle in settings (Deutsch/English), fixed all 81 test failures across 11 test files. Created shared MockLocaleProvider helper. 765 tests passing, 0 analyze issues. Phase 14 COMPLETE. |
 
 ## Key Decisions (carried forward)
 1. **Local-first architecture** - Using Drift/SQLite for offline-capable data storage
@@ -50,8 +51,8 @@ _None_
 16. **Separate SmartPlugAnalyticsProvider** - Smart plug analytics uses its own provider since data is pre-aggregated
 17. **Other consumption clamped** - max(0, totalElectricity - totalSmartPlug), null when no electricity data
 18. **Smart plug entry = monthly** - No interval type; simple month/year picker + kWh value per plug
-19. **Gas analysis in m³** - Display gas consumption in cubic meters as entered, not converted to kWh
-20. **German locale formatting** - Comma decimal, dot thousands, "Uhr" time suffix, proper umlauts (ä/ö/ü)
+19. **Gas analysis in m3** - Display gas consumption in cubic meters as entered, not converted to kWh
+20. **German locale formatting** - Comma decimal, dot thousands, "Uhr" time suffix, proper umlauts
 21. **Two heating use-cases** - (a) Own gas meter: direct monthly readings; (b) Central gas meter + per-room heating meters showing energy ratio
 22. **No daily analysis** - Only monthly data entry, so daily views removed from all analysis screens
 23. **No custom date ranges** - Removed from all analysis screens; fixed monthly/yearly views only
@@ -71,11 +72,13 @@ _None_
 33. **Water type colors** - Cold=blue, Hot=red, Other=grey using Colors.* (not AppColors) for intuitive water type distinction
 34. **Interpolation UI removed** - Settings screen no longer exposes interpolation method selection (linear-only decision enforced in code)
 
+35. **Shared MockLocaleProvider test helper** - Defaults to 'en' locale for consistent English-format test assertions
+
 ## Technical Debt
 1. **LiquidGlass integration** - Using standard Flutter glass-style widgets instead of full liquid_glass_renderer integration
 2. **NFR-3.3**: Test coverage not measured with Codecov yet (target: Milestone 3, Phase 15)
-3. ~~**Hardcoded colors**~~ — Resolved in Phase 12 dark mode audit (11 fixes across 6 files)
-4. **Screen test ThemeProvider gap** - 81 screen tests fail because Plan 14-01 glass widget conversions need ThemeProvider in test wrappers (deferred-items.md)
+3. ~~**Hardcoded colors**~~ -- Resolved in Phase 12 dark mode audit (11 fixes across 6 files)
+4. ~~**Screen test ThemeProvider gap**~~ -- Resolved in Plan 14-07 (all 81 test failures fixed)
 
 ## Next Actions
-_Continue Phase 14: Execute Plan 14-07._
+_Phase 14 complete. Begin Phase 15: Data Model & Analytics Rework._
