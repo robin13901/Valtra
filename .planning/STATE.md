@@ -3,7 +3,7 @@
 ## Current Status
 - **Milestone**: 3 - Polish & Enhancement (v0.3.0)
 - **Last Shipped**: v0.2.0 (2026-03-07)
-- **Current Phase**: 14 - UI/UX Polish & Localization (IN PROGRESS -- Plan 05 complete)
+- **Current Phase**: 14 - UI/UX Polish & Localization (IN PROGRESS -- Plan 06 complete)
 - **Next Phase**: 15 - Data Model & Analytics Rework
 - **Last Updated**: 2026-03-07
 
@@ -12,7 +12,7 @@
 - **Milestone 2**: Analytics & Visualization (v0.2.0) — 4 phases, 625 tests
 
 ## In Progress
-- **Phase 14**: UI/UX Polish & Localization -- IN PROGRESS (Plan 05/07 complete, 10/14 tasks done)
+- **Phase 14**: UI/UX Polish & Localization -- IN PROGRESS (Plan 06/07 complete, 12/14 tasks done)
 
 ## Blocked
 _None_
@@ -29,6 +29,7 @@ _None_
 | 2026-03-07 | 14 | Plan 14-03 complete | Glass Widgets Rollout -- buildGlassAppBar, buildGlassFAB, GlassCard applied to all 13 screens. No new tests (widget-level only). 695 passing, 82 pre-existing screen test failures (ThemeProvider gap). |
 | 2026-03-07 | 14 | Plan 14-04 complete | Number Formatting Cascade -- ValtraNumberFormat wired to all 18 display files: 6 meter screens, 4 analytics screens, 4 chart widgets, 4 providers. Providers return raw doubles, screens format with locale. Zero hardcoded 'en' patterns remaining. 694 passing, 83 pre-existing screen test failures. |
 | 2026-03-07 | 14 | Plan 14-05 complete | UI Element Cleanup -- Removed unit badge chips (4 screens), info icons (2 files), interpolation settings, too-long hints. Styled date/time pickers as InputDecorator (5 dialogs). Water type DropdownButtonFormField, filled water icons. Smart plug no pre-selection. 689 passing, 83 pre-existing screen test failures. |
+| 2026-03-07 | 14 | Plan 14-06 complete | Analytics Cleanup -- Removed daily trends view, custom date range feature, "Benutzerdefiniert" tab. Renamed Monatsvergleich to Monatsverlauf. AnalyticsPeriod enum reduced to {monthly, yearly}. 4 l10n keys removed, 10 obsolete tests removed. 681 passing, 81 pre-existing screen test failures. |
 
 ## Key Decisions (carried forward)
 1. **Local-first architecture** - Using Drift/SQLite for offline-capable data storage
@@ -74,7 +75,7 @@ _None_
 1. **LiquidGlass integration** - Using standard Flutter glass-style widgets instead of full liquid_glass_renderer integration
 2. **NFR-3.3**: Test coverage not measured with Codecov yet (target: Milestone 3, Phase 15)
 3. ~~**Hardcoded colors**~~ — Resolved in Phase 12 dark mode audit (11 fixes across 6 files)
-4. **Screen test ThemeProvider gap** - 83 screen tests fail because Plan 14-01 glass widget conversions need ThemeProvider in test wrappers (deferred-items.md)
+4. **Screen test ThemeProvider gap** - 81 screen tests fail because Plan 14-01 glass widget conversions need ThemeProvider in test wrappers (deferred-items.md)
 
 ## Next Actions
-_Continue Phase 14: Execute Plan 14-06._
+_Continue Phase 14: Execute Plan 14-07._

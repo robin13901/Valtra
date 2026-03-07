@@ -80,11 +80,11 @@
 - [x] **FR-12.5.2**: Replace water type SegmentedButton with Dropdown (text wraps badly: "Kaltwe-/asar")
 
 #### FR-12.6: Analysis Screen Cleanup
-- [ ] **FR-12.6.1**: Remove "Tagesverlauf" (daily view) from all analysis screens (monthly readings only)
-- [ ] **FR-12.6.2**: Remove custom date range feature (calendar icon in app bar) from all analysis screens
-- [ ] **FR-12.6.3**: Remove "Benutzerdefiniert" tab from smart plug analysis
-- [ ] **FR-12.6.4**: Rename "Monatsvergleich" to "Monatsverlauf"
-- [ ] **FR-12.6.5**: Analysis screens default to current month (not arbitrary past month)
+- [x] **FR-12.6.1**: Remove "Tagesverlauf" (daily view) from all analysis screens (monthly readings only)
+- [x] **FR-12.6.2**: Remove custom date range feature (calendar icon in app bar) from all analysis screens
+- [x] **FR-12.6.3**: Remove "Benutzerdefiniert" tab from smart plug analysis
+- [x] **FR-12.6.4**: Rename "Monatsvergleich" to "Monatsverlauf"
+- [x] **FR-12.6.5**: Analysis screens default to current month (not arbitrary past month)
 
 #### FR-12.7: Language Setting
 - [x] **FR-12.7.1**: Add language toggle (Deutsch / English) to settings screen
