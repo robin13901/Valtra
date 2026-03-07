@@ -11,6 +11,7 @@ import '../screens/monthly_analytics_screen.dart';
 import '../services/analytics/analytics_models.dart';
 import '../widgets/dialogs/heating_meter_form_dialog.dart';
 import '../widgets/dialogs/heating_reading_form_dialog.dart';
+import '../widgets/liquid_glass_widgets.dart';
 
 /// Screen displaying heating meters with their readings.
 class HeatingScreen extends StatelessWidget {
@@ -23,8 +24,9 @@ class HeatingScreen extends StatelessWidget {
     final meters = provider.meters;
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.heatingMeters),
+      appBar: buildGlassAppBar(
+        context: context,
+        title: l10n.heatingMeters,
         actions: [
           IconButton(
             icon: const Icon(Icons.analytics),
@@ -41,9 +43,10 @@ class HeatingScreen extends StatelessWidget {
       body: meters.isEmpty
           ? _buildEmptyState(context, l10n)
           : _HeatingMetersList(meters: meters),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: buildGlassFAB(
+        context: context,
+        icon: Icons.add,
         onPressed: () => _addMeter(context),
-        child: const Icon(Icons.add),
       ),
     );
   }
@@ -118,8 +121,9 @@ class _HeatingMeterCardState extends State<_HeatingMeterCard> {
     final readings = provider.getReadingsWithDeltas(widget.meter.id);
     final valueFormatter = NumberFormat('#,##0.0', 'en');
 
-    return Card(
+    return GlassCard(
       margin: const EdgeInsets.only(bottom: 16),
+      padding: EdgeInsets.zero,
       child: Column(
         children: [
           // Meter header

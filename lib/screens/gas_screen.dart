@@ -10,6 +10,7 @@ import '../providers/gas_provider.dart';
 import '../screens/monthly_analytics_screen.dart';
 import '../services/analytics/analytics_models.dart';
 import '../widgets/dialogs/gas_reading_form_dialog.dart';
+import '../widgets/liquid_glass_widgets.dart';
 
 /// Screen displaying gas readings with add/edit/delete functionality.
 class GasScreen extends StatelessWidget {
@@ -22,8 +23,9 @@ class GasScreen extends StatelessWidget {
     final readings = provider.readingsWithDeltas;
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.gas),
+      appBar: buildGlassAppBar(
+        context: context,
+        title: l10n.gas,
         actions: [
           IconButton(
             icon: const Icon(Icons.analytics),
@@ -57,9 +59,10 @@ class GasScreen extends StatelessWidget {
                 );
               },
             ),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: buildGlassFAB(
+        context: context,
+        icon: Icons.add,
         onPressed: () => _addReading(context),
-        child: const Icon(Icons.add),
       ),
     );
   }
@@ -219,11 +222,12 @@ class _GasReadingCard extends StatelessWidget {
     final dateFormatter = DateFormat('dd.MM.yyyy HH:mm');
     final valueFormatter = NumberFormat('#,##0.0', 'en');
 
-    return Card(
+    return GlassCard(
       margin: const EdgeInsets.only(bottom: 12),
+      padding: EdgeInsets.zero,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(16),
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Column(

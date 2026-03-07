@@ -9,6 +9,7 @@ import '../l10n/app_localizations.dart';
 import '../providers/room_provider.dart';
 import '../providers/smart_plug_provider.dart';
 import '../widgets/dialogs/smart_plug_form_dialog.dart';
+import '../widgets/liquid_glass_widgets.dart';
 import 'rooms_screen.dart';
 import 'smart_plug_analytics_screen.dart';
 import 'smart_plug_consumption_screen.dart';
@@ -24,8 +25,9 @@ class SmartPlugsScreen extends StatelessWidget {
     final plugsByRoom = provider.plugsByRoom;
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.smartPlugs),
+      appBar: buildGlassAppBar(
+        context: context,
+        title: l10n.smartPlugs,
         actions: [
           IconButton(
             icon: const Icon(Icons.pie_chart),
@@ -50,9 +52,10 @@ class SmartPlugsScreen extends StatelessWidget {
       body: plugsByRoom.isEmpty
           ? _buildEmptyState(context, l10n)
           : _SmartPlugsList(plugsByRoom: plugsByRoom),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: buildGlassFAB(
+        context: context,
+        icon: Icons.add,
         onPressed: () => _addSmartPlug(context),
-        child: const Icon(Icons.add),
       ),
     );
   }
@@ -228,11 +231,12 @@ class _SmartPlugCardState extends State<_SmartPlugCard> {
     final theme = Theme.of(context);
     final valueFormatter = NumberFormat('#,##0.0', 'en');
 
-    return Card(
+    return GlassCard(
       margin: const EdgeInsets.only(bottom: 12),
+      padding: EdgeInsets.zero,
       child: InkWell(
         onTap: () => _navigateToConsumption(context),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(16),
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Row(

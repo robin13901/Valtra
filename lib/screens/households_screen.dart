@@ -5,6 +5,7 @@ import '../database/app_database.dart';
 import '../l10n/app_localizations.dart';
 import '../providers/household_provider.dart';
 import '../widgets/dialogs/household_form_dialog.dart';
+import '../widgets/liquid_glass_widgets.dart';
 
 /// Screen for managing households.
 ///
@@ -20,8 +21,9 @@ class HouseholdsScreen extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.households),
+      appBar: buildGlassAppBar(
+        context: context,
+        title: l10n.households,
       ),
       body: Consumer<HouseholdProvider>(
         builder: (context, provider, child) {
@@ -44,10 +46,11 @@ class HouseholdsScreen extends StatelessWidget {
           );
         },
       ),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: buildGlassFAB(
+        context: context,
+        icon: Icons.add,
         onPressed: () => _showCreateDialog(context),
         tooltip: l10n.createHousehold,
-        child: const Icon(Icons.add),
       ),
     );
   }
@@ -108,13 +111,13 @@ class _HouseholdCard extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     final colorScheme = Theme.of(context).colorScheme;
 
-    return Card(
+    return GlassCard(
       margin: const EdgeInsets.only(bottom: 12),
-      color: isSelected ? colorScheme.primaryContainer : null,
+      padding: EdgeInsets.zero,
       child: InkWell(
         onTap: () => _showEditDialog(context),
         onLongPress: () => _showDeleteConfirmation(context),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(16),
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Row(

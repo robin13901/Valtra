@@ -6,6 +6,7 @@ import '../database/app_database.dart';
 import '../l10n/app_localizations.dart';
 import '../providers/room_provider.dart';
 import '../widgets/dialogs/room_form_dialog.dart';
+import '../widgets/liquid_glass_widgets.dart';
 
 /// Screen displaying rooms with add/edit/delete functionality.
 class RoomsScreen extends StatelessWidget {
@@ -18,15 +19,17 @@ class RoomsScreen extends StatelessWidget {
     final rooms = provider.rooms;
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.rooms),
+      appBar: buildGlassAppBar(
+        context: context,
+        title: l10n.rooms,
       ),
       body: rooms.isEmpty
           ? _buildEmptyState(context, l10n)
           : _RoomsList(rooms: rooms),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: buildGlassFAB(
+        context: context,
+        icon: Icons.add,
         onPressed: () => _addRoom(context),
-        child: const Icon(Icons.add),
       ),
     );
   }
@@ -121,11 +124,12 @@ class _RoomCardState extends State<_RoomCard> {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
-    return Card(
+    return GlassCard(
       margin: const EdgeInsets.only(bottom: 12),
+      padding: EdgeInsets.zero,
       child: InkWell(
         onTap: () => _editRoom(context),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(16),
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Row(

@@ -8,6 +8,7 @@ import '../database/tables.dart';
 import '../l10n/app_localizations.dart';
 import '../providers/smart_plug_provider.dart';
 import '../widgets/dialogs/smart_plug_consumption_form_dialog.dart';
+import '../widgets/liquid_glass_widgets.dart';
 
 /// Screen showing consumption history for a specific smart plug.
 class SmartPlugConsumptionScreen extends StatefulWidget {
@@ -62,22 +63,11 @@ class _SmartPlugConsumptionScreenState
     final provider = context.watch<SmartPlugProvider>();
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(_plug?.name ?? '...'),
-        bottom: _room != null
-            ? PreferredSize(
-                preferredSize: const Size.fromHeight(24),
-                child: Padding(
-                  padding: const EdgeInsets.only(bottom: 8),
-                  child: Text(
-                    _room!.name,
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
-                        ),
-                  ),
-                ),
-              )
-            : null,
+      appBar: buildGlassAppBar(
+        context: context,
+        title: _room != null
+            ? '${_plug?.name ?? '...'} - ${_room!.name}'
+            : _plug?.name ?? '...',
       ),
       body: _plug == null
           ? const Center(child: CircularProgressIndicator())
@@ -114,9 +104,10 @@ class _SmartPlugConsumptionScreenState
                 );
               },
             ),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: buildGlassFAB(
+        context: context,
+        icon: Icons.add,
         onPressed: () => _addConsumption(context),
-        child: const Icon(Icons.add),
       ),
     );
   }
@@ -232,11 +223,12 @@ class _ConsumptionCard extends StatelessWidget {
     final dateFormatter = DateFormat('MMM d, yyyy');
     final valueFormatter = NumberFormat('#,##0.0', 'en');
 
-    return Card(
+    return GlassCard(
       margin: const EdgeInsets.only(bottom: 12),
+      padding: EdgeInsets.zero,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(16),
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Column(
