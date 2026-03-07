@@ -124,7 +124,14 @@ class _SmartPlugConsumptionScreenState
   Future<void> _addConsumption(BuildContext context) async {
     final provider = context.read<SmartPlugProvider>();
 
-    final result = await SmartPlugConsumptionFormDialog.show(context);
+    final result = await SmartPlugConsumptionFormDialog.show(
+      context,
+      onCheckDuplicate: (month) async {
+        final existing =
+            await provider.getConsumptionForMonth(widget.smartPlugId, month);
+        return existing != null;
+      },
+    );
     if (result == null) return;
 
     await provider.addConsumption(
@@ -143,6 +150,12 @@ class _SmartPlugConsumptionScreenState
     final result = await SmartPlugConsumptionFormDialog.show(
       context,
       consumption: consumption,
+      onCheckDuplicate: (month) async {
+        final existing =
+            await provider.getConsumptionForMonth(widget.smartPlugId, month);
+        // Don't count the current entry as a duplicate
+        return existing != null && existing.id != consumption.id;
+      },
     );
     if (result == null || !context.mounted) return;
 
@@ -212,66 +225,42 @@ class _ConsumptionCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         child: Padding(
           padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          child: Row(
             children: [
-              Row(
-                children: [
-                  Icon(
-                    Icons.bar_chart,
-                    color: AppColors.electricityColor,
-                    size: 20,
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      consumption.intervalLabel,
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                  PopupMenuButton<String>(
-                    onSelected: (value) {
-                      if (value == 'delete') onDelete();
-                    },
-                    itemBuilder: (context) => [
-                      PopupMenuItem(
-                        value: 'delete',
-                        child: Row(
-                          children: [
-                            Icon(
-                              Icons.delete,
-                              color: theme.colorScheme.error,
-                              size: 20,
-                            ),
-                            const SizedBox(width: 8),
-                            Text(
-                              l10n.delete,
-                              style: TextStyle(color: theme.colorScheme.error),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
+              Icon(
+                Icons.electric_bolt,
+                color: AppColors.electricityColor,
+                size: 24,
               ),
-              const SizedBox(height: 8),
-              const Divider(),
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  Icon(
-                    Icons.electric_bolt,
-                    color: AppColors.electricityColor,
-                    size: 24,
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  '${consumption.intervalLabel} \u2014 ${ValtraNumberFormat.consumption(consumption.consumption.valueKwh, locale)} ${l10n.kWh}',
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
                   ),
-                  const SizedBox(width: 8),
-                  Text(
-                    '${ValtraNumberFormat.consumption(consumption.consumption.valueKwh, locale)} ${l10n.kWh}',
-                    style: theme.textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
+                ),
+              ),
+              PopupMenuButton<String>(
+                onSelected: (value) {
+                  if (value == 'delete') onDelete();
+                },
+                itemBuilder: (context) => [
+                  PopupMenuItem(
+                    value: 'delete',
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.delete,
+                          color: theme.colorScheme.error,
+                          size: 20,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          l10n.delete,
+                          style: TextStyle(color: theme.colorScheme.error),
+                        ),
+                      ],
                     ),
                   ),
                 ],

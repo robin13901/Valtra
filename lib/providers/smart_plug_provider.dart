@@ -190,6 +190,15 @@ class SmartPlugProvider extends ChangeNotifier {
     return _dao.deleteConsumption(id);
   }
 
+  /// Gets the consumption entry for a specific plug and month.
+  /// Returns null if no entry exists for that month.
+  Future<SmartPlugConsumption?> getConsumptionForMonth(
+    int plugId,
+    DateTime month,
+  ) {
+    return _dao.getConsumptionForMonth(plugId, month);
+  }
+
   /// Gets the latest consumption entry for a smart plug.
   Future<SmartPlugConsumption?> getLatestConsumptionForPlug(int plugId) {
     return _dao.getLatestConsumptionForPlug(plugId);
