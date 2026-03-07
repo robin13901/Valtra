@@ -4,7 +4,7 @@
 - **Milestone**: 3 - Polish & Enhancement (v0.3.0)
 - **Last Shipped**: v0.2.0 (2026-03-07)
 - **Current Phase**: 15 - Data Model & Analytics Rework (IN PROGRESS)
-- **Current Plan**: 15-02
+- **Current Plan**: 15-03
 - **Last Updated**: 2026-03-07
 
 ## Completed Milestones
@@ -32,6 +32,7 @@ _None_
 | 2026-03-07 | 14 | Plan 14-06 complete | Analytics Cleanup -- Removed daily trends view, custom date range feature, "Benutzerdefiniert" tab. Renamed Monatsvergleich to Monatsverlauf. AnalyticsPeriod enum reduced to {monthly, yearly}. 4 l10n keys removed, 10 obsolete tests removed. 681 passing, 81 pre-existing screen test failures. |
 | 2026-03-07 | 14 | Plan 14-07 complete | Language Toggle & Test Fixes -- Language toggle in settings (Deutsch/English), fixed all 81 test failures across 11 test files. Created shared MockLocaleProvider helper. 765 tests passing, 0 analyze issues. Phase 14 COMPLETE. |
 | 2026-03-07 | 15 | Plan 15-01 complete | Interpolation Rework -- Removed step interpolation, added toggle to show/hide interpolated values in reading lists, color-coded interpolated entries with Ultra Violet tint. ReadingDisplayItem model, displayItems getters on all 4 providers, GlassCard color param. 6 new tests, 771 total. |
+| 2026-03-07 | 15 | Plan 15-02 complete | Smart Plug Data Layer -- Removed ConsumptionInterval enum, renamed intervalStart to month, simplified provider API (locale-based labels, duplicate month check). Updated form dialog (month picker), screens, and all tests. 788 tests passing, 0 analyze issues. |
 
 ## Key Decisions (carried forward)
 1. **Local-first architecture** - Using Drift/SQLite for offline-capable data storage
@@ -83,4 +84,4 @@ _None_
 4. ~~**Screen test ThemeProvider gap**~~ -- Resolved in Plan 14-07 (all 81 test failures fixed)
 
 ## Next Actions
-_Plan 15-01 complete. Continue with Plan 15-02._
+_Plan 15-02 complete. Continue with Plan 15-03._
