@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 import '../../l10n/app_localizations.dart';
 import '../../database/app_database.dart';
-import '../../database/tables.dart';
 
 /// Dialog for creating or editing a smart plug consumption entry.
 ///
@@ -35,8 +35,7 @@ class _SmartPlugConsumptionFormDialogState
     extends State<SmartPlugConsumptionFormDialog> {
   final _formKey = GlobalKey<FormState>();
   late final TextEditingController _valueController;
-  late ConsumptionInterval _selectedInterval;
-  late DateTime _selectedDate;
+  late DateTime _selectedMonth;
 
   bool get isEditing => widget.consumption != null;
 
@@ -46,9 +45,12 @@ class _SmartPlugConsumptionFormDialogState
     _valueController = TextEditingController(
       text: widget.consumption?.valueKwh.toString() ?? '',
     );
-    _selectedInterval =
-        widget.consumption?.intervalType ?? ConsumptionInterval.monthly;
-    _selectedDate = widget.consumption?.intervalStart ?? DateTime.now();
+    if (widget.consumption != null) {
+      _selectedMonth = widget.consumption!.month;
+    } else {
+      final now = DateTime.now();
+      _selectedMonth = DateTime(now.year, now.month, 1);
+    }
   }
 
   @override
@@ -69,34 +71,15 @@ class _SmartPlugConsumptionFormDialogState
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Interval type dropdown
-            DropdownButtonFormField<ConsumptionInterval>(
-              initialValue: _selectedInterval,
-              decoration: InputDecoration(
-                labelText: l10n.intervalType,
-              ),
-              items: ConsumptionInterval.values.map((interval) {
-                return DropdownMenuItem(
-                  value: interval,
-                  child: Text(_getIntervalLabel(l10n, interval)),
-                );
-              }).toList(),
-              onChanged: (value) {
-                if (value != null) {
-                  setState(() => _selectedInterval = value);
-                }
-              },
-            ),
-            const SizedBox(height: 16),
-            // Date picker
+            // Month picker
             InkWell(
-              onTap: _selectDate,
+              onTap: _selectMonth,
               child: InputDecorator(
                 decoration: InputDecoration(
-                  labelText: l10n.intervalStart,
+                  labelText: l10n.monthly,
                   suffixIcon: const Icon(Icons.calendar_today),
                 ),
-                child: Text(_formatDate(_selectedDate)),
+                child: Text(_formatMonth(_selectedMonth)),
               ),
             ),
             const SizedBox(height: 16),
@@ -140,34 +123,22 @@ class _SmartPlugConsumptionFormDialogState
     );
   }
 
-  String _getIntervalLabel(AppLocalizations l10n, ConsumptionInterval interval) {
-    switch (interval) {
-      case ConsumptionInterval.daily:
-        return l10n.daily;
-      case ConsumptionInterval.weekly:
-        return l10n.weekly;
-      case ConsumptionInterval.monthly:
-        return l10n.monthly;
-      case ConsumptionInterval.yearly:
-        return l10n.yearly;
-    }
+  String _formatMonth(DateTime dt) {
+    return DateFormat.yMMMM().format(dt);
   }
 
-  String _formatDate(DateTime dt) {
-    return '${dt.day.toString().padLeft(2, '0')}.${dt.month.toString().padLeft(2, '0')}.${dt.year}';
-  }
-
-  Future<void> _selectDate() async {
+  Future<void> _selectMonth() async {
     final date = await showDatePicker(
       context: context,
-      initialDate: _selectedDate,
+      initialDate: _selectedMonth,
       firstDate: DateTime(2000),
-      lastDate: DateTime.now().add(const Duration(days: 1)),
+      lastDate: DateTime.now().add(const Duration(days: 31)),
     );
     if (date == null || !mounted) return;
 
     setState(() {
-      _selectedDate = date;
+      // Normalize to 1st of month at 00:00
+      _selectedMonth = DateTime(date.year, date.month, 1);
     });
   }
 
@@ -176,8 +147,7 @@ class _SmartPlugConsumptionFormDialogState
       final value = double.parse(_valueController.text.trim());
 
       Navigator.of(context).pop(SmartPlugConsumptionFormData(
-        intervalType: _selectedInterval,
-        intervalStart: _selectedDate,
+        month: _selectedMonth,
         valueKwh: value,
       ));
     }
@@ -186,13 +156,11 @@ class _SmartPlugConsumptionFormDialogState
 
 /// Data returned from [SmartPlugConsumptionFormDialog] when saved.
 class SmartPlugConsumptionFormData {
-  final ConsumptionInterval intervalType;
-  final DateTime intervalStart;
+  final DateTime month;
   final double valueKwh;
 
   const SmartPlugConsumptionFormData({
-    required this.intervalType,
-    required this.intervalStart,
+    required this.month,
     required this.valueKwh,
   });
 }

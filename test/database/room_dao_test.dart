@@ -2,7 +2,6 @@ import 'package:drift/drift.dart' hide isNotNull, isNull;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:valtra/database/app_database.dart';
 import 'package:valtra/database/daos/room_dao.dart';
-import 'package:valtra/database/tables.dart';
 
 import '../helpers/test_database.dart';
 
@@ -126,16 +125,14 @@ void main() {
       await database.into(database.smartPlugConsumptions).insert(
             SmartPlugConsumptionsCompanion.insert(
               smartPlugId: plugId1,
-              intervalType: ConsumptionInterval.daily,
-              intervalStart: DateTime.now(),
+              month: DateTime.now(),
               valueKwh: 10.0,
             ),
           );
       await database.into(database.smartPlugConsumptions).insert(
             SmartPlugConsumptionsCompanion.insert(
               smartPlugId: plugId2,
-              intervalType: ConsumptionInterval.daily,
-              intervalStart: DateTime.now(),
+              month: DateTime.now(),
               valueKwh: 20.0,
             ),
           );

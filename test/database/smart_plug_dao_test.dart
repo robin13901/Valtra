@@ -2,7 +2,6 @@ import 'package:drift/drift.dart' hide isNotNull, isNull;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:valtra/database/app_database.dart';
 import 'package:valtra/database/daos/smart_plug_dao.dart';
-import 'package:valtra/database/tables.dart';
 
 import '../helpers/test_database.dart';
 
@@ -132,8 +131,7 @@ void main() {
       // Add consumption entries
       await dao.insertConsumption(SmartPlugConsumptionsCompanion.insert(
         smartPlugId: plugId,
-        intervalType: ConsumptionInterval.daily,
-        intervalStart: DateTime.now(),
+        month: DateTime(2024, 3, 1),
         valueKwh: 10.0,
       ));
 
@@ -171,11 +169,10 @@ void main() {
     });
 
     test('insert and retrieve consumption', () async {
-      final timestamp = DateTime(2024, 3, 1);
+      final month = DateTime(2024, 3, 1);
       final id = await dao.insertConsumption(SmartPlugConsumptionsCompanion.insert(
         smartPlugId: plugId,
-        intervalType: ConsumptionInterval.monthly,
-        intervalStart: timestamp,
+        month: month,
         valueKwh: 15.5,
       ));
 
@@ -183,38 +180,32 @@ void main() {
 
       final consumption = await dao.getConsumption(id);
       expect(consumption.smartPlugId, plugId);
-      expect(consumption.intervalType, ConsumptionInterval.monthly);
-      expect(consumption.intervalStart, timestamp);
+      expect(consumption.month, month);
       expect(consumption.valueKwh, 15.5);
     });
 
-    test('getConsumptionsForPlug returns entries ordered by start date desc', () async {
-      final now = DateTime.now();
-
+    test('getConsumptionsForPlug returns entries ordered by month desc', () async {
       await dao.insertConsumption(SmartPlugConsumptionsCompanion.insert(
         smartPlugId: plugId,
-        intervalType: ConsumptionInterval.monthly,
-        intervalStart: now.subtract(const Duration(days: 60)),
+        month: DateTime(2024, 1, 1),
         valueKwh: 10.0,
       ));
       await dao.insertConsumption(SmartPlugConsumptionsCompanion.insert(
         smartPlugId: plugId,
-        intervalType: ConsumptionInterval.monthly,
-        intervalStart: now.subtract(const Duration(days: 30)),
+        month: DateTime(2024, 2, 1),
         valueKwh: 15.0,
       ));
       await dao.insertConsumption(SmartPlugConsumptionsCompanion.insert(
         smartPlugId: plugId,
-        intervalType: ConsumptionInterval.monthly,
-        intervalStart: now,
+        month: DateTime(2024, 3, 1),
         valueKwh: 20.0,
       ));
 
       final consumptions = await dao.getConsumptionsForPlug(plugId);
       expect(consumptions.length, 3);
-      expect(consumptions[0].valueKwh, 20.0); // Newest first
-      expect(consumptions[1].valueKwh, 15.0);
-      expect(consumptions[2].valueKwh, 10.0);
+      expect(consumptions[0].valueKwh, 20.0); // Newest first (March)
+      expect(consumptions[1].valueKwh, 15.0); // February
+      expect(consumptions[2].valueKwh, 10.0); // January
     });
 
     test('watchConsumptionsForPlug emits on changes', () async {
@@ -232,8 +223,7 @@ void main() {
 
       await dao.insertConsumption(SmartPlugConsumptionsCompanion.insert(
         smartPlugId: plugId,
-        intervalType: ConsumptionInterval.daily,
-        intervalStart: DateTime.now(),
+        month: DateTime(2024, 3, 1),
         valueKwh: 5.0,
       ));
 
@@ -243,8 +233,7 @@ void main() {
     test('updateConsumption modifies existing record', () async {
       final id = await dao.insertConsumption(SmartPlugConsumptionsCompanion.insert(
         smartPlugId: plugId,
-        intervalType: ConsumptionInterval.daily,
-        intervalStart: DateTime(2024, 3, 1),
+        month: DateTime(2024, 3, 1),
         valueKwh: 10.0,
       ));
 
@@ -262,8 +251,7 @@ void main() {
     test('deleteConsumption removes entry', () async {
       final id = await dao.insertConsumption(SmartPlugConsumptionsCompanion.insert(
         smartPlugId: plugId,
-        intervalType: ConsumptionInterval.daily,
-        intervalStart: DateTime.now(),
+        month: DateTime(2024, 3, 1),
         valueKwh: 10.0,
       ));
 
@@ -274,18 +262,14 @@ void main() {
     });
 
     test('getLatestConsumptionForPlug returns most recent entry', () async {
-      final now = DateTime.now();
-
       await dao.insertConsumption(SmartPlugConsumptionsCompanion.insert(
         smartPlugId: plugId,
-        intervalType: ConsumptionInterval.monthly,
-        intervalStart: now.subtract(const Duration(days: 30)),
+        month: DateTime(2024, 2, 1),
         valueKwh: 10.0,
       ));
       await dao.insertConsumption(SmartPlugConsumptionsCompanion.insert(
         smartPlugId: plugId,
-        intervalType: ConsumptionInterval.monthly,
-        intervalStart: now,
+        month: DateTime(2024, 3, 1),
         valueKwh: 20.0,
       ));
 
@@ -297,6 +281,30 @@ void main() {
     test('getLatestConsumptionForPlug returns null when no entries', () async {
       final latest = await dao.getLatestConsumptionForPlug(plugId);
       expect(latest, isNull);
+    });
+
+    test('getConsumptionForMonth returns entry for given month', () async {
+      final month = DateTime(2024, 3, 1);
+      await dao.insertConsumption(SmartPlugConsumptionsCompanion.insert(
+        smartPlugId: plugId,
+        month: month,
+        valueKwh: 15.0,
+      ));
+
+      final result = await dao.getConsumptionForMonth(plugId, month);
+      expect(result, isNotNull);
+      expect(result!.valueKwh, 15.0);
+    });
+
+    test('getConsumptionForMonth returns null for non-existent month', () async {
+      await dao.insertConsumption(SmartPlugConsumptionsCompanion.insert(
+        smartPlugId: plugId,
+        month: DateTime(2024, 3, 1),
+        valueKwh: 15.0,
+      ));
+
+      final result = await dao.getConsumptionForMonth(plugId, DateTime(2024, 4, 1));
+      expect(result, isNull);
     });
   });
 
@@ -328,20 +336,17 @@ void main() {
 
       await dao.insertConsumption(SmartPlugConsumptionsCompanion.insert(
         smartPlugId: plugId1,
-        intervalType: ConsumptionInterval.monthly,
-        intervalStart: march1,
+        month: march1,
         valueKwh: 10.0,
       ));
       await dao.insertConsumption(SmartPlugConsumptionsCompanion.insert(
         smartPlugId: plugId1,
-        intervalType: ConsumptionInterval.monthly,
-        intervalStart: march15,
+        month: march15,
         valueKwh: 15.0,
       ));
       await dao.insertConsumption(SmartPlugConsumptionsCompanion.insert(
         smartPlugId: plugId1,
-        intervalType: ConsumptionInterval.monthly,
-        intervalStart: april1,
+        month: april1,
         valueKwh: 20.0, // Outside range
       ));
 
@@ -365,21 +370,18 @@ void main() {
 
       await dao.insertConsumption(SmartPlugConsumptionsCompanion.insert(
         smartPlugId: plugId1,
-        intervalType: ConsumptionInterval.monthly,
-        intervalStart: march1,
+        month: march1,
         valueKwh: 10.0,
       ));
       await dao.insertConsumption(SmartPlugConsumptionsCompanion.insert(
         smartPlugId: plugId3,
-        intervalType: ConsumptionInterval.monthly,
-        intervalStart: march1,
+        month: march1,
         valueKwh: 20.0,
       ));
       // Plug 2 is in a different room
       await dao.insertConsumption(SmartPlugConsumptionsCompanion.insert(
         smartPlugId: plugId2,
-        intervalType: ConsumptionInterval.monthly,
-        intervalStart: march1,
+        month: march1,
         valueKwh: 100.0, // Should not be counted
       ));
 
@@ -397,14 +399,12 @@ void main() {
 
       await dao.insertConsumption(SmartPlugConsumptionsCompanion.insert(
         smartPlugId: plugId1,
-        intervalType: ConsumptionInterval.monthly,
-        intervalStart: march1,
+        month: march1,
         valueKwh: 10.0,
       ));
       await dao.insertConsumption(SmartPlugConsumptionsCompanion.insert(
         smartPlugId: plugId2,
-        intervalType: ConsumptionInterval.monthly,
-        intervalStart: march1,
+        month: march1,
         valueKwh: 20.0,
       ));
 

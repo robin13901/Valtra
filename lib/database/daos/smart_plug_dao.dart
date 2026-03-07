@@ -99,11 +99,11 @@ class SmartPlugDao extends DatabaseAccessor<AppDatabase>
         .getSingle();
   }
 
-  /// Retrieves all consumption entries for a smart plug, ordered by interval start (newest first).
+  /// Retrieves all consumption entries for a smart plug, ordered by month (newest first).
   Future<List<SmartPlugConsumption>> getConsumptionsForPlug(int smartPlugId) {
     return (select(smartPlugConsumptions)
           ..where((c) => c.smartPlugId.equals(smartPlugId))
-          ..orderBy([(c) => OrderingTerm.desc(c.intervalStart)]))
+          ..orderBy([(c) => OrderingTerm.desc(c.month)]))
         .get();
   }
 
@@ -111,7 +111,7 @@ class SmartPlugDao extends DatabaseAccessor<AppDatabase>
   Stream<List<SmartPlugConsumption>> watchConsumptionsForPlug(int smartPlugId) {
     return (select(smartPlugConsumptions)
           ..where((c) => c.smartPlugId.equals(smartPlugId))
-          ..orderBy([(c) => OrderingTerm.desc(c.intervalStart)]))
+          ..orderBy([(c) => OrderingTerm.desc(c.month)]))
         .watch();
   }
 
@@ -136,8 +136,20 @@ class SmartPlugDao extends DatabaseAccessor<AppDatabase>
       int smartPlugId) async {
     return (select(smartPlugConsumptions)
           ..where((c) => c.smartPlugId.equals(smartPlugId))
-          ..orderBy([(c) => OrderingTerm.desc(c.intervalStart)])
+          ..orderBy([(c) => OrderingTerm.desc(c.month)])
           ..limit(1))
+        .getSingleOrNull();
+  }
+
+  /// Gets the consumption entry for a specific plug and month.
+  /// Returns null if no entry exists for that month.
+  Future<SmartPlugConsumption?> getConsumptionForMonth(
+    int smartPlugId,
+    DateTime month,
+  ) async {
+    return (select(smartPlugConsumptions)
+          ..where((c) =>
+              c.smartPlugId.equals(smartPlugId) & c.month.equals(month)))
         .getSingleOrNull();
   }
 
@@ -152,8 +164,8 @@ class SmartPlugDao extends DatabaseAccessor<AppDatabase>
     final query = selectOnly(smartPlugConsumptions)
       ..addColumns([smartPlugConsumptions.valueKwh.sum()])
       ..where(smartPlugConsumptions.smartPlugId.equals(smartPlugId) &
-          smartPlugConsumptions.intervalStart.isBiggerOrEqualValue(from) &
-          smartPlugConsumptions.intervalStart.isSmallerThanValue(to));
+          smartPlugConsumptions.month.isBiggerOrEqualValue(from) &
+          smartPlugConsumptions.month.isSmallerThanValue(to));
 
     final result = await query.getSingle();
     return result.read(smartPlugConsumptions.valueKwh.sum()) ?? 0.0;
@@ -171,8 +183,8 @@ class SmartPlugDao extends DatabaseAccessor<AppDatabase>
     query
       ..addColumns([smartPlugConsumptions.valueKwh.sum()])
       ..where(smartPlugs.roomId.equals(roomId) &
-          smartPlugConsumptions.intervalStart.isBiggerOrEqualValue(from) &
-          smartPlugConsumptions.intervalStart.isSmallerThanValue(to));
+          smartPlugConsumptions.month.isBiggerOrEqualValue(from) &
+          smartPlugConsumptions.month.isSmallerThanValue(to));
 
     final result = await query.getSingle();
     return result.read(smartPlugConsumptions.valueKwh.sum()) ?? 0.0;
@@ -191,8 +203,8 @@ class SmartPlugDao extends DatabaseAccessor<AppDatabase>
     query
       ..addColumns([smartPlugConsumptions.valueKwh.sum()])
       ..where(rooms.householdId.equals(householdId) &
-          smartPlugConsumptions.intervalStart.isBiggerOrEqualValue(from) &
-          smartPlugConsumptions.intervalStart.isSmallerThanValue(to));
+          smartPlugConsumptions.month.isBiggerOrEqualValue(from) &
+          smartPlugConsumptions.month.isSmallerThanValue(to));
 
     final result = await query.getSingle();
     return result.read(smartPlugConsumptions.valueKwh.sum()) ?? 0.0;

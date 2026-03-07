@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../app_theme.dart';
 import '../database/app_database.dart';
-import '../database/tables.dart';
 import '../l10n/app_localizations.dart';
 import '../providers/locale_provider.dart';
 import '../providers/room_provider.dart';
@@ -209,19 +209,6 @@ class _SmartPlugCardState extends State<_SmartPlugCard> {
     }
   }
 
-  String _getIntervalName(AppLocalizations l10n, ConsumptionInterval interval) {
-    switch (interval) {
-      case ConsumptionInterval.daily:
-        return l10n.daily;
-      case ConsumptionInterval.weekly:
-        return l10n.weekly;
-      case ConsumptionInterval.monthly:
-        return l10n.monthly;
-      case ConsumptionInterval.yearly:
-        return l10n.yearly;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -266,7 +253,7 @@ class _SmartPlugCardState extends State<_SmartPlugCard> {
                       Text(
                         l10n.lastEntry(
                           ValtraNumberFormat.consumption(_latestConsumption!.valueKwh, locale),
-                          _getIntervalName(l10n, _latestConsumption!.intervalType),
+                          DateFormat.yMMM(locale).format(_latestConsumption!.month),
                         ),
                         style: theme.textTheme.bodySmall?.copyWith(
                           color: AppColors.electricityColor,

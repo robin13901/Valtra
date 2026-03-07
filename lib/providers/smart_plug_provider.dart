@@ -6,7 +6,6 @@ import 'package:intl/intl.dart';
 
 import '../database/app_database.dart';
 import '../database/daos/smart_plug_dao.dart';
-import '../database/tables.dart';
 
 /// Smart plug with its associated room name for display.
 class SmartPlugWithRoom {
@@ -16,21 +15,17 @@ class SmartPlugWithRoom {
   SmartPlugWithRoom({required this.plug, required this.roomName});
 }
 
-/// Consumption entry with interval label for display.
+/// Consumption entry with localized month/year label for display.
 class ConsumptionWithLabel {
   final SmartPlugConsumption consumption;
   final String intervalLabel;
 
   ConsumptionWithLabel({required this.consumption, required this.intervalLabel});
 
-  /// Generates a label for the interval type and start date.
-  static String generateLabel(
-    ConsumptionInterval intervalType,
-    DateTime intervalStart,
-    String Function(ConsumptionInterval) getIntervalName,
-  ) {
-    final dateFormatter = DateFormat('MMM d, yyyy');
-    return '${getIntervalName(intervalType)} - ${dateFormatter.format(intervalStart)}';
+  /// Generates a localized month/year label from the month DateTime.
+  static String generateLabel(DateTime month, String locale) {
+    final formatter = DateFormat.yMMMM(locale);
+    return formatter.format(month);
   }
 }
 
@@ -122,54 +117,57 @@ class SmartPlugProvider extends ChangeNotifier {
 
   // ============== Consumption Methods ==============
 
-  /// Gets all consumption entries for a smart plug with labels.
+  /// Gets all consumption entries for a smart plug with localized month labels.
   Future<List<ConsumptionWithLabel>> getConsumptionsForPlug(
     int plugId,
-    String Function(ConsumptionInterval) getIntervalName,
+    String locale,
   ) async {
     final consumptions = await _dao.getConsumptionsForPlug(plugId);
     return consumptions
         .map((c) => ConsumptionWithLabel(
               consumption: c,
               intervalLabel: ConsumptionWithLabel.generateLabel(
-                c.intervalType,
-                c.intervalStart,
-                getIntervalName,
+                c.month,
+                locale,
               ),
             ))
         .toList();
   }
 
-  /// Watches consumption entries for a smart plug.
+  /// Watches consumption entries for a smart plug with localized month labels.
   Stream<List<ConsumptionWithLabel>> watchConsumptionsForPlug(
     int plugId,
-    String Function(ConsumptionInterval) getIntervalName,
+    String locale,
   ) {
     return _dao.watchConsumptionsForPlug(plugId).map((consumptions) {
       return consumptions
           .map((c) => ConsumptionWithLabel(
                 consumption: c,
                 intervalLabel: ConsumptionWithLabel.generateLabel(
-                  c.intervalType,
-                  c.intervalStart,
-                  getIntervalName,
+                  c.month,
+                  locale,
                 ),
               ))
           .toList();
     });
   }
 
-  /// Adds a new consumption entry.
+  /// Adds a new consumption entry for a given month.
+  /// The [month] should be the 1st of the month at 00:00.
+  /// Returns the new entry's ID, or -1 if a duplicate month exists.
   Future<int> addConsumption(
     int plugId,
-    ConsumptionInterval interval,
-    DateTime start,
+    DateTime month,
     double kWh,
   ) async {
+    // Check for duplicate month
+    final existing = await _dao.getConsumptionForMonth(plugId, month);
+    if (existing != null) {
+      return -1;
+    }
     return _dao.insertConsumption(SmartPlugConsumptionsCompanion.insert(
       smartPlugId: plugId,
-      intervalType: interval,
-      intervalStart: start,
+      month: month,
       valueKwh: kWh,
     ));
   }
@@ -177,14 +175,12 @@ class SmartPlugProvider extends ChangeNotifier {
   /// Updates an existing consumption entry.
   Future<bool> updateConsumption(
     int id,
-    ConsumptionInterval interval,
-    DateTime start,
+    DateTime month,
     double kWh,
   ) {
     return _dao.updateConsumption(SmartPlugConsumptionsCompanion(
       id: Value(id),
-      intervalType: Value(interval),
-      intervalStart: Value(start),
+      month: Value(month),
       valueKwh: Value(kWh),
     ));
   }

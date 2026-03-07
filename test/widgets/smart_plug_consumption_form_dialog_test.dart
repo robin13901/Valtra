@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:valtra/database/app_database.dart';
-import 'package:valtra/database/tables.dart';
 import 'package:valtra/l10n/app_localizations.dart';
 import 'package:valtra/widgets/dialogs/smart_plug_consumption_form_dialog.dart';
 
@@ -64,7 +63,7 @@ void main() {
       expect(find.text('Value must be positive'), findsOneWidget);
     });
 
-    testWidgets('interval type dropdown works', (tester) async {
+    testWidgets('shows month picker field', (tester) async {
       await tester.pumpWidget(buildTestWidget());
       await tester.pumpAndSettle();
 
@@ -72,24 +71,8 @@ void main() {
       await tester.tap(find.text('Open Dialog'));
       await tester.pumpAndSettle();
 
-      // Default should be Monthly
+      // Month field should be present with label
       expect(find.text('Monthly'), findsOneWidget);
-
-      // Open dropdown
-      await tester.tap(find.text('Monthly'));
-      await tester.pumpAndSettle();
-
-      // Verify all interval types are available
-      expect(find.text('Daily'), findsWidgets);
-      expect(find.text('Weekly'), findsWidgets);
-      expect(find.text('Monthly'), findsWidgets);
-      expect(find.text('Yearly'), findsWidgets);
-
-      // Select Daily
-      await tester.tap(find.text('Daily').last);
-      await tester.pumpAndSettle();
-
-      expect(find.text('Daily'), findsOneWidget);
     });
 
     testWidgets('submits form with valid data', (tester) async {
@@ -127,16 +110,17 @@ void main() {
       // Verify result
       expect(result, isNotNull);
       expect(result!.valueKwh, 15.5);
-      expect(result!.intervalType, ConsumptionInterval.monthly);
-      expect(result!.intervalStart, isNotNull);
+      expect(result!.month, isNotNull);
+      // Month should be 1st of current month
+      final now = DateTime.now();
+      expect(result!.month, DateTime(now.year, now.month, 1));
     });
 
     testWidgets('edit mode pre-fills fields', (tester) async {
       final consumption = SmartPlugConsumption(
         id: 1,
         smartPlugId: 1,
-        intervalType: ConsumptionInterval.daily,
-        intervalStart: DateTime(2024, 3, 15),
+        month: DateTime(2024, 3, 1),
         valueKwh: 25.0,
       );
 
@@ -164,8 +148,7 @@ void main() {
       // Verify edit mode title
       expect(find.text('Edit Consumption'), findsOneWidget);
 
-      // Verify fields are pre-filled
-      expect(find.text('Daily'), findsOneWidget);
+      // Verify value is pre-filled
       expect(find.text('25.0'), findsOneWidget);
     });
 

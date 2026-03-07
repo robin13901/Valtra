@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../app_theme.dart';
 import '../database/app_database.dart';
-import '../database/tables.dart';
 import '../l10n/app_localizations.dart';
 import '../providers/locale_provider.dart';
 import '../providers/smart_plug_provider.dart';
@@ -46,23 +44,11 @@ class _SmartPlugConsumptionScreenState
     }
   }
 
-  String _getIntervalName(AppLocalizations l10n, ConsumptionInterval interval) {
-    switch (interval) {
-      case ConsumptionInterval.daily:
-        return l10n.daily;
-      case ConsumptionInterval.weekly:
-        return l10n.weekly;
-      case ConsumptionInterval.monthly:
-        return l10n.monthly;
-      case ConsumptionInterval.yearly:
-        return l10n.yearly;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final provider = context.watch<SmartPlugProvider>();
+    final locale = context.watch<LocaleProvider>().localeString;
 
     return Scaffold(
       appBar: buildGlassAppBar(
@@ -76,7 +62,7 @@ class _SmartPlugConsumptionScreenState
           : StreamBuilder<List<ConsumptionWithLabel>>(
               stream: provider.watchConsumptionsForPlug(
                 widget.smartPlugId,
-                (interval) => _getIntervalName(l10n, interval),
+                locale,
               ),
               builder: (context, snapshot) {
                 if (!snapshot.hasData) {
@@ -95,8 +81,6 @@ class _SmartPlugConsumptionScreenState
                     final item = consumptions[index];
                     return _ConsumptionCard(
                       consumption: item,
-                      getIntervalName: (interval) =>
-                          _getIntervalName(l10n, interval),
                       onTap: () =>
                           _editConsumption(context, item.consumption),
                       onDelete: () =>
@@ -145,8 +129,7 @@ class _SmartPlugConsumptionScreenState
 
     await provider.addConsumption(
       widget.smartPlugId,
-      result.intervalType,
-      result.intervalStart,
+      result.month,
       result.valueKwh,
     );
   }
@@ -165,8 +148,7 @@ class _SmartPlugConsumptionScreenState
 
     await provider.updateConsumption(
       consumption.id,
-      result.intervalType,
-      result.intervalStart,
+      result.month,
       result.valueKwh,
     );
   }
@@ -207,13 +189,11 @@ class _SmartPlugConsumptionScreenState
 
 class _ConsumptionCard extends StatelessWidget {
   final ConsumptionWithLabel consumption;
-  final String Function(ConsumptionInterval) getIntervalName;
   final VoidCallback onTap;
   final VoidCallback onDelete;
 
   const _ConsumptionCard({
     required this.consumption,
-    required this.getIntervalName,
     required this.onTap,
     required this.onDelete,
   });
@@ -223,7 +203,6 @@ class _ConsumptionCard extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final locale = context.watch<LocaleProvider>().localeString;
-    final dateFormatter = DateFormat('MMM d, yyyy');
 
     return GlassCard(
       margin: const EdgeInsets.only(bottom: 12),
@@ -246,7 +225,7 @@ class _ConsumptionCard extends StatelessWidget {
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      getIntervalName(consumption.consumption.intervalType),
+                      consumption.intervalLabel,
                       style: theme.textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.w600,
                       ),
@@ -277,13 +256,6 @@ class _ConsumptionCard extends StatelessWidget {
                     ],
                   ),
                 ],
-              ),
-              const SizedBox(height: 4),
-              Text(
-                dateFormatter.format(consumption.consumption.intervalStart),
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
               ),
               const SizedBox(height: 8),
               const Divider(),

@@ -94,8 +94,7 @@ void main() {
       final consumptionId = await db.into(db.smartPlugConsumptions).insert(
             SmartPlugConsumptionsCompanion.insert(
               smartPlugId: plugId,
-              intervalType: ConsumptionInterval.daily,
-              intervalStart: DateTime(2026, 3, 1),
+              month: DateTime(2026, 3, 1),
               valueKwh: 2.5,
             ),
           );
