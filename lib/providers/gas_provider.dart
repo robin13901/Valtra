@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:drift/drift.dart';
 import 'package:flutter/foundation.dart';
-import 'package:intl/intl.dart';
 
 import '../database/app_database.dart';
 import '../database/daos/gas_dao.dart';
@@ -105,9 +104,9 @@ class GasProvider extends ChangeNotifier {
 
   /// Validates a reading value against the previous reading.
   ///
-  /// Returns an error message if invalid, null if valid.
+  /// Returns the boundary value as a raw double if invalid, null if valid.
   /// When editing (excludeId provided), finds the previous reading relative to that reading.
-  Future<String?> validateReading(
+  Future<double?> validateReading(
     double value,
     DateTime timestamp, {
     int? excludeId,
@@ -120,8 +119,7 @@ class GasProvider extends ChangeNotifier {
     // If there's a previous reading and it's not the one we're editing
     if (previous != null && previous.id != excludeId) {
       if (value < previous.valueCubicMeters) {
-        final formatter = NumberFormat('#,##0.0', 'en');
-        return formatter.format(previous.valueCubicMeters);
+        return previous.valueCubicMeters;
       }
     }
 
@@ -131,8 +129,7 @@ class GasProvider extends ChangeNotifier {
       if (next != null &&
           next.id != excludeId &&
           next.valueCubicMeters < value) {
-        final formatter = NumberFormat('#,##0.0', 'en');
-        return 'Value must be <= ${formatter.format(next.valueCubicMeters)} m³ (next reading)';
+        return next.valueCubicMeters;
       }
     }
 

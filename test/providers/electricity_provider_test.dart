@@ -85,7 +85,7 @@ void main() {
       );
 
       expect(error, isNotNull);
-      expect(error, contains('1,000.0'));
+      expect(error, 1000.0);
     });
 
     test('validateReading returns null for valid readings', () async {

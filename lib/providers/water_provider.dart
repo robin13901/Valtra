@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:drift/drift.dart';
 import 'package:flutter/foundation.dart';
-import 'package:intl/intl.dart';
 
 import '../database/app_database.dart';
 import '../database/daos/water_dao.dart';
@@ -191,9 +190,9 @@ class WaterProvider extends ChangeNotifier {
 
   /// Validates a reading value against surrounding readings.
   ///
-  /// Returns an error message if invalid, null if valid.
+  /// Returns the boundary value as a raw double if invalid, null if valid.
   /// When editing (excludeId provided), finds the previous reading relative to that reading.
-  Future<String?> validateReading(
+  Future<double?> validateReading(
     int meterId,
     double value,
     DateTime timestamp, {
@@ -205,8 +204,7 @@ class WaterProvider extends ChangeNotifier {
     // If there's a previous reading and it's not the one we're editing
     if (previous != null && previous.id != excludeId) {
       if (value < previous.valueCubicMeters) {
-        final formatter = NumberFormat('#,##0.000', 'en');
-        return formatter.format(previous.valueCubicMeters);
+        return previous.valueCubicMeters;
       }
     }
 
@@ -214,9 +212,7 @@ class WaterProvider extends ChangeNotifier {
     if (excludeId != null) {
       final next = await _dao.getNextReading(meterId, timestamp);
       if (next != null && next.id != excludeId && next.valueCubicMeters < value) {
-        // The new value would be greater than the next reading
-        final formatter = NumberFormat('#,##0.000', 'en');
-        return 'Value must be <= ${formatter.format(next.valueCubicMeters)} m³ (next reading)';
+        return next.valueCubicMeters;
       }
     }
 

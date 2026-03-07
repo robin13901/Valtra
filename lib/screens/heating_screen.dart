@@ -7,8 +7,10 @@ import '../database/app_database.dart';
 import '../l10n/app_localizations.dart';
 import '../providers/analytics_provider.dart';
 import '../providers/heating_provider.dart';
+import '../providers/locale_provider.dart';
 import '../screens/monthly_analytics_screen.dart';
 import '../services/analytics/analytics_models.dart';
+import '../services/number_format_service.dart';
 import '../widgets/dialogs/heating_meter_form_dialog.dart';
 import '../widgets/dialogs/heating_reading_form_dialog.dart';
 import '../widgets/liquid_glass_widgets.dart';
@@ -119,7 +121,7 @@ class _HeatingMeterCardState extends State<_HeatingMeterCard> {
     final theme = Theme.of(context);
     final provider = context.watch<HeatingProvider>();
     final readings = provider.getReadingsWithDeltas(widget.meter.id);
-    final valueFormatter = NumberFormat('#,##0.0', 'en');
+    final locale = context.watch<LocaleProvider>().localeString;
 
     return GlassCard(
       margin: const EdgeInsets.only(bottom: 16),
@@ -176,8 +178,8 @@ class _HeatingMeterCardState extends State<_HeatingMeterCard> {
                         if (readings.isNotEmpty) ...[
                           const SizedBox(height: 4),
                           Text(
-                            valueFormatter
-                                .format(readings.first.reading.value),
+                            ValtraNumberFormat.consumption(
+                                readings.first.reading.value, locale),
                             style: theme.textTheme.bodySmall?.copyWith(
                               color:
                                   theme.colorScheme.onSurfaceVariant,
@@ -252,7 +254,7 @@ class _HeatingMeterCardState extends State<_HeatingMeterCard> {
     List<HeatingReadingWithDelta> readings,
   ) {
     final theme = Theme.of(context);
-    final valueFormatter = NumberFormat('#,##0.0', 'en');
+    final locale = context.watch<LocaleProvider>().localeString;
     final dateFormatter = DateFormat('dd.MM.yyyy HH:mm');
 
     return Column(
@@ -304,7 +306,7 @@ class _HeatingMeterCardState extends State<_HeatingMeterCard> {
                   color: AppColors.heatingColor,
                 ),
                 title: Text(
-                  valueFormatter.format(reading.value),
+                  ValtraNumberFormat.consumption(reading.value, locale),
                   style: theme.textTheme.bodyLarge?.copyWith(
                     fontWeight: FontWeight.w500,
                   ),
@@ -319,7 +321,7 @@ class _HeatingMeterCardState extends State<_HeatingMeterCard> {
                     if (delta != null)
                       Text(
                         l10n.heatingConsumptionSince(
-                            valueFormatter.format(delta)),
+                            ValtraNumberFormat.consumption(delta, locale)),
                         style: theme.textTheme.bodySmall?.copyWith(
                           color: AppColors.heatingColor,
                           fontWeight: FontWeight.w500,
@@ -448,6 +450,7 @@ class _HeatingMeterCardState extends State<_HeatingMeterCard> {
   Future<void> _addReading(BuildContext context) async {
     final provider = context.read<HeatingProvider>();
     final l10n = AppLocalizations.of(context)!;
+    final locale = context.read<LocaleProvider>().localeString;
 
     final result = await HeatingReadingFormDialog.show(context);
     if (result == null || !context.mounted) return;
@@ -462,7 +465,8 @@ class _HeatingMeterCardState extends State<_HeatingMeterCard> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content:
-              Text(l10n.heatingReadingMustBeGreaterOrEqual(error)),
+              Text(l10n.heatingReadingMustBeGreaterOrEqual(
+                  ValtraNumberFormat.consumption(error, locale))),
           backgroundColor: Theme.of(context).colorScheme.error,
         ),
       );
@@ -480,6 +484,7 @@ class _HeatingMeterCardState extends State<_HeatingMeterCard> {
       BuildContext context, HeatingReading reading) async {
     final provider = context.read<HeatingProvider>();
     final l10n = AppLocalizations.of(context)!;
+    final locale = context.read<LocaleProvider>().localeString;
 
     final result = await HeatingReadingFormDialog.show(
       context,
@@ -498,7 +503,8 @@ class _HeatingMeterCardState extends State<_HeatingMeterCard> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content:
-              Text(l10n.heatingReadingMustBeGreaterOrEqual(error)),
+              Text(l10n.heatingReadingMustBeGreaterOrEqual(
+                  ValtraNumberFormat.consumption(error, locale))),
           backgroundColor: Theme.of(context).colorScheme.error,
         ),
       );

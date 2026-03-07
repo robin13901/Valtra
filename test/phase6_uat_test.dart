@@ -207,7 +207,7 @@ void main() {
       );
 
       expect(error, isNotNull);
-      expect(error, contains('100.5'));
+      expect(error, 100.5);
     });
 
     // UAC-G6: Navigation

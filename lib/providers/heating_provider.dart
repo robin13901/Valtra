@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:drift/drift.dart';
 import 'package:flutter/foundation.dart';
-import 'package:intl/intl.dart';
 
 import '../database/app_database.dart';
 import '../database/daos/heating_dao.dart';
@@ -179,8 +178,8 @@ class HeatingProvider extends ChangeNotifier {
 
   /// Validates a reading value against surrounding readings.
   ///
-  /// Returns an error message if invalid, null if valid.
-  Future<String?> validateReading(
+  /// Returns the boundary value as a raw double if invalid, null if valid.
+  Future<double?> validateReading(
     int meterId,
     double value,
     DateTime timestamp, {
@@ -190,16 +189,14 @@ class HeatingProvider extends ChangeNotifier {
 
     if (previous != null && previous.id != excludeId) {
       if (value < previous.value) {
-        final formatter = NumberFormat('#,##0.0', 'en');
-        return formatter.format(previous.value);
+        return previous.value;
       }
     }
 
     if (excludeId != null) {
       final next = await _dao.getNextReading(meterId, timestamp);
       if (next != null && next.id != excludeId && next.value < value) {
-        final formatter = NumberFormat('#,##0.0', 'en');
-        return 'Value must be <= ${formatter.format(next.value)} (next reading)';
+        return next.value;
       }
     }
 

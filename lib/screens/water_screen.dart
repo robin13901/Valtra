@@ -7,9 +7,11 @@ import '../database/app_database.dart';
 import '../database/tables.dart';
 import '../l10n/app_localizations.dart';
 import '../providers/analytics_provider.dart';
+import '../providers/locale_provider.dart';
 import '../providers/water_provider.dart';
 import '../screens/monthly_analytics_screen.dart';
 import '../services/analytics/analytics_models.dart';
+import '../services/number_format_service.dart';
 import '../widgets/dialogs/water_meter_form_dialog.dart';
 import '../widgets/dialogs/water_reading_form_dialog.dart';
 import '../widgets/liquid_glass_widgets.dart';
@@ -158,7 +160,7 @@ class _WaterMeterCardState extends State<_WaterMeterCard> {
     final theme = Theme.of(context);
     final provider = context.watch<WaterProvider>();
     final readings = provider.getReadingsWithDeltas(widget.meter.id);
-    final valueFormatter = NumberFormat('#,##0.000', 'en');
+    final locale = context.watch<LocaleProvider>().localeString;
 
     return GlassCard(
       margin: const EdgeInsets.only(bottom: 16),
@@ -213,7 +215,7 @@ class _WaterMeterCardState extends State<_WaterMeterCard> {
                             const SizedBox(width: 8),
                             if (readings.isNotEmpty)
                               Text(
-                                '${valueFormatter.format(readings.first.reading.valueCubicMeters)} m³',
+                                '${ValtraNumberFormat.waterReading(readings.first.reading.valueCubicMeters, locale)} m\u00B3',
                                 style: theme.textTheme.bodySmall?.copyWith(
                                   color: theme.colorScheme.onSurfaceVariant,
                                 ),
@@ -285,7 +287,7 @@ class _WaterMeterCardState extends State<_WaterMeterCard> {
     List<WaterReadingWithDelta> readings,
   ) {
     final theme = Theme.of(context);
-    final valueFormatter = NumberFormat('#,##0.000', 'en');
+    final locale = context.watch<LocaleProvider>().localeString;
     final dateFormatter = DateFormat('dd.MM.yyyy HH:mm');
 
     return Column(
@@ -336,7 +338,7 @@ class _WaterMeterCardState extends State<_WaterMeterCard> {
                   color: _getTypeColor(widget.meter.type),
                 ),
                 title: Text(
-                  '${valueFormatter.format(reading.valueCubicMeters)} m³',
+                  '${ValtraNumberFormat.waterReading(reading.valueCubicMeters, locale)} m\u00B3',
                   style: theme.textTheme.bodyLarge?.copyWith(
                     fontWeight: FontWeight.w500,
                   ),
@@ -350,7 +352,7 @@ class _WaterMeterCardState extends State<_WaterMeterCard> {
                     ),
                     if (delta != null)
                       Text(
-                        l10n.waterConsumptionSince(valueFormatter.format(delta)),
+                        l10n.waterConsumptionSince(ValtraNumberFormat.waterReading(delta, locale)),
                         style: theme.textTheme.bodySmall?.copyWith(
                           color: AppColors.waterColor,
                           fontWeight: FontWeight.w500,
@@ -476,6 +478,7 @@ class _WaterMeterCardState extends State<_WaterMeterCard> {
   Future<void> _addReading(BuildContext context) async {
     final provider = context.read<WaterProvider>();
     final l10n = AppLocalizations.of(context)!;
+    final locale = context.read<LocaleProvider>().localeString;
 
     final result = await WaterReadingFormDialog.show(context);
     if (result == null || !context.mounted) return;
@@ -490,7 +493,8 @@ class _WaterMeterCardState extends State<_WaterMeterCard> {
     if (error != null && context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(l10n.waterReadingMustBeGreaterOrEqual(error)),
+          content: Text(l10n.waterReadingMustBeGreaterOrEqual(
+              ValtraNumberFormat.waterReading(error, locale))),
           backgroundColor: Theme.of(context).colorScheme.error,
         ),
       );
@@ -507,6 +511,7 @@ class _WaterMeterCardState extends State<_WaterMeterCard> {
   Future<void> _editReading(BuildContext context, WaterReading reading) async {
     final provider = context.read<WaterProvider>();
     final l10n = AppLocalizations.of(context)!;
+    final locale = context.read<LocaleProvider>().localeString;
 
     final result = await WaterReadingFormDialog.show(
       context,
@@ -525,7 +530,8 @@ class _WaterMeterCardState extends State<_WaterMeterCard> {
     if (error != null && context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(l10n.waterReadingMustBeGreaterOrEqual(error)),
+          content: Text(l10n.waterReadingMustBeGreaterOrEqual(
+              ValtraNumberFormat.waterReading(error, locale))),
           backgroundColor: Theme.of(context).colorScheme.error,
         ),
       );

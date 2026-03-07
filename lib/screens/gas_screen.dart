@@ -7,8 +7,10 @@ import '../database/app_database.dart';
 import '../l10n/app_localizations.dart';
 import '../providers/analytics_provider.dart';
 import '../providers/gas_provider.dart';
+import '../providers/locale_provider.dart';
 import '../screens/monthly_analytics_screen.dart';
 import '../services/analytics/analytics_models.dart';
+import '../services/number_format_service.dart';
 import '../widgets/dialogs/gas_reading_form_dialog.dart';
 import '../widgets/liquid_glass_widgets.dart';
 
@@ -93,6 +95,7 @@ class GasScreen extends StatelessWidget {
   Future<void> _addReading(BuildContext context) async {
     final provider = context.read<GasProvider>();
     final l10n = AppLocalizations.of(context)!;
+    final locale = context.read<LocaleProvider>().localeString;
 
     final result = await GasReadingFormDialog.show(context);
     if (result == null) return;
@@ -109,7 +112,8 @@ class GasScreen extends StatelessWidget {
         builder: (ctx) => AlertDialog(
           title: Text(l10n.readingMustBePositive),
           content:
-              Text(l10n.gasReadingMustBeGreaterOrEqual(validationError)),
+              Text(l10n.gasReadingMustBeGreaterOrEqual(
+                  ValtraNumberFormat.consumption(validationError, locale))),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(ctx).pop(),
@@ -130,6 +134,7 @@ class GasScreen extends StatelessWidget {
   ) async {
     final provider = context.read<GasProvider>();
     final l10n = AppLocalizations.of(context)!;
+    final locale = context.read<LocaleProvider>().localeString;
 
     final result = await GasReadingFormDialog.show(
       context,
@@ -150,7 +155,8 @@ class GasScreen extends StatelessWidget {
         builder: (ctx) => AlertDialog(
           title: Text(l10n.readingMustBePositive),
           content:
-              Text(l10n.gasReadingMustBeGreaterOrEqual(validationError)),
+              Text(l10n.gasReadingMustBeGreaterOrEqual(
+                  ValtraNumberFormat.consumption(validationError, locale))),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(ctx).pop(),
@@ -218,9 +224,9 @@ class _GasReadingCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
+    final locale = context.watch<LocaleProvider>().localeString;
 
     final dateFormatter = DateFormat('dd.MM.yyyy HH:mm');
-    final valueFormatter = NumberFormat('#,##0.0', 'en');
 
     return GlassCard(
       margin: const EdgeInsets.only(bottom: 12),
@@ -287,7 +293,7 @@ class _GasReadingCard extends StatelessWidget {
                   ),
                   const SizedBox(width: 8),
                   Text(
-                    '${valueFormatter.format(reading.valueCubicMeters)} ${l10n.cubicMeters}',
+                    '${ValtraNumberFormat.consumption(reading.valueCubicMeters, locale)} ${l10n.cubicMeters}',
                     style: theme.textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -298,7 +304,7 @@ class _GasReadingCard extends StatelessWidget {
               if (deltaCubicMeters != null)
                 Text(
                   l10n.gasConsumptionSince(
-                      valueFormatter.format(deltaCubicMeters)),
+                      ValtraNumberFormat.consumption(deltaCubicMeters!, locale)),
                   style: theme.textTheme.bodyMedium?.copyWith(
                     color: AppColors.gasColor,
                     fontWeight: FontWeight.w500,

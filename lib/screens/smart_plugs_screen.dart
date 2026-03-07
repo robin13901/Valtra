@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../app_theme.dart';
 import '../database/app_database.dart';
 import '../database/tables.dart';
 import '../l10n/app_localizations.dart';
+import '../providers/locale_provider.dart';
 import '../providers/room_provider.dart';
 import '../providers/smart_plug_provider.dart';
+import '../services/number_format_service.dart';
 import '../widgets/dialogs/smart_plug_form_dialog.dart';
 import '../widgets/liquid_glass_widgets.dart';
 import 'rooms_screen.dart';
@@ -229,7 +230,7 @@ class _SmartPlugCardState extends State<_SmartPlugCard> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final valueFormatter = NumberFormat('#,##0.0', 'en');
+    final locale = context.watch<LocaleProvider>().localeString;
 
     return GlassCard(
       margin: const EdgeInsets.only(bottom: 12),
@@ -268,7 +269,7 @@ class _SmartPlugCardState extends State<_SmartPlugCard> {
                       const SizedBox(height: 4),
                       Text(
                         l10n.lastEntry(
-                          valueFormatter.format(_latestConsumption!.valueKwh),
+                          ValtraNumberFormat.consumption(_latestConsumption!.valueKwh, locale),
                           _getIntervalName(l10n, _latestConsumption!.intervalType),
                         ),
                         style: theme.textTheme.bodySmall?.copyWith(

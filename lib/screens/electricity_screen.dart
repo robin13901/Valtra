@@ -7,8 +7,10 @@ import '../database/app_database.dart';
 import '../l10n/app_localizations.dart';
 import '../providers/analytics_provider.dart';
 import '../providers/electricity_provider.dart';
+import '../providers/locale_provider.dart';
 import '../screens/monthly_analytics_screen.dart';
 import '../services/analytics/analytics_models.dart';
+import '../services/number_format_service.dart';
 import '../widgets/dialogs/electricity_reading_form_dialog.dart';
 import '../widgets/liquid_glass_widgets.dart';
 
@@ -93,6 +95,7 @@ class ElectricityScreen extends StatelessWidget {
   Future<void> _addReading(BuildContext context) async {
     final provider = context.read<ElectricityProvider>();
     final l10n = AppLocalizations.of(context)!;
+    final locale = context.read<LocaleProvider>().localeString;
 
     final result = await ElectricityReadingFormDialog.show(context);
     if (result == null) return;
@@ -109,7 +112,8 @@ class ElectricityScreen extends StatelessWidget {
         context: context,
         builder: (ctx) => AlertDialog(
           title: Text(l10n.readingMustBePositive),
-          content: Text(l10n.readingMustBeGreaterOrEqual(validationError)),
+          content: Text(l10n.readingMustBeGreaterOrEqual(
+              ValtraNumberFormat.consumption(validationError, locale))),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(ctx).pop(),
@@ -130,6 +134,7 @@ class ElectricityScreen extends StatelessWidget {
   ) async {
     final provider = context.read<ElectricityProvider>();
     final l10n = AppLocalizations.of(context)!;
+    final locale = context.read<LocaleProvider>().localeString;
 
     final result = await ElectricityReadingFormDialog.show(
       context,
@@ -149,7 +154,8 @@ class ElectricityScreen extends StatelessWidget {
         context: context,
         builder: (ctx) => AlertDialog(
           title: Text(l10n.readingMustBePositive),
-          content: Text(l10n.readingMustBeGreaterOrEqual(validationError)),
+          content: Text(l10n.readingMustBeGreaterOrEqual(
+              ValtraNumberFormat.consumption(validationError, locale))),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(ctx).pop(),
@@ -216,9 +222,9 @@ class _ReadingCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
+    final locale = context.watch<LocaleProvider>().localeString;
 
     final dateFormatter = DateFormat('dd.MM.yyyy HH:mm');
-    final valueFormatter = NumberFormat('#,##0.0', 'en');
 
     return GlassCard(
       margin: const EdgeInsets.only(bottom: 12),
@@ -285,7 +291,7 @@ class _ReadingCard extends StatelessWidget {
                   ),
                   const SizedBox(width: 8),
                   Text(
-                    '${valueFormatter.format(reading.valueKwh)} ${l10n.kWh}',
+                    '${ValtraNumberFormat.consumption(reading.valueKwh, locale)} ${l10n.kWh}',
                     style: theme.textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -295,7 +301,7 @@ class _ReadingCard extends StatelessWidget {
               const SizedBox(height: 8),
               if (deltaKwh != null)
                 Text(
-                  l10n.consumptionSince(valueFormatter.format(deltaKwh)),
+                  l10n.consumptionSince(ValtraNumberFormat.consumption(deltaKwh!, locale)),
                   style: theme.textTheme.bodyMedium?.copyWith(
                     color: AppColors.electricityColor,
                     fontWeight: FontWeight.w500,

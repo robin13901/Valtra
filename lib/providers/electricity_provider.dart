@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:drift/drift.dart';
 import 'package:flutter/foundation.dart';
-import 'package:intl/intl.dart';
 
 import '../database/app_database.dart';
 import '../database/daos/electricity_dao.dart';
@@ -104,9 +103,9 @@ class ElectricityProvider extends ChangeNotifier {
 
   /// Validates a reading value against the previous reading.
   ///
-  /// Returns an error message if invalid, null if valid.
+  /// Returns the boundary value as a raw double if invalid, null if valid.
   /// When editing (excludeId provided), finds the previous reading relative to that reading.
-  Future<String?> validateReading(
+  Future<double?> validateReading(
     double value,
     DateTime timestamp, {
     int? excludeId,
@@ -119,8 +118,7 @@ class ElectricityProvider extends ChangeNotifier {
     // If there's a previous reading and it's not the one we're editing
     if (previous != null && previous.id != excludeId) {
       if (value < previous.valueKwh) {
-        final formatter = NumberFormat('#,##0.0', 'en');
-        return formatter.format(previous.valueKwh);
+        return previous.valueKwh;
       }
     }
 
@@ -129,8 +127,7 @@ class ElectricityProvider extends ChangeNotifier {
       final next = await _dao.getNextReading(_householdId!, timestamp);
       if (next != null && next.id != excludeId && next.valueKwh < value) {
         // The new value would be greater than the next reading
-        final formatter = NumberFormat('#,##0.0', 'en');
-        return 'Value must be <= ${formatter.format(next.valueKwh)} kWh (next reading)';
+        return next.valueKwh;
       }
     }
 

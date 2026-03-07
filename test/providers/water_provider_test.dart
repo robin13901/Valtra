@@ -260,7 +260,7 @@ void main() {
       );
 
       expect(error, isNotNull);
-      expect(error, contains('100'));
+      expect(error, 100.0);
     });
 
     test('validateReading handles excludeId for editing', () async {
@@ -301,7 +301,7 @@ void main() {
       );
 
       expect(error, isNotNull);
-      expect(error, contains('200'));
+      expect(error, 200.0);
     });
   });
 

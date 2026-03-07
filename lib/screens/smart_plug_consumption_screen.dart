@@ -6,7 +6,9 @@ import '../app_theme.dart';
 import '../database/app_database.dart';
 import '../database/tables.dart';
 import '../l10n/app_localizations.dart';
+import '../providers/locale_provider.dart';
 import '../providers/smart_plug_provider.dart';
+import '../services/number_format_service.dart';
 import '../widgets/dialogs/smart_plug_consumption_form_dialog.dart';
 import '../widgets/liquid_glass_widgets.dart';
 
@@ -220,8 +222,8 @@ class _ConsumptionCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
+    final locale = context.watch<LocaleProvider>().localeString;
     final dateFormatter = DateFormat('MMM d, yyyy');
-    final valueFormatter = NumberFormat('#,##0.0', 'en');
 
     return GlassCard(
       margin: const EdgeInsets.only(bottom: 12),
@@ -295,7 +297,7 @@ class _ConsumptionCard extends StatelessWidget {
                   ),
                   const SizedBox(width: 8),
                   Text(
-                    '${valueFormatter.format(consumption.consumption.valueKwh)} ${l10n.kWh}',
+                    '${ValtraNumberFormat.consumption(consumption.consumption.valueKwh, locale)} ${l10n.kWh}',
                     style: theme.textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
