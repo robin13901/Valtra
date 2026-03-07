@@ -57,8 +57,8 @@
 **Plans:** 2 plans
 
 Plans:
-- [ ] 11-01-PLAN.md — Data models, SmartPlugAnalyticsProvider, ConsumptionPieChart widget (Wave 1)
-- [ ] 11-02-PLAN.md — SmartPlugAnalyticsScreen, navigation wiring, localization, provider registration (Wave 2)
+- [x] 11-01-PLAN.md — Data models, SmartPlugAnalyticsProvider, ConsumptionPieChart widget (Wave 1)
+- [x] 11-02-PLAN.md — SmartPlugAnalyticsScreen, navigation wiring, localization, provider registration (Wave 2)
 
 ---
 
@@ -104,7 +104,7 @@ Phase 12 (UI Polish) ───► Phase 13 (Data Entry) ───► Phase 14 (T
 ```
 
 ## Current Status
-- **Completed**: Milestone 1 (v0.1.0), Phases 8-10 (Interpolation, Analytics Hub, Yearly + CSV)
-- **Active Milestone**: 2 - Analytics & Visualization (v0.2.0)
-- **Active Phase**: Phase 11 - Smart Plug Analytics (PLANNED)
+- **Completed**: Milestone 1 (v0.1.0), Phases 8-11 (Interpolation, Analytics Hub, Yearly + CSV, Smart Plug Analytics)
+- **Active Milestone**: 2 - Analytics & Visualization (v0.2.0) - COMPLETED
+- **Active Phase**: None - Milestone 2 complete
 - **Blockers**: None
