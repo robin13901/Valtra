@@ -51,9 +51,9 @@
 - [x] **FR-12.1.1**: Remove divider before Analyse button (direct placement)
 - [x] **FR-12.1.2**: Remove non-functional FAB on home screen
 - [x] **FR-12.1.3**: Apply GlassBottomNav as primary navigation (replacing current home screen chips)
-- [ ] **FR-12.1.4**: Apply buildGlassFAB to all screens with floating action buttons
-- [ ] **FR-12.1.5**: Apply GlassCard to all list items and summary cards
-- [ ] **FR-12.1.6**: Apply buildGlassAppBar to all screens
+- [x] **FR-12.1.4**: Apply buildGlassFAB to all screens with floating action buttons
+- [x] **FR-12.1.5**: Apply GlassCard to all list items and summary cards
+- [x] **FR-12.1.6**: Apply buildGlassAppBar to all screens
 
 #### FR-12.2: Number & Date Formatting (German Locale)
 - [x] **FR-12.2.1**: German number format everywhere: comma as decimal separator, dot as thousands separator (e.g., "1.234,5 kWh")
