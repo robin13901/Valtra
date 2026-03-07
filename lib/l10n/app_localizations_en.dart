@@ -404,4 +404,77 @@ class AppLocalizationsEn extends AppLocalizations {
   String gasReadingMustBeGreaterOrEqual(String previousValue) {
     return 'Value must be >= $previousValue m³';
   }
+
+  @override
+  String get heatingMeters => 'Heating Meters';
+
+  @override
+  String get addHeatingMeter => 'Add Heating Meter';
+
+  @override
+  String get editHeatingMeter => 'Edit Heating Meter';
+
+  @override
+  String get deleteHeatingMeter => 'Delete Heating Meter';
+
+  @override
+  String get heatingMeterName => 'Meter Name';
+
+  @override
+  String get heatingMeterNameHint => 'Enter meter name';
+
+  @override
+  String get heatingMeterLocation => 'Location';
+
+  @override
+  String get heatingMeterLocationHint => 'e.g. Living Room (optional)';
+
+  @override
+  String get noHeatingMeters =>
+      'No heating meters yet. Add one to start tracking heating consumption!';
+
+  @override
+  String get heatingMeterNameRequired => 'Meter name is required';
+
+  @override
+  String get deleteHeatingMeterConfirm =>
+      'Are you sure you want to delete this heating meter?';
+
+  @override
+  String heatingMeterHasReadings(int count) {
+    return 'This meter has $count reading(s). They will also be deleted.';
+  }
+
+  @override
+  String get heatingReading => 'Heating Reading';
+
+  @override
+  String get heatingReadings => 'Heating Readings';
+
+  @override
+  String get addHeatingReading => 'Add Reading';
+
+  @override
+  String get editHeatingReading => 'Edit Reading';
+
+  @override
+  String get deleteHeatingReading => 'Delete Reading';
+
+  @override
+  String get deleteHeatingReadingConfirm =>
+      'Are you sure you want to delete this reading?';
+
+  @override
+  String get noHeatingReadings =>
+      'No readings yet. Add your first meter reading!';
+
+  @override
+  String heatingConsumptionSince(String value) {
+    return '+$value units since previous';
+  }
+
+  @override
+  String heatingReadingMustBeGreaterOrEqual(String previousValue) {
+    return 'Value must be >= $previousValue';
+  }
 }

@@ -811,6 +811,132 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Value must be >= {previousValue} m³'**
   String gasReadingMustBeGreaterOrEqual(String previousValue);
+
+  /// No description provided for @heatingMeters.
+  ///
+  /// In en, this message translates to:
+  /// **'Heating Meters'**
+  String get heatingMeters;
+
+  /// No description provided for @addHeatingMeter.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Heating Meter'**
+  String get addHeatingMeter;
+
+  /// No description provided for @editHeatingMeter.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Heating Meter'**
+  String get editHeatingMeter;
+
+  /// No description provided for @deleteHeatingMeter.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Heating Meter'**
+  String get deleteHeatingMeter;
+
+  /// No description provided for @heatingMeterName.
+  ///
+  /// In en, this message translates to:
+  /// **'Meter Name'**
+  String get heatingMeterName;
+
+  /// No description provided for @heatingMeterNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter meter name'**
+  String get heatingMeterNameHint;
+
+  /// No description provided for @heatingMeterLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Location'**
+  String get heatingMeterLocation;
+
+  /// No description provided for @heatingMeterLocationHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Living Room (optional)'**
+  String get heatingMeterLocationHint;
+
+  /// No description provided for @noHeatingMeters.
+  ///
+  /// In en, this message translates to:
+  /// **'No heating meters yet. Add one to start tracking heating consumption!'**
+  String get noHeatingMeters;
+
+  /// No description provided for @heatingMeterNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Meter name is required'**
+  String get heatingMeterNameRequired;
+
+  /// No description provided for @deleteHeatingMeterConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this heating meter?'**
+  String get deleteHeatingMeterConfirm;
+
+  /// No description provided for @heatingMeterHasReadings.
+  ///
+  /// In en, this message translates to:
+  /// **'This meter has {count} reading(s). They will also be deleted.'**
+  String heatingMeterHasReadings(int count);
+
+  /// No description provided for @heatingReading.
+  ///
+  /// In en, this message translates to:
+  /// **'Heating Reading'**
+  String get heatingReading;
+
+  /// No description provided for @heatingReadings.
+  ///
+  /// In en, this message translates to:
+  /// **'Heating Readings'**
+  String get heatingReadings;
+
+  /// No description provided for @addHeatingReading.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Reading'**
+  String get addHeatingReading;
+
+  /// No description provided for @editHeatingReading.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Reading'**
+  String get editHeatingReading;
+
+  /// No description provided for @deleteHeatingReading.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Reading'**
+  String get deleteHeatingReading;
+
+  /// No description provided for @deleteHeatingReadingConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this reading?'**
+  String get deleteHeatingReadingConfirm;
+
+  /// No description provided for @noHeatingReadings.
+  ///
+  /// In en, this message translates to:
+  /// **'No readings yet. Add your first meter reading!'**
+  String get noHeatingReadings;
+
+  /// No description provided for @heatingConsumptionSince.
+  ///
+  /// In en, this message translates to:
+  /// **'+{value} units since previous'**
+  String heatingConsumptionSince(String value);
+
+  /// No description provided for @heatingReadingMustBeGreaterOrEqual.
+  ///
+  /// In en, this message translates to:
+  /// **'Value must be >= {previousValue}'**
+  String heatingReadingMustBeGreaterOrEqual(String previousValue);
 }
 
 class _AppLocalizationsDelegate

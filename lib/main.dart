@@ -6,6 +6,7 @@ import 'database/app_database.dart';
 import 'database/connection/shared.dart';
 import 'database/daos/electricity_dao.dart';
 import 'database/daos/gas_dao.dart';
+import 'database/daos/heating_dao.dart';
 import 'database/daos/household_dao.dart';
 import 'database/daos/room_dao.dart';
 import 'database/daos/smart_plug_dao.dart';
@@ -13,6 +14,7 @@ import 'database/daos/water_dao.dart';
 import 'l10n/app_localizations.dart';
 import 'providers/electricity_provider.dart';
 import 'providers/gas_provider.dart';
+import 'providers/heating_provider.dart';
 import 'providers/household_provider.dart';
 import 'providers/room_provider.dart';
 import 'providers/smart_plug_provider.dart';
@@ -20,6 +22,7 @@ import 'providers/theme_provider.dart';
 import 'providers/water_provider.dart';
 import 'screens/electricity_screen.dart';
 import 'screens/gas_screen.dart';
+import 'screens/heating_screen.dart';
 import 'screens/smart_plugs_screen.dart';
 import 'screens/water_screen.dart';
 import 'widgets/household_selector.dart';
@@ -53,6 +56,9 @@ void main() async {
   // Initialize gas provider
   final gasProvider = GasProvider(GasDao(database));
 
+  // Initialize heating provider
+  final heatingProvider = HeatingProvider(HeatingDao(database));
+
   // Connect providers to household changes
   if (householdProvider.selectedHouseholdId != null) {
     electricityProvider.setHouseholdId(householdProvider.selectedHouseholdId);
@@ -60,6 +66,7 @@ void main() async {
     smartPlugProvider.setHouseholdId(householdProvider.selectedHouseholdId);
     waterProvider.setHouseholdId(householdProvider.selectedHouseholdId);
     gasProvider.setHouseholdId(householdProvider.selectedHouseholdId);
+    heatingProvider.setHouseholdId(householdProvider.selectedHouseholdId);
   }
 
   runApp(ValtraApp(
@@ -71,6 +78,7 @@ void main() async {
     smartPlugProvider: smartPlugProvider,
     waterProvider: waterProvider,
     gasProvider: gasProvider,
+    heatingProvider: heatingProvider,
   ));
 }
 
@@ -83,6 +91,7 @@ class ValtraApp extends StatefulWidget {
   final SmartPlugProvider smartPlugProvider;
   final WaterProvider waterProvider;
   final GasProvider gasProvider;
+  final HeatingProvider heatingProvider;
 
   const ValtraApp({
     super.key,
@@ -94,6 +103,7 @@ class ValtraApp extends StatefulWidget {
     required this.smartPlugProvider,
     required this.waterProvider,
     required this.gasProvider,
+    required this.heatingProvider,
   });
 
   @override
@@ -121,6 +131,7 @@ class _ValtraAppState extends State<ValtraApp> {
     widget.smartPlugProvider.setHouseholdId(householdId);
     widget.waterProvider.setHouseholdId(householdId);
     widget.gasProvider.setHouseholdId(householdId);
+    widget.heatingProvider.setHouseholdId(householdId);
   }
 
   @override
@@ -142,6 +153,8 @@ class _ValtraAppState extends State<ValtraApp> {
             value: widget.waterProvider),
         ChangeNotifierProvider<GasProvider>.value(
             value: widget.gasProvider),
+        ChangeNotifierProvider<HeatingProvider>.value(
+            value: widget.heatingProvider),
       ],
       child: Consumer<ThemeProvider>(
         builder: (context, themeProvider, child) {
@@ -240,6 +253,7 @@ class HomeScreen extends StatelessWidget {
               Icons.thermostat,
               l10n.heating,
               AppColors.heatingColor,
+              onTap: () => _navigateToHeating(context),
             ),
           ],
         ),
@@ -368,6 +382,22 @@ class HomeScreen extends StatelessWidget {
 
     Navigator.of(context).push(
       MaterialPageRoute(builder: (context) => const GasScreen()),
+    );
+  }
+
+  void _navigateToHeating(BuildContext context) {
+    final householdProvider = context.read<HouseholdProvider>();
+    if (householdProvider.selectedHousehold == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.selectHousehold),
+        ),
+      );
+      return;
+    }
+
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (context) => const HeatingScreen()),
     );
   }
 }

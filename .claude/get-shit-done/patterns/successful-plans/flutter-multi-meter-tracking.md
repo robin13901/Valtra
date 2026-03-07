@@ -3,16 +3,17 @@ name: flutter-multi-meter-tracking
 domain: crud
 tech: [flutter, drift, provider, intl]
 success_rate: 100%
-times_used: 1
+times_used: 2
 source_project: valtra
 captured_at: 2026-03-06
+validated_phases: [5-water, 7-heating]
 ---
 
 ## Context
-Use this pattern when implementing meter tracking that supports **multiple meters per household** with types/categories. Examples: water meters (cold/hot/other), heating meters. Differs from single-meter pattern (electricity/gas) by having:
+Use this pattern when implementing meter tracking that supports **multiple meters per household** with types/categories. Examples: water meters (cold/hot/other), heating meters (with optional location). Differs from single-meter pattern (electricity/gas) by having:
 - Parent entity: Meter (belongs to Household)
 - Child entity: Reading (belongs to Meter)
-- Type categorization on meter (enum field)
+- Meter differentiation via enum field (e.g. type) OR optional text field (e.g. location)
 
 ## Pattern
 
@@ -240,9 +241,43 @@ class _WaterMeterCard extends StatelessWidget {
 
 ### UAT Criteria Template
 
-1. **Create Meter** - Dialog shows type selector, meter appears in list
-2. **Add Reading to Meter** - Reading scoped to correct meter
-3. **Edit Meter** - Type and name update correctly
-4. **Delete Meter** - Warning shows reading count, cascade deletes readings
-5. **Consumption Deltas** - Per-meter delta calculation works correctly
-6. **Localization** - All strings translated (EN/DE)
+1. **Create Meter** - Dialog shows type/location selector, meter appears in list
+2. **Create Meter Without Optional Field** - Meter appears without type badge or location subtitle
+3. **Add Reading to Meter** - Reading scoped to correct meter
+4. **Edit Meter** - Type/location and name update correctly
+5. **Delete Meter** - Warning shows reading count, cascade deletes readings
+6. **Consumption Deltas** - Per-meter delta calculation works correctly
+7. **Localization** - All strings translated (EN/DE)
+
+### Validated Implementations
+
+| Phase | Meter | Differentiator | Value Field | Unit | Color | Icon |
+|-------|-------|---------------|-------------|------|-------|------|
+| 5 | Water | `type` (IntEnum: cold/hot/other) | `valueCubicMeters` | m³ | waterColor (#6BC5F8) | `Icons.water_drop` |
+| 7 | Heating | `location` (nullable Text) | `value` | (unit-less) | heatingColor (#FF6B6B) | `Icons.thermostat` |
+
+### Variation: Enum Type vs Text Field
+
+**Water (Phase 5)** — Meter categorized by enum:
+- Table has `IntColumn get type => intEnum<WaterMeterType>()();`
+- Dialog uses `SegmentedButton<WaterMeterType>` for type selection
+- Screen shows colored type badge chip
+
+**Heating (Phase 7)** — Meter categorized by optional text:
+- Table has `TextColumn get location => text().nullable()();`
+- Dialog uses simple `TextFormField` for optional location
+- Screen shows location with `Icons.location_on` icon, hidden when null
+- Reading value is unit-less (no suffix in dialog or display)
+
+### Adaptation Notes
+- Copy DAO/Provider/Screen from Water or Heating and replace:
+  - Table names (`waterMeters`/`waterReadings` → `{new}Meters`/`{new}Readings`)
+  - Entity names (`WaterMeter`/`WaterReading` → `{New}Meter`/`{New}Reading`)
+  - Foreign key (`waterMeterId` → `{new}MeterId`)
+  - Value field (`valueCubicMeters` → `value` or custom)
+  - Unit display (`m³` → custom or none)
+  - Color and Icon
+  - Localization keys (prefix with meter type)
+- If new meter type uses enum: follow Water pattern (SegmentedButton)
+- If new meter type uses text: follow Heating pattern (TextFormField, nullable)
+

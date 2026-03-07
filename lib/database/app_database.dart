@@ -2,6 +2,7 @@ import 'package:drift/drift.dart';
 
 import 'daos/electricity_dao.dart';
 import 'daos/gas_dao.dart';
+import 'daos/heating_dao.dart';
 import 'daos/household_dao.dart';
 import 'daos/room_dao.dart';
 import 'daos/smart_plug_dao.dart';
@@ -25,6 +26,7 @@ part 'app_database.g.dart';
   HouseholdDao,
   ElectricityDao,
   GasDao,
+  HeatingDao,
   RoomDao,
   SmartPlugDao,
   WaterDao,
@@ -63,4 +65,8 @@ class AppDatabase extends _$AppDatabase {
   /// Provides access to gas reading CRUD operations.
   @override
   GasDao get gasDao => GasDao(this);
+
+  /// Provides access to heating meter and reading CRUD operations.
+  @override
+  HeatingDao get heatingDao => HeatingDao(this);
 }

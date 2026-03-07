@@ -3094,6 +3094,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     this as AppDatabase,
   );
   late final GasDao gasDao = GasDao(this as AppDatabase);
+  late final HeatingDao heatingDao = HeatingDao(this as AppDatabase);
   late final RoomDao roomDao = RoomDao(this as AppDatabase);
   late final SmartPlugDao smartPlugDao = SmartPlugDao(this as AppDatabase);
   late final WaterDao waterDao = WaterDao(this as AppDatabase);

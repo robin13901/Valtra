@@ -406,4 +406,77 @@ class AppLocalizationsDe extends AppLocalizations {
   String gasReadingMustBeGreaterOrEqual(String previousValue) {
     return 'Der Wert muss >= $previousValue m³ sein';
   }
+
+  @override
+  String get heatingMeters => 'Heizungszähler';
+
+  @override
+  String get addHeatingMeter => 'Heizungszähler hinzufügen';
+
+  @override
+  String get editHeatingMeter => 'Heizungszähler bearbeiten';
+
+  @override
+  String get deleteHeatingMeter => 'Heizungszähler löschen';
+
+  @override
+  String get heatingMeterName => 'Zählername';
+
+  @override
+  String get heatingMeterNameHint => 'Zählernamen eingeben';
+
+  @override
+  String get heatingMeterLocation => 'Standort';
+
+  @override
+  String get heatingMeterLocationHint => 'z.B. Wohnzimmer (optional)';
+
+  @override
+  String get noHeatingMeters =>
+      'Noch keine Heizungszähler. Fügen Sie einen hinzu, um den Heizverbrauch zu verfolgen!';
+
+  @override
+  String get heatingMeterNameRequired => 'Zählername ist erforderlich';
+
+  @override
+  String get deleteHeatingMeterConfirm =>
+      'Möchten Sie diesen Heizungszähler wirklich löschen?';
+
+  @override
+  String heatingMeterHasReadings(int count) {
+    return 'Dieser Zähler hat $count Ablesung(en). Diese werden ebenfalls gelöscht.';
+  }
+
+  @override
+  String get heatingReading => 'Heizungsablesung';
+
+  @override
+  String get heatingReadings => 'Heizungsablesungen';
+
+  @override
+  String get addHeatingReading => 'Ablesung hinzufügen';
+
+  @override
+  String get editHeatingReading => 'Ablesung bearbeiten';
+
+  @override
+  String get deleteHeatingReading => 'Ablesung löschen';
+
+  @override
+  String get deleteHeatingReadingConfirm =>
+      'Möchten Sie diese Ablesung wirklich löschen?';
+
+  @override
+  String get noHeatingReadings =>
+      'Noch keine Ablesungen. Fügen Sie Ihre erste Zählerablesung hinzu!';
+
+  @override
+  String heatingConsumptionSince(String value) {
+    return '+$value Einheiten seit letzter Ablesung';
+  }
+
+  @override
+  String heatingReadingMustBeGreaterOrEqual(String previousValue) {
+    return 'Der Wert muss >= $previousValue sein';
+  }
 }

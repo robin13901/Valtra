@@ -68,8 +68,8 @@ Tracks which models work best for which task types:
 | flutter-household-crud | crud | flutter, drift, provider, sharedpreferences | 100% | 1 |
 | flutter-meter-reading-crud | crud | flutter, drift, provider, intl | 100% | 2 |
 | flutter-smart-plug-room-crud | crud | flutter, drift, provider, intl | 100% | 1 |
-| flutter-multi-meter-tracking | crud | flutter, drift, provider, intl | 100% | 1 |
+| flutter-multi-meter-tracking | crud | flutter, drift, provider, intl | 100% | 2 |
 
 ---
 
-*Last updated: 2026-03-06*
+*Last updated: 2026-03-07*
