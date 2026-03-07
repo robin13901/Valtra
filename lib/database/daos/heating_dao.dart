@@ -4,7 +4,7 @@ import '../tables.dart';
 
 part 'heating_dao.g.dart';
 
-@DriftAccessor(tables: [HeatingMeters, HeatingReadings])
+@DriftAccessor(tables: [HeatingMeters, HeatingReadings, Rooms])
 class HeatingDao extends DatabaseAccessor<AppDatabase>
     with _$HeatingDaoMixin {
   HeatingDao(super.db);
@@ -35,6 +35,29 @@ class HeatingDao extends DatabaseAccessor<AppDatabase>
           ..where((m) => m.householdId.equals(householdId))
           ..orderBy([(m) => OrderingTerm.asc(m.name)]))
         .watch();
+  }
+
+  /// Retrieves all heating meters for a specific room.
+  Future<List<HeatingMeter>> getMetersForRoom(int roomId) {
+    return (select(heatingMeters)
+          ..where((m) => m.roomId.equals(roomId))
+          ..orderBy([(m) => OrderingTerm.asc(m.name)]))
+        .get();
+  }
+
+  /// Watches all heating meters for a specific room for reactive updates.
+  Stream<List<HeatingMeter>> watchMetersForRoom(int roomId) {
+    return (select(heatingMeters)
+          ..where((m) => m.roomId.equals(roomId))
+          ..orderBy([(m) => OrderingTerm.asc(m.name)]))
+        .watch();
+  }
+
+  /// Gets the room associated with a heating meter.
+  Future<Room> getRoomForMeter(int meterId) async {
+    final meter = await getMeter(meterId);
+    return (select(rooms)..where((r) => r.id.equals(meter.roomId)))
+        .getSingle();
   }
 
   /// Updates an existing heating meter. Returns true if a row was updated.

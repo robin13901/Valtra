@@ -3,8 +3,8 @@ import 'package:drift/drift.dart';
 /// Water meter types for distinguishing cold/hot water
 enum WaterMeterType { cold, hot, other }
 
-/// Interval types for smart plug consumption aggregation
-enum ConsumptionInterval { daily, weekly, monthly, yearly }
+/// Heating meter types: own meter (direct reading) or central meter (shared with ratio)
+enum HeatingType { ownMeter, centralMeter }
 
 /// Households table - top-level entity for grouping meters
 @DataClassName('Household')
@@ -51,13 +51,16 @@ class WaterReadings extends Table {
   RealColumn get valueCubicMeters => real()();
 }
 
-/// Heating meters - multiple per household (room radiators, etc.)
+/// Heating meters - multiple per household, assigned to rooms
 @DataClassName('HeatingMeter')
 class HeatingMeters extends Table {
   IntColumn get id => integer().autoIncrement()();
   IntColumn get householdId => integer().references(Households, #id)();
+  IntColumn get roomId => integer().references(Rooms, #id)();
   TextColumn get name => text().withLength(min: 1, max: 100)();
-  TextColumn get location => text().nullable()();
+  IntColumn get heatingType =>
+      intEnum<HeatingType>().withDefault(const Constant(0))();
+  RealColumn get heatingRatio => real().nullable()();
 }
 
 /// Heating meter readings - linked to specific heating meter
@@ -85,13 +88,12 @@ class SmartPlugs extends Table {
   TextColumn get name => text().withLength(min: 1, max: 100)();
 }
 
-/// Smart plug consumption - aggregated consumption data
+/// Smart plug consumption - monthly consumption data per plug
 @DataClassName('SmartPlugConsumption')
 class SmartPlugConsumptions extends Table {
   IntColumn get id => integer().autoIncrement()();
   IntColumn get smartPlugId => integer().references(SmartPlugs, #id)();
-  IntColumn get intervalType => intEnum<ConsumptionInterval>()();
-  DateTimeColumn get intervalStart => dateTime()();
+  DateTimeColumn get month => dateTime()();
   RealColumn get valueKwh => real()();
 }
 

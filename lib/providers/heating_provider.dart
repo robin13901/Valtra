@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 
 import '../database/app_database.dart';
 import '../database/daos/heating_dao.dart';
+import '../database/tables.dart';
 import '../services/interpolation/interpolation_service.dart';
 import '../services/interpolation/models.dart';
 
@@ -16,12 +17,20 @@ class HeatingReadingWithDelta {
   const HeatingReadingWithDelta({required this.reading, this.delta});
 }
 
+/// Heating meter with its associated room name for display.
+class HeatingMeterWithRoom {
+  final HeatingMeter meter;
+  final String roomName;
+
+  HeatingMeterWithRoom({required this.meter, required this.roomName});
+}
+
 /// Manages heating meter and reading state including CRUD operations and delta calculations.
 class HeatingProvider extends ChangeNotifier {
   final HeatingDao _dao;
   final InterpolationService _interpolationService;
 
-  List<HeatingMeter> _meters = [];
+  List<HeatingMeterWithRoom> _metersWithRooms = [];
   final Map<int, List<HeatingReading>> _readingsByMeter = {};
   final Map<int, StreamSubscription<List<HeatingReading>>>
       _readingSubscriptions = {};
@@ -43,8 +52,22 @@ class HeatingProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// List of all heating meters for the current household.
-  List<HeatingMeter> get meters => List.unmodifiable(_meters);
+  /// List of all heating meters for the current household (raw HeatingMeter objects).
+  List<HeatingMeter> get meters =>
+      List.unmodifiable(_metersWithRooms.map((m) => m.meter));
+
+  /// List of all heating meters with room names for the current household.
+  List<HeatingMeterWithRoom> get metersWithRooms =>
+      List.unmodifiable(_metersWithRooms);
+
+  /// Heating meters grouped by room name.
+  Map<String, List<HeatingMeterWithRoom>> get metersByRoom {
+    final result = <String, List<HeatingMeterWithRoom>>{};
+    for (final mwr in _metersWithRooms) {
+      result.putIfAbsent(mwr.roomName, () => []).add(mwr);
+    }
+    return result;
+  }
 
   /// The currently selected household ID.
   int? get householdId => _householdId;
@@ -63,14 +86,20 @@ class HeatingProvider extends ChangeNotifier {
     _readingsByMeter.clear();
 
     if (householdId == null) {
-      _meters = [];
+      _metersWithRooms = [];
       notifyListeners();
       return;
     }
 
     _metersSubscription = _dao.watchMetersForHousehold(householdId).listen(
-      (meters) {
-        _meters = meters;
+      (meters) async {
+        final metersWithRooms = <HeatingMeterWithRoom>[];
+        for (final meter in meters) {
+          final room = await _dao.getRoomForMeter(meter.id);
+          metersWithRooms.add(
+              HeatingMeterWithRoom(meter: meter, roomName: room.name));
+        }
+        _metersWithRooms = metersWithRooms;
         for (final meter in meters) {
           _subscribeToReadings(meter.id);
         }
@@ -105,26 +134,43 @@ class HeatingProvider extends ChangeNotifier {
 
   // ============== Meter Operations ==============
 
-  /// Adds a new heating meter.
-  Future<int> addMeter(String name, String? location) async {
+  /// Adds a new heating meter assigned to a room.
+  Future<int> addMeter(
+    String name,
+    int roomId, {
+    HeatingType heatingType = HeatingType.ownMeter,
+    double? heatingRatio,
+  }) async {
     if (_householdId == null) {
       throw StateError('No household selected');
     }
 
     return _dao.insertMeter(HeatingMetersCompanion.insert(
       householdId: _householdId!,
+      roomId: roomId,
       name: name,
-      location: Value(location),
+      heatingType: Value(heatingType),
+      heatingRatio: Value(heatingRatio),
     ));
   }
 
   /// Updates an existing heating meter.
-  Future<bool> updateMeter(int id, String name, String? location) {
-    return _dao.updateMeter(HeatingMetersCompanion(
+  Future<bool> updateMeter(
+    int id,
+    String name,
+    int roomId, {
+    HeatingType? heatingType,
+    double? heatingRatio,
+  }) {
+    final companion = HeatingMetersCompanion(
       id: Value(id),
       name: Value(name),
-      location: Value(location),
-    ));
+      roomId: Value(roomId),
+      heatingType:
+          heatingType != null ? Value(heatingType) : const Value.absent(),
+      heatingRatio: Value(heatingRatio),
+    );
+    return _dao.updateMeter(companion);
   }
 
   /// Deletes a heating meter and all its readings.

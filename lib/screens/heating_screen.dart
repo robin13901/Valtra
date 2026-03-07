@@ -24,7 +24,7 @@ class HeatingScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final provider = context.watch<HeatingProvider>();
-    final meters = provider.meters;
+    final metersWithRooms = provider.metersWithRooms;
 
     return Scaffold(
       appBar: buildGlassAppBar(
@@ -54,9 +54,9 @@ class HeatingScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: meters.isEmpty
+      body: metersWithRooms.isEmpty
           ? _buildEmptyState(context, l10n)
-          : _HeatingMetersList(meters: meters),
+          : _HeatingMetersList(metersWithRooms: metersWithRooms),
       floatingActionButton: buildGlassFAB(
         context: context,
         icon: Icons.add,
@@ -90,35 +90,49 @@ class HeatingScreen extends StatelessWidget {
 
   Future<void> _addMeter(BuildContext context) async {
     final provider = context.read<HeatingProvider>();
+    final roomDao = context.read<AppDatabase>().roomDao;
+    final householdId = provider.householdId;
+    if (householdId == null) return;
 
-    final result = await HeatingMeterFormDialog.show(context);
+    final rooms = await roomDao.getRoomsForHousehold(householdId);
+    if (!context.mounted) return;
+
+    final result = await HeatingMeterFormDialog.show(
+      context,
+      rooms: rooms,
+    );
     if (result == null || !context.mounted) return;
 
-    await provider.addMeter(result.name, result.location);
+    await provider.addMeter(
+      result.name,
+      result.roomId,
+      heatingType: result.heatingType,
+      heatingRatio: result.heatingRatio,
+    );
   }
 }
 
 class _HeatingMetersList extends StatelessWidget {
-  final List<HeatingMeter> meters;
+  final List<HeatingMeterWithRoom> metersWithRooms;
 
-  const _HeatingMetersList({required this.meters});
+  const _HeatingMetersList({required this.metersWithRooms});
 
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
       padding: const EdgeInsets.all(16),
-      itemCount: meters.length,
+      itemCount: metersWithRooms.length,
       itemBuilder: (context, index) {
-        return _HeatingMeterCard(meter: meters[index]);
+        return _HeatingMeterCard(meterWithRoom: metersWithRooms[index]);
       },
     );
   }
 }
 
 class _HeatingMeterCard extends StatefulWidget {
-  final HeatingMeter meter;
+  final HeatingMeterWithRoom meterWithRoom;
 
-  const _HeatingMeterCard({required this.meter});
+  const _HeatingMeterCard({required this.meterWithRoom});
 
   @override
   State<_HeatingMeterCard> createState() => _HeatingMeterCardState();
@@ -127,13 +141,16 @@ class _HeatingMeterCard extends StatefulWidget {
 class _HeatingMeterCardState extends State<_HeatingMeterCard> {
   bool _isExpanded = false;
 
+  HeatingMeter get meter => widget.meterWithRoom.meter;
+  String get roomName => widget.meterWithRoom.roomName;
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final provider = context.watch<HeatingProvider>();
-    final readings = provider.getReadingsWithDeltas(widget.meter.id);
-    final displayItems = provider.getDisplayItems(widget.meter.id);
+    final readings = provider.getReadingsWithDeltas(meter.id);
+    final displayItems = provider.getDisplayItems(meter.id);
     final locale = context.watch<LocaleProvider>().localeString;
 
     return GlassCard(
@@ -161,33 +178,31 @@ class _HeatingMeterCardState extends State<_HeatingMeterCard> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          widget.meter.name,
+                          meter.name,
                           style: theme.textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.w600,
                           ),
                         ),
-                        if (widget.meter.location != null) ...[
-                          const SizedBox(height: 4),
-                          Row(
-                            children: [
-                              Icon(
-                                Icons.location_on,
-                                size: 14,
-                                color:
-                                    theme.colorScheme.onSurfaceVariant,
+                        const SizedBox(height: 4),
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.room,
+                              size: 14,
+                              color:
+                                  theme.colorScheme.onSurfaceVariant,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              roomName,
+                              style:
+                                  theme.textTheme.bodySmall?.copyWith(
+                                color: theme
+                                    .colorScheme.onSurfaceVariant,
                               ),
-                              const SizedBox(width: 4),
-                              Text(
-                                widget.meter.location!,
-                                style:
-                                    theme.textTheme.bodySmall?.copyWith(
-                                  color: theme
-                                      .colorScheme.onSurfaceVariant,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
+                            ),
+                          ],
+                        ),
                         if (readings.isNotEmpty) ...[
                           const SizedBox(height: 4),
                           Text(
@@ -573,15 +588,27 @@ class _HeatingMeterCardState extends State<_HeatingMeterCard> {
 
   Future<void> _editMeter(BuildContext context) async {
     final provider = context.read<HeatingProvider>();
+    final roomDao = context.read<AppDatabase>().roomDao;
+    final householdId = provider.householdId;
+    if (householdId == null) return;
+
+    final rooms = await roomDao.getRoomsForHousehold(householdId);
+    if (!context.mounted) return;
 
     final result = await HeatingMeterFormDialog.show(
       context,
-      meter: widget.meter,
+      meter: meter,
+      rooms: rooms,
     );
     if (result == null || !context.mounted) return;
 
     await provider.updateMeter(
-        widget.meter.id, result.name, result.location);
+      meter.id,
+      result.name,
+      result.roomId,
+      heatingType: result.heatingType,
+      heatingRatio: result.heatingRatio,
+    );
   }
 
   Future<void> _deleteMeter(BuildContext context) async {
@@ -589,7 +616,7 @@ class _HeatingMeterCardState extends State<_HeatingMeterCard> {
     final provider = context.read<HeatingProvider>();
 
     final readingCount =
-        await provider.getReadingCountForMeter(widget.meter.id);
+        await provider.getReadingCountForMeter(meter.id);
 
     if (!context.mounted) return;
 
@@ -630,7 +657,7 @@ class _HeatingMeterCardState extends State<_HeatingMeterCard> {
     );
 
     if (confirmed == true && context.mounted) {
-      await provider.deleteMeter(widget.meter.id);
+      await provider.deleteMeter(meter.id);
     }
   }
 
@@ -643,7 +670,7 @@ class _HeatingMeterCardState extends State<_HeatingMeterCard> {
     if (result == null || !context.mounted) return;
 
     final error = await provider.validateReading(
-      widget.meter.id,
+      meter.id,
       result.value,
       result.timestamp,
     );
@@ -661,7 +688,7 @@ class _HeatingMeterCardState extends State<_HeatingMeterCard> {
     }
 
     await provider.addReading(
-      widget.meter.id,
+      meter.id,
       result.timestamp,
       result.value,
     );
@@ -680,7 +707,7 @@ class _HeatingMeterCardState extends State<_HeatingMeterCard> {
     if (result == null || !context.mounted) return;
 
     final error = await provider.validateReading(
-      widget.meter.id,
+      meter.id,
       result.value,
       result.timestamp,
       excludeId: reading.id,
@@ -715,7 +742,7 @@ class _HeatingMeterCardState extends State<_HeatingMeterCard> {
     final l10n = AppLocalizations.of(context)!;
     final locale = context.read<LocaleProvider>().localeString;
 
-    final readings = provider.getReadingsWithDeltas(widget.meter.id);
+    final readings = provider.getReadingsWithDeltas(meter.id);
     final readingWithDelta = readings.firstWhere((r) => r.reading.id == readingId);
     final reading = readingWithDelta.reading;
 
@@ -726,7 +753,7 @@ class _HeatingMeterCardState extends State<_HeatingMeterCard> {
     if (result == null || !context.mounted) return;
 
     final error = await provider.validateReading(
-      widget.meter.id,
+      meter.id,
       result.value,
       result.timestamp,
       excludeId: reading.id,

@@ -5,6 +5,7 @@ part of 'heating_dao.dart';
 // ignore_for_file: type=lint
 mixin _$HeatingDaoMixin on DatabaseAccessor<AppDatabase> {
   $HouseholdsTable get households => attachedDatabase.households;
+  $RoomsTable get rooms => attachedDatabase.rooms;
   $HeatingMetersTable get heatingMeters => attachedDatabase.heatingMeters;
   $HeatingReadingsTable get heatingReadings => attachedDatabase.heatingReadings;
   HeatingDaoManager get managers => HeatingDaoManager(this);
@@ -15,6 +16,8 @@ class HeatingDaoManager {
   HeatingDaoManager(this._db);
   $$HouseholdsTableTableManager get households =>
       $$HouseholdsTableTableManager(_db.attachedDatabase, _db.households);
+  $$RoomsTableTableManager get rooms =>
+      $$RoomsTableTableManager(_db.attachedDatabase, _db.rooms);
   $$HeatingMetersTableTableManager get heatingMeters =>
       $$HeatingMetersTableTableManager(_db.attachedDatabase, _db.heatingMeters);
   $$HeatingReadingsTableTableManager get heatingReadings =>

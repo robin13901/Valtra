@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../l10n/app_localizations.dart';
 import '../../database/app_database.dart';
+import '../../database/tables.dart';
 
 /// Dialog for creating or editing a heating meter.
 ///
@@ -9,17 +10,26 @@ import '../../database/app_database.dart';
 /// and pre-fills the form with existing values.
 class HeatingMeterFormDialog extends StatefulWidget {
   final HeatingMeter? meter;
+  final List<Room> rooms;
 
-  const HeatingMeterFormDialog({super.key, this.meter});
+  const HeatingMeterFormDialog({
+    super.key,
+    this.meter,
+    required this.rooms,
+  });
 
   /// Shows the dialog and returns the form data if saved, or null if cancelled.
   static Future<HeatingMeterFormData?> show(
     BuildContext context, {
     HeatingMeter? meter,
+    required List<Room> rooms,
   }) {
     return showDialog<HeatingMeterFormData>(
       context: context,
-      builder: (context) => HeatingMeterFormDialog(meter: meter),
+      builder: (context) => HeatingMeterFormDialog(
+        meter: meter,
+        rooms: rooms,
+      ),
     );
   }
 
@@ -31,7 +41,9 @@ class HeatingMeterFormDialog extends StatefulWidget {
 class _HeatingMeterFormDialogState extends State<HeatingMeterFormDialog> {
   final _formKey = GlobalKey<FormState>();
   late final TextEditingController _nameController;
-  late final TextEditingController _locationController;
+  int? _selectedRoomId;
+  HeatingType _heatingType = HeatingType.ownMeter;
+  final TextEditingController _ratioController = TextEditingController();
 
   bool get isEditing => widget.meter != null;
 
@@ -39,14 +51,21 @@ class _HeatingMeterFormDialogState extends State<HeatingMeterFormDialog> {
   void initState() {
     super.initState();
     _nameController = TextEditingController(text: widget.meter?.name ?? '');
-    _locationController =
-        TextEditingController(text: widget.meter?.location ?? '');
+    _selectedRoomId = widget.meter?.roomId ??
+        (widget.rooms.isNotEmpty ? widget.rooms.first.id : null);
+    if (widget.meter != null) {
+      _heatingType = widget.meter!.heatingType;
+      if (widget.meter!.heatingRatio != null) {
+        _ratioController.text =
+            (widget.meter!.heatingRatio! * 100).toStringAsFixed(0);
+      }
+    }
   }
 
   @override
   void dispose() {
     _nameController.dispose();
-    _locationController.dispose();
+    _ratioController.dispose();
     super.dispose();
   }
 
@@ -59,35 +78,51 @@ class _HeatingMeterFormDialogState extends State<HeatingMeterFormDialog> {
           Text(isEditing ? l10n.editHeatingMeter : l10n.addHeatingMeter),
       content: Form(
         key: _formKey,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            TextFormField(
-              controller: _nameController,
-              decoration: InputDecoration(
-                labelText: l10n.heatingMeterName,
-                hintText: l10n.heatingMeterNameHint,
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              TextFormField(
+                controller: _nameController,
+                decoration: InputDecoration(
+                  labelText: l10n.heatingMeterName,
+                  hintText: l10n.heatingMeterNameHint,
+                ),
+                autofocus: !isEditing,
+                maxLength: 100,
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return l10n.heatingMeterNameRequired;
+                  }
+                  return null;
+                },
               ),
-              autofocus: !isEditing,
-              maxLength: 100,
-              validator: (value) {
-                if (value == null || value.trim().isEmpty) {
-                  return l10n.heatingMeterNameRequired;
-                }
-                return null;
-              },
-            ),
-            const SizedBox(height: 16),
-            TextFormField(
-              controller: _locationController,
-              decoration: InputDecoration(
-                labelText: l10n.heatingMeterLocation,
-                hintText: l10n.heatingMeterLocationHint,
-              ),
-              maxLength: 100,
-            ),
-          ],
+              const SizedBox(height: 16),
+              if (widget.rooms.isNotEmpty)
+                DropdownButtonFormField<int>(
+                  initialValue: _selectedRoomId,
+                  decoration: InputDecoration(
+                    labelText: l10n.room,
+                  ),
+                  items: widget.rooms
+                      .map((room) => DropdownMenuItem(
+                            value: room.id,
+                            child: Text(room.name),
+                          ))
+                      .toList(),
+                  onChanged: (value) {
+                    setState(() => _selectedRoomId = value);
+                  },
+                  validator: (value) {
+                    if (value == null) {
+                      return l10n.roomRequired;
+                    }
+                    return null;
+                  },
+                ),
+            ],
+          ),
         ),
       ),
       actions: [
@@ -105,10 +140,17 @@ class _HeatingMeterFormDialogState extends State<HeatingMeterFormDialog> {
 
   void _onSave() {
     if (_formKey.currentState!.validate()) {
-      final location = _locationController.text.trim();
+      final ratioText = _ratioController.text.trim();
+      double? ratio;
+      if (ratioText.isNotEmpty) {
+        ratio = double.tryParse(ratioText);
+        if (ratio != null) ratio = ratio / 100.0;
+      }
       Navigator.of(context).pop(HeatingMeterFormData(
         name: _nameController.text.trim(),
-        location: location.isEmpty ? null : location,
+        roomId: _selectedRoomId!,
+        heatingType: _heatingType,
+        heatingRatio: _heatingType == HeatingType.centralMeter ? ratio : null,
       ));
     }
   }
@@ -117,10 +159,14 @@ class _HeatingMeterFormDialogState extends State<HeatingMeterFormDialog> {
 /// Data returned from [HeatingMeterFormDialog] when saved.
 class HeatingMeterFormData {
   final String name;
-  final String? location;
+  final int roomId;
+  final HeatingType heatingType;
+  final double? heatingRatio;
 
   const HeatingMeterFormData({
     required this.name,
-    this.location,
+    required this.roomId,
+    this.heatingType = HeatingType.ownMeter,
+    this.heatingRatio,
   });
 }

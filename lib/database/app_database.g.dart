@@ -1568,12 +1568,11 @@ class WaterReadingsCompanion extends UpdateCompanion<WaterReading> {
   }
 }
 
-class $HeatingMetersTable extends HeatingMeters
-    with TableInfo<$HeatingMetersTable, HeatingMeter> {
+class $RoomsTable extends Rooms with TableInfo<$RoomsTable, Room> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  $HeatingMetersTable(this.attachedDatabase, [this._alias]);
+  $RoomsTable(this.attachedDatabase, [this._alias]);
   static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
   late final GeneratedColumn<int> id = GeneratedColumn<int>(
@@ -1614,27 +1613,16 @@ class $HeatingMetersTable extends HeatingMeters
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _locationMeta = const VerificationMeta(
-    'location',
-  );
   @override
-  late final GeneratedColumn<String> location = GeneratedColumn<String>(
-    'location',
-    aliasedName,
-    true,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-  );
-  @override
-  List<GeneratedColumn> get $columns => [id, householdId, name, location];
+  List<GeneratedColumn> get $columns => [id, householdId, name];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
   String get actualTableName => $name;
-  static const String $name = 'heating_meters';
+  static const String $name = 'rooms';
   @override
   VerificationContext validateIntegrity(
-    Insertable<HeatingMeter> instance, {
+    Insertable<Room> instance, {
     bool isInserting = false,
   }) {
     final context = VerificationContext();
@@ -1661,10 +1649,317 @@ class $HeatingMetersTable extends HeatingMeters
     } else if (isInserting) {
       context.missing(_nameMeta);
     }
-    if (data.containsKey('location')) {
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  Room map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return Room(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      householdId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}household_id'],
+      )!,
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      )!,
+    );
+  }
+
+  @override
+  $RoomsTable createAlias(String alias) {
+    return $RoomsTable(attachedDatabase, alias);
+  }
+}
+
+class Room extends DataClass implements Insertable<Room> {
+  final int id;
+  final int householdId;
+  final String name;
+  const Room({required this.id, required this.householdId, required this.name});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['household_id'] = Variable<int>(householdId);
+    map['name'] = Variable<String>(name);
+    return map;
+  }
+
+  RoomsCompanion toCompanion(bool nullToAbsent) {
+    return RoomsCompanion(
+      id: Value(id),
+      householdId: Value(householdId),
+      name: Value(name),
+    );
+  }
+
+  factory Room.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return Room(
+      id: serializer.fromJson<int>(json['id']),
+      householdId: serializer.fromJson<int>(json['householdId']),
+      name: serializer.fromJson<String>(json['name']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'householdId': serializer.toJson<int>(householdId),
+      'name': serializer.toJson<String>(name),
+    };
+  }
+
+  Room copyWith({int? id, int? householdId, String? name}) => Room(
+    id: id ?? this.id,
+    householdId: householdId ?? this.householdId,
+    name: name ?? this.name,
+  );
+  Room copyWithCompanion(RoomsCompanion data) {
+    return Room(
+      id: data.id.present ? data.id.value : this.id,
+      householdId: data.householdId.present
+          ? data.householdId.value
+          : this.householdId,
+      name: data.name.present ? data.name.value : this.name,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('Room(')
+          ..write('id: $id, ')
+          ..write('householdId: $householdId, ')
+          ..write('name: $name')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, householdId, name);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is Room &&
+          other.id == this.id &&
+          other.householdId == this.householdId &&
+          other.name == this.name);
+}
+
+class RoomsCompanion extends UpdateCompanion<Room> {
+  final Value<int> id;
+  final Value<int> householdId;
+  final Value<String> name;
+  const RoomsCompanion({
+    this.id = const Value.absent(),
+    this.householdId = const Value.absent(),
+    this.name = const Value.absent(),
+  });
+  RoomsCompanion.insert({
+    this.id = const Value.absent(),
+    required int householdId,
+    required String name,
+  }) : householdId = Value(householdId),
+       name = Value(name);
+  static Insertable<Room> custom({
+    Expression<int>? id,
+    Expression<int>? householdId,
+    Expression<String>? name,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (householdId != null) 'household_id': householdId,
+      if (name != null) 'name': name,
+    });
+  }
+
+  RoomsCompanion copyWith({
+    Value<int>? id,
+    Value<int>? householdId,
+    Value<String>? name,
+  }) {
+    return RoomsCompanion(
+      id: id ?? this.id,
+      householdId: householdId ?? this.householdId,
+      name: name ?? this.name,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (householdId.present) {
+      map['household_id'] = Variable<int>(householdId.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('RoomsCompanion(')
+          ..write('id: $id, ')
+          ..write('householdId: $householdId, ')
+          ..write('name: $name')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $HeatingMetersTable extends HeatingMeters
+    with TableInfo<$HeatingMetersTable, HeatingMeter> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $HeatingMetersTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _householdIdMeta = const VerificationMeta(
+    'householdId',
+  );
+  @override
+  late final GeneratedColumn<int> householdId = GeneratedColumn<int>(
+    'household_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES households (id)',
+    ),
+  );
+  static const VerificationMeta _roomIdMeta = const VerificationMeta('roomId');
+  @override
+  late final GeneratedColumn<int> roomId = GeneratedColumn<int>(
+    'room_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES rooms (id)',
+    ),
+  );
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    false,
+    additionalChecks: GeneratedColumn.checkTextLength(
+      minTextLength: 1,
+      maxTextLength: 100,
+    ),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  late final GeneratedColumnWithTypeConverter<HeatingType, int> heatingType =
+      GeneratedColumn<int>(
+        'heating_type',
+        aliasedName,
+        false,
+        type: DriftSqlType.int,
+        requiredDuringInsert: false,
+        defaultValue: const Constant(0),
+      ).withConverter<HeatingType>($HeatingMetersTable.$converterheatingType);
+  static const VerificationMeta _heatingRatioMeta = const VerificationMeta(
+    'heatingRatio',
+  );
+  @override
+  late final GeneratedColumn<double> heatingRatio = GeneratedColumn<double>(
+    'heating_ratio',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    householdId,
+    roomId,
+    name,
+    heatingType,
+    heatingRatio,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'heating_meters';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<HeatingMeter> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('household_id')) {
       context.handle(
-        _locationMeta,
-        location.isAcceptableOrUnknown(data['location']!, _locationMeta),
+        _householdIdMeta,
+        householdId.isAcceptableOrUnknown(
+          data['household_id']!,
+          _householdIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_householdIdMeta);
+    }
+    if (data.containsKey('room_id')) {
+      context.handle(
+        _roomIdMeta,
+        roomId.isAcceptableOrUnknown(data['room_id']!, _roomIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_roomIdMeta);
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('heating_ratio')) {
+      context.handle(
+        _heatingRatioMeta,
+        heatingRatio.isAcceptableOrUnknown(
+          data['heating_ratio']!,
+          _heatingRatioMeta,
+        ),
       );
     }
     return context;
@@ -1684,13 +1979,23 @@ class $HeatingMetersTable extends HeatingMeters
         DriftSqlType.int,
         data['${effectivePrefix}household_id'],
       )!,
+      roomId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}room_id'],
+      )!,
       name: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}name'],
       )!,
-      location: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}location'],
+      heatingType: $HeatingMetersTable.$converterheatingType.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.int,
+          data['${effectivePrefix}heating_type'],
+        )!,
+      ),
+      heatingRatio: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}heating_ratio'],
       ),
     );
   }
@@ -1699,27 +2004,40 @@ class $HeatingMetersTable extends HeatingMeters
   $HeatingMetersTable createAlias(String alias) {
     return $HeatingMetersTable(attachedDatabase, alias);
   }
+
+  static JsonTypeConverter2<HeatingType, int, int> $converterheatingType =
+      const EnumIndexConverter<HeatingType>(HeatingType.values);
 }
 
 class HeatingMeter extends DataClass implements Insertable<HeatingMeter> {
   final int id;
   final int householdId;
+  final int roomId;
   final String name;
-  final String? location;
+  final HeatingType heatingType;
+  final double? heatingRatio;
   const HeatingMeter({
     required this.id,
     required this.householdId,
+    required this.roomId,
     required this.name,
-    this.location,
+    required this.heatingType,
+    this.heatingRatio,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
     map['household_id'] = Variable<int>(householdId);
+    map['room_id'] = Variable<int>(roomId);
     map['name'] = Variable<String>(name);
-    if (!nullToAbsent || location != null) {
-      map['location'] = Variable<String>(location);
+    {
+      map['heating_type'] = Variable<int>(
+        $HeatingMetersTable.$converterheatingType.toSql(heatingType),
+      );
+    }
+    if (!nullToAbsent || heatingRatio != null) {
+      map['heating_ratio'] = Variable<double>(heatingRatio);
     }
     return map;
   }
@@ -1728,10 +2046,12 @@ class HeatingMeter extends DataClass implements Insertable<HeatingMeter> {
     return HeatingMetersCompanion(
       id: Value(id),
       householdId: Value(householdId),
+      roomId: Value(roomId),
       name: Value(name),
-      location: location == null && nullToAbsent
+      heatingType: Value(heatingType),
+      heatingRatio: heatingRatio == null && nullToAbsent
           ? const Value.absent()
-          : Value(location),
+          : Value(heatingRatio),
     );
   }
 
@@ -1743,8 +2063,12 @@ class HeatingMeter extends DataClass implements Insertable<HeatingMeter> {
     return HeatingMeter(
       id: serializer.fromJson<int>(json['id']),
       householdId: serializer.fromJson<int>(json['householdId']),
+      roomId: serializer.fromJson<int>(json['roomId']),
       name: serializer.fromJson<String>(json['name']),
-      location: serializer.fromJson<String?>(json['location']),
+      heatingType: $HeatingMetersTable.$converterheatingType.fromJson(
+        serializer.fromJson<int>(json['heatingType']),
+      ),
+      heatingRatio: serializer.fromJson<double?>(json['heatingRatio']),
     );
   }
   @override
@@ -1753,21 +2077,29 @@ class HeatingMeter extends DataClass implements Insertable<HeatingMeter> {
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
       'householdId': serializer.toJson<int>(householdId),
+      'roomId': serializer.toJson<int>(roomId),
       'name': serializer.toJson<String>(name),
-      'location': serializer.toJson<String?>(location),
+      'heatingType': serializer.toJson<int>(
+        $HeatingMetersTable.$converterheatingType.toJson(heatingType),
+      ),
+      'heatingRatio': serializer.toJson<double?>(heatingRatio),
     };
   }
 
   HeatingMeter copyWith({
     int? id,
     int? householdId,
+    int? roomId,
     String? name,
-    Value<String?> location = const Value.absent(),
+    HeatingType? heatingType,
+    Value<double?> heatingRatio = const Value.absent(),
   }) => HeatingMeter(
     id: id ?? this.id,
     householdId: householdId ?? this.householdId,
+    roomId: roomId ?? this.roomId,
     name: name ?? this.name,
-    location: location.present ? location.value : this.location,
+    heatingType: heatingType ?? this.heatingType,
+    heatingRatio: heatingRatio.present ? heatingRatio.value : this.heatingRatio,
   );
   HeatingMeter copyWithCompanion(HeatingMetersCompanion data) {
     return HeatingMeter(
@@ -1775,8 +2107,14 @@ class HeatingMeter extends DataClass implements Insertable<HeatingMeter> {
       householdId: data.householdId.present
           ? data.householdId.value
           : this.householdId,
+      roomId: data.roomId.present ? data.roomId.value : this.roomId,
       name: data.name.present ? data.name.value : this.name,
-      location: data.location.present ? data.location.value : this.location,
+      heatingType: data.heatingType.present
+          ? data.heatingType.value
+          : this.heatingType,
+      heatingRatio: data.heatingRatio.present
+          ? data.heatingRatio.value
+          : this.heatingRatio,
     );
   }
 
@@ -1785,67 +2123,87 @@ class HeatingMeter extends DataClass implements Insertable<HeatingMeter> {
     return (StringBuffer('HeatingMeter(')
           ..write('id: $id, ')
           ..write('householdId: $householdId, ')
+          ..write('roomId: $roomId, ')
           ..write('name: $name, ')
-          ..write('location: $location')
+          ..write('heatingType: $heatingType, ')
+          ..write('heatingRatio: $heatingRatio')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, householdId, name, location);
+  int get hashCode =>
+      Object.hash(id, householdId, roomId, name, heatingType, heatingRatio);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is HeatingMeter &&
           other.id == this.id &&
           other.householdId == this.householdId &&
+          other.roomId == this.roomId &&
           other.name == this.name &&
-          other.location == this.location);
+          other.heatingType == this.heatingType &&
+          other.heatingRatio == this.heatingRatio);
 }
 
 class HeatingMetersCompanion extends UpdateCompanion<HeatingMeter> {
   final Value<int> id;
   final Value<int> householdId;
+  final Value<int> roomId;
   final Value<String> name;
-  final Value<String?> location;
+  final Value<HeatingType> heatingType;
+  final Value<double?> heatingRatio;
   const HeatingMetersCompanion({
     this.id = const Value.absent(),
     this.householdId = const Value.absent(),
+    this.roomId = const Value.absent(),
     this.name = const Value.absent(),
-    this.location = const Value.absent(),
+    this.heatingType = const Value.absent(),
+    this.heatingRatio = const Value.absent(),
   });
   HeatingMetersCompanion.insert({
     this.id = const Value.absent(),
     required int householdId,
+    required int roomId,
     required String name,
-    this.location = const Value.absent(),
+    this.heatingType = const Value.absent(),
+    this.heatingRatio = const Value.absent(),
   }) : householdId = Value(householdId),
+       roomId = Value(roomId),
        name = Value(name);
   static Insertable<HeatingMeter> custom({
     Expression<int>? id,
     Expression<int>? householdId,
+    Expression<int>? roomId,
     Expression<String>? name,
-    Expression<String>? location,
+    Expression<int>? heatingType,
+    Expression<double>? heatingRatio,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (householdId != null) 'household_id': householdId,
+      if (roomId != null) 'room_id': roomId,
       if (name != null) 'name': name,
-      if (location != null) 'location': location,
+      if (heatingType != null) 'heating_type': heatingType,
+      if (heatingRatio != null) 'heating_ratio': heatingRatio,
     });
   }
 
   HeatingMetersCompanion copyWith({
     Value<int>? id,
     Value<int>? householdId,
+    Value<int>? roomId,
     Value<String>? name,
-    Value<String?>? location,
+    Value<HeatingType>? heatingType,
+    Value<double?>? heatingRatio,
   }) {
     return HeatingMetersCompanion(
       id: id ?? this.id,
       householdId: householdId ?? this.householdId,
+      roomId: roomId ?? this.roomId,
       name: name ?? this.name,
-      location: location ?? this.location,
+      heatingType: heatingType ?? this.heatingType,
+      heatingRatio: heatingRatio ?? this.heatingRatio,
     );
   }
 
@@ -1858,11 +2216,19 @@ class HeatingMetersCompanion extends UpdateCompanion<HeatingMeter> {
     if (householdId.present) {
       map['household_id'] = Variable<int>(householdId.value);
     }
+    if (roomId.present) {
+      map['room_id'] = Variable<int>(roomId.value);
+    }
     if (name.present) {
       map['name'] = Variable<String>(name.value);
     }
-    if (location.present) {
-      map['location'] = Variable<String>(location.value);
+    if (heatingType.present) {
+      map['heating_type'] = Variable<int>(
+        $HeatingMetersTable.$converterheatingType.toSql(heatingType.value),
+      );
+    }
+    if (heatingRatio.present) {
+      map['heating_ratio'] = Variable<double>(heatingRatio.value);
     }
     return map;
   }
@@ -1872,8 +2238,10 @@ class HeatingMetersCompanion extends UpdateCompanion<HeatingMeter> {
     return (StringBuffer('HeatingMetersCompanion(')
           ..write('id: $id, ')
           ..write('householdId: $householdId, ')
+          ..write('roomId: $roomId, ')
           ..write('name: $name, ')
-          ..write('location: $location')
+          ..write('heatingType: $heatingType, ')
+          ..write('heatingRatio: $heatingRatio')
           ..write(')'))
         .toString();
   }
@@ -2185,261 +2553,6 @@ class HeatingReadingsCompanion extends UpdateCompanion<HeatingReading> {
   }
 }
 
-class $RoomsTable extends Rooms with TableInfo<$RoomsTable, Room> {
-  @override
-  final GeneratedDatabase attachedDatabase;
-  final String? _alias;
-  $RoomsTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _idMeta = const VerificationMeta('id');
-  @override
-  late final GeneratedColumn<int> id = GeneratedColumn<int>(
-    'id',
-    aliasedName,
-    false,
-    hasAutoIncrement: true,
-    type: DriftSqlType.int,
-    requiredDuringInsert: false,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'PRIMARY KEY AUTOINCREMENT',
-    ),
-  );
-  static const VerificationMeta _householdIdMeta = const VerificationMeta(
-    'householdId',
-  );
-  @override
-  late final GeneratedColumn<int> householdId = GeneratedColumn<int>(
-    'household_id',
-    aliasedName,
-    false,
-    type: DriftSqlType.int,
-    requiredDuringInsert: true,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES households (id)',
-    ),
-  );
-  static const VerificationMeta _nameMeta = const VerificationMeta('name');
-  @override
-  late final GeneratedColumn<String> name = GeneratedColumn<String>(
-    'name',
-    aliasedName,
-    false,
-    additionalChecks: GeneratedColumn.checkTextLength(
-      minTextLength: 1,
-      maxTextLength: 100,
-    ),
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
-  @override
-  List<GeneratedColumn> get $columns => [id, householdId, name];
-  @override
-  String get aliasedName => _alias ?? actualTableName;
-  @override
-  String get actualTableName => $name;
-  static const String $name = 'rooms';
-  @override
-  VerificationContext validateIntegrity(
-    Insertable<Room> instance, {
-    bool isInserting = false,
-  }) {
-    final context = VerificationContext();
-    final data = instance.toColumns(true);
-    if (data.containsKey('id')) {
-      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
-    }
-    if (data.containsKey('household_id')) {
-      context.handle(
-        _householdIdMeta,
-        householdId.isAcceptableOrUnknown(
-          data['household_id']!,
-          _householdIdMeta,
-        ),
-      );
-    } else if (isInserting) {
-      context.missing(_householdIdMeta);
-    }
-    if (data.containsKey('name')) {
-      context.handle(
-        _nameMeta,
-        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_nameMeta);
-    }
-    return context;
-  }
-
-  @override
-  Set<GeneratedColumn> get $primaryKey => {id};
-  @override
-  Room map(Map<String, dynamic> data, {String? tablePrefix}) {
-    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return Room(
-      id: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}id'],
-      )!,
-      householdId: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}household_id'],
-      )!,
-      name: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}name'],
-      )!,
-    );
-  }
-
-  @override
-  $RoomsTable createAlias(String alias) {
-    return $RoomsTable(attachedDatabase, alias);
-  }
-}
-
-class Room extends DataClass implements Insertable<Room> {
-  final int id;
-  final int householdId;
-  final String name;
-  const Room({required this.id, required this.householdId, required this.name});
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    map['id'] = Variable<int>(id);
-    map['household_id'] = Variable<int>(householdId);
-    map['name'] = Variable<String>(name);
-    return map;
-  }
-
-  RoomsCompanion toCompanion(bool nullToAbsent) {
-    return RoomsCompanion(
-      id: Value(id),
-      householdId: Value(householdId),
-      name: Value(name),
-    );
-  }
-
-  factory Room.fromJson(
-    Map<String, dynamic> json, {
-    ValueSerializer? serializer,
-  }) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return Room(
-      id: serializer.fromJson<int>(json['id']),
-      householdId: serializer.fromJson<int>(json['householdId']),
-      name: serializer.fromJson<String>(json['name']),
-    );
-  }
-  @override
-  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return <String, dynamic>{
-      'id': serializer.toJson<int>(id),
-      'householdId': serializer.toJson<int>(householdId),
-      'name': serializer.toJson<String>(name),
-    };
-  }
-
-  Room copyWith({int? id, int? householdId, String? name}) => Room(
-    id: id ?? this.id,
-    householdId: householdId ?? this.householdId,
-    name: name ?? this.name,
-  );
-  Room copyWithCompanion(RoomsCompanion data) {
-    return Room(
-      id: data.id.present ? data.id.value : this.id,
-      householdId: data.householdId.present
-          ? data.householdId.value
-          : this.householdId,
-      name: data.name.present ? data.name.value : this.name,
-    );
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('Room(')
-          ..write('id: $id, ')
-          ..write('householdId: $householdId, ')
-          ..write('name: $name')
-          ..write(')'))
-        .toString();
-  }
-
-  @override
-  int get hashCode => Object.hash(id, householdId, name);
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is Room &&
-          other.id == this.id &&
-          other.householdId == this.householdId &&
-          other.name == this.name);
-}
-
-class RoomsCompanion extends UpdateCompanion<Room> {
-  final Value<int> id;
-  final Value<int> householdId;
-  final Value<String> name;
-  const RoomsCompanion({
-    this.id = const Value.absent(),
-    this.householdId = const Value.absent(),
-    this.name = const Value.absent(),
-  });
-  RoomsCompanion.insert({
-    this.id = const Value.absent(),
-    required int householdId,
-    required String name,
-  }) : householdId = Value(householdId),
-       name = Value(name);
-  static Insertable<Room> custom({
-    Expression<int>? id,
-    Expression<int>? householdId,
-    Expression<String>? name,
-  }) {
-    return RawValuesInsertable({
-      if (id != null) 'id': id,
-      if (householdId != null) 'household_id': householdId,
-      if (name != null) 'name': name,
-    });
-  }
-
-  RoomsCompanion copyWith({
-    Value<int>? id,
-    Value<int>? householdId,
-    Value<String>? name,
-  }) {
-    return RoomsCompanion(
-      id: id ?? this.id,
-      householdId: householdId ?? this.householdId,
-      name: name ?? this.name,
-    );
-  }
-
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    if (id.present) {
-      map['id'] = Variable<int>(id.value);
-    }
-    if (householdId.present) {
-      map['household_id'] = Variable<int>(householdId.value);
-    }
-    if (name.present) {
-      map['name'] = Variable<String>(name.value);
-    }
-    return map;
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('RoomsCompanion(')
-          ..write('id: $id, ')
-          ..write('householdId: $householdId, ')
-          ..write('name: $name')
-          ..write(')'))
-        .toString();
-  }
-}
-
 class $SmartPlugsTable extends SmartPlugs
     with TableInfo<$SmartPlugsTable, SmartPlug> {
   @override
@@ -2722,30 +2835,15 @@ class $SmartPlugConsumptionsTable extends SmartPlugConsumptions
       'REFERENCES smart_plugs (id)',
     ),
   );
+  static const VerificationMeta _monthMeta = const VerificationMeta('month');
   @override
-  late final GeneratedColumnWithTypeConverter<ConsumptionInterval, int>
-  intervalType =
-      GeneratedColumn<int>(
-        'interval_type',
-        aliasedName,
-        false,
-        type: DriftSqlType.int,
-        requiredDuringInsert: true,
-      ).withConverter<ConsumptionInterval>(
-        $SmartPlugConsumptionsTable.$converterintervalType,
-      );
-  static const VerificationMeta _intervalStartMeta = const VerificationMeta(
-    'intervalStart',
+  late final GeneratedColumn<DateTime> month = GeneratedColumn<DateTime>(
+    'month',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
   );
-  @override
-  late final GeneratedColumn<DateTime> intervalStart =
-      GeneratedColumn<DateTime>(
-        'interval_start',
-        aliasedName,
-        false,
-        type: DriftSqlType.dateTime,
-        requiredDuringInsert: true,
-      );
   static const VerificationMeta _valueKwhMeta = const VerificationMeta(
     'valueKwh',
   );
@@ -2758,13 +2856,7 @@ class $SmartPlugConsumptionsTable extends SmartPlugConsumptions
     requiredDuringInsert: true,
   );
   @override
-  List<GeneratedColumn> get $columns => [
-    id,
-    smartPlugId,
-    intervalType,
-    intervalStart,
-    valueKwh,
-  ];
+  List<GeneratedColumn> get $columns => [id, smartPlugId, month, valueKwh];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -2791,16 +2883,13 @@ class $SmartPlugConsumptionsTable extends SmartPlugConsumptions
     } else if (isInserting) {
       context.missing(_smartPlugIdMeta);
     }
-    if (data.containsKey('interval_start')) {
+    if (data.containsKey('month')) {
       context.handle(
-        _intervalStartMeta,
-        intervalStart.isAcceptableOrUnknown(
-          data['interval_start']!,
-          _intervalStartMeta,
-        ),
+        _monthMeta,
+        month.isAcceptableOrUnknown(data['month']!, _monthMeta),
       );
     } else if (isInserting) {
-      context.missing(_intervalStartMeta);
+      context.missing(_monthMeta);
     }
     if (data.containsKey('value_kwh')) {
       context.handle(
@@ -2827,15 +2916,9 @@ class $SmartPlugConsumptionsTable extends SmartPlugConsumptions
         DriftSqlType.int,
         data['${effectivePrefix}smart_plug_id'],
       )!,
-      intervalType: $SmartPlugConsumptionsTable.$converterintervalType.fromSql(
-        attachedDatabase.typeMapping.read(
-          DriftSqlType.int,
-          data['${effectivePrefix}interval_type'],
-        )!,
-      ),
-      intervalStart: attachedDatabase.typeMapping.read(
+      month: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
-        data['${effectivePrefix}interval_start'],
+        data['${effectivePrefix}month'],
       )!,
       valueKwh: attachedDatabase.typeMapping.read(
         DriftSqlType.double,
@@ -2848,25 +2931,18 @@ class $SmartPlugConsumptionsTable extends SmartPlugConsumptions
   $SmartPlugConsumptionsTable createAlias(String alias) {
     return $SmartPlugConsumptionsTable(attachedDatabase, alias);
   }
-
-  static JsonTypeConverter2<ConsumptionInterval, int, int>
-  $converterintervalType = const EnumIndexConverter<ConsumptionInterval>(
-    ConsumptionInterval.values,
-  );
 }
 
 class SmartPlugConsumption extends DataClass
     implements Insertable<SmartPlugConsumption> {
   final int id;
   final int smartPlugId;
-  final ConsumptionInterval intervalType;
-  final DateTime intervalStart;
+  final DateTime month;
   final double valueKwh;
   const SmartPlugConsumption({
     required this.id,
     required this.smartPlugId,
-    required this.intervalType,
-    required this.intervalStart,
+    required this.month,
     required this.valueKwh,
   });
   @override
@@ -2874,12 +2950,7 @@ class SmartPlugConsumption extends DataClass
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
     map['smart_plug_id'] = Variable<int>(smartPlugId);
-    {
-      map['interval_type'] = Variable<int>(
-        $SmartPlugConsumptionsTable.$converterintervalType.toSql(intervalType),
-      );
-    }
-    map['interval_start'] = Variable<DateTime>(intervalStart);
+    map['month'] = Variable<DateTime>(month);
     map['value_kwh'] = Variable<double>(valueKwh);
     return map;
   }
@@ -2888,8 +2959,7 @@ class SmartPlugConsumption extends DataClass
     return SmartPlugConsumptionsCompanion(
       id: Value(id),
       smartPlugId: Value(smartPlugId),
-      intervalType: Value(intervalType),
-      intervalStart: Value(intervalStart),
+      month: Value(month),
       valueKwh: Value(valueKwh),
     );
   }
@@ -2902,10 +2972,7 @@ class SmartPlugConsumption extends DataClass
     return SmartPlugConsumption(
       id: serializer.fromJson<int>(json['id']),
       smartPlugId: serializer.fromJson<int>(json['smartPlugId']),
-      intervalType: $SmartPlugConsumptionsTable.$converterintervalType.fromJson(
-        serializer.fromJson<int>(json['intervalType']),
-      ),
-      intervalStart: serializer.fromJson<DateTime>(json['intervalStart']),
+      month: serializer.fromJson<DateTime>(json['month']),
       valueKwh: serializer.fromJson<double>(json['valueKwh']),
     );
   }
@@ -2915,10 +2982,7 @@ class SmartPlugConsumption extends DataClass
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
       'smartPlugId': serializer.toJson<int>(smartPlugId),
-      'intervalType': serializer.toJson<int>(
-        $SmartPlugConsumptionsTable.$converterintervalType.toJson(intervalType),
-      ),
-      'intervalStart': serializer.toJson<DateTime>(intervalStart),
+      'month': serializer.toJson<DateTime>(month),
       'valueKwh': serializer.toJson<double>(valueKwh),
     };
   }
@@ -2926,14 +2990,12 @@ class SmartPlugConsumption extends DataClass
   SmartPlugConsumption copyWith({
     int? id,
     int? smartPlugId,
-    ConsumptionInterval? intervalType,
-    DateTime? intervalStart,
+    DateTime? month,
     double? valueKwh,
   }) => SmartPlugConsumption(
     id: id ?? this.id,
     smartPlugId: smartPlugId ?? this.smartPlugId,
-    intervalType: intervalType ?? this.intervalType,
-    intervalStart: intervalStart ?? this.intervalStart,
+    month: month ?? this.month,
     valueKwh: valueKwh ?? this.valueKwh,
   );
   SmartPlugConsumption copyWithCompanion(SmartPlugConsumptionsCompanion data) {
@@ -2942,12 +3004,7 @@ class SmartPlugConsumption extends DataClass
       smartPlugId: data.smartPlugId.present
           ? data.smartPlugId.value
           : this.smartPlugId,
-      intervalType: data.intervalType.present
-          ? data.intervalType.value
-          : this.intervalType,
-      intervalStart: data.intervalStart.present
-          ? data.intervalStart.value
-          : this.intervalStart,
+      month: data.month.present ? data.month.value : this.month,
       valueKwh: data.valueKwh.present ? data.valueKwh.value : this.valueKwh,
     );
   }
@@ -2957,24 +3014,21 @@ class SmartPlugConsumption extends DataClass
     return (StringBuffer('SmartPlugConsumption(')
           ..write('id: $id, ')
           ..write('smartPlugId: $smartPlugId, ')
-          ..write('intervalType: $intervalType, ')
-          ..write('intervalStart: $intervalStart, ')
+          ..write('month: $month, ')
           ..write('valueKwh: $valueKwh')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode =>
-      Object.hash(id, smartPlugId, intervalType, intervalStart, valueKwh);
+  int get hashCode => Object.hash(id, smartPlugId, month, valueKwh);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is SmartPlugConsumption &&
           other.id == this.id &&
           other.smartPlugId == this.smartPlugId &&
-          other.intervalType == this.intervalType &&
-          other.intervalStart == this.intervalStart &&
+          other.month == this.month &&
           other.valueKwh == this.valueKwh);
 }
 
@@ -2982,38 +3036,32 @@ class SmartPlugConsumptionsCompanion
     extends UpdateCompanion<SmartPlugConsumption> {
   final Value<int> id;
   final Value<int> smartPlugId;
-  final Value<ConsumptionInterval> intervalType;
-  final Value<DateTime> intervalStart;
+  final Value<DateTime> month;
   final Value<double> valueKwh;
   const SmartPlugConsumptionsCompanion({
     this.id = const Value.absent(),
     this.smartPlugId = const Value.absent(),
-    this.intervalType = const Value.absent(),
-    this.intervalStart = const Value.absent(),
+    this.month = const Value.absent(),
     this.valueKwh = const Value.absent(),
   });
   SmartPlugConsumptionsCompanion.insert({
     this.id = const Value.absent(),
     required int smartPlugId,
-    required ConsumptionInterval intervalType,
-    required DateTime intervalStart,
+    required DateTime month,
     required double valueKwh,
   }) : smartPlugId = Value(smartPlugId),
-       intervalType = Value(intervalType),
-       intervalStart = Value(intervalStart),
+       month = Value(month),
        valueKwh = Value(valueKwh);
   static Insertable<SmartPlugConsumption> custom({
     Expression<int>? id,
     Expression<int>? smartPlugId,
-    Expression<int>? intervalType,
-    Expression<DateTime>? intervalStart,
+    Expression<DateTime>? month,
     Expression<double>? valueKwh,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (smartPlugId != null) 'smart_plug_id': smartPlugId,
-      if (intervalType != null) 'interval_type': intervalType,
-      if (intervalStart != null) 'interval_start': intervalStart,
+      if (month != null) 'month': month,
       if (valueKwh != null) 'value_kwh': valueKwh,
     });
   }
@@ -3021,15 +3069,13 @@ class SmartPlugConsumptionsCompanion
   SmartPlugConsumptionsCompanion copyWith({
     Value<int>? id,
     Value<int>? smartPlugId,
-    Value<ConsumptionInterval>? intervalType,
-    Value<DateTime>? intervalStart,
+    Value<DateTime>? month,
     Value<double>? valueKwh,
   }) {
     return SmartPlugConsumptionsCompanion(
       id: id ?? this.id,
       smartPlugId: smartPlugId ?? this.smartPlugId,
-      intervalType: intervalType ?? this.intervalType,
-      intervalStart: intervalStart ?? this.intervalStart,
+      month: month ?? this.month,
       valueKwh: valueKwh ?? this.valueKwh,
     );
   }
@@ -3043,15 +3089,8 @@ class SmartPlugConsumptionsCompanion
     if (smartPlugId.present) {
       map['smart_plug_id'] = Variable<int>(smartPlugId.value);
     }
-    if (intervalType.present) {
-      map['interval_type'] = Variable<int>(
-        $SmartPlugConsumptionsTable.$converterintervalType.toSql(
-          intervalType.value,
-        ),
-      );
-    }
-    if (intervalStart.present) {
-      map['interval_start'] = Variable<DateTime>(intervalStart.value);
+    if (month.present) {
+      map['month'] = Variable<DateTime>(month.value);
     }
     if (valueKwh.present) {
       map['value_kwh'] = Variable<double>(valueKwh.value);
@@ -3064,8 +3103,7 @@ class SmartPlugConsumptionsCompanion
     return (StringBuffer('SmartPlugConsumptionsCompanion(')
           ..write('id: $id, ')
           ..write('smartPlugId: $smartPlugId, ')
-          ..write('intervalType: $intervalType, ')
-          ..write('intervalStart: $intervalStart, ')
+          ..write('month: $month, ')
           ..write('valueKwh: $valueKwh')
           ..write(')'))
         .toString();
@@ -3651,11 +3689,11 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $GasReadingsTable gasReadings = $GasReadingsTable(this);
   late final $WaterMetersTable waterMeters = $WaterMetersTable(this);
   late final $WaterReadingsTable waterReadings = $WaterReadingsTable(this);
+  late final $RoomsTable rooms = $RoomsTable(this);
   late final $HeatingMetersTable heatingMeters = $HeatingMetersTable(this);
   late final $HeatingReadingsTable heatingReadings = $HeatingReadingsTable(
     this,
   );
-  late final $RoomsTable rooms = $RoomsTable(this);
   late final $SmartPlugsTable smartPlugs = $SmartPlugsTable(this);
   late final $SmartPlugConsumptionsTable smartPlugConsumptions =
       $SmartPlugConsumptionsTable(this);
@@ -3680,9 +3718,9 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     gasReadings,
     waterMeters,
     waterReadings,
+    rooms,
     heatingMeters,
     heatingReadings,
-    rooms,
     smartPlugs,
     smartPlugConsumptions,
     costConfigs,
@@ -3777,6 +3815,25 @@ final class $$HouseholdsTableReferences
     );
   }
 
+  static MultiTypedResultKey<$RoomsTable, List<Room>> _roomsRefsTable(
+    _$AppDatabase db,
+  ) => MultiTypedResultKey.fromTable(
+    db.rooms,
+    aliasName: $_aliasNameGenerator(db.households.id, db.rooms.householdId),
+  );
+
+  $$RoomsTableProcessedTableManager get roomsRefs {
+    final manager = $$RoomsTableTableManager(
+      $_db,
+      $_db.rooms,
+    ).filter((f) => f.householdId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_roomsRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
   static MultiTypedResultKey<$HeatingMetersTable, List<HeatingMeter>>
   _heatingMetersRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
     db.heatingMeters,
@@ -3793,25 +3850,6 @@ final class $$HouseholdsTableReferences
     ).filter((f) => f.householdId.id.sqlEquals($_itemColumn<int>('id')!));
 
     final cache = $_typedResult.readTableOrNull(_heatingMetersRefsTable($_db));
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: cache),
-    );
-  }
-
-  static MultiTypedResultKey<$RoomsTable, List<Room>> _roomsRefsTable(
-    _$AppDatabase db,
-  ) => MultiTypedResultKey.fromTable(
-    db.rooms,
-    aliasName: $_aliasNameGenerator(db.households.id, db.rooms.householdId),
-  );
-
-  $$RoomsTableProcessedTableManager get roomsRefs {
-    final manager = $$RoomsTableTableManager(
-      $_db,
-      $_db.rooms,
-    ).filter((f) => f.householdId.id.sqlEquals($_itemColumn<int>('id')!));
-
-    final cache = $_typedResult.readTableOrNull(_roomsRefsTable($_db));
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: cache),
     );
@@ -3943,31 +3981,6 @@ class $$HouseholdsTableFilterComposer
     return f(composer);
   }
 
-  Expression<bool> heatingMetersRefs(
-    Expression<bool> Function($$HeatingMetersTableFilterComposer f) f,
-  ) {
-    final $$HeatingMetersTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.heatingMeters,
-      getReferencedColumn: (t) => t.householdId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$HeatingMetersTableFilterComposer(
-            $db: $db,
-            $table: $db.heatingMeters,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-
   Expression<bool> roomsRefs(
     Expression<bool> Function($$RoomsTableFilterComposer f) f,
   ) {
@@ -3984,6 +3997,31 @@ class $$HouseholdsTableFilterComposer
           }) => $$RoomsTableFilterComposer(
             $db: $db,
             $table: $db.rooms,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> heatingMetersRefs(
+    Expression<bool> Function($$HeatingMetersTableFilterComposer f) f,
+  ) {
+    final $$HeatingMetersTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.heatingMeters,
+      getReferencedColumn: (t) => t.householdId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$HeatingMetersTableFilterComposer(
+            $db: $db,
+            $table: $db.heatingMeters,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -4148,31 +4186,6 @@ class $$HouseholdsTableAnnotationComposer
     return f(composer);
   }
 
-  Expression<T> heatingMetersRefs<T extends Object>(
-    Expression<T> Function($$HeatingMetersTableAnnotationComposer a) f,
-  ) {
-    final $$HeatingMetersTableAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.heatingMeters,
-      getReferencedColumn: (t) => t.householdId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$HeatingMetersTableAnnotationComposer(
-            $db: $db,
-            $table: $db.heatingMeters,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-
   Expression<T> roomsRefs<T extends Object>(
     Expression<T> Function($$RoomsTableAnnotationComposer a) f,
   ) {
@@ -4189,6 +4202,31 @@ class $$HouseholdsTableAnnotationComposer
           }) => $$RoomsTableAnnotationComposer(
             $db: $db,
             $table: $db.rooms,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<T> heatingMetersRefs<T extends Object>(
+    Expression<T> Function($$HeatingMetersTableAnnotationComposer a) f,
+  ) {
+    final $$HeatingMetersTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.heatingMeters,
+      getReferencedColumn: (t) => t.householdId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$HeatingMetersTableAnnotationComposer(
+            $db: $db,
+            $table: $db.heatingMeters,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -4241,8 +4279,8 @@ class $$HouseholdsTableTableManager
             bool electricityReadingsRefs,
             bool gasReadingsRefs,
             bool waterMetersRefs,
-            bool heatingMetersRefs,
             bool roomsRefs,
+            bool heatingMetersRefs,
             bool costConfigsRefs,
           })
         > {
@@ -4294,8 +4332,8 @@ class $$HouseholdsTableTableManager
                 electricityReadingsRefs = false,
                 gasReadingsRefs = false,
                 waterMetersRefs = false,
-                heatingMetersRefs = false,
                 roomsRefs = false,
+                heatingMetersRefs = false,
                 costConfigsRefs = false,
               }) {
                 return PrefetchHooks(
@@ -4304,8 +4342,8 @@ class $$HouseholdsTableTableManager
                     if (electricityReadingsRefs) db.electricityReadings,
                     if (gasReadingsRefs) db.gasReadings,
                     if (waterMetersRefs) db.waterMeters,
-                    if (heatingMetersRefs) db.heatingMeters,
                     if (roomsRefs) db.rooms,
+                    if (heatingMetersRefs) db.heatingMeters,
                     if (costConfigsRefs) db.costConfigs,
                   ],
                   addJoins: null,
@@ -4374,27 +4412,6 @@ class $$HouseholdsTableTableManager
                               ),
                           typedResults: items,
                         ),
-                      if (heatingMetersRefs)
-                        await $_getPrefetchedData<
-                          Household,
-                          $HouseholdsTable,
-                          HeatingMeter
-                        >(
-                          currentTable: table,
-                          referencedTable: $$HouseholdsTableReferences
-                              ._heatingMetersRefsTable(db),
-                          managerFromTypedResult: (p0) =>
-                              $$HouseholdsTableReferences(
-                                db,
-                                table,
-                                p0,
-                              ).heatingMetersRefs,
-                          referencedItemsForCurrentItem:
-                              (item, referencedItems) => referencedItems.where(
-                                (e) => e.householdId == item.id,
-                              ),
-                          typedResults: items,
-                        ),
                       if (roomsRefs)
                         await $_getPrefetchedData<
                           Household,
@@ -4410,6 +4427,27 @@ class $$HouseholdsTableTableManager
                                 table,
                                 p0,
                               ).roomsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.householdId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (heatingMetersRefs)
+                        await $_getPrefetchedData<
+                          Household,
+                          $HouseholdsTable,
+                          HeatingMeter
+                        >(
+                          currentTable: table,
+                          referencedTable: $$HouseholdsTableReferences
+                              ._heatingMetersRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$HouseholdsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).heatingMetersRefs,
                           referencedItemsForCurrentItem:
                               (item, referencedItems) => referencedItems.where(
                                 (e) => e.householdId == item.id,
@@ -4461,8 +4499,8 @@ typedef $$HouseholdsTableProcessedTableManager =
         bool electricityReadingsRefs,
         bool gasReadingsRefs,
         bool waterMetersRefs,
-        bool heatingMetersRefs,
         bool roomsRefs,
+        bool heatingMetersRefs,
         bool costConfigsRefs,
       })
     >;
@@ -5771,19 +5809,483 @@ typedef $$WaterReadingsTableProcessedTableManager =
       WaterReading,
       PrefetchHooks Function({bool waterMeterId})
     >;
+typedef $$RoomsTableCreateCompanionBuilder =
+    RoomsCompanion Function({
+      Value<int> id,
+      required int householdId,
+      required String name,
+    });
+typedef $$RoomsTableUpdateCompanionBuilder =
+    RoomsCompanion Function({
+      Value<int> id,
+      Value<int> householdId,
+      Value<String> name,
+    });
+
+final class $$RoomsTableReferences
+    extends BaseReferences<_$AppDatabase, $RoomsTable, Room> {
+  $$RoomsTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static $HouseholdsTable _householdIdTable(_$AppDatabase db) =>
+      db.households.createAlias(
+        $_aliasNameGenerator(db.rooms.householdId, db.households.id),
+      );
+
+  $$HouseholdsTableProcessedTableManager get householdId {
+    final $_column = $_itemColumn<int>('household_id')!;
+
+    final manager = $$HouseholdsTableTableManager(
+      $_db,
+      $_db.households,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_householdIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static MultiTypedResultKey<$HeatingMetersTable, List<HeatingMeter>>
+  _heatingMetersRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.heatingMeters,
+    aliasName: $_aliasNameGenerator(db.rooms.id, db.heatingMeters.roomId),
+  );
+
+  $$HeatingMetersTableProcessedTableManager get heatingMetersRefs {
+    final manager = $$HeatingMetersTableTableManager(
+      $_db,
+      $_db.heatingMeters,
+    ).filter((f) => f.roomId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_heatingMetersRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<$SmartPlugsTable, List<SmartPlug>>
+  _smartPlugsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.smartPlugs,
+    aliasName: $_aliasNameGenerator(db.rooms.id, db.smartPlugs.roomId),
+  );
+
+  $$SmartPlugsTableProcessedTableManager get smartPlugsRefs {
+    final manager = $$SmartPlugsTableTableManager(
+      $_db,
+      $_db.smartPlugs,
+    ).filter((f) => f.roomId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_smartPlugsRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+}
+
+class $$RoomsTableFilterComposer extends Composer<_$AppDatabase, $RoomsTable> {
+  $$RoomsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$HouseholdsTableFilterComposer get householdId {
+    final $$HouseholdsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.householdId,
+      referencedTable: $db.households,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$HouseholdsTableFilterComposer(
+            $db: $db,
+            $table: $db.households,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  Expression<bool> heatingMetersRefs(
+    Expression<bool> Function($$HeatingMetersTableFilterComposer f) f,
+  ) {
+    final $$HeatingMetersTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.heatingMeters,
+      getReferencedColumn: (t) => t.roomId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$HeatingMetersTableFilterComposer(
+            $db: $db,
+            $table: $db.heatingMeters,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> smartPlugsRefs(
+    Expression<bool> Function($$SmartPlugsTableFilterComposer f) f,
+  ) {
+    final $$SmartPlugsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.smartPlugs,
+      getReferencedColumn: (t) => t.roomId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$SmartPlugsTableFilterComposer(
+            $db: $db,
+            $table: $db.smartPlugs,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$RoomsTableOrderingComposer
+    extends Composer<_$AppDatabase, $RoomsTable> {
+  $$RoomsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$HouseholdsTableOrderingComposer get householdId {
+    final $$HouseholdsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.householdId,
+      referencedTable: $db.households,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$HouseholdsTableOrderingComposer(
+            $db: $db,
+            $table: $db.households,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$RoomsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $RoomsTable> {
+  $$RoomsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  $$HouseholdsTableAnnotationComposer get householdId {
+    final $$HouseholdsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.householdId,
+      referencedTable: $db.households,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$HouseholdsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.households,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  Expression<T> heatingMetersRefs<T extends Object>(
+    Expression<T> Function($$HeatingMetersTableAnnotationComposer a) f,
+  ) {
+    final $$HeatingMetersTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.heatingMeters,
+      getReferencedColumn: (t) => t.roomId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$HeatingMetersTableAnnotationComposer(
+            $db: $db,
+            $table: $db.heatingMeters,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<T> smartPlugsRefs<T extends Object>(
+    Expression<T> Function($$SmartPlugsTableAnnotationComposer a) f,
+  ) {
+    final $$SmartPlugsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.smartPlugs,
+      getReferencedColumn: (t) => t.roomId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$SmartPlugsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.smartPlugs,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$RoomsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $RoomsTable,
+          Room,
+          $$RoomsTableFilterComposer,
+          $$RoomsTableOrderingComposer,
+          $$RoomsTableAnnotationComposer,
+          $$RoomsTableCreateCompanionBuilder,
+          $$RoomsTableUpdateCompanionBuilder,
+          (Room, $$RoomsTableReferences),
+          Room,
+          PrefetchHooks Function({
+            bool householdId,
+            bool heatingMetersRefs,
+            bool smartPlugsRefs,
+          })
+        > {
+  $$RoomsTableTableManager(_$AppDatabase db, $RoomsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$RoomsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$RoomsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$RoomsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<int> householdId = const Value.absent(),
+                Value<String> name = const Value.absent(),
+              }) =>
+                  RoomsCompanion(id: id, householdId: householdId, name: name),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required int householdId,
+                required String name,
+              }) => RoomsCompanion.insert(
+                id: id,
+                householdId: householdId,
+                name: name,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) =>
+                    (e.readTable(table), $$RoomsTableReferences(db, table, e)),
+              )
+              .toList(),
+          prefetchHooksCallback:
+              ({
+                householdId = false,
+                heatingMetersRefs = false,
+                smartPlugsRefs = false,
+              }) {
+                return PrefetchHooks(
+                  db: db,
+                  explicitlyWatchedTables: [
+                    if (heatingMetersRefs) db.heatingMeters,
+                    if (smartPlugsRefs) db.smartPlugs,
+                  ],
+                  addJoins:
+                      <
+                        T extends TableManagerState<
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic
+                        >
+                      >(state) {
+                        if (householdId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.householdId,
+                                    referencedTable: $$RoomsTableReferences
+                                        ._householdIdTable(db),
+                                    referencedColumn: $$RoomsTableReferences
+                                        ._householdIdTable(db)
+                                        .id,
+                                  )
+                                  as T;
+                        }
+
+                        return state;
+                      },
+                  getPrefetchedDataCallback: (items) async {
+                    return [
+                      if (heatingMetersRefs)
+                        await $_getPrefetchedData<
+                          Room,
+                          $RoomsTable,
+                          HeatingMeter
+                        >(
+                          currentTable: table,
+                          referencedTable: $$RoomsTableReferences
+                              ._heatingMetersRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$RoomsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).heatingMetersRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.roomId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (smartPlugsRefs)
+                        await $_getPrefetchedData<Room, $RoomsTable, SmartPlug>(
+                          currentTable: table,
+                          referencedTable: $$RoomsTableReferences
+                              ._smartPlugsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$RoomsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).smartPlugsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.roomId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                    ];
+                  },
+                );
+              },
+        ),
+      );
+}
+
+typedef $$RoomsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $RoomsTable,
+      Room,
+      $$RoomsTableFilterComposer,
+      $$RoomsTableOrderingComposer,
+      $$RoomsTableAnnotationComposer,
+      $$RoomsTableCreateCompanionBuilder,
+      $$RoomsTableUpdateCompanionBuilder,
+      (Room, $$RoomsTableReferences),
+      Room,
+      PrefetchHooks Function({
+        bool householdId,
+        bool heatingMetersRefs,
+        bool smartPlugsRefs,
+      })
+    >;
 typedef $$HeatingMetersTableCreateCompanionBuilder =
     HeatingMetersCompanion Function({
       Value<int> id,
       required int householdId,
+      required int roomId,
       required String name,
-      Value<String?> location,
+      Value<HeatingType> heatingType,
+      Value<double?> heatingRatio,
     });
 typedef $$HeatingMetersTableUpdateCompanionBuilder =
     HeatingMetersCompanion Function({
       Value<int> id,
       Value<int> householdId,
+      Value<int> roomId,
       Value<String> name,
-      Value<String?> location,
+      Value<HeatingType> heatingType,
+      Value<double?> heatingRatio,
     });
 
 final class $$HeatingMetersTableReferences
@@ -5807,6 +6309,24 @@ final class $$HeatingMetersTableReferences
       $_db.households,
     ).filter((f) => f.id.sqlEquals($_column));
     final item = $_typedResult.readTableOrNull(_householdIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static $RoomsTable _roomIdTable(_$AppDatabase db) => db.rooms.createAlias(
+    $_aliasNameGenerator(db.heatingMeters.roomId, db.rooms.id),
+  );
+
+  $$RoomsTableProcessedTableManager get roomId {
+    final $_column = $_itemColumn<int>('room_id')!;
+
+    final manager = $$RoomsTableTableManager(
+      $_db,
+      $_db.rooms,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_roomIdTable($_db));
     if (item == null) return manager;
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: [item]),
@@ -5856,8 +6376,14 @@ class $$HeatingMetersTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<String> get location => $composableBuilder(
-    column: $table.location,
+  ColumnWithTypeConverterFilters<HeatingType, HeatingType, int>
+  get heatingType => $composableBuilder(
+    column: $table.heatingType,
+    builder: (column) => ColumnWithTypeConverterFilters(column),
+  );
+
+  ColumnFilters<double> get heatingRatio => $composableBuilder(
+    column: $table.heatingRatio,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -5875,6 +6401,29 @@ class $$HeatingMetersTableFilterComposer
           }) => $$HouseholdsTableFilterComposer(
             $db: $db,
             $table: $db.households,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$RoomsTableFilterComposer get roomId {
+    final $$RoomsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.roomId,
+      referencedTable: $db.rooms,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$RoomsTableFilterComposer(
+            $db: $db,
+            $table: $db.rooms,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -5929,8 +6478,13 @@ class $$HeatingMetersTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get location => $composableBuilder(
-    column: $table.location,
+  ColumnOrderings<int> get heatingType => $composableBuilder(
+    column: $table.heatingType,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get heatingRatio => $composableBuilder(
+    column: $table.heatingRatio,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -5956,6 +6510,29 @@ class $$HeatingMetersTableOrderingComposer
     );
     return composer;
   }
+
+  $$RoomsTableOrderingComposer get roomId {
+    final $$RoomsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.roomId,
+      referencedTable: $db.rooms,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$RoomsTableOrderingComposer(
+            $db: $db,
+            $table: $db.rooms,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
 }
 
 class $$HeatingMetersTableAnnotationComposer
@@ -5973,8 +6550,16 @@ class $$HeatingMetersTableAnnotationComposer
   GeneratedColumn<String> get name =>
       $composableBuilder(column: $table.name, builder: (column) => column);
 
-  GeneratedColumn<String> get location =>
-      $composableBuilder(column: $table.location, builder: (column) => column);
+  GeneratedColumnWithTypeConverter<HeatingType, int> get heatingType =>
+      $composableBuilder(
+        column: $table.heatingType,
+        builder: (column) => column,
+      );
+
+  GeneratedColumn<double> get heatingRatio => $composableBuilder(
+    column: $table.heatingRatio,
+    builder: (column) => column,
+  );
 
   $$HouseholdsTableAnnotationComposer get householdId {
     final $$HouseholdsTableAnnotationComposer composer = $composerBuilder(
@@ -5990,6 +6575,29 @@ class $$HeatingMetersTableAnnotationComposer
           }) => $$HouseholdsTableAnnotationComposer(
             $db: $db,
             $table: $db.households,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$RoomsTableAnnotationComposer get roomId {
+    final $$RoomsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.roomId,
+      referencedTable: $db.rooms,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$RoomsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.rooms,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -6038,7 +6646,11 @@ class $$HeatingMetersTableTableManager
           $$HeatingMetersTableUpdateCompanionBuilder,
           (HeatingMeter, $$HeatingMetersTableReferences),
           HeatingMeter,
-          PrefetchHooks Function({bool householdId, bool heatingReadingsRefs})
+          PrefetchHooks Function({
+            bool householdId,
+            bool roomId,
+            bool heatingReadingsRefs,
+          })
         > {
   $$HeatingMetersTableTableManager(_$AppDatabase db, $HeatingMetersTable table)
     : super(
@@ -6055,25 +6667,33 @@ class $$HeatingMetersTableTableManager
               ({
                 Value<int> id = const Value.absent(),
                 Value<int> householdId = const Value.absent(),
+                Value<int> roomId = const Value.absent(),
                 Value<String> name = const Value.absent(),
-                Value<String?> location = const Value.absent(),
+                Value<HeatingType> heatingType = const Value.absent(),
+                Value<double?> heatingRatio = const Value.absent(),
               }) => HeatingMetersCompanion(
                 id: id,
                 householdId: householdId,
+                roomId: roomId,
                 name: name,
-                location: location,
+                heatingType: heatingType,
+                heatingRatio: heatingRatio,
               ),
           createCompanionCallback:
               ({
                 Value<int> id = const Value.absent(),
                 required int householdId,
+                required int roomId,
                 required String name,
-                Value<String?> location = const Value.absent(),
+                Value<HeatingType> heatingType = const Value.absent(),
+                Value<double?> heatingRatio = const Value.absent(),
               }) => HeatingMetersCompanion.insert(
                 id: id,
                 householdId: householdId,
+                roomId: roomId,
                 name: name,
-                location: location,
+                heatingType: heatingType,
+                heatingRatio: heatingRatio,
               ),
           withReferenceMapper: (p0) => p0
               .map(
@@ -6084,7 +6704,11 @@ class $$HeatingMetersTableTableManager
               )
               .toList(),
           prefetchHooksCallback:
-              ({householdId = false, heatingReadingsRefs = false}) {
+              ({
+                householdId = false,
+                roomId = false,
+                heatingReadingsRefs = false,
+              }) {
                 return PrefetchHooks(
                   db: db,
                   explicitlyWatchedTables: [
@@ -6117,6 +6741,21 @@ class $$HeatingMetersTableTableManager
                                     referencedColumn:
                                         $$HeatingMetersTableReferences
                                             ._householdIdTable(db)
+                                            .id,
+                                  )
+                                  as T;
+                        }
+                        if (roomId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.roomId,
+                                    referencedTable:
+                                        $$HeatingMetersTableReferences
+                                            ._roomIdTable(db),
+                                    referencedColumn:
+                                        $$HeatingMetersTableReferences
+                                            ._roomIdTable(db)
                                             .id,
                                   )
                                   as T;
@@ -6167,7 +6806,11 @@ typedef $$HeatingMetersTableProcessedTableManager =
       $$HeatingMetersTableUpdateCompanionBuilder,
       (HeatingMeter, $$HeatingMetersTableReferences),
       HeatingMeter,
-      PrefetchHooks Function({bool householdId, bool heatingReadingsRefs})
+      PrefetchHooks Function({
+        bool householdId,
+        bool roomId,
+        bool heatingReadingsRefs,
+      })
     >;
 typedef $$HeatingReadingsTableCreateCompanionBuilder =
     HeatingReadingsCompanion Function({
@@ -6474,362 +7117,6 @@ typedef $$HeatingReadingsTableProcessedTableManager =
       (HeatingReading, $$HeatingReadingsTableReferences),
       HeatingReading,
       PrefetchHooks Function({bool heatingMeterId})
-    >;
-typedef $$RoomsTableCreateCompanionBuilder =
-    RoomsCompanion Function({
-      Value<int> id,
-      required int householdId,
-      required String name,
-    });
-typedef $$RoomsTableUpdateCompanionBuilder =
-    RoomsCompanion Function({
-      Value<int> id,
-      Value<int> householdId,
-      Value<String> name,
-    });
-
-final class $$RoomsTableReferences
-    extends BaseReferences<_$AppDatabase, $RoomsTable, Room> {
-  $$RoomsTableReferences(super.$_db, super.$_table, super.$_typedResult);
-
-  static $HouseholdsTable _householdIdTable(_$AppDatabase db) =>
-      db.households.createAlias(
-        $_aliasNameGenerator(db.rooms.householdId, db.households.id),
-      );
-
-  $$HouseholdsTableProcessedTableManager get householdId {
-    final $_column = $_itemColumn<int>('household_id')!;
-
-    final manager = $$HouseholdsTableTableManager(
-      $_db,
-      $_db.households,
-    ).filter((f) => f.id.sqlEquals($_column));
-    final item = $_typedResult.readTableOrNull(_householdIdTable($_db));
-    if (item == null) return manager;
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: [item]),
-    );
-  }
-
-  static MultiTypedResultKey<$SmartPlugsTable, List<SmartPlug>>
-  _smartPlugsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
-    db.smartPlugs,
-    aliasName: $_aliasNameGenerator(db.rooms.id, db.smartPlugs.roomId),
-  );
-
-  $$SmartPlugsTableProcessedTableManager get smartPlugsRefs {
-    final manager = $$SmartPlugsTableTableManager(
-      $_db,
-      $_db.smartPlugs,
-    ).filter((f) => f.roomId.id.sqlEquals($_itemColumn<int>('id')!));
-
-    final cache = $_typedResult.readTableOrNull(_smartPlugsRefsTable($_db));
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: cache),
-    );
-  }
-}
-
-class $$RoomsTableFilterComposer extends Composer<_$AppDatabase, $RoomsTable> {
-  $$RoomsTableFilterComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnFilters<int> get id => $composableBuilder(
-    column: $table.id,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get name => $composableBuilder(
-    column: $table.name,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  $$HouseholdsTableFilterComposer get householdId {
-    final $$HouseholdsTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.householdId,
-      referencedTable: $db.households,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$HouseholdsTableFilterComposer(
-            $db: $db,
-            $table: $db.households,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
-
-  Expression<bool> smartPlugsRefs(
-    Expression<bool> Function($$SmartPlugsTableFilterComposer f) f,
-  ) {
-    final $$SmartPlugsTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.smartPlugs,
-      getReferencedColumn: (t) => t.roomId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$SmartPlugsTableFilterComposer(
-            $db: $db,
-            $table: $db.smartPlugs,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-}
-
-class $$RoomsTableOrderingComposer
-    extends Composer<_$AppDatabase, $RoomsTable> {
-  $$RoomsTableOrderingComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnOrderings<int> get id => $composableBuilder(
-    column: $table.id,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get name => $composableBuilder(
-    column: $table.name,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  $$HouseholdsTableOrderingComposer get householdId {
-    final $$HouseholdsTableOrderingComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.householdId,
-      referencedTable: $db.households,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$HouseholdsTableOrderingComposer(
-            $db: $db,
-            $table: $db.households,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
-}
-
-class $$RoomsTableAnnotationComposer
-    extends Composer<_$AppDatabase, $RoomsTable> {
-  $$RoomsTableAnnotationComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  GeneratedColumn<int> get id =>
-      $composableBuilder(column: $table.id, builder: (column) => column);
-
-  GeneratedColumn<String> get name =>
-      $composableBuilder(column: $table.name, builder: (column) => column);
-
-  $$HouseholdsTableAnnotationComposer get householdId {
-    final $$HouseholdsTableAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.householdId,
-      referencedTable: $db.households,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$HouseholdsTableAnnotationComposer(
-            $db: $db,
-            $table: $db.households,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
-
-  Expression<T> smartPlugsRefs<T extends Object>(
-    Expression<T> Function($$SmartPlugsTableAnnotationComposer a) f,
-  ) {
-    final $$SmartPlugsTableAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.smartPlugs,
-      getReferencedColumn: (t) => t.roomId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$SmartPlugsTableAnnotationComposer(
-            $db: $db,
-            $table: $db.smartPlugs,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-}
-
-class $$RoomsTableTableManager
-    extends
-        RootTableManager<
-          _$AppDatabase,
-          $RoomsTable,
-          Room,
-          $$RoomsTableFilterComposer,
-          $$RoomsTableOrderingComposer,
-          $$RoomsTableAnnotationComposer,
-          $$RoomsTableCreateCompanionBuilder,
-          $$RoomsTableUpdateCompanionBuilder,
-          (Room, $$RoomsTableReferences),
-          Room,
-          PrefetchHooks Function({bool householdId, bool smartPlugsRefs})
-        > {
-  $$RoomsTableTableManager(_$AppDatabase db, $RoomsTable table)
-    : super(
-        TableManagerState(
-          db: db,
-          table: table,
-          createFilteringComposer: () =>
-              $$RoomsTableFilterComposer($db: db, $table: table),
-          createOrderingComposer: () =>
-              $$RoomsTableOrderingComposer($db: db, $table: table),
-          createComputedFieldComposer: () =>
-              $$RoomsTableAnnotationComposer($db: db, $table: table),
-          updateCompanionCallback:
-              ({
-                Value<int> id = const Value.absent(),
-                Value<int> householdId = const Value.absent(),
-                Value<String> name = const Value.absent(),
-              }) =>
-                  RoomsCompanion(id: id, householdId: householdId, name: name),
-          createCompanionCallback:
-              ({
-                Value<int> id = const Value.absent(),
-                required int householdId,
-                required String name,
-              }) => RoomsCompanion.insert(
-                id: id,
-                householdId: householdId,
-                name: name,
-              ),
-          withReferenceMapper: (p0) => p0
-              .map(
-                (e) =>
-                    (e.readTable(table), $$RoomsTableReferences(db, table, e)),
-              )
-              .toList(),
-          prefetchHooksCallback:
-              ({householdId = false, smartPlugsRefs = false}) {
-                return PrefetchHooks(
-                  db: db,
-                  explicitlyWatchedTables: [if (smartPlugsRefs) db.smartPlugs],
-                  addJoins:
-                      <
-                        T extends TableManagerState<
-                          dynamic,
-                          dynamic,
-                          dynamic,
-                          dynamic,
-                          dynamic,
-                          dynamic,
-                          dynamic,
-                          dynamic,
-                          dynamic,
-                          dynamic,
-                          dynamic
-                        >
-                      >(state) {
-                        if (householdId) {
-                          state =
-                              state.withJoin(
-                                    currentTable: table,
-                                    currentColumn: table.householdId,
-                                    referencedTable: $$RoomsTableReferences
-                                        ._householdIdTable(db),
-                                    referencedColumn: $$RoomsTableReferences
-                                        ._householdIdTable(db)
-                                        .id,
-                                  )
-                                  as T;
-                        }
-
-                        return state;
-                      },
-                  getPrefetchedDataCallback: (items) async {
-                    return [
-                      if (smartPlugsRefs)
-                        await $_getPrefetchedData<Room, $RoomsTable, SmartPlug>(
-                          currentTable: table,
-                          referencedTable: $$RoomsTableReferences
-                              ._smartPlugsRefsTable(db),
-                          managerFromTypedResult: (p0) =>
-                              $$RoomsTableReferences(
-                                db,
-                                table,
-                                p0,
-                              ).smartPlugsRefs,
-                          referencedItemsForCurrentItem:
-                              (item, referencedItems) => referencedItems.where(
-                                (e) => e.roomId == item.id,
-                              ),
-                          typedResults: items,
-                        ),
-                    ];
-                  },
-                );
-              },
-        ),
-      );
-}
-
-typedef $$RoomsTableProcessedTableManager =
-    ProcessedTableManager<
-      _$AppDatabase,
-      $RoomsTable,
-      Room,
-      $$RoomsTableFilterComposer,
-      $$RoomsTableOrderingComposer,
-      $$RoomsTableAnnotationComposer,
-      $$RoomsTableCreateCompanionBuilder,
-      $$RoomsTableUpdateCompanionBuilder,
-      (Room, $$RoomsTableReferences),
-      Room,
-      PrefetchHooks Function({bool householdId, bool smartPlugsRefs})
     >;
 typedef $$SmartPlugsTableCreateCompanionBuilder =
     SmartPlugsCompanion Function({
@@ -7211,16 +7498,14 @@ typedef $$SmartPlugConsumptionsTableCreateCompanionBuilder =
     SmartPlugConsumptionsCompanion Function({
       Value<int> id,
       required int smartPlugId,
-      required ConsumptionInterval intervalType,
-      required DateTime intervalStart,
+      required DateTime month,
       required double valueKwh,
     });
 typedef $$SmartPlugConsumptionsTableUpdateCompanionBuilder =
     SmartPlugConsumptionsCompanion Function({
       Value<int> id,
       Value<int> smartPlugId,
-      Value<ConsumptionInterval> intervalType,
-      Value<DateTime> intervalStart,
+      Value<DateTime> month,
       Value<double> valueKwh,
     });
 
@@ -7274,14 +7559,8 @@ class $$SmartPlugConsumptionsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnWithTypeConverterFilters<ConsumptionInterval, ConsumptionInterval, int>
-  get intervalType => $composableBuilder(
-    column: $table.intervalType,
-    builder: (column) => ColumnWithTypeConverterFilters(column),
-  );
-
-  ColumnFilters<DateTime> get intervalStart => $composableBuilder(
-    column: $table.intervalStart,
+  ColumnFilters<DateTime> get month => $composableBuilder(
+    column: $table.month,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -7328,13 +7607,8 @@ class $$SmartPlugConsumptionsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<int> get intervalType => $composableBuilder(
-    column: $table.intervalType,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<DateTime> get intervalStart => $composableBuilder(
-    column: $table.intervalStart,
+  ColumnOrderings<DateTime> get month => $composableBuilder(
+    column: $table.month,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -7379,16 +7653,8 @@ class $$SmartPlugConsumptionsTableAnnotationComposer
   GeneratedColumn<int> get id =>
       $composableBuilder(column: $table.id, builder: (column) => column);
 
-  GeneratedColumnWithTypeConverter<ConsumptionInterval, int> get intervalType =>
-      $composableBuilder(
-        column: $table.intervalType,
-        builder: (column) => column,
-      );
-
-  GeneratedColumn<DateTime> get intervalStart => $composableBuilder(
-    column: $table.intervalStart,
-    builder: (column) => column,
-  );
+  GeneratedColumn<DateTime> get month =>
+      $composableBuilder(column: $table.month, builder: (column) => column);
 
   GeneratedColumn<double> get valueKwh =>
       $composableBuilder(column: $table.valueKwh, builder: (column) => column);
@@ -7458,28 +7724,24 @@ class $$SmartPlugConsumptionsTableTableManager
               ({
                 Value<int> id = const Value.absent(),
                 Value<int> smartPlugId = const Value.absent(),
-                Value<ConsumptionInterval> intervalType = const Value.absent(),
-                Value<DateTime> intervalStart = const Value.absent(),
+                Value<DateTime> month = const Value.absent(),
                 Value<double> valueKwh = const Value.absent(),
               }) => SmartPlugConsumptionsCompanion(
                 id: id,
                 smartPlugId: smartPlugId,
-                intervalType: intervalType,
-                intervalStart: intervalStart,
+                month: month,
                 valueKwh: valueKwh,
               ),
           createCompanionCallback:
               ({
                 Value<int> id = const Value.absent(),
                 required int smartPlugId,
-                required ConsumptionInterval intervalType,
-                required DateTime intervalStart,
+                required DateTime month,
                 required double valueKwh,
               }) => SmartPlugConsumptionsCompanion.insert(
                 id: id,
                 smartPlugId: smartPlugId,
-                intervalType: intervalType,
-                intervalStart: intervalStart,
+                month: month,
                 valueKwh: valueKwh,
               ),
           withReferenceMapper: (p0) => p0
@@ -7961,12 +8223,12 @@ class $AppDatabaseManager {
       $$WaterMetersTableTableManager(_db, _db.waterMeters);
   $$WaterReadingsTableTableManager get waterReadings =>
       $$WaterReadingsTableTableManager(_db, _db.waterReadings);
+  $$RoomsTableTableManager get rooms =>
+      $$RoomsTableTableManager(_db, _db.rooms);
   $$HeatingMetersTableTableManager get heatingMeters =>
       $$HeatingMetersTableTableManager(_db, _db.heatingMeters);
   $$HeatingReadingsTableTableManager get heatingReadings =>
       $$HeatingReadingsTableTableManager(_db, _db.heatingReadings);
-  $$RoomsTableTableManager get rooms =>
-      $$RoomsTableTableManager(_db, _db.rooms);
   $$SmartPlugsTableTableManager get smartPlugs =>
       $$SmartPlugsTableTableManager(_db, _db.smartPlugs);
   $$SmartPlugConsumptionsTableTableManager get smartPlugConsumptions =>

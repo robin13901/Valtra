@@ -9,8 +9,8 @@ mixin _$HouseholdDaoMixin on DatabaseAccessor<AppDatabase> {
       attachedDatabase.electricityReadings;
   $GasReadingsTable get gasReadings => attachedDatabase.gasReadings;
   $WaterMetersTable get waterMeters => attachedDatabase.waterMeters;
-  $HeatingMetersTable get heatingMeters => attachedDatabase.heatingMeters;
   $RoomsTable get rooms => attachedDatabase.rooms;
+  $HeatingMetersTable get heatingMeters => attachedDatabase.heatingMeters;
   HouseholdDaoManager get managers => HouseholdDaoManager(this);
 }
 
@@ -28,8 +28,8 @@ class HouseholdDaoManager {
       $$GasReadingsTableTableManager(_db.attachedDatabase, _db.gasReadings);
   $$WaterMetersTableTableManager get waterMeters =>
       $$WaterMetersTableTableManager(_db.attachedDatabase, _db.waterMeters);
-  $$HeatingMetersTableTableManager get heatingMeters =>
-      $$HeatingMetersTableTableManager(_db.attachedDatabase, _db.heatingMeters);
   $$RoomsTableTableManager get rooms =>
       $$RoomsTableTableManager(_db.attachedDatabase, _db.rooms);
+  $$HeatingMetersTableTableManager get heatingMeters =>
+      $$HeatingMetersTableTableManager(_db.attachedDatabase, _db.heatingMeters);
 }

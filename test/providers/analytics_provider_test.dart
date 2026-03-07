@@ -705,6 +705,278 @@ void main() {
       expect(provider.monthlyData?.unit, 'units');
     });
   });
+
+  group('heating ratio application', () {
+    test('central meter consumption is scaled by ratio', () async {
+      // Stub non-heating DAOs empty
+      when(() => mockElectricityDao.getReadingsForRange(any(), any(), any()))
+          .thenAnswer((_) async => <ElectricityReading>[]);
+      when(() => mockGasDao.getReadingsForRange(any(), any(), any()))
+          .thenAnswer((_) async => <GasReading>[]);
+      when(() => mockWaterDao.getMetersForHousehold(any()))
+          .thenAnswer((_) async => <WaterMeter>[]);
+
+      // Create a central meter with 25% ratio
+      final mockMeter = _createHeatingMeter(
+        id: 20,
+        householdId: 1,
+        heatingType: HeatingType.centralMeter,
+        heatingRatio: 0.25,
+      );
+      when(() => mockHeatingDao.getMetersForHousehold(1))
+          .thenAnswer((_) async => [mockMeter]);
+
+      // Stub heating readings
+      final reading1 = _createHeatingReading(
+        id: 1,
+        heatingMeterId: 20,
+        timestamp: DateTime(2024, 5, 1),
+        value: 100.0,
+      );
+      final reading2 = _createHeatingReading(
+        id: 2,
+        heatingMeterId: 20,
+        timestamp: DateTime(2024, 7, 1),
+        value: 200.0,
+      );
+      when(() => mockHeatingDao.getReadingsForRange(20, any(), any()))
+          .thenAnswer((_) async => [reading1, reading2]);
+
+      // Stub interpolation to return known consumption
+      when(() => mockInterpolationService.getMonthlyConsumption(
+            readings: any(named: 'readings'),
+            rangeStart: any(named: 'rangeStart'),
+            rangeEnd: any(named: 'rangeEnd'),
+          )).thenReturn([
+        PeriodConsumption(
+          periodStart: DateTime(2024, 6, 1),
+          periodEnd: DateTime(2024, 7, 1),
+          startValue: 100.0,
+          endValue: 200.0,
+          consumption: 100.0,
+          startInterpolated: false,
+          endInterpolated: false,
+        ),
+      ]);
+
+      when(() => mockInterpolationService.getMonthlyBoundaries(
+            readings: any(named: 'readings'),
+            rangeStart: any(named: 'rangeStart'),
+            rangeEnd: any(named: 'rangeEnd'),
+          )).thenReturn([]);
+
+      provider.setHouseholdId(1);
+      await Future.delayed(const Duration(milliseconds: 50));
+
+      provider.setSelectedMeterType(MeterType.heating);
+      provider.setSelectedMonth(DateTime(2024, 6, 1));
+      await Future.delayed(const Duration(milliseconds: 100));
+
+      // Consumption of 100.0 * 0.25 ratio = 25.0
+      expect(provider.monthlyData, isNotNull);
+      expect(provider.monthlyData!.totalConsumption, 25.0);
+    });
+
+    test('own meter consumption is NOT scaled (full value)', () async {
+      // Stub non-heating DAOs empty
+      when(() => mockElectricityDao.getReadingsForRange(any(), any(), any()))
+          .thenAnswer((_) async => <ElectricityReading>[]);
+      when(() => mockGasDao.getReadingsForRange(any(), any(), any()))
+          .thenAnswer((_) async => <GasReading>[]);
+      when(() => mockWaterDao.getMetersForHousehold(any()))
+          .thenAnswer((_) async => <WaterMeter>[]);
+
+      // Create an own meter (no ratio)
+      final mockMeter = _createHeatingMeter(
+        id: 20,
+        householdId: 1,
+        heatingType: HeatingType.ownMeter,
+        heatingRatio: null,
+      );
+      when(() => mockHeatingDao.getMetersForHousehold(1))
+          .thenAnswer((_) async => [mockMeter]);
+
+      final reading1 = _createHeatingReading(
+        id: 1,
+        heatingMeterId: 20,
+        timestamp: DateTime(2024, 5, 1),
+        value: 100.0,
+      );
+      final reading2 = _createHeatingReading(
+        id: 2,
+        heatingMeterId: 20,
+        timestamp: DateTime(2024, 7, 1),
+        value: 200.0,
+      );
+      when(() => mockHeatingDao.getReadingsForRange(20, any(), any()))
+          .thenAnswer((_) async => [reading1, reading2]);
+
+      when(() => mockInterpolationService.getMonthlyConsumption(
+            readings: any(named: 'readings'),
+            rangeStart: any(named: 'rangeStart'),
+            rangeEnd: any(named: 'rangeEnd'),
+          )).thenReturn([
+        PeriodConsumption(
+          periodStart: DateTime(2024, 6, 1),
+          periodEnd: DateTime(2024, 7, 1),
+          startValue: 100.0,
+          endValue: 200.0,
+          consumption: 100.0,
+          startInterpolated: false,
+          endInterpolated: false,
+        ),
+      ]);
+
+      when(() => mockInterpolationService.getMonthlyBoundaries(
+            readings: any(named: 'readings'),
+            rangeStart: any(named: 'rangeStart'),
+            rangeEnd: any(named: 'rangeEnd'),
+          )).thenReturn([]);
+
+      provider.setHouseholdId(1);
+      await Future.delayed(const Duration(milliseconds: 50));
+
+      provider.setSelectedMeterType(MeterType.heating);
+      provider.setSelectedMonth(DateTime(2024, 6, 1));
+      await Future.delayed(const Duration(milliseconds: 100));
+
+      // Own meter: consumption = 100.0, no scaling
+      expect(provider.monthlyData, isNotNull);
+      expect(provider.monthlyData!.totalConsumption, 100.0);
+    });
+
+    test('central meter with ratio 0 results in zero consumption', () async {
+      when(() => mockElectricityDao.getReadingsForRange(any(), any(), any()))
+          .thenAnswer((_) async => <ElectricityReading>[]);
+      when(() => mockGasDao.getReadingsForRange(any(), any(), any()))
+          .thenAnswer((_) async => <GasReading>[]);
+      when(() => mockWaterDao.getMetersForHousehold(any()))
+          .thenAnswer((_) async => <WaterMeter>[]);
+
+      final mockMeter = _createHeatingMeter(
+        id: 20,
+        householdId: 1,
+        heatingType: HeatingType.centralMeter,
+        heatingRatio: 0.0,
+      );
+      when(() => mockHeatingDao.getMetersForHousehold(1))
+          .thenAnswer((_) async => [mockMeter]);
+
+      final reading1 = _createHeatingReading(
+        id: 1,
+        heatingMeterId: 20,
+        timestamp: DateTime(2024, 5, 1),
+        value: 100.0,
+      );
+      final reading2 = _createHeatingReading(
+        id: 2,
+        heatingMeterId: 20,
+        timestamp: DateTime(2024, 7, 1),
+        value: 200.0,
+      );
+      when(() => mockHeatingDao.getReadingsForRange(20, any(), any()))
+          .thenAnswer((_) async => [reading1, reading2]);
+
+      when(() => mockInterpolationService.getMonthlyConsumption(
+            readings: any(named: 'readings'),
+            rangeStart: any(named: 'rangeStart'),
+            rangeEnd: any(named: 'rangeEnd'),
+          )).thenReturn([
+        PeriodConsumption(
+          periodStart: DateTime(2024, 6, 1),
+          periodEnd: DateTime(2024, 7, 1),
+          startValue: 100.0,
+          endValue: 200.0,
+          consumption: 100.0,
+          startInterpolated: false,
+          endInterpolated: false,
+        ),
+      ]);
+
+      when(() => mockInterpolationService.getMonthlyBoundaries(
+            readings: any(named: 'readings'),
+            rangeStart: any(named: 'rangeStart'),
+            rangeEnd: any(named: 'rangeEnd'),
+          )).thenReturn([]);
+
+      provider.setHouseholdId(1);
+      await Future.delayed(const Duration(milliseconds: 50));
+
+      provider.setSelectedMeterType(MeterType.heating);
+      provider.setSelectedMonth(DateTime(2024, 6, 1));
+      await Future.delayed(const Duration(milliseconds: 100));
+
+      // Consumption 100.0 * 0.0 = 0.0
+      expect(provider.monthlyData, isNotNull);
+      expect(provider.monthlyData!.totalConsumption, 0.0);
+    });
+
+    test('central meter with ratio 1 uses full consumption', () async {
+      when(() => mockElectricityDao.getReadingsForRange(any(), any(), any()))
+          .thenAnswer((_) async => <ElectricityReading>[]);
+      when(() => mockGasDao.getReadingsForRange(any(), any(), any()))
+          .thenAnswer((_) async => <GasReading>[]);
+      when(() => mockWaterDao.getMetersForHousehold(any()))
+          .thenAnswer((_) async => <WaterMeter>[]);
+
+      final mockMeter = _createHeatingMeter(
+        id: 20,
+        householdId: 1,
+        heatingType: HeatingType.centralMeter,
+        heatingRatio: 1.0,
+      );
+      when(() => mockHeatingDao.getMetersForHousehold(1))
+          .thenAnswer((_) async => [mockMeter]);
+
+      final reading1 = _createHeatingReading(
+        id: 1,
+        heatingMeterId: 20,
+        timestamp: DateTime(2024, 5, 1),
+        value: 100.0,
+      );
+      final reading2 = _createHeatingReading(
+        id: 2,
+        heatingMeterId: 20,
+        timestamp: DateTime(2024, 7, 1),
+        value: 200.0,
+      );
+      when(() => mockHeatingDao.getReadingsForRange(20, any(), any()))
+          .thenAnswer((_) async => [reading1, reading2]);
+
+      when(() => mockInterpolationService.getMonthlyConsumption(
+            readings: any(named: 'readings'),
+            rangeStart: any(named: 'rangeStart'),
+            rangeEnd: any(named: 'rangeEnd'),
+          )).thenReturn([
+        PeriodConsumption(
+          periodStart: DateTime(2024, 6, 1),
+          periodEnd: DateTime(2024, 7, 1),
+          startValue: 100.0,
+          endValue: 200.0,
+          consumption: 100.0,
+          startInterpolated: false,
+          endInterpolated: false,
+        ),
+      ]);
+
+      when(() => mockInterpolationService.getMonthlyBoundaries(
+            readings: any(named: 'readings'),
+            rangeStart: any(named: 'rangeStart'),
+            rangeEnd: any(named: 'rangeEnd'),
+          )).thenReturn([]);
+
+      provider.setHouseholdId(1);
+      await Future.delayed(const Duration(milliseconds: 50));
+
+      provider.setSelectedMeterType(MeterType.heating);
+      provider.setSelectedMonth(DateTime(2024, 6, 1));
+      await Future.delayed(const Duration(milliseconds: 100));
+
+      // Consumption 100.0 * 1.0 = 100.0
+      expect(provider.monthlyData, isNotNull);
+      expect(provider.monthlyData!.totalConsumption, 100.0);
+    });
+  });
 }
 
 // -- Test helpers --
@@ -746,11 +1018,16 @@ WaterMeter _createWaterMeter({
 HeatingMeter _createHeatingMeter({
   required int id,
   required int householdId,
+  HeatingType heatingType = HeatingType.ownMeter,
+  double? heatingRatio,
 }) {
   final mock = _MockHeatingMeter();
   when(() => mock.id).thenReturn(id);
   when(() => mock.householdId).thenReturn(householdId);
   when(() => mock.name).thenReturn('Test Heating Meter');
+  when(() => mock.heatingType).thenReturn(heatingType);
+  when(() => mock.heatingRatio).thenReturn(heatingRatio);
+  when(() => mock.roomId).thenReturn(1);
   return mock;
 }
 
@@ -784,10 +1061,27 @@ ElectricityReading _createElectricityReading({
   return mock;
 }
 
+/// Creates a fake [HeatingReading] for testing.
+HeatingReading _createHeatingReading({
+  required int id,
+  required int heatingMeterId,
+  required DateTime timestamp,
+  required double value,
+}) {
+  final mock = _MockHeatingReading();
+  when(() => mock.id).thenReturn(id);
+  when(() => mock.heatingMeterId).thenReturn(heatingMeterId);
+  when(() => mock.timestamp).thenReturn(timestamp);
+  when(() => mock.value).thenReturn(value);
+  return mock;
+}
+
 // Private mock classes for data models
 class _MockWaterMeter extends Mock implements WaterMeter {}
 
 class _MockHeatingMeter extends Mock implements HeatingMeter {}
+
+class _MockHeatingReading extends Mock implements HeatingReading {}
 
 class _MockGasReading extends Mock implements GasReading {}
 

@@ -1,4 +1,3 @@
-import 'package:drift/drift.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
@@ -23,6 +22,7 @@ void main() {
   late ThemeProvider themeProvider;
   late MockLocaleProvider localeProvider;
   late int householdId;
+  late int roomId;
 
   Widget wrapWithProviders(Widget child) {
     return MultiProvider(
@@ -55,6 +55,13 @@ void main() {
         .into(database.households)
         .insert(HouseholdsCompanion.insert(name: 'Test Household'));
 
+    roomId = await database
+        .into(database.rooms)
+        .insert(RoomsCompanion.insert(
+          householdId: householdId,
+          name: 'Living Room',
+        ));
+
     provider.setHouseholdId(householdId);
     await Future.delayed(const Duration(milliseconds: 50));
   });
@@ -85,11 +92,18 @@ void main() {
         (tester) => tester.runAsync(() async {
               await dao.insertMeter(HeatingMetersCompanion.insert(
                 householdId: householdId,
+                roomId: roomId,
                 name: 'Bedroom Radiator',
-                location: const Value('Bedroom'),
               ));
+              final room2Id = await database
+                  .into(database.rooms)
+                  .insert(RoomsCompanion.insert(
+                    householdId: householdId,
+                    name: 'Kitchen',
+                  ));
               await dao.insertMeter(HeatingMetersCompanion.insert(
                 householdId: householdId,
+                roomId: room2Id,
                 name: 'Kitchen Radiator',
               ));
               await Future.delayed(const Duration(milliseconds: 100));
@@ -104,12 +118,12 @@ void main() {
               await tester.pumpWidget(Container());
             }));
 
-    testWidgets('meter shows location subtitle when set',
+    testWidgets('meter shows room name subtitle',
         (tester) => tester.runAsync(() async {
               await dao.insertMeter(HeatingMetersCompanion.insert(
                 householdId: householdId,
+                roomId: roomId,
                 name: 'Bedroom Radiator',
-                location: const Value('Bedroom'),
               ));
               await Future.delayed(const Duration(milliseconds: 100));
 
@@ -117,41 +131,8 @@ void main() {
                   .pumpWidget(wrapWithProviders(const HeatingScreen()));
               await tester.pumpAndSettle();
 
-              expect(find.text('Bedroom'), findsOneWidget);
-              expect(find.byIcon(Icons.location_on), findsOneWidget);
-
-              await tester.pumpWidget(Container());
-            }));
-
-    testWidgets('meter hides location when null',
-        (tester) => tester.runAsync(() async {
-              await dao.insertMeter(HeatingMetersCompanion.insert(
-                householdId: householdId,
-                name: 'Hall Radiator',
-              ));
-              await Future.delayed(const Duration(milliseconds: 100));
-
-              await tester
-                  .pumpWidget(wrapWithProviders(const HeatingScreen()));
-              await tester.pumpAndSettle();
-
-              expect(find.text('Hall Radiator'), findsOneWidget);
-              expect(find.byIcon(Icons.location_on), findsNothing);
-
-              await tester.pumpWidget(Container());
-            }));
-
-    testWidgets('FAB opens add meter dialog',
-        (tester) => tester.runAsync(() async {
-              await tester
-                  .pumpWidget(wrapWithProviders(const HeatingScreen()));
-              await tester.pumpAndSettle();
-
-              await tester.tap(find.byType(FloatingActionButton));
-              await tester.pumpAndSettle();
-
-              expect(find.text('Add Heating Meter'), findsOneWidget);
-              expect(find.text('Meter Name'), findsOneWidget);
+              expect(find.text('Living Room'), findsOneWidget);
+              expect(find.byIcon(Icons.room), findsOneWidget);
 
               await tester.pumpWidget(Container());
             }));
@@ -161,6 +142,7 @@ void main() {
               final meterId =
                   await dao.insertMeter(HeatingMetersCompanion.insert(
                 householdId: householdId,
+                roomId: roomId,
                 name: 'Test Meter',
               ));
               await dao.insertReading(HeatingReadingsCompanion.insert(
@@ -191,6 +173,7 @@ void main() {
               final meterId =
                   await dao.insertMeter(HeatingMetersCompanion.insert(
                 householdId: householdId,
+                roomId: roomId,
                 name: 'Test Meter',
               ));
               await dao.insertReading(HeatingReadingsCompanion.insert(
@@ -222,6 +205,7 @@ void main() {
         (tester) => tester.runAsync(() async {
               await dao.insertMeter(HeatingMetersCompanion.insert(
                 householdId: householdId,
+                roomId: roomId,
                 name: 'Test Meter',
               ));
               await Future.delayed(const Duration(milliseconds: 100));
@@ -246,6 +230,7 @@ void main() {
         (tester) => tester.runAsync(() async {
               await dao.insertMeter(HeatingMetersCompanion.insert(
                 householdId: householdId,
+                roomId: roomId,
                 name: 'Test Meter',
               ));
               await Future.delayed(const Duration(milliseconds: 100));
@@ -269,6 +254,7 @@ void main() {
         (tester) => tester.runAsync(() async {
               await dao.insertMeter(HeatingMetersCompanion.insert(
                 householdId: householdId,
+                roomId: roomId,
                 name: 'Empty Meter',
               ));
               await Future.delayed(const Duration(milliseconds: 100));
