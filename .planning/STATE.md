@@ -3,8 +3,8 @@
 ## Current Status
 - **Milestone**: 3 - Polish & Enhancement (v0.3.0)
 - **Last Shipped**: v0.2.0 (2026-03-07)
-- **Current Phase**: 15 - Data Model & Analytics Rework (IN PROGRESS)
-- **Current Plan**: 15-07
+- **Current Phase**: 15 - Data Model & Analytics Rework (COMPLETE)
+- **Current Plan**: 15-08 (COMPLETE)
 - **Last Updated**: 2026-03-07
 
 ## Completed Milestones
@@ -13,6 +13,7 @@
 
 ## Completed (this milestone)
 - **Phase 14**: UI/UX Polish & Localization — 7 plans, 4 waves, 765 tests
+- **Phase 15**: Data Model & Analytics Rework — 8 plans, 4 waves, 855 tests
 
 ## Blocked
 _None_
@@ -35,6 +36,7 @@ _None_
 | 2026-03-07 | 15 | Plan 15-02 complete | Smart Plug Data Layer -- Removed ConsumptionInterval enum, renamed intervalStart to month, simplified provider API (locale-based labels, duplicate month check). Updated form dialog (month picker), screens, and all tests. 788 tests passing, 0 analyze issues. |
 | 2026-03-07 | 15 | Plan 15-03 complete | Smart Plug UI Layer -- Replaced date picker with month/year dropdown selectors, added duplicate month warning, simplified consumption card to single-row format, removed 6 unused l10n keys, added 3 new. 808 tests passing, 0 analyze issues. |
 | 2026-03-07 | 15 | Plan 15-06 complete | Gas Analysis Fix & Yearly Extrapolation -- Gas analytics displays raw m3 (not kWh), conversion retained for cost only. Added year-end extrapolation with projected total, extrapolated bars with distinct style. 13 new interpolation service tests, 4 new screen tests. 842 tests passing, 0 analyze issues. |
+| 2026-03-07 | 15 | Plan 15-08 complete | DB Migration v2->v3 & Integration -- Schema version 2->3 migration: heating meter locations converted to rooms (room_id FK), smart plug consumptions simplified (interval_type/interval_start removed, grouped by month with SUM). Timezone-aware epoch conversion. 13 new migration tests, 855 total tests passing, 0 analyze issues. Phase 15 COMPLETE. |
 
 ## Key Decisions (carried forward)
 1. **Local-first architecture** - Using Drift/SQLite for offline-capable data storage
@@ -82,11 +84,13 @@ _None_
 37. **Month/year dropdown selectors** - Form dialog uses two DropdownButtonFormField<int> (month 1-12, year 2020-current+1) instead of date picker; locale-aware month names via DateFormat.MMMM
 38. **Duplicate month warning pattern** - DuplicateMonthChecker callback from screen to provider, inline warning text in error color, allows overwrite
 
+39. **DB migration timezone handling** - Drift stores DateTime as local-time epoch seconds; SQLite 'unixepoch' interprets as UTC. Migration computes Dart timezone offset and applies it to SQL for correct year-month grouping.
+
 ## Technical Debt
 1. **LiquidGlass integration** - Using standard Flutter glass-style widgets instead of full liquid_glass_renderer integration
-2. **NFR-3.3**: Test coverage not measured with Codecov yet (target: Milestone 3, Phase 15)
+2. **NFR-3.3**: Test coverage not measured with Codecov yet (target: Milestone 3, Phase 16)
 3. ~~**Hardcoded colors**~~ -- Resolved in Phase 12 dark mode audit (11 fixes across 6 files)
 4. ~~**Screen test ThemeProvider gap**~~ -- Resolved in Plan 14-07 (all 81 test failures fixed)
 
 ## Next Actions
-_Plan 15-06 complete. Continue with Plan 15-07._
+_Phase 15 complete. Continue with Phase 16 (Backup, Testing & Documentation)._

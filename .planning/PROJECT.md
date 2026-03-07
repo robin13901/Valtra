@@ -57,10 +57,10 @@ Managing utility consumption across multiple households requires manual tracking
 </details>
 
 ### Next: v0.3.0 - Polish & Enhancement
-- Phase 12: Settings & Configuration (theme toggle, cost configuration, app preferences) ✅
-- Phase 13: Cost Tracking (price models, cost calculations, cost display in analytics) ✅
-- Phase 14: UI/UX Polish & Localization (LiquidGlass, German formatting, umlaut fixes, cleanup)
-- Phase 15: Data Model & Analytics Rework (interpolation rework, smart plug entry, heating rooms, yearly analysis)
+- Phase 12: Settings & Configuration (theme toggle, cost configuration, app preferences) -- COMPLETE
+- Phase 13: Cost Tracking (price models, cost calculations, cost display in analytics) -- COMPLETE
+- Phase 14: UI/UX Polish & Localization (LiquidGlass, German formatting, umlaut fixes, cleanup) -- COMPLETE
+- Phase 15: Data Model & Analytics Rework (interpolation rework, smart plug entry, heating rooms, yearly analysis) -- COMPLETE (855 tests, DB schema v3)
 - Phase 16: Backup, Testing & Documentation (DB export/import, 80%+ coverage, README)
 
 ## Success Criteria
