@@ -312,5 +312,6 @@
   "monthlyProgress": "Monatsverlauf",
   "language": "Sprache",
   "languageDE": "Deutsch",
-  "languageEN": "Englisch"
+  "languageEN": "Englisch",
+  "home": "Start"
 }

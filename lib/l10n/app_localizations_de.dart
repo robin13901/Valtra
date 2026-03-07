@@ -820,4 +820,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get languageEN => 'Englisch';
+
+  @override
+  String get home => 'Start';
 }

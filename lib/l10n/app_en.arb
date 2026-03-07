@@ -378,5 +378,6 @@
   "monthlyProgress": "Monthly Progress",
   "language": "Language",
   "languageDE": "German",
-  "languageEN": "English"
+  "languageEN": "English",
+  "home": "Home"
 }

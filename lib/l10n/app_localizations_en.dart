@@ -817,4 +817,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get languageEN => 'English';
+
+  @override
+  String get home => 'Home';
 }
