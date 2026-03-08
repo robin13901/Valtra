@@ -4,7 +4,7 @@
 - **Milestone**: 3 - Polish & Enhancement (v0.3.0)
 - **Last Shipped**: v0.2.0 (2026-03-07)
 - **Current Phase**: 16 - Backup, Testing & Documentation
-- **Current Plan**: 16-01 (COMPLETE)
+- **Current Plan**: 16-02 (COMPLETE)
 - **Last Updated**: 2026-03-08
 
 ## Completed Milestones
@@ -38,6 +38,7 @@ _None_
 | 2026-03-07 | 15 | Plan 15-06 complete | Gas Analysis Fix & Yearly Extrapolation -- Gas analytics displays raw m3 (not kWh), conversion retained for cost only. Added year-end extrapolation with projected total, extrapolated bars with distinct style. 13 new interpolation service tests, 4 new screen tests. 842 tests passing, 0 analyze issues. |
 | 2026-03-07 | 15 | Plan 15-08 complete | DB Migration v2->v3 & Integration -- Schema version 2->3 migration: heating meter locations converted to rooms (room_id FK), smart plug consumptions simplified (interval_type/interval_start removed, grouped by month with SUM). Timezone-aware epoch conversion. 13 new migration tests, 855 total tests passing, 0 analyze issues. Phase 15 COMPLETE. |
 | 2026-03-08 | 16 | Plan 16-01 complete | BackupRestoreService TDD -- export, import, validation, sharing. Constructor injection for testability. 19 new tests, 874 total. file_picker dependency added. |
+| 2026-03-08 | 16 | Plan 16-02 complete | BackupRestoreProvider + Settings UI -- provider state machine, backup/restore section in settings (export + import), file picker + confirmation dialog, 13 EN/DE localization keys, wired into MultiProvider. 22 new tests (16 provider + 6 screen), 896 total. |
 
 ## Key Decisions (carried forward)
 1. **Local-first architecture** - Using Drift/SQLite for offline-capable data storage
@@ -90,6 +91,8 @@ _None_
 40. **Backup service constructor injection** - BackupRestoreService takes `Future<Directory> Function()` params for DB and temp directories, defaulting to path_provider; enables fast deterministic tests without platform channels
 41. **Backup validation via sqlite3 package** - Direct sqlite3.open + PRAGMA user_version check for schema version, not Drift overhead
 42. **Import = file copy only** - BackupRestoreService.importDatabase copies file but does not manage DB close/reconnect; provider layer handles connection lifecycle
+43. **backupExportSuccess l10n key** - Named differently from existing `exportSuccess` (CSV) to avoid collision; backup-specific success message
+44. **CircularProgressIndicator test workaround** - Use tester.drag + pump instead of scrollUntilVisible + pumpAndSettle for tests with loading indicators (infinite animation prevents settle)
 
 ## Technical Debt
 1. **LiquidGlass integration** - Using standard Flutter glass-style widgets instead of full liquid_glass_renderer integration
@@ -98,4 +101,4 @@ _None_
 4. ~~**Screen test ThemeProvider gap**~~ -- Resolved in Plan 14-07 (all 81 test failures fixed)
 
 ## Next Actions
-_Plan 16-01 complete. Continue with Plan 16-02 (BackupRestoreProvider + Settings UI)._
+_Plan 16-02 complete. Continue with Plan 16-03 (Test coverage + integration tests)._
