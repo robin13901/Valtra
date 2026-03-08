@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:valtra/database/tables.dart';
 import 'package:valtra/l10n/app_localizations.dart';
+import 'package:valtra/providers/backup_restore_provider.dart';
 import 'package:valtra/providers/cost_config_provider.dart';
 import 'package:valtra/providers/interpolation_settings_provider.dart';
 import 'package:valtra/providers/locale_provider.dart';
@@ -12,6 +13,8 @@ import 'package:valtra/providers/theme_provider.dart';
 import 'package:valtra/screens/settings_screen.dart';
 
 class MockCostConfigProvider extends Mock implements CostConfigProvider {}
+
+class MockBackupRestoreProvider extends Mock implements BackupRestoreProvider {}
 
 class MockLocaleProvider extends ChangeNotifier implements LocaleProvider {
   String _localeString = 'en';
@@ -32,6 +35,7 @@ void main() {
   late ThemeProvider themeProvider;
   late InterpolationSettingsProvider settingsProvider;
   late MockCostConfigProvider costConfigProvider;
+  late MockBackupRestoreProvider backupRestoreProvider;
   late MockLocaleProvider localeProvider;
 
   setUpAll(() {
@@ -50,6 +54,9 @@ void main() {
           value: costConfigProvider,
         ),
         ChangeNotifierProvider<LocaleProvider>.value(value: localeProvider),
+        ChangeNotifierProvider<BackupRestoreProvider>.value(
+          value: backupRestoreProvider,
+        ),
       ],
       child: MaterialApp(
         localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -73,6 +80,12 @@ void main() {
     when(() => costConfigProvider.configs).thenReturn([]);
     when(() => costConfigProvider.hasCostConfigs).thenReturn(false);
     when(() => costConfigProvider.householdId).thenReturn(null);
+    backupRestoreProvider = MockBackupRestoreProvider();
+    when(() => backupRestoreProvider.state).thenReturn(BackupRestoreState.idle);
+    when(() => backupRestoreProvider.isLoading).thenReturn(false);
+    when(() => backupRestoreProvider.errorMessage).thenReturn(null);
+    when(() => backupRestoreProvider.successMessage).thenReturn(null);
+    when(() => backupRestoreProvider.onDatabaseReplaced).thenReturn(null);
     localeProvider = MockLocaleProvider();
   });
 
@@ -303,6 +316,115 @@ void main() {
         expect(find.text('Please enter a valid number'), findsOneWidget);
       });
     });
+
+    group('backup & restore section', () {
+      testWidgets('shows Backup & Restore section header', (tester) async {
+        await tester.pumpWidget(buildSettingsScreen());
+        await tester.pumpAndSettle();
+
+        await tester.scrollUntilVisible(
+          find.text('Backup & Restore'),
+          200,
+          scrollable: find.byType(Scrollable).first,
+        );
+        await tester.pumpAndSettle();
+
+        expect(find.text('Backup & Restore'), findsOneWidget);
+      });
+
+      testWidgets('shows Export Database list tile', (tester) async {
+        await tester.pumpWidget(buildSettingsScreen());
+        await tester.pumpAndSettle();
+
+        await tester.scrollUntilVisible(
+          find.text('Export Database'),
+          200,
+          scrollable: find.byType(Scrollable).first,
+        );
+        await tester.pumpAndSettle();
+
+        expect(find.text('Export Database'), findsOneWidget);
+        expect(find.byIcon(Icons.cloud_upload), findsOneWidget);
+      });
+
+      testWidgets('shows Import Database list tile', (tester) async {
+        await tester.pumpWidget(buildSettingsScreen());
+        await tester.pumpAndSettle();
+
+        await tester.scrollUntilVisible(
+          find.text('Import Database'),
+          200,
+          scrollable: find.byType(Scrollable).first,
+        );
+        await tester.pumpAndSettle();
+
+        expect(find.text('Import Database'), findsOneWidget);
+        expect(find.byIcon(Icons.cloud_download), findsOneWidget);
+      });
+
+      testWidgets('export button shows loading indicator when exporting',
+          (tester) async {
+        when(() => backupRestoreProvider.state)
+            .thenReturn(BackupRestoreState.exporting);
+        when(() => backupRestoreProvider.isLoading).thenReturn(true);
+
+        await tester.pumpWidget(buildSettingsScreen());
+        await tester.pump(const Duration(milliseconds: 100));
+
+        // Drag up multiple times to reveal backup section (can't use
+        // scrollUntilVisible because CircularProgressIndicator prevents
+        // pumpAndSettle from completing)
+        for (var i = 0; i < 5; i++) {
+          await tester.drag(
+            find.byType(ListView),
+            const Offset(0, -300),
+          );
+          await tester.pump(const Duration(milliseconds: 100));
+        }
+
+        expect(find.text('Exporting database...'), findsOneWidget);
+        expect(find.byType(CircularProgressIndicator), findsOneWidget);
+      });
+
+      testWidgets('import button shows loading indicator when importing',
+          (tester) async {
+        when(() => backupRestoreProvider.state)
+            .thenReturn(BackupRestoreState.importing);
+        when(() => backupRestoreProvider.isLoading).thenReturn(true);
+
+        await tester.pumpWidget(buildSettingsScreen());
+        await tester.pump(const Duration(milliseconds: 100));
+
+        for (var i = 0; i < 5; i++) {
+          await tester.drag(
+            find.byType(ListView),
+            const Offset(0, -300),
+          );
+          await tester.pump(const Duration(milliseconds: 100));
+        }
+
+        expect(find.text('Importing database...'), findsOneWidget);
+        expect(find.byType(CircularProgressIndicator), findsOneWidget);
+      });
+
+      testWidgets('shows validating text when validating', (tester) async {
+        when(() => backupRestoreProvider.state)
+            .thenReturn(BackupRestoreState.validating);
+
+        await tester.pumpWidget(buildSettingsScreen());
+        await tester.pump(const Duration(milliseconds: 100));
+
+        for (var i = 0; i < 5; i++) {
+          await tester.drag(
+            find.byType(ListView),
+            const Offset(0, -300),
+          );
+          await tester.pump(const Duration(milliseconds: 100));
+        }
+
+        expect(find.text('Validating file...'), findsOneWidget);
+      });
+    });
   });
 
   group('HomeScreen settings navigation', () {
@@ -322,6 +444,9 @@ void main() {
               value: costConfigProvider,
             ),
             ChangeNotifierProvider<LocaleProvider>.value(value: localeProvider),
+            ChangeNotifierProvider<BackupRestoreProvider>.value(
+              value: backupRestoreProvider,
+            ),
           ],
           child: MaterialApp(
             localizationsDelegates: AppLocalizations.localizationsDelegates,

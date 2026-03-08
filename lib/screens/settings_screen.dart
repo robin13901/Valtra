@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:drift/drift.dart' hide Column;
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -8,6 +11,7 @@ import '../app_theme.dart';
 import '../database/app_database.dart';
 import '../database/tables.dart';
 import '../l10n/app_localizations.dart';
+import '../providers/backup_restore_provider.dart';
 import '../providers/cost_config_provider.dart';
 import '../providers/interpolation_settings_provider.dart';
 import '../providers/locale_provider.dart';
@@ -34,6 +38,8 @@ class SettingsScreen extends StatelessWidget {
           _buildMeterSettingsSection(context, l10n),
           const SizedBox(height: 8),
           _buildCostConfigSection(context, l10n),
+          const SizedBox(height: 8),
+          _buildBackupRestoreSection(context, l10n),
           const SizedBox(height: 8),
           _buildAboutSection(context, l10n),
         ],
@@ -200,6 +206,138 @@ class SettingsScreen extends StatelessWidget {
         ),
       ],
     );
+  }
+
+  Widget _buildBackupRestoreSection(
+    BuildContext context,
+    AppLocalizations l10n,
+  ) {
+    final provider = context.watch<BackupRestoreProvider>();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildSectionHeader(context, l10n.backupRestore),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: GlassCard(
+            child: Column(
+              children: [
+                ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: const Icon(Icons.cloud_upload),
+                  title: Text(l10n.exportDatabase),
+                  subtitle: provider.state == BackupRestoreState.exporting
+                      ? Text(l10n.exportInProgress)
+                      : null,
+                  trailing: provider.state == BackupRestoreState.exporting
+                      ? const SizedBox(
+                          width: 24,
+                          height: 24,
+                          child:
+                              CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : const Icon(Icons.chevron_right),
+                  onTap: provider.isLoading
+                      ? null
+                      : () => _handleExport(context, provider),
+                ),
+                const Divider(height: 1),
+                ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: const Icon(Icons.cloud_download),
+                  title: Text(l10n.importDatabase),
+                  subtitle: provider.state == BackupRestoreState.importing
+                      ? Text(l10n.importInProgress)
+                      : provider.state == BackupRestoreState.validating
+                          ? Text(l10n.validatingFile)
+                          : null,
+                  trailing: (provider.state ==
+                              BackupRestoreState.importing ||
+                          provider.state == BackupRestoreState.validating)
+                      ? const SizedBox(
+                          width: 24,
+                          height: 24,
+                          child:
+                              CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : const Icon(Icons.chevron_right),
+                  onTap: provider.isLoading
+                      ? null
+                      : () => _handleImport(context, provider, l10n),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Future<void> _handleExport(
+    BuildContext context,
+    BackupRestoreProvider provider,
+  ) async {
+    await provider.exportDatabase();
+    if (context.mounted) {
+      final l10n = AppLocalizations.of(context)!;
+      final msg = provider.state == BackupRestoreState.success
+          ? l10n.backupExportSuccess
+          : provider.errorMessage ?? l10n.importFailed;
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(msg)));
+      provider.resetState();
+    }
+  }
+
+  Future<void> _handleImport(
+    BuildContext context,
+    BackupRestoreProvider provider,
+    AppLocalizations l10n,
+  ) async {
+    final result = await FilePicker.platform.pickFiles(type: FileType.any);
+    if (result == null || result.files.single.path == null) return;
+
+    if (!context.mounted) return;
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.importConfirmTitle),
+        content: Text(l10n.importConfirmMessage),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: Text(l10n.cancel),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: Text(l10n.importDatabase),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true) return;
+    if (!context.mounted) return;
+
+    final success =
+        await provider.importDatabase(File(result.files.single.path!));
+
+    if (!context.mounted) return;
+
+    if (success) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(l10n.importSuccess)));
+      provider.onDatabaseReplaced?.call();
+    } else {
+      final msg = provider.errorMessage?.contains('Invalid') == true
+          ? l10n.invalidBackupFile
+          : l10n.importFailed;
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(msg)));
+    }
+    provider.resetState();
   }
 
   Widget _buildAboutSection(BuildContext context, AppLocalizations l10n) {

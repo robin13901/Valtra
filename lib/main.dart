@@ -18,6 +18,7 @@ import 'providers/gas_provider.dart';
 import 'providers/heating_provider.dart';
 import 'providers/household_provider.dart';
 import 'providers/analytics_provider.dart';
+import 'providers/backup_restore_provider.dart';
 import 'providers/cost_config_provider.dart';
 import 'providers/interpolation_settings_provider.dart';
 import 'providers/locale_provider.dart';
@@ -34,6 +35,7 @@ import 'screens/settings_screen.dart';
 import 'screens/smart_plugs_screen.dart';
 import 'screens/water_screen.dart';
 import 'services/cost_calculation_service.dart';
+import 'services/backup_restore_service.dart';
 import 'services/gas_conversion_service.dart';
 import 'services/interpolation/interpolation_service.dart';
 import 'widgets/household_selector.dart';
@@ -105,6 +107,12 @@ void main() async {
     interpolationService: InterpolationService(),
   );
 
+  // Initialize backup/restore service and provider
+  final backupRestoreService = BackupRestoreService();
+  final backupRestoreProvider = BackupRestoreProvider(
+    service: backupRestoreService,
+  );
+
   // Connect providers to household changes
   if (householdProvider.selectedHouseholdId != null) {
     electricityProvider.setHouseholdId(householdProvider.selectedHouseholdId);
@@ -133,6 +141,7 @@ void main() async {
     analyticsProvider: analyticsProvider,
     smartPlugAnalyticsProvider: smartPlugAnalyticsProvider,
     costConfigProvider: costConfigProvider,
+    backupRestoreProvider: backupRestoreProvider,
   ));
 }
 
@@ -151,6 +160,7 @@ class ValtraApp extends StatefulWidget {
   final AnalyticsProvider analyticsProvider;
   final SmartPlugAnalyticsProvider smartPlugAnalyticsProvider;
   final CostConfigProvider costConfigProvider;
+  final BackupRestoreProvider backupRestoreProvider;
 
   const ValtraApp({
     super.key,
@@ -168,6 +178,7 @@ class ValtraApp extends StatefulWidget {
     required this.analyticsProvider,
     required this.smartPlugAnalyticsProvider,
     required this.costConfigProvider,
+    required this.backupRestoreProvider,
   });
 
   @override
@@ -232,6 +243,8 @@ class _ValtraAppState extends State<ValtraApp> {
             value: widget.smartPlugAnalyticsProvider),
         ChangeNotifierProvider<CostConfigProvider>.value(
             value: widget.costConfigProvider),
+        ChangeNotifierProvider<BackupRestoreProvider>.value(
+            value: widget.backupRestoreProvider),
       ],
       child: Consumer2<ThemeProvider, LocaleProvider>(
         builder: (context, themeProvider, localeProvider, child) {
