@@ -74,10 +74,10 @@ Plans:
 **Plans:** 4 plans
 
 Plans:
-- [ ] 16-01-PLAN.md — BackupRestoreService + unit tests (TDD): export, import, validation, sharing
-- [ ] 16-02-PLAN.md — UI integration: provider, settings screen section, localization (EN + DE), app restart
-- [ ] 16-03-PLAN.md — Coverage analysis + test gap filling (target 80%+)
-- [ ] 16-04-PLAN.md — Integration tests for critical flows + final verification + project state update
+- [x] 16-01-PLAN.md -- BackupRestoreService + unit tests (TDD): export, import, validation, sharing
+- [x] 16-02-PLAN.md -- UI integration: provider, settings screen section, localization (EN + DE), app restart
+- [x] 16-03-PLAN.md -- Coverage analysis + test gap filling (75% coverage, 146 new tests)
+- [x] 16-04-PLAN.md -- Integration tests for critical flows + final verification + project state update
 
 ---
 
@@ -110,8 +110,8 @@ Milestone 1 (v0.1.0) --> Milestone 2 (v0.2.0) --> Milestone 3 (v0.3.0)
 ```
 
 ## Current Status
-- **Completed**: Milestone 1 (v0.1.0), Milestone 2 (v0.2.0)
-- **Active Milestone**: 3 - Polish & Enhancement (v0.3.0)
-- **Active Phase**: 16 - Backup, Testing & Documentation
-- **Next Phase**: None (final phase of Milestone 3)
+- **Completed**: Milestone 1 (v0.1.0), Milestone 2 (v0.2.0), Milestone 3 (v0.3.0)
+- **Active Milestone**: None (all milestones complete)
+- **Active Phase**: None
+- **Next Phase**: None planned
 - **Blockers**: None

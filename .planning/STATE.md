@@ -1,19 +1,23 @@
 # Valtra - Project State
 
 ## Current Status
-- **Milestone**: 3 - Polish & Enhancement (v0.3.0)
+- **Milestone**: 3 - Polish & Enhancement (v0.3.0) -- COMPLETE
 - **Last Shipped**: v0.2.0 (2026-03-07)
-- **Current Phase**: 16 - Backup, Testing & Documentation
-- **Current Plan**: 16-02 (COMPLETE)
+- **Current Phase**: 16 - Backup, Testing & Documentation (COMPLETE)
+- **Current Plan**: 16-04 (COMPLETE)
 - **Last Updated**: 2026-03-08
 
 ## Completed Milestones
-- **Milestone 1**: Core Foundation (v0.1.0) — 7 phases, 313 tests
-- **Milestone 2**: Analytics & Visualization (v0.2.0) — 4 phases, 625 tests
+- **Milestone 1**: Core Foundation (v0.1.0) -- 7 phases, 313 tests
+- **Milestone 2**: Analytics & Visualization (v0.2.0) -- 4 phases, 625 tests
+- **Milestone 3**: Polish & Enhancement (v0.3.0) -- 5 phases, 1017 tests
 
 ## Completed (this milestone)
-- **Phase 14**: UI/UX Polish & Localization — 7 plans, 4 waves, 765 tests
-- **Phase 15**: Data Model & Analytics Rework — 8 plans, 4 waves, 855 tests
+- **Phase 12**: Settings & Configuration -- 668 tests
+- **Phase 13**: Cost Tracking -- 707 tests
+- **Phase 14**: UI/UX Polish & Localization -- 7 plans, 4 waves, 765 tests
+- **Phase 15**: Data Model & Analytics Rework -- 8 plans, 4 waves, 855 tests
+- **Phase 16**: Backup, Testing & Documentation -- 4 plans, 3 waves, 1017 tests
 
 ## Blocked
 _None_
@@ -39,6 +43,8 @@ _None_
 | 2026-03-07 | 15 | Plan 15-08 complete | DB Migration v2->v3 & Integration -- Schema version 2->3 migration: heating meter locations converted to rooms (room_id FK), smart plug consumptions simplified (interval_type/interval_start removed, grouped by month with SUM). Timezone-aware epoch conversion. 13 new migration tests, 855 total tests passing, 0 analyze issues. Phase 15 COMPLETE. |
 | 2026-03-08 | 16 | Plan 16-01 complete | BackupRestoreService TDD -- export, import, validation, sharing. Constructor injection for testability. 19 new tests, 874 total. file_picker dependency added. |
 | 2026-03-08 | 16 | Plan 16-02 complete | BackupRestoreProvider + Settings UI -- provider state machine, backup/restore section in settings (export + import), file picker + confirmation dialog, 13 EN/DE localization keys, wired into MultiProvider. 22 new tests (16 provider + 6 screen), 896 total. |
+| 2026-03-08 | 16 | Plan 16-03 complete | Coverage gap filling -- 146 new tests (German locale, screen coverage), statement coverage improved from 64.8% to 75.0%. 1001 tests total. |
+| 2026-03-08 | 16 | Phase 16 completed | Plan 16-04: 16 integration tests (reading-to-analytics, backup/restore, cost tracking). 1017 total tests, 75% coverage, 0 analyze issues. Phase 16 COMPLETE. Milestone 3 (v0.3.0) COMPLETE. |
 
 ## Key Decisions (carried forward)
 1. **Local-first architecture** - Using Drift/SQLite for offline-capable data storage
@@ -101,4 +107,4 @@ _None_
 4. ~~**Screen test ThemeProvider gap**~~ -- Resolved in Plan 14-07 (all 81 test failures fixed)
 
 ## Next Actions
-_Plan 16-02 complete. Continue with Plan 16-03 (Test coverage + integration tests)._
+_Milestone 3 (v0.3.0) complete. All phases shipped. 1017 tests passing, 75% statement coverage._
