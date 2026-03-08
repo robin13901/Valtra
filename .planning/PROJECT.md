@@ -21,7 +21,6 @@ Managing utility consumption across multiple households requires manual tracking
 - **Database**: Drift (SQLite) - local-first with offline capability
 - **State Management**: Provider
 - **Charts**: fl_chart
-- **CSV Export**: csv + share_plus
 - **UI Components**: LiquidGlass widgets (from XFin reference)
 - **Localization**: Flutter intl (EN/DE)
 
@@ -38,13 +37,25 @@ Managing utility consumption across multiple households requires manual tracking
 
 ## Current State
 
-### Shipped: v0.2.0 - Analytics & Visualization (2026-03-07)
+### Shipped: v0.3.0 - Polish & Enhancement (2026-03-08)
+- 5 phases completed: Settings, Cost Tracking, UI/UX Polish, Data Model Rework, Backup & Testing
+- 1017 tests passing, 75% statement coverage, DB schema v3
+- Theme toggle (light/dark/system), language toggle (DE/EN), cost tracking with tiered pricing
+- LiquidGlass widgets on all screens, German locale formatting, umlaut fixes
+- Interpolation rework (linear only, 1st-of-month boundaries, toggle visibility)
+- Smart plug monthly entry, heating meter room assignment, gas analysis in m³
+- Database backup/restore via file export/import
+
+<details>
+<summary>v0.2.0 - Analytics & Visualization (2026-03-07)</summary>
+
 - 4 phases completed: Interpolation engine, analytics hub + monthly analytics, yearly analytics + CSV export, smart plug analytics
 - 71 source files (21,131 LOC), 55 test files (14,156 LOC), 625 tests passing
 - InterpolationService (linear + step), GasConversionService, AnalyticsProvider, SmartPlugAnalyticsProvider
 - Analytics hub, monthly/yearly analytics screens, smart plug pie charts
 - CSV export via share_plus, custom date ranges, year-over-year comparison
 - Full EN/DE localization
+</details>
 
 <details>
 <summary>v0.1.0 - Core Foundation (2026-03-07)</summary>
@@ -56,12 +67,13 @@ Managing utility consumption across multiple households requires manual tracking
 - Architecture: Drift DAOs -> Provider state management -> Material 3 + LiquidGlass UI
 </details>
 
-### Next: v0.3.0 - Polish & Enhancement -- COMPLETE
-- Phase 12: Settings & Configuration (theme toggle, cost configuration, app preferences) -- COMPLETE
-- Phase 13: Cost Tracking (price models, cost calculations, cost display in analytics) -- COMPLETE
-- Phase 14: UI/UX Polish & Localization (LiquidGlass, German formatting, umlaut fixes, cleanup) -- COMPLETE
-- Phase 15: Data Model & Analytics Rework (interpolation rework, smart plug entry, heating rooms, yearly analysis) -- COMPLETE (855 tests, DB schema v3)
-- Phase 16: Backup, Testing & Documentation (DB export/import, 75% coverage, 16 integration tests) -- COMPLETE (1017 tests)
+### Next: v0.4.0 - UX Overhaul
+- Phase 17: Home Screen & Global UI Fixes (dropdown color, remove bottom nav, reorder tiles, remove Analyse tile, remove CSV export, form button cleanup, global date format)
+- Phase 18: Cost Settings & Household Configuration (per-household cost profile history, field rename, move to household settings)
+- Phase 19: Electricity Screen Overhaul (bottom nav list/analysis, LiquidGlass FAB, single analysis page, chart fix, kWh/€ toggle)
+- Phase 20: Gas Screen Overhaul (mirror electricity architecture, m³/€ toggle)
+- Phase 21: Smart Plug Screen Overhaul (bottom nav, monthly-only analysis, renamed stats, UI reorder, percentages)
+- Phase 22: Water & Heating Screen Overhaul (bottom nav, analysis pages, unit/€ toggle, interpolated deltas)
 
 ## Success Criteria
 1. ~~All meter types can be recorded with timestamps~~ (v0.1.0)
@@ -69,7 +81,7 @@ Managing utility consumption across multiple households requires manual tracking
 3. ~~Interpolation produces accurate monthly boundary values with configurable methods~~ (v0.2.0)
 4. ~~Multi-household data remains properly isolated~~ (v0.1.0)
 5. ~~Analytics views show meaningful consumption insights with line/bar/pie charts~~ (v0.2.0)
-6. ~~CSV export works for all meter types via system share sheet~~ (v0.2.0)
+6. ~~CSV export works for all meter types via system share sheet~~ (v0.2.0 — removed in v0.4.0)
 7. ~~80%+ test coverage maintained~~ (v0.3.0 -- 75% achieved, limited by generated l10n files)
 8. ~~Cost tracking shows accurate cost calculations with tiered pricing~~ (v0.3.0)
 9. ~~Dark/light/system theme toggle works with full UI consistency~~ (v0.3.0)
@@ -78,6 +90,11 @@ Managing utility consumption across multiple households requires manual tracking
 12. ~~Interpolation reworked: values at 1st of month 00:00, toggle visibility~~ (v0.3.0)
 13. ~~Heating meters assigned to rooms with per-room energy ratio support~~ (v0.3.0)
 14. ~~In-app language toggle (DE/EN) works independently of device locale~~ (v0.3.0)
+15. Every meter screen has unified list/analysis bottom navigation with LiquidGlass FAB (v0.4.0)
+16. Per-household cost profile history with date-based lookup (v0.4.0)
+17. kWh/€ (or m³/€) toggle on all meter analysis pages (v0.4.0)
+18. Year comparison chart shows previous year data at correct month positions (v0.4.0)
+19. Global date format "dd.MM.yyyy, HH:mm Uhr" with localized suffix (v0.4.0)
 
 ## Repository
 - Location: c:\SAPDevelop\Privat\Valtra

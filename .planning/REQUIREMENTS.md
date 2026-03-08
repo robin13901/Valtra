@@ -1,270 +1,282 @@
-# Valtra v0.3.0 Requirements — Polish & Enhancement
+# Valtra v0.4.0 Requirements — UX Overhaul
 
-**Milestone**: 3 — Polish & Enhancement (v0.3.0)
+**Milestone**: 4 — UX Overhaul (v0.4.0)
 **Status**: IN PROGRESS
-**Predecessor**: v0.2.0 — Analytics & Visualization (4 phases, 625 tests)
+**Predecessor**: v0.3.0 — Polish & Enhancement (5 phases, 1017 tests)
 
 ---
 
 ## Functional Requirements
 
-### FR-10: Settings & Configuration
+### FR-15: Home Screen & Global UI Fixes
 
-#### FR-10.1: Theme Management
-- [ ] **FR-10.1.1**: Provide 3-way theme toggle: Light / Dark / System (default: System)
-- [ ] **FR-10.1.2**: Persist theme selection across app restarts (SharedPreferences)
-- [ ] **FR-10.1.3**: Dark theme uses Ultra Violet/Lemon Chiffon palette with inverted contrast
-- [ ] **FR-10.1.4**: All screens and components render correctly in both light and dark modes
-- [ ] **FR-10.1.5**: Theme changes apply immediately without app restart
+#### FR-15.1: Household Dropdown Text Color
+- [ ] **FR-15.1.1**: Fix household dropdown text in AppBar — dark/black text in light mode (currently white on white, unreadable)
+- [ ] **FR-15.1.2**: Maintain current readable text color in dark mode
 
-#### FR-10.2: Settings Screen
-- [ ] **FR-10.2.1**: Dedicated settings screen accessible from home screen
-- [ ] **FR-10.2.2**: Theme toggle section with visual preview
-- [ ] **FR-10.2.3**: Gas kWh conversion factor configuration (currently in InterpolationSettingsProvider — move to settings)
-- [ ] **FR-10.2.4**: Interpolation method configuration per meter type
-- [ ] **FR-10.2.5**: App version and about section
+#### FR-15.2: Remove Home Screen Bottom Navigation
+- [ ] **FR-15.2.1**: Remove the GlassBottomNav from the home screen entirely
+- [ ] **FR-15.2.2**: Home screen is now a single scrollable page with the tile grid only
 
-### FR-11: Cost Tracking
+#### FR-15.3: Remove Global Analyse Tile & Screen
+- [ ] **FR-15.3.1**: Remove the "Analyse" tile from the home screen grid
+- [ ] **FR-15.3.2**: Remove the AnalyticsScreen (analytics hub) and all navigation to it
+- [ ] **FR-15.3.3**: Clean up related routes, imports, and dead code
 
-#### FR-11.1: Cost Configuration
-- [ ] **FR-11.1.1**: Configure price per unit for each meter type (electricity: €/kWh, gas: €/kWh or €/m³, water: €/m³)
-- [ ] **FR-11.1.2**: Configure monthly standing charge per meter type (Grundgebühr)
-- [ ] **FR-11.1.3**: Support tiered pricing with up to 3 tiers (e.g., first 100 kWh at rate A, next 200 at rate B, rest at rate C)
-- [ ] **FR-11.1.4**: Persist cost configuration per household
-- [ ] **FR-11.1.5**: Allow different pricing for different time periods (e.g., price change on 2026-01-01)
+#### FR-15.4: Reorder Home Screen Tiles
+- [ ] **FR-15.4.1**: Row 1 (left to right): Strom, Smart Home
+- [ ] **FR-15.4.2**: Row 2 (left to right): Gas, Heizung
+- [ ] **FR-15.4.3**: Row 3 (center): Wasser (single tile, centered)
+- [ ] **FR-15.4.4**: Maintain existing tile design (GlassCard, icons, colors) — do NOT change visual design
 
-#### FR-11.2: Cost Calculation
-- [ ] **FR-11.2.1**: Calculate monthly cost from consumption delta × price per unit + standing charge
-- [ ] **FR-11.2.2**: Apply tiered pricing correctly (cumulative tiers per billing period)
-- [ ] **FR-11.2.3**: Handle gas cost in both m³ and kWh modes (using existing GasConversionService)
-- [ ] **FR-11.2.4**: CostCalculationService as pure business logic with no UI dependencies
+#### FR-15.5: Remove "Save & Continue" from Forms
+- [ ] **FR-15.5.1**: Remove "Save & Continue" / "Speichern und Weiter" button from all reading form dialogs
+- [ ] **FR-15.5.2**: Keep only "Cancel" and "Save" buttons
+- [ ] **FR-15.5.3**: Cancel and Save buttons must be side-by-side (horizontal), not stacked vertically
+- [ ] **FR-15.5.4**: Remove QuickEntryMixin and related quick-entry logic
 
-#### FR-11.3: Cost Display
-- [ ] **FR-11.3.1**: Show cost alongside consumption in monthly analytics (e.g., "245 kWh — €78.50")
-- [ ] **FR-11.3.2**: Show cost in yearly analytics with year-over-year cost comparison
-- [ ] **FR-11.3.3**: Cost summary card on analytics hub showing total monthly/yearly costs
-- [ ] **FR-11.3.4**: Cost column in CSV export (optional, when pricing configured)
+#### FR-15.6: Global Date/Time Format
+- [ ] **FR-15.6.1**: All date/time displays must use format: "dd.MM.yyyy, HH:mm Uhr"
+- [ ] **FR-15.6.2**: "Uhr" must be a localized string (DE = "Uhr", EN = "")
+- [ ] **FR-15.6.3**: In English locale, format becomes "dd.MM.yyyy, HH:mm" (no suffix)
+- [ ] **FR-15.6.4**: Apply consistently across all screens (reading lists, cards, charts, forms)
 
-### FR-12: UI/UX Polish & Localization
+#### FR-15.7: Remove CSV Export Feature
+- [ ] **FR-15.7.1**: Remove CSV export button from all analytics screens
+- [ ] **FR-15.7.2**: Remove CSV export service/logic
+- [ ] **FR-15.7.3**: Remove csv and share_plus dependencies (if only used for CSV — check backup uses share_plus)
+- [ ] **FR-15.7.4**: Clean up related l10n keys, imports, and dead code
 
-#### FR-12.1: Home Screen Cleanup
-- [x] **FR-12.1.1**: Remove divider before Analyse button (direct placement)
-- [x] **FR-12.1.2**: Remove non-functional FAB on home screen
-- [x] **FR-12.1.3**: Apply GlassBottomNav as primary navigation (replacing current home screen chips)
-- [x] **FR-12.1.4**: Apply buildGlassFAB to all screens with floating action buttons
-- [x] **FR-12.1.5**: Apply GlassCard to all list items and summary cards
-- [x] **FR-12.1.6**: Apply buildGlassAppBar to all screens
+---
 
-#### FR-12.2: Number & Date Formatting (German Locale)
-- [x] **FR-12.2.1**: German number format everywhere: comma as decimal separator, dot as thousands separator (e.g., "1.234,5 kWh")
-- [x] **FR-12.2.2**: Time display with "Uhr" suffix (e.g., "9:43 Uhr")
-- [x] **FR-12.2.3**: Month names localized to device language (German: "Marz" not "March")
-- [x] **FR-12.2.4**: Fix umlaut encoding everywhere — use a/o/u, never ae/oe/ue (Uber, Zahler, jahrlich, etc.)
+### FR-16: Cost Settings & Household Configuration
 
-#### FR-12.3: UI Element Cleanup
-- [x] **FR-12.3.1**: Remove unit badges (kWh, m³) from all app bar headers (unit shown with each value already)
-- [x] **FR-12.3.2**: Remove all non-clickable info icons (settings "Über" section, smart plug "Sonstige" kWh)
-- [x] **FR-12.3.3**: Remove too-long hints in meter reading input fields (no hint needed)
-- [x] **FR-12.3.4**: Style date/time picker fields as outlined input fields (matching meter reading field styling)
-- [x] **FR-12.3.5**: No pre-selected room when adding new smart plug
-- [x] **FR-12.3.6**: No hint text in smart plug name field
-- [x] **FR-12.3.7**: Remove interpolation method setting from settings (only linear, remove step function)
+#### FR-16.1: Per-Household Cost Profile History
+- [ ] **FR-16.1.1**: Support multiple cost configurations per meter type per household (history of price changes)
+- [ ] **FR-16.1.2**: Each cost profile has a "valid from" date (Gültig ab)
+- [ ] **FR-16.1.3**: Cost calculation uses the correct profile for each time period based on valid-from dates
+- [ ] **FR-16.1.4**: Example: electricity Arbeitspreis 0.25 €/kWh from 25.07.2024, then 0.27 €/kWh from 01.01.2026
 
-#### FR-12.4: Dark Mode Fixes
-- [x] **FR-12.4.1**: Black text on Lemon Chiffon accent backgrounds (white text unreadable)
-- [ ] **FR-12.4.2**: Ensure all glass effects render correctly in both light and dark themes
-- [x] **FR-12.4.3**: Smart plug detail: room subtitle readable in light theme (currently too small/thin)
+#### FR-16.2: Rename Cost Fields
+- [ ] **FR-16.2.1**: "Grundgebühr pro Monat" → "Grundpreis pro Jahr" (base price per year, not per month)
+- [ ] **FR-16.2.2**: "Preis pro Einheit" → "Arbeitspreis" (unit price → working price)
+- [ ] **FR-16.2.3**: Update all l10n keys (EN + DE) accordingly
+- [ ] **FR-16.2.4**: Update cost calculation to use annual base price (divide by 12 for monthly)
 
-#### FR-12.5: Water Screen Fixes
-- [x] **FR-12.5.1**: Use filled icons everywhere (header AND entries) — cold water blue, hot water red, other gray
-- [x] **FR-12.5.2**: Replace water type SegmentedButton with Dropdown (text wraps badly: "Kaltwe-/asar")
+#### FR-16.3: Cost Form Field Order
+- [ ] **FR-16.3.1**: Field order in cost config form: 1) Gültig ab (date), 2) Grundpreis pro Jahr, 3) Arbeitspreis
 
-#### FR-12.6: Analysis Screen Cleanup
-- [x] **FR-12.6.1**: Remove "Tagesverlauf" (daily view) from all analysis screens (monthly readings only)
-- [x] **FR-12.6.2**: Remove custom date range feature (calendar icon in app bar) from all analysis screens
-- [x] **FR-12.6.3**: Remove "Benutzerdefiniert" tab from smart plug analysis
-- [x] **FR-12.6.4**: Rename "Monatsvergleich" to "Monatsverlauf"
-- [x] **FR-12.6.5**: Analysis screens default to current month (not arbitrary past month)
+#### FR-16.4: Cost Config Card Design
+- [ ] **FR-16.4.1**: Card design like water meter cards — main item header (e.g., "Strom") with expandable sub-entries for each cost profile
+- [ ] **FR-16.4.2**: Each sub-entry shows valid-from date, Grundpreis, Arbeitspreis
+- [ ] **FR-16.4.3**: Support add/edit/delete of individual cost profiles within the card
 
-#### FR-12.7: Language Setting
-- [x] **FR-12.7.1**: Add language toggle (Deutsch / English) to settings screen
-- [x] **FR-12.7.2**: Persist language selection across app restarts
-- [x] **FR-12.7.3**: Language change applies immediately without app restart
+#### FR-16.5: Move to Household Settings
+- [ ] **FR-16.5.1**: Cost configuration moves from general settings to household-specific settings
+- [ ] **FR-16.5.2**: Each household has its own cost profiles for electricity, gas, and water
+- [ ] **FR-16.5.3**: Accessible via household management or a dedicated household settings section
 
-### FR-13: Data Model & Analytics Rework
+---
 
-#### FR-13.1: Interpolation Rework
-- [ ] **FR-13.1.1**: Calculate interpolated values for the 1st of each month at 00:00, from the two nearest real readings
-- [ ] **FR-13.1.2**: Only create interpolated value when real readings exist both before and after the month boundary
-- [ ] **FR-13.1.3**: Monthly consumption = difference between interpolated values at consecutive month starts
-- [ ] **FR-13.1.4**: Toggle in readings list to show/hide interpolated values (default: hidden)
-- [ ] **FR-13.1.5**: Interpolated values visually distinct (different color) when shown in list
-- [ ] **FR-13.1.6**: Remove step function interpolation entirely (only linear)
+### FR-17: Electricity Screen Overhaul
 
-#### FR-13.2: Smart Plug Entry Rework
-- [ ] **FR-13.2.1**: Remove interval type selection from smart plug reading entry
-- [ ] **FR-13.2.2**: Remove start date field from smart plug reading entry
-- [ ] **FR-13.2.3**: Add month/year picker (e.g., "März 2026") as the only date input
-- [ ] **FR-13.2.4**: Entry flow: select month → enter kWh value → save (monthly consumption for that plug)
+#### FR-17.1: Bottom Navigation (List/Analysis)
+- [ ] **FR-17.1.1**: Add LiquidGlass bottom navigation bar (like XFin Assets screen pattern)
+- [ ] **FR-17.1.2**: Left nav item = "Analyse", Right nav item = "Liste"
+- [ ] **FR-17.1.3**: Default view = Liste (right tab)
+- [ ] **FR-17.1.4**: Use IndexedStack for tab content (preserves state when switching)
 
-#### FR-13.3: Heating Meter Rework
-- [ ] **FR-13.3.1**: Remove optional "Standort" (location) text field from heating meters
-- [ ] **FR-13.3.2**: Add mandatory room assignment (like smart plugs — select from room list)
-- [ ] **FR-13.3.3**: Heating meters organized by room (same UI pattern as smart plugs)
-- [ ] **FR-13.3.4**: Database migration: add room_id FK to heating meters, remove location field
-- [ ] **FR-13.3.5**: Support use-case 1: own gas meter → direct monthly readings for household
-- [ ] **FR-13.3.6**: Support use-case 2: central gas meter (shared building) + per-room heating meters showing percentage/ratio of total heating energy
+#### FR-17.2: LiquidGlass FAB
+- [ ] **FR-17.2.1**: Add button uses LiquidGlass FAB style (like XFin buildCircleButton)
+- [ ] **FR-17.2.2**: FAB only visible when on Liste tab (rightVisibleForIndices pattern)
+- [ ] **FR-17.2.3**: FAB hidden when on Analyse tab
 
-#### FR-13.4: Gas Analysis Fix
-- [ ] **FR-13.4.1**: Display gas consumption in m³ (as entered) instead of converting to kWh in analysis
+#### FR-17.3: Remove App Bar Analysis Navigation
+- [ ] **FR-17.3.1**: Remove analytics icon from electricity screen app bar (now accessible via bottom nav)
 
-#### FR-13.5: Yearly Analysis Rework
-- [ ] **FR-13.5.1**: For current year: extrapolate consumption to end of year based on data so far
-- [ ] **FR-13.5.2**: Show previous year's consumption alongside current year for comparison
-- [ ] **FR-13.5.3**: Monthly breakdown within the displayed year (bar chart with 12 months)
+#### FR-17.4: Single Analysis Page
+- [ ] **FR-17.4.1**: Remove monthly analytics view — only keep yearly-style analysis
+- [ ] **FR-17.4.2**: Rename from "Jahresanalyse" to simply "Analyse"
+- [ ] **FR-17.4.3**: Analysis page content: year navigation, summary card, monthly bar chart, year comparison chart
 
-#### FR-13.6: Data Entry Enhancements
-- [ ] **FR-13.6.1**: Quick entry mode: batch-add multiple readings without closing dialog
-- [ ] **FR-13.6.2**: Reading validation: new reading >= previous for cumulative meters
-- [ ] **FR-13.6.3**: Confirmation dialog before deleting readings
+#### FR-17.5: Fix Year Comparison Chart
+- [ ] **FR-17.5.1**: Previous year line must start at the correct month (first month with data), not month 1
+- [ ] **FR-17.5.2**: Example: if previous year data starts July, the line starts at July position (not shifted to January)
+- [ ] **FR-17.5.3**: Months without data should have no line segment (gap or null)
 
-### FR-14: Backup & Restore
+#### FR-17.6: kWh/Euro Toggle
+- [ ] **FR-17.6.1**: Toggle switch at top of analysis page or in app bar to switch between kWh and Euro (€) views
+- [ ] **FR-17.6.2**: When toggled to €: all charts and summary values show cost instead of consumption
+- [ ] **FR-17.6.3**: Cost calculated using household-specific cost profiles (FR-16) for the correct time period
+- [ ] **FR-17.6.4**: Toggle label: "kWh" / "€" (or localized equivalent)
 
-#### FR-14.1: Database Export
-- [ ] **FR-14.1.1**: Export full SQLite database file via system share sheet
-- [ ] **FR-14.1.2**: Export filename includes timestamp (e.g., valtra_backup_20260307_143000.sqlite)
-- [ ] **FR-14.1.3**: Export accessible from settings screen
-- [ ] **FR-14.1.4**: Show export progress and success/failure feedback
+#### FR-17.7: Monthly Values from Interpolation
+- [ ] **FR-17.7.1**: Monthly consumption values always calculated from interpolated value differences
+- [ ] **FR-17.7.2**: Monthly value = interpolated value at end-of-month boundary minus interpolated value at start-of-month boundary
 
-#### FR-14.2: Database Import
-- [ ] **FR-14.2.1**: Import database file from device file picker
-- [ ] **FR-14.2.2**: Validate imported file is a valid Valtra database before replacing
-- [ ] **FR-14.2.3**: Confirm import with warning that current data will be replaced
-- [ ] **FR-14.2.4**: Restart app state after successful import (re-initialize providers)
-- [ ] **FR-14.2.5**: Automatic backup of current database before import (safety net)
+---
+
+### FR-18: Gas Screen Overhaul
+
+#### FR-18.1: Mirror Electricity Architecture
+- [ ] **FR-18.1.1**: Exact same bottom navigation pattern (Analyse left, Liste right, default Liste)
+- [ ] **FR-18.1.2**: LiquidGlass FAB visible on Liste only
+- [ ] **FR-18.1.3**: Remove app bar analysis icon
+- [ ] **FR-18.1.4**: Single analysis page (renamed to "Analyse")
+- [ ] **FR-18.1.5**: Fix year comparison chart month alignment (same as FR-17.5)
+- [ ] **FR-18.1.6**: m³/€ toggle (gas displays in m³, not kWh)
+- [ ] **FR-18.1.7**: Monthly values from interpolated deltas
+
+---
+
+### FR-19: Smart Plug Screen Overhaul
+
+#### FR-19.1: Bottom Navigation
+- [ ] **FR-19.1.1**: Add bottom navigation (Analyse left, Liste right, default Liste)
+- [ ] **FR-19.1.2**: LiquidGlass FAB visible on Liste only
+- [ ] **FR-19.1.3**: Remove app bar analytics icon (pie_chart)
+
+#### FR-19.2: Monthly-Only Analysis
+- [ ] **FR-19.2.1**: No yearly/monthly tab choice — only monthly view
+- [ ] **FR-19.2.2**: Start on current month
+- [ ] **FR-19.2.3**: Month navigation with arrow buttons (previous/next)
+
+#### FR-19.3: Rename Statistics
+- [ ] **FR-19.3.1**: "Gesamtstrom" → "Gesamtverbrauch" (total consumption from main meter)
+- [ ] **FR-19.3.2**: "Gesamt erfasst" → "Davon erfasst" (of which captured)
+- [ ] **FR-19.3.3**: "Sonstiger nicht erfasst" → "Nicht erfasst" (not captured)
+
+#### FR-19.4: UI Element Order
+- [ ] **FR-19.4.1**: Order from top to bottom:
+  1. Month navigation (arrows + month label)
+  2. Statistics card (Gesamtverbrauch, Davon erfasst, Nicht erfasst)
+  3. Section title "Verbrauch nach Raum"
+  4. Pie chart (by room)
+  5. Room list with consumption values + percentage
+  6. Section title "Verbrauch nach Steckdose"
+  7. Pie chart (by plug)
+  8. Plug list with consumption values
+
+#### FR-19.5: List Enhancements
+- [ ] **FR-19.5.1**: Room breakdown list shows both kWh value and percentage (e.g., "12.5 kWh — 35%")
+- [ ] **FR-19.5.2**: Reduced padding between list items for denser layout
+
+---
+
+### FR-20: Water Screen Overhaul
+
+#### FR-20.1: Bottom Navigation Pattern
+- [ ] **FR-20.1.1**: Add bottom navigation (Analyse left, Liste right, default Liste)
+- [ ] **FR-20.1.2**: LiquidGlass FAB visible on Liste only
+- [ ] **FR-20.1.3**: Analysis page with same pattern as electricity (year nav, summary, charts, comparison)
+
+#### FR-20.2: Analysis Features
+- [ ] **FR-20.2.1**: m³/€ toggle for consumption vs. cost view
+- [ ] **FR-20.2.2**: Year comparison chart with correct month alignment
+- [ ] **FR-20.2.3**: Monthly values from interpolated deltas at month boundaries
+
+---
+
+### FR-21: Heating Screen Overhaul
+
+#### FR-21.1: Bottom Navigation Pattern
+- [ ] **FR-21.1.1**: Add bottom navigation (Analyse left, Liste right, default Liste)
+- [ ] **FR-21.1.2**: LiquidGlass FAB visible on Liste only
+- [ ] **FR-21.1.3**: Analysis page with same pattern as electricity (year nav, summary, charts, comparison)
+
+#### FR-21.2: Analysis Features
+- [ ] **FR-21.2.1**: kWh/€ toggle for consumption vs. cost view
+- [ ] **FR-21.2.2**: Year comparison chart with correct month alignment
+- [ ] **FR-21.2.3**: Monthly values from interpolated deltas at month boundaries
 
 ---
 
 ## Non-Functional Requirements
 
-### NFR-8: Theme Consistency
-- [ ] **NFR-8.1**: All screens render correctly in light, dark, and system-follow modes
-- [ ] **NFR-8.2**: No hardcoded colors — all colors from Theme.of(context) or AppColors
-- [ ] **NFR-8.3**: Charts (fl_chart) adapt colors to current theme
-- [ ] **NFR-8.4**: Glass effects maintain visual quality in both themes
-- [ ] **NFR-8.5**: Text on accent-colored backgrounds must be black (not white) for readability
+### NFR-13: Design Preservation
+- [ ] **NFR-13.1**: Do NOT change any visual design elements unless explicitly requested
+- [ ] **NFR-13.2**: Maintain existing GlassCard, color scheme, and layout patterns
+- [ ] **NFR-13.3**: New bottom navigation follows XFin LiquidGlass pattern exactly
 
-### NFR-9: Performance
-- [ ] **NFR-9.1**: Cost calculations complete within 100ms for 12 months of data
-- [ ] **NFR-9.2**: Database export completes within 5 seconds
-- [ ] **NFR-9.3**: Database import + restart completes within 10 seconds
-- [ ] **NFR-9.4**: Theme switching is instantaneous (no visible delay)
-- [ ] **NFR-9.5**: Interpolation calculations complete within 100ms for 24 months of data
+### NFR-14: Localization
+- [ ] **NFR-14.1**: All new strings externalized to ARB files (EN + DE)
+- [ ] **NFR-14.2**: "Uhr" time suffix is a localized string (DE = "Uhr", EN = "")
+- [ ] **NFR-14.3**: Renamed cost field labels localized in both languages
+- [ ] **NFR-14.4**: Smart plug stat labels localized in both languages
 
-### NFR-10: Testing
-- [ ] **NFR-10.1**: Achieve 80%+ statement coverage across the codebase
-- [ ] **NFR-10.2**: Unit tests for CostCalculationService including all tier scenarios
-- [ ] **NFR-10.3**: Widget tests for settings screen, cost display, and backup/restore flows
-- [ ] **NFR-10.4**: Integration tests for critical user flows (add reading → view analytics → see cost)
-- [ ] **NFR-10.5**: All existing 707 tests continue to pass
+### NFR-15: Testing
+- [ ] **NFR-15.1**: All existing 1017 tests continue to pass
+- [ ] **NFR-15.2**: New tests for bottom navigation switching behavior
+- [ ] **NFR-15.3**: New tests for cost profile history CRUD
+- [ ] **NFR-15.4**: New tests for kWh/€ toggle state management
+- [ ] **NFR-15.5**: New tests for date format changes
+- [ ] **NFR-15.6**: Maintain 75%+ statement coverage
 
-### NFR-11: Localization (Continuation)
-- [ ] **NFR-11.1**: All new strings externalized to ARB files (EN + DE)
-- [ ] **NFR-11.2**: Number formatting follows device locale (German: 1.234,5 — English: 1,234.5)
-- [ ] **NFR-11.3**: Currency formatting follows device locale (€ for DE, user-configurable)
-- [ ] **NFR-11.4**: Settings labels, cost terminology, backup messages all localized
-- [ ] **NFR-11.5**: Umlauts rendered correctly everywhere (ä/ö/ü, never ae/oe/ue)
-- [ ] **NFR-11.6**: Month names, weekdays localized via intl package
-- [ ] **NFR-11.7**: In-app language toggle (DE/EN) independent of device locale
-
-### NFR-12: Data Integrity
-- [ ] **NFR-12.1**: Cost configurations stored in database with household isolation
-- [ ] **NFR-12.2**: Backup file contains complete database state (all tables, all households)
-- [ ] **NFR-12.3**: Import validates schema compatibility before replacing database
-- [ ] **NFR-12.4**: Heating meter room assignments maintain referential integrity (FK to rooms table)
+### NFR-16: Code Quality
+- [ ] **NFR-16.1**: Remove all dead code from CSV export removal
+- [ ] **NFR-16.2**: Remove all dead code from analytics hub removal
+- [ ] **NFR-16.3**: Shared bottom nav pattern reused across all 5 meter screens
+- [ ] **NFR-16.4**: Zero flutter analyze issues
 
 ---
 
 ## User Acceptance Criteria
 
-### UAC-M3-1: Theme Switching
-**Given** a user on any screen
-**When** they change theme in settings (Light → Dark → System)
-**Then** the entire app updates immediately with correct colors, glass effects, and chart styling — text on accent backgrounds is always readable
+### UAC-M4-1: Home Screen
+**Given** the app opens on the home screen
+**When** viewing in light mode
+**Then** household dropdown text is dark/black and readable; no bottom navigation bar exists; 5 tiles shown (no Analyse) in order: [Strom, Smart Home] [Gas, Heizung] [Wasser centered]
 
-### UAC-M3-2: Cost Configuration
-**Given** a user with electricity readings
-**When** they configure €0.30/kWh base rate + €12.50/month standing charge + tiered pricing
-**Then** the monthly analytics shows correct cost breakdown alongside consumption
+### UAC-M4-2: Electricity List/Analysis Navigation
+**Given** the user taps "Strom" on the home screen
+**When** the electricity screen opens
+**Then** a LiquidGlass bottom nav shows "Analyse" (left) and "Liste" (right); default view is Liste; FAB is visible on Liste and hidden on Analyse
 
-### UAC-M3-3: Cost in Analytics
-**Given** configured pricing for electricity and gas
-**When** viewing yearly analytics
-**Then** cost totals and year-over-year cost comparison are displayed accurately
+### UAC-M4-3: Electricity Analysis Page
+**Given** the user switches to Analysis tab on electricity
+**When** viewing the analysis
+**Then** a single analysis page shows year navigation, monthly bar chart, year comparison chart; a kWh/€ toggle switches all values between consumption and cost
 
-### UAC-M3-4: LiquidGlass Navigation
-**Given** the app is open
-**When** navigating between sections
-**Then** GlassBottomNav provides smooth navigation with glass effects in both themes
+### UAC-M4-4: Year Comparison Chart Fix
+**Given** previous year data starts in July (no data Jan-Jun)
+**When** viewing the year comparison chart
+**Then** the previous year line begins at July position, not January
 
-### UAC-M3-5: German Number Formatting
-**Given** the app language is set to Deutsch
-**When** viewing any meter reading or consumption value
-**Then** numbers use comma as decimal separator, dot as thousands separator (e.g., "1.234,5 kWh"), time shows "Uhr" suffix
+### UAC-M4-5: Gas Screen
+**Given** the user taps "Gas" on the home screen
+**Then** same architecture as electricity: bottom nav, single analysis, m³/€ toggle, correct chart alignment
 
-### UAC-M3-6: Reading Validation
-**Given** a meter with a previous reading of 1000 kWh
-**When** the user enters a new reading of 950 kWh
-**Then** a validation error is shown (reading cannot decrease for cumulative meters)
+### UAC-M4-6: Smart Plug Analysis
+**Given** the user switches to Analysis on smart plugs
+**Then** monthly-only view with month navigation; stats show "Gesamtverbrauch", "Davon erfasst", "Nicht erfasst"; room breakdown with pie chart + list with percentages; plug breakdown with pie chart + list
 
-### UAC-M3-7: Database Backup
-**Given** a user with data across multiple households
-**When** they export the database from settings
-**Then** a .sqlite file is shared via system share sheet with all data intact
+### UAC-M4-7: Water Screen
+**Given** the user taps "Wasser" on the home screen
+**Then** bottom nav with Liste/Analyse; analysis with m³/€ toggle; monthly values from interpolated deltas
 
-### UAC-M3-8: Database Restore
-**Given** a user with a backup file
-**When** they import it via settings
-**Then** the app replaces the current database, restarts state, and shows the restored data
+### UAC-M4-8: Heating Screen
+**Given** the user taps "Heizung" on the home screen
+**Then** bottom nav with Liste/Analyse; analysis with kWh/€ toggle; monthly values from interpolated deltas
 
-### UAC-M3-9: Settings Screen
-**Given** a user on the home screen
-**When** they navigate to settings
-**Then** they see theme toggle, language toggle, cost configuration, gas conversion factor, backup/restore, and app info (no interpolation method, no non-clickable icons)
+### UAC-M4-9: Form Dialogs
+**Given** the user opens any reading form dialog
+**Then** only "Cancel" and "Save" buttons shown side-by-side; no "Save & Continue" button
 
-### UAC-M3-10: Test Coverage
-**Given** all new code from Milestone 3
-**Then** Codecov reports 80%+ statement coverage with all tests passing
+### UAC-M4-10: Date/Time Format
+**Given** any date/time displayed in the app
+**When** locale is German
+**Then** format is "dd.MM.yyyy, HH:mm Uhr"
+**When** locale is English
+**Then** format is "dd.MM.yyyy, HH:mm"
 
-### UAC-M3-11: Monthly Interpolation
-**Given** meter readings on 1.12.2025 and 1.1.2026 and 1.2.2026
-**When** viewing the readings list with interpolation toggle ON
-**Then** interpolated values for 1.1.2026 00:00 and 1.2.2026 00:00 are shown in a distinct color, and monthly consumption in analytics uses these interpolated boundaries
+### UAC-M4-11: Cost Configuration
+**Given** a user in household settings
+**When** configuring electricity costs
+**Then** they see a card with "Strom" header and sub-entries for each cost profile; each profile shows Gültig ab, Grundpreis pro Jahr, Arbeitspreis; multiple profiles can be added with different valid-from dates
 
-### UAC-M3-12: Smart Plug Monthly Entry
-**Given** a user adding smart plug consumption
-**When** they tap the add button
-**Then** they see a month/year picker and a value field (no interval type, no start date)
-
-### UAC-M3-13: Heating Meter Rooms
-**Given** a user adding a heating meter
-**When** they fill the form
-**Then** they must select a room (mandatory) — no "Standort" text field; heating meters are grouped by room like smart plugs
-
-### UAC-M3-14: Gas Analysis in m³
-**Given** gas meter readings entered in m³
-**When** viewing gas analysis
-**Then** consumption is displayed in m³ (not converted to kWh)
-
-### UAC-M3-15: Yearly Analysis
-**Given** readings for the current year
-**When** viewing yearly analysis
-**Then** extrapolated consumption to year-end is shown, with previous year comparison and monthly breakdown
-
-### UAC-M3-16: Language Toggle
-**Given** a user in settings
-**When** they switch language from Deutsch to English (or vice versa)
-**Then** the entire app updates immediately to the selected language
+### UAC-M4-12: CSV Export Removed
+**Given** any screen in the app
+**Then** no CSV export button or functionality exists
 
 ---
 
@@ -272,13 +284,14 @@
 
 | Requirement | Phase(s) | UAC | Priority |
 |-------------|----------|-----|----------|
-| FR-10 (Settings & Theme) | 12 | UAC-M3-1, UAC-M3-9 | High |
-| FR-11 (Cost Tracking) | 13 | UAC-M3-2, UAC-M3-3 | High |
-| FR-12 (UI/UX Polish & Localization) | 14 | UAC-M3-4, UAC-M3-5, UAC-M3-9, UAC-M3-16 | High |
-| FR-13 (Data Model & Analytics Rework) | 15 | UAC-M3-11, UAC-M3-12, UAC-M3-13, UAC-M3-14, UAC-M3-15 | High |
-| FR-14 (Backup & Restore) | 16 | UAC-M3-7, UAC-M3-8 | Medium |
-| NFR-8 (Theme Consistency) | 12, 14 | UAC-M3-1 | High |
-| NFR-9 (Performance) | 13, 15, 16 | — | Medium |
-| NFR-10 (Testing) | 16 | UAC-M3-10 | High |
-| NFR-11 (Localization) | 14-16 | UAC-M3-5, UAC-M3-16 | High |
-| NFR-12 (Data Integrity) | 13, 15, 16 | UAC-M3-8, UAC-M3-13 | High |
+| FR-15 (Home Screen & Global UI Fixes) | 17 | UAC-M4-1, UAC-M4-9, UAC-M4-10, UAC-M4-12 | High |
+| FR-16 (Cost Settings & Household Config) | 18 | UAC-M4-11 | High |
+| FR-17 (Electricity Screen Overhaul) | 19 | UAC-M4-2, UAC-M4-3, UAC-M4-4 | High |
+| FR-18 (Gas Screen Overhaul) | 20 | UAC-M4-5 | High |
+| FR-19 (Smart Plug Screen Overhaul) | 21 | UAC-M4-6 | High |
+| FR-20 (Water Screen Overhaul) | 22 | UAC-M4-7 | High |
+| FR-21 (Heating Screen Overhaul) | 22 | UAC-M4-8 | High |
+| NFR-13 (Design Preservation) | All | — | Critical |
+| NFR-14 (Localization) | All | UAC-M4-10 | High |
+| NFR-15 (Testing) | All | — | High |
+| NFR-16 (Code Quality) | 17 | UAC-M4-12 | Medium |
