@@ -868,4 +868,45 @@ class AppLocalizationsEn extends AppLocalizations {
   String basedOnMonths(int count) {
     return 'Based on $count months';
   }
+
+  @override
+  String get backupRestore => 'Backup & Restore';
+
+  @override
+  String get exportDatabase => 'Export Database';
+
+  @override
+  String get importDatabase => 'Import Database';
+
+  @override
+  String get exportInProgress => 'Exporting database...';
+
+  @override
+  String get importInProgress => 'Importing database...';
+
+  @override
+  String get backupExportSuccess => 'Database exported successfully';
+
+  @override
+  String get importSuccess => 'Database imported successfully. Restarting...';
+
+  @override
+  String get importFailed => 'Import failed';
+
+  @override
+  String get importConfirmTitle => 'Replace Database?';
+
+  @override
+  String get importConfirmMessage =>
+      'This will replace all current data with the imported backup. A safety backup will be created automatically. Continue?';
+
+  @override
+  String get invalidBackupFile =>
+      'Invalid backup file. Please select a valid Valtra database.';
+
+  @override
+  String get backupCreated => 'Safety backup created';
+
+  @override
+  String get validatingFile => 'Validating file...';
 }

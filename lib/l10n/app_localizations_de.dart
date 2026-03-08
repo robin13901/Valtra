@@ -872,4 +872,45 @@ class AppLocalizationsDe extends AppLocalizations {
   String basedOnMonths(int count) {
     return 'Basierend auf $count Monaten';
   }
+
+  @override
+  String get backupRestore => 'Sicherung & Wiederherstellung';
+
+  @override
+  String get exportDatabase => 'Datenbank exportieren';
+
+  @override
+  String get importDatabase => 'Datenbank importieren';
+
+  @override
+  String get exportInProgress => 'Datenbank wird exportiert...';
+
+  @override
+  String get importInProgress => 'Datenbank wird importiert...';
+
+  @override
+  String get backupExportSuccess => 'Datenbank erfolgreich exportiert';
+
+  @override
+  String get importSuccess => 'Datenbank erfolgreich importiert. Neustart...';
+
+  @override
+  String get importFailed => 'Import fehlgeschlagen';
+
+  @override
+  String get importConfirmTitle => 'Datenbank ersetzen?';
+
+  @override
+  String get importConfirmMessage =>
+      'Alle aktuellen Daten werden durch die importierte Sicherung ersetzt. Eine Sicherheitskopie wird automatisch erstellt. Fortfahren?';
+
+  @override
+  String get invalidBackupFile =>
+      'Ungültige Sicherungsdatei. Bitte eine gültige Valtra-Datenbank auswählen.';
+
+  @override
+  String get backupCreated => 'Sicherheitskopie erstellt';
+
+  @override
+  String get validatingFile => 'Datei wird überprüft...';
 }

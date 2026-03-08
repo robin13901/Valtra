@@ -425,5 +425,18 @@
     "placeholders": {
       "count": {"type": "int"}
     }
-  }
+  },
+  "backupRestore": "Backup & Restore",
+  "exportDatabase": "Export Database",
+  "importDatabase": "Import Database",
+  "exportInProgress": "Exporting database...",
+  "importInProgress": "Importing database...",
+  "backupExportSuccess": "Database exported successfully",
+  "importSuccess": "Database imported successfully. Restarting...",
+  "importFailed": "Import failed",
+  "importConfirmTitle": "Replace Database?",
+  "importConfirmMessage": "This will replace all current data with the imported backup. A safety backup will be created automatically. Continue?",
+  "invalidBackupFile": "Invalid backup file. Please select a valid Valtra database.",
+  "backupCreated": "Safety backup created",
+  "validatingFile": "Validating file..."
 }

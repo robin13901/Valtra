@@ -1627,6 +1627,84 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Based on {count} months'**
   String basedOnMonths(int count);
+
+  /// No description provided for @backupRestore.
+  ///
+  /// In en, this message translates to:
+  /// **'Backup & Restore'**
+  String get backupRestore;
+
+  /// No description provided for @exportDatabase.
+  ///
+  /// In en, this message translates to:
+  /// **'Export Database'**
+  String get exportDatabase;
+
+  /// No description provided for @importDatabase.
+  ///
+  /// In en, this message translates to:
+  /// **'Import Database'**
+  String get importDatabase;
+
+  /// No description provided for @exportInProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Exporting database...'**
+  String get exportInProgress;
+
+  /// No description provided for @importInProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Importing database...'**
+  String get importInProgress;
+
+  /// No description provided for @backupExportSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Database exported successfully'**
+  String get backupExportSuccess;
+
+  /// No description provided for @importSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Database imported successfully. Restarting...'**
+  String get importSuccess;
+
+  /// No description provided for @importFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Import failed'**
+  String get importFailed;
+
+  /// No description provided for @importConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Replace Database?'**
+  String get importConfirmTitle;
+
+  /// No description provided for @importConfirmMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This will replace all current data with the imported backup. A safety backup will be created automatically. Continue?'**
+  String get importConfirmMessage;
+
+  /// No description provided for @invalidBackupFile.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid backup file. Please select a valid Valtra database.'**
+  String get invalidBackupFile;
+
+  /// No description provided for @backupCreated.
+  ///
+  /// In en, this message translates to:
+  /// **'Safety backup created'**
+  String get backupCreated;
+
+  /// No description provided for @validatingFile.
+  ///
+  /// In en, this message translates to:
+  /// **'Validating file...'**
+  String get validatingFile;
 }
 
 class _AppLocalizationsDelegate
