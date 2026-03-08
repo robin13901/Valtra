@@ -11,7 +11,7 @@ import 'package:valtra/providers/locale_provider.dart';
 import 'package:valtra/providers/smart_plug_provider.dart';
 import 'package:valtra/providers/theme_provider.dart';
 import 'package:valtra/screens/smart_plug_consumption_screen.dart';
-import 'package:valtra/widgets/liquid_glass_widgets.dart';
+
 
 import '../helpers/test_database.dart';
 import '../helpers/test_locale_provider.dart';

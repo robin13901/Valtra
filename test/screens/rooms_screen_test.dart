@@ -5,7 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:valtra/app_theme.dart';
 import 'package:valtra/database/app_database.dart';
 import 'package:valtra/database/daos/room_dao.dart';
-import 'package:valtra/database/daos/smart_plug_dao.dart';
+
 import 'package:valtra/l10n/app_localizations.dart';
 import 'package:valtra/providers/room_provider.dart';
 import 'package:valtra/providers/theme_provider.dart';

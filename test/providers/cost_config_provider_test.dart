@@ -211,7 +211,7 @@ void main() {
     });
 
     test('updateConfig modifies existing config', () async {
-      final id = await dao.insertConfig(CostConfigsCompanion.insert(
+      await dao.insertConfig(CostConfigsCompanion.insert(
         householdId: householdId,
         meterType: CostMeterType.electricity,
         unitPrice: 0.30,
