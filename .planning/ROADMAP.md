@@ -1,13 +1,13 @@
 # Valtra - Development Roadmap
 
 ## Milestone 1: Core Foundation (v0.1.0) - COMPLETED
-7 phases (Setup, Households, Electricity, Smart Plugs, Water, Gas, Heating) | 313 tests | [Full details](milestones/v0.1.0-ROADMAP.md)
+7 phases (Setup, Households, Electricity, Smart Plugs, Water, Gas, Heating) | 313 tests | [Full details](milestones/v0.1.0/ROADMAP.md)
 
 ## Milestone 2: Analytics & Visualization (v0.2.0) - COMPLETED
-4 phases (Interpolation, Analytics Hub, Yearly + CSV, Smart Plug Analytics) | 625 tests | [Full details](milestones/v0.2.0-ROADMAP.md)
+4 phases (Interpolation, Analytics Hub, Yearly + CSV, Smart Plug Analytics) | 625 tests | [Full details](milestones/v0.2.0/ROADMAP.md)
 
 ## Milestone 3: Polish & Enhancement (v0.3.0) - COMPLETED
-5 phases (Settings, Cost Tracking, UI/UX Polish, Data Model Rework, Backup & Testing) | 1017 tests | [Full details](milestones/v0.3.0-ROADMAP.md)
+5 phases (Settings, Cost Tracking, UI/UX Polish, Data Model Rework, Backup & Testing) | 1017 tests | [Full details](milestones/v0.3.0/ROADMAP.md)
 
 ---
 
