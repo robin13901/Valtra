@@ -1,6 +1,6 @@
 {
   "project": "valtra",
-  "captured_at": "2026-03-07",
+  "captured_at": "2026-03-08",
   "language": {
     "primary": "dart",
     "version": "^3.10.0"
@@ -62,12 +62,12 @@
       "screens": ["{entity}s_screen.dart", "settings_screen.dart", "analytics_screen.dart", "monthly_analytics_screen.dart", "yearly_analytics_screen.dart"],
       "widgets": ["liquid_glass_widgets.dart", "{entity}_selector.dart"],
       "widgets/charts": ["consumption_line_chart.dart", "monthly_bar_chart.dart", "chart_legend.dart", "year_comparison_chart.dart", "consumption_pie_chart.dart"],
-      "widgets/dialogs": ["{entity}_form_dialog.dart"],
+      "widgets/dialogs": ["{entity}_form_dialog.dart", "confirm_delete_dialog.dart", "reading_form_base.dart"],
       "l10n": ["app_en.arb", "app_de.arb"]
     },
     "test": {
       "helpers": ["test_database.dart", "test_utils.dart"],
-      "database": ["tables_test.dart", "{entity}_dao_test.dart"],
+      "database": ["tables_test.dart", "{entity}_dao_test.dart", "migration_test.dart"],
       "providers": ["{entity}_provider_test.dart", "analytics_provider_yearly_test.dart"],
       "services": ["{conversion}_service_test.dart", "csv_export_service_test.dart"],
       "services/{domain}": ["models_test.dart", "{domain}_service_test.dart", "reading_converters_test.dart"],
@@ -161,6 +161,22 @@
     "Water type semantic colors: blue=cold, red=hot, grey=other (using Colors.* not AppColors)",
     "Feature removal order: screens (UI) first, providers (data) second, ARB (l10n) third, tests last",
     "Shared MockLocaleProvider defaults to 'en' for consistent English-format test assertions",
-    "SegmentedButton<String> for binary language toggle (DE/EN) — Material 3 standard pattern"
+    "SegmentedButton<String> for binary language toggle (DE/EN) — Material 3 standard pattern",
+    "ReadingDisplayItem wrapper model: providers expose displayItems getter with isInterpolated flag; screens render differently based on flag",
+    "Toggle state lives in provider (not screen state) — persists across rebuilds, testable independently",
+    "Schema migration: defer to final integration plan — change tables.dart early, write migration SQL last for atomicity",
+    "CREATE-INSERT-DROP-RENAME for SQLite column removal/rename (no DROP COLUMN support in older versions)",
+    "GROUP BY + SUM in migration SQL to merge duplicate entries when consolidating interval types to monthly",
+    "Location-to-FK migration: INSERT OR IGNORE DISTINCT values → JOIN back for IDs → COALESCE(null, 'Standard')",
+    "Drift DateTime as local epoch seconds: SQLite unixepoch=UTC; compute timezone offset in Dart for migration SQL",
+    "Month-based entries: add getEntityForMonth() duplicate check in DAO, return -1 or inline warning on duplicate",
+    "Room FK guard: check rooms exist before showing add-meter FAB, display 'create room first' message if empty",
+    "Conditional form fields: AnimatedSwitcher or simple if-guard; clear hidden field value when switching away",
+    "Apply ratio AFTER interpolation — ratios scale final consumption, not raw meter readings",
+    "Extrapolation guard: only current year + monthlyBreakdown.length < 12; past years never extrapolated",
+    "Extrapolated bar visual: alpha 0.3 + borderDashArray [6,3] for dashed lighter appearance",
+    "QuickEntryMixin: Save&Next keeps dialog open, clears value field, increments counter in title, shows brief SnackBar",
+    "ConfirmDeleteDialog.show() static factory — shared widget across all 5 meter screens for consistent UX",
+    "Parallel data-layer plans for independent tables (smart plugs vs heating meters) — halves wall-clock time"
   ]
 }

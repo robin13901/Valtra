@@ -20,7 +20,8 @@ patterns/
 │   ├── flutter-smart-plug-analytics.md
 │   ├── flutter-settings-dark-mode-audit.md
 │   ├── flutter-cost-tracking.md
-│   └── flutter-ui-ux-polish-localization.md
+│   ├── flutter-ui-ux-polish-localization.md
+│   └── flutter-data-model-rework.md
 ├── conventions-learned/  # Project-specific conventions (JSON)
 │   └── valtra.json
 └── routing-history.json  # Agent/model performance tracking
@@ -83,7 +84,8 @@ Tracks which models work best for which task types:
 | flutter-settings-dark-mode-audit | ui, settings | flutter, provider, shared_preferences, package_info_plus, material3 | 100% | 1 |
 | flutter-cost-tracking | service, db, ui, settings | flutter, dart, drift, provider, mocktail | 100% | 1 |
 | flutter-ui-ux-polish-localization | ui, localization, polish | flutter, dart, intl, provider, shared_preferences, material3 | 100% | 1 |
+| flutter-data-model-rework | db, service, ui, analytics | flutter, dart, drift, provider, fl_chart, intl, mocktail | 100% | 1 |
 
 ---
 
-*Last updated: 2026-03-07 (Phase 14 captured)*
+*Last updated: 2026-03-08 (Phase 15 captured)*
