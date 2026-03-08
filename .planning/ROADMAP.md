@@ -71,14 +71,13 @@ Plans:
 ### Phase 16: Backup, Testing & Documentation
 **Requirements**: FR-14 (Backup & Restore), NFR-10 (Testing)
 **Dependencies**: Phase 15 (all features complete)
-- [ ] Implement database export: copy SQLite file → share via share_plus
-- [ ] Implement database import: file picker → validate → backup current → replace → restart
-- [ ] Add backup/restore section to SettingsScreen
-- [ ] Achieve 80%+ statement coverage (Codecov integration)
-- [ ] Add integration tests for critical flows (reading → analytics → cost)
-- [ ] Fill test gaps identified by coverage report
-- [ ] Final UI/UX review across light and dark themes
-- [ ] Localize backup/restore strings (EN + DE)
+**Plans:** 4 plans
+
+Plans:
+- [ ] 16-01-PLAN.md — BackupRestoreService + unit tests (TDD): export, import, validation, sharing
+- [ ] 16-02-PLAN.md — UI integration: provider, settings screen section, localization (EN + DE), app restart
+- [ ] 16-03-PLAN.md — Coverage analysis + test gap filling (target 80%+)
+- [ ] 16-04-PLAN.md — Integration tests for critical flows + final verification + project state update
 
 ---
 
@@ -105,11 +104,14 @@ Milestone 1 (v0.1.0) --> Milestone 2 (v0.2.0) --> Milestone 3 (v0.3.0)
                                       |-- Wave 4: Plan 08 (DB migration, integration, cleanup)
                                         |
                                     Phase 16 (Backup, Testing & Docs)
+                                      |-- Wave 1: Plan 01 (service TDD), Plan 03 (coverage)
+                                      |-- Wave 2: Plan 02 (UI integration)
+                                      |-- Wave 3: Plan 04 (integration tests, final verification)
 ```
 
 ## Current Status
 - **Completed**: Milestone 1 (v0.1.0), Milestone 2 (v0.2.0)
 - **Active Milestone**: 3 - Polish & Enhancement (v0.3.0)
-- **Active Phase**: 15 - Data Model & Analytics Rework (COMPLETE -- 8/8 plans)
-- **Next Phase**: 16 - Backup, Testing & Documentation
+- **Active Phase**: 16 - Backup, Testing & Documentation
+- **Next Phase**: None (final phase of Milestone 3)
 - **Blockers**: None
