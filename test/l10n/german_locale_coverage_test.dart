@@ -101,38 +101,42 @@ void main() {
       expect(find.text('Englisch'), findsOneWidget);
     });
 
-    testWidgets('HouseholdsScreen renders in German', (tester) async {
-      final database = createTestDatabase();
-      final dao = HouseholdDao(database);
-      final provider = HouseholdProvider(dao);
-      await provider.init();
+    testWidgets('HouseholdsScreen renders in German',
+        (tester) => tester.runAsync(() async {
+              final database = createTestDatabase();
+              final dao = HouseholdDao(database);
+              final provider = HouseholdProvider(dao);
+              await provider.init();
 
-      await tester.pumpWidget(MultiProvider(
-        providers: [
-          Provider<AppDatabase>.value(value: database),
-          ChangeNotifierProvider<HouseholdProvider>.value(value: provider),
-          ChangeNotifierProvider<ThemeProvider>.value(value: themeProvider),
-        ],
-        child: MaterialApp(
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-          locale: const Locale('de'),
-          theme: AppTheme.lightTheme,
-          home: const HouseholdsScreen(),
-        ),
-      ));
-      await tester.pumpAndSettle();
+              await tester.pumpWidget(MultiProvider(
+                providers: [
+                  Provider<AppDatabase>.value(value: database),
+                  ChangeNotifierProvider<HouseholdProvider>.value(
+                      value: provider),
+                  ChangeNotifierProvider<ThemeProvider>.value(
+                      value: themeProvider),
+                ],
+                child: MaterialApp(
+                  localizationsDelegates:
+                      AppLocalizations.localizationsDelegates,
+                  supportedLocales: AppLocalizations.supportedLocales,
+                  locale: const Locale('de'),
+                  theme: AppTheme.lightTheme,
+                  home: const HouseholdsScreen(),
+                ),
+              ));
+              await tester.pumpAndSettle();
 
-      expect(find.text('Haushalte'), findsOneWidget);
-      // Empty state German text
-      expect(
-          find.text(
-              'Noch keine Haushalte. Erstellen Sie einen, um zu beginnen!'),
-          findsOneWidget);
+              expect(find.text('Haushalte'), findsOneWidget);
+              expect(
+                  find.text(
+                      'Noch keine Haushalte. Erstellen Sie einen, um zu beginnen!'),
+                  findsOneWidget);
 
-      provider.dispose();
-      await database.close();
-    });
+              provider.dispose();
+              await database.close();
+              await tester.pumpWidget(Container());
+            }));
 
     testWidgets('ElectricityScreen renders in German',
         (tester) => tester.runAsync(() async {
