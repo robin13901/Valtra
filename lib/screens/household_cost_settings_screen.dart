@@ -71,16 +71,6 @@ class _CostMeterTypeCardState extends State<_CostMeterTypeCard> {
     }
   }
 
-  String _unitSuffix(AppLocalizations l10n) {
-    switch (widget.meterType) {
-      case CostMeterType.electricity:
-      case CostMeterType.gas:
-        return l10n.pricePerKwh;
-      case CostMeterType.water:
-        return l10n.pricePerCubicMeter;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
