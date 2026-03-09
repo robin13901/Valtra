@@ -4,12 +4,22 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:valtra/app_theme.dart';
 import 'package:valtra/database/app_database.dart';
+import 'package:valtra/database/daos/cost_config_dao.dart';
 import 'package:valtra/database/daos/electricity_dao.dart';
+import 'package:valtra/database/daos/gas_dao.dart';
+import 'package:valtra/database/daos/heating_dao.dart';
+import 'package:valtra/database/daos/water_dao.dart';
 import 'package:valtra/l10n/app_localizations.dart';
+import 'package:valtra/providers/analytics_provider.dart';
+import 'package:valtra/providers/cost_config_provider.dart';
 import 'package:valtra/providers/electricity_provider.dart';
+import 'package:valtra/providers/interpolation_settings_provider.dart';
 import 'package:valtra/providers/locale_provider.dart';
 import 'package:valtra/providers/theme_provider.dart';
 import 'package:valtra/screens/electricity_screen.dart';
+import 'package:valtra/services/cost_calculation_service.dart';
+import 'package:valtra/services/gas_conversion_service.dart';
+import 'package:valtra/services/interpolation/interpolation_service.dart';
 
 
 import '../helpers/test_database.dart';
@@ -19,6 +29,8 @@ void main() {
   late AppDatabase database;
   late ElectricityDao dao;
   late ElectricityProvider provider;
+  late AnalyticsProvider analyticsProvider;
+  late CostConfigProvider costConfigProvider;
   late ThemeProvider themeProvider;
   late MockLocaleProvider localeProvider;
   late int householdId;
@@ -28,6 +40,10 @@ void main() {
       providers: [
         Provider<AppDatabase>.value(value: database),
         ChangeNotifierProvider<ElectricityProvider>.value(value: provider),
+        ChangeNotifierProvider<AnalyticsProvider>.value(
+            value: analyticsProvider),
+        ChangeNotifierProvider<CostConfigProvider>.value(
+            value: costConfigProvider),
         ChangeNotifierProvider<ThemeProvider>.value(value: themeProvider),
         ChangeNotifierProvider<LocaleProvider>.value(value: localeProvider),
       ],
@@ -50,16 +66,40 @@ void main() {
     await themeProvider.init();
     localeProvider = MockLocaleProvider();
 
+    final interpolationSettingsProvider = InterpolationSettingsProvider();
+    await interpolationSettingsProvider.init();
+
+    final costConfigDao = CostConfigDao(database);
+    costConfigProvider = CostConfigProvider(
+      costConfigDao: costConfigDao,
+      costCalculationService: CostCalculationService(),
+    );
+
+    analyticsProvider = AnalyticsProvider(
+      electricityDao: dao,
+      gasDao: GasDao(database),
+      waterDao: WaterDao(database),
+      heatingDao: HeatingDao(database),
+      interpolationService: InterpolationService(),
+      gasConversionService: GasConversionService(),
+      settingsProvider: interpolationSettingsProvider,
+      costConfigProvider: costConfigProvider,
+    );
+
     householdId = await database
         .into(database.households)
         .insert(HouseholdsCompanion.insert(name: 'Test Household'));
 
     provider.setHouseholdId(householdId);
+    analyticsProvider.setHouseholdId(householdId);
+    costConfigProvider.setHouseholdId(householdId);
     await Future.delayed(const Duration(milliseconds: 50));
   });
 
   tearDown(() async {
     provider.dispose();
+    analyticsProvider.dispose();
+    costConfigProvider.dispose();
     await database.close();
   });
 
@@ -148,13 +188,15 @@ void main() {
               await tester.pumpWidget(Container());
             }));
 
-    testWidgets('has analytics button in app bar',
+    testWidgets('has analytics tab in bottom nav',
         (tester) => tester.runAsync(() async {
               await tester
                   .pumpWidget(wrapWithProviders(const ElectricityScreen()));
               await tester.pumpAndSettle();
 
+              // Analytics icon is now in bottom nav, not app bar
               expect(find.byIcon(Icons.analytics), findsOneWidget);
+              expect(find.text('Analysis'), findsOneWidget);
 
               await tester.pumpWidget(Container());
             }));

@@ -6,11 +6,15 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:valtra/app_theme.dart';
 import 'package:valtra/database/app_database.dart';
+import 'package:valtra/database/daos/cost_config_dao.dart';
 import 'package:valtra/database/daos/electricity_dao.dart';
 import 'package:valtra/database/daos/gas_dao.dart';
+import 'package:valtra/database/daos/heating_dao.dart';
 import 'package:valtra/database/daos/household_dao.dart';
+import 'package:valtra/database/daos/water_dao.dart';
 import 'package:valtra/database/tables.dart';
 import 'package:valtra/l10n/app_localizations.dart';
+import 'package:valtra/providers/analytics_provider.dart';
 import 'package:valtra/providers/backup_restore_provider.dart';
 import 'package:valtra/providers/cost_config_provider.dart';
 import 'package:valtra/providers/electricity_provider.dart';
@@ -23,6 +27,9 @@ import 'package:valtra/screens/electricity_screen.dart';
 import 'package:valtra/screens/gas_screen.dart';
 import 'package:valtra/screens/households_screen.dart';
 import 'package:valtra/screens/settings_screen.dart';
+import 'package:valtra/services/cost_calculation_service.dart';
+import 'package:valtra/services/gas_conversion_service.dart';
+import 'package:valtra/services/interpolation/interpolation_service.dart';
 
 import '../helpers/test_database.dart';
 import '../helpers/test_locale_provider.dart';
@@ -151,11 +158,37 @@ void main() {
               provider.setHouseholdId(householdId);
               await Future.delayed(const Duration(milliseconds: 50));
 
+              final interpolationSettings = InterpolationSettingsProvider();
+              await interpolationSettings.init();
+              final costConfigDao = CostConfigDao(database);
+              final costConfigProvider = CostConfigProvider(
+                costConfigDao: costConfigDao,
+                costCalculationService: CostCalculationService(),
+              );
+              final analyticsProvider = AnalyticsProvider(
+                electricityDao: dao,
+                gasDao: GasDao(database),
+                waterDao: WaterDao(database),
+                heatingDao: HeatingDao(database),
+                interpolationService: InterpolationService(),
+                gasConversionService: GasConversionService(),
+                settingsProvider: interpolationSettings,
+                costConfigProvider: costConfigProvider,
+              );
+              analyticsProvider.setHouseholdId(householdId);
+              costConfigProvider.setHouseholdId(householdId);
+              // Allow async _loadOverview to complete
+              await Future.delayed(const Duration(milliseconds: 200));
+
               await tester.pumpWidget(MultiProvider(
                 providers: [
                   Provider<AppDatabase>.value(value: database),
                   ChangeNotifierProvider<ElectricityProvider>.value(
                       value: provider),
+                  ChangeNotifierProvider<AnalyticsProvider>.value(
+                      value: analyticsProvider),
+                  ChangeNotifierProvider<CostConfigProvider>.value(
+                      value: costConfigProvider),
                   ChangeNotifierProvider<ThemeProvider>.value(
                       value: themeProvider),
                   ChangeNotifierProvider<LocaleProvider>.value(
@@ -178,9 +211,13 @@ void main() {
                       'Noch keine Ablesungen. Fügen Sie Ihre erste Zählerablesung hinzu!'),
                   findsOneWidget);
 
-              provider.dispose();
-              await database.close();
               await tester.pumpWidget(Container());
+              // Allow any in-flight async to settle before disposing
+              await Future.delayed(const Duration(milliseconds: 200));
+              provider.dispose();
+              analyticsProvider.dispose();
+              costConfigProvider.dispose();
+              await database.close();
             }));
 
     testWidgets('GasScreen renders in German',
@@ -307,11 +344,37 @@ void main() {
               ));
               await Future.delayed(const Duration(milliseconds: 100));
 
+              final interpolationSettings = InterpolationSettingsProvider();
+              await interpolationSettings.init();
+              final costConfigDao = CostConfigDao(database);
+              final costConfigProvider = CostConfigProvider(
+                costConfigDao: costConfigDao,
+                costCalculationService: CostCalculationService(),
+              );
+              final analyticsProvider = AnalyticsProvider(
+                electricityDao: dao,
+                gasDao: GasDao(database),
+                waterDao: WaterDao(database),
+                heatingDao: HeatingDao(database),
+                interpolationService: InterpolationService(),
+                gasConversionService: GasConversionService(),
+                settingsProvider: interpolationSettings,
+                costConfigProvider: costConfigProvider,
+              );
+              analyticsProvider.setHouseholdId(householdId);
+              costConfigProvider.setHouseholdId(householdId);
+              // Allow async _loadOverview to complete
+              await Future.delayed(const Duration(milliseconds: 200));
+
               await tester.pumpWidget(MultiProvider(
                 providers: [
                   Provider<AppDatabase>.value(value: database),
                   ChangeNotifierProvider<ElectricityProvider>.value(
                       value: provider),
+                  ChangeNotifierProvider<AnalyticsProvider>.value(
+                      value: analyticsProvider),
+                  ChangeNotifierProvider<CostConfigProvider>.value(
+                      value: costConfigProvider),
                   ChangeNotifierProvider<ThemeProvider>.value(
                       value: themeProvider),
                   ChangeNotifierProvider<LocaleProvider>.value(
@@ -333,9 +396,13 @@ void main() {
               // Should show kWh label
               expect(find.textContaining('kWh'), findsAtLeastNWidgets(1));
 
-              provider.dispose();
-              await database.close();
               await tester.pumpWidget(Container());
+              // Allow any in-flight async to settle before disposing
+              await Future.delayed(const Duration(milliseconds: 200));
+              provider.dispose();
+              analyticsProvider.dispose();
+              costConfigProvider.dispose();
+              await database.close();
             }));
   });
 }
