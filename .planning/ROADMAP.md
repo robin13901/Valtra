@@ -84,18 +84,21 @@ Plans:
 - [x] Localize all new/changed strings (EN + DE)
 - [x] Tests for renamed stats, percentage display, UI order
 
-### Phase 22: Water & Heating Screen Overhaul
+### Phase 22: Water & Heating Screen Overhaul (COMPLETE)
 **Requirements**: FR-20 (Water), FR-21 (Heating)
 **Dependencies**: Phase 19 (bottom nav pattern), Phase 18 (cost profiles for toggle)
-- [ ] Water: add bottom nav (Analyse | Liste), default Liste, FAB on Liste only
-- [ ] Water analysis: year nav, summary, monthly bar chart, year comparison chart, m³/€ toggle
-- [ ] Water monthly values from interpolated deltas at month boundaries
-- [ ] Heating: add bottom nav (Analyse | Liste), default Liste, FAB on Liste only
-- [ ] Heating analysis: year nav, summary, monthly bar chart, year comparison chart, kWh/€ toggle
-- [ ] Heating monthly values from interpolated deltas at month boundaries
-- [ ] Fix year comparison chart month alignment for both
-- [ ] Localize all new strings (EN + DE)
-- [ ] Tests for both screens: nav, toggle, chart alignment
+**Plans:** 1 plan (1/1 complete)
+Plans:
+- [x] PLAN.md — Water & heating bottom nav, inline analysis, cost toggles, dead code cleanup, tests
+- [x] Water: add bottom nav (Analyse | Liste), default Liste, FAB on Liste only
+- [x] Water analysis: year nav, summary, monthly bar chart, year comparison chart, m³/€ toggle
+- [x] Water monthly values from interpolated deltas at month boundaries
+- [x] Heating: add bottom nav (Analyse | Liste), default Liste, FAB on Liste only
+- [x] Heating analysis: year nav, summary, monthly bar chart, year comparison chart, kWh/€ toggle
+- [x] Heating monthly values from interpolated deltas at month boundaries
+- [x] Fix year comparison chart month alignment for both
+- [x] Localize all new strings (EN + DE)
+- [x] Tests for both screens: nav, toggle, chart alignment
 
 ---
 
@@ -118,7 +121,7 @@ Milestone 3 (v0.3.0) --> Milestone 4 (v0.4.0)
 
 ## Current Status
 - **Completed**: Milestone 1 (v0.1.0), Milestone 2 (v0.2.0), Milestone 3 (v0.3.0)
-- **Active Milestone**: 4 — UX Overhaul (v0.4.0)
-- **Active Phase**: 22 — Water & Heating Screen Overhaul
+- **Active Milestone**: 4 — UX Overhaul (v0.4.0) — ALL PHASES COMPLETE
+- **Active Phase**: —
 - **Next Phase**: —
 - **Blockers**: None
