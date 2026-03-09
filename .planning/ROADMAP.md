@@ -41,31 +41,31 @@
 - [x] Localize all new/changed strings (EN + DE)
 - [x] Comprehensive tests for cost profile CRUD and date-based lookup
 
-### Phase 19: Electricity Screen Overhaul
+### Phase 19: Electricity Screen Overhaul - COMPLETED
 **Requirements**: FR-17 (Electricity Screen Overhaul)
 **Dependencies**: Phase 18 (cost profiles for kWh/€ toggle)
-- [ ] Add LiquidGlass bottom nav: Analyse (left) | Liste (right), default Liste
-- [ ] IndexedStack for tab content (preserve state when switching)
-- [ ] LiquidGlass FAB (add reading) — visible on Liste tab only
-- [ ] Remove app bar analysis icon (now in bottom nav)
-- [ ] Consolidate to single analysis page (current yearly view → renamed "Analyse")
-- [ ] Remove MonthlyAnalyticsScreen navigation for electricity
-- [ ] Fix year comparison chart: previous year line starts at first month with data (not January)
-- [ ] Add kWh/€ toggle (top of analysis or in app bar) — switches all charts & values
-- [ ] Monthly consumption always from interpolated value deltas at month boundaries
-- [ ] Localize all new strings (EN + DE)
-- [ ] Tests for bottom nav switching, FAB visibility, toggle state, chart alignment
+- [x] Add LiquidGlass bottom nav: Analyse (left) | Liste (right), default Liste
+- [x] IndexedStack for tab content (preserve state when switching)
+- [x] LiquidGlass FAB (add reading) — visible on Liste tab only
+- [x] Remove app bar analysis icon (now in bottom nav)
+- [x] Consolidate to single analysis page (current yearly view → renamed "Analyse")
+- [x] Remove MonthlyAnalyticsScreen navigation for electricity
+- [x] Fix year comparison chart: previous year line starts at first month with data (not January)
+- [x] Add kWh/€ toggle (top of analysis or in app bar) — switches all charts & values
+- [x] Monthly consumption always from interpolated value deltas at month boundaries
+- [x] Localize all new strings (EN + DE)
+- [x] Tests for bottom nav switching, FAB visibility, toggle state, chart alignment
 
-### Phase 20: Gas Screen Overhaul
+### Phase 20: Gas Screen Overhaul - COMPLETED
 **Requirements**: FR-18 (Gas Screen Overhaul)
 **Dependencies**: Phase 19 (shared patterns established)
-- [ ] Mirror electricity architecture exactly: bottom nav, FAB, single analysis
-- [ ] m³/€ toggle (gas displays consumption in m³, cost in €)
-- [ ] Fix year comparison chart month alignment
-- [ ] Monthly consumption from interpolated deltas
-- [ ] Remove app bar analysis icon
-- [ ] Localize all new strings (EN + DE)
-- [ ] Tests mirroring electricity screen tests
+- [x] Mirror electricity architecture exactly: bottom nav, FAB, single analysis
+- [x] m³/€ toggle (gas displays consumption in m³, cost in €)
+- [x] Fix year comparison chart month alignment
+- [x] Monthly consumption from interpolated deltas
+- [x] Remove app bar analysis icon
+- [x] Localize all new strings (EN + DE)
+- [x] Tests mirroring electricity screen tests
 
 ### Phase 21: Smart Plug Screen Overhaul
 **Requirements**: FR-19 (Smart Plug Screen Overhaul)
@@ -117,5 +117,5 @@ Milestone 3 (v0.3.0) --> Milestone 4 (v0.4.0)
 - **Completed**: Milestone 1 (v0.1.0), Milestone 2 (v0.2.0), Milestone 3 (v0.3.0)
 - **Active Milestone**: 4 — UX Overhaul (v0.4.0)
 - **Active Phase**: None
-- **Next Phase**: 19 — Electricity Screen Overhaul
+- **Next Phase**: 21 — Smart Plug Screen Overhaul
 - **Blockers**: None
