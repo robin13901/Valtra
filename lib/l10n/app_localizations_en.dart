@@ -513,9 +513,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get analyticsHub => 'Analytics';
 
   @override
-  String get consumptionOverview => 'Consumption Overview';
-
-  @override
   String get monthlyAnalytics => 'Monthly Analytics';
 
   @override
@@ -583,11 +580,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get exportAll => 'Export All Meters';
-
-  @override
-  String get exportSuccess => 'Export ready to share';
-
   @override
   String noYearlyData(String year) {
     return 'No data for $year';

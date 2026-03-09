@@ -27,7 +27,6 @@ import 'providers/room_provider.dart';
 import 'providers/smart_plug_provider.dart';
 import 'providers/theme_provider.dart';
 import 'providers/water_provider.dart';
-import 'screens/analytics_screen.dart';
 import 'screens/electricity_screen.dart';
 import 'screens/gas_screen.dart';
 import 'screens/heating_screen.dart';
@@ -265,71 +264,20 @@ class _ValtraAppState extends State<ValtraApp> {
   }
 }
 
-/// Home screen with GlassBottomNav for primary navigation.
+/// Home screen with GlassCard navigation tiles.
 ///
-/// Uses Option B from the plan: bottom nav acts as a shortcut bar.
-/// Index 0 shows the home hub with GlassCard navigation tiles.
-/// Tapping bottom nav items 1-4 pushes to their screens via Navigator.push
-/// and resets the index back to 0.
-class HomeScreen extends StatefulWidget {
+/// Displays a hub with category tiles for navigating to individual screens.
+/// Bottom navigation bar has been removed in favour of tile-only navigation.
+class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
-  @override
-  State<HomeScreen> createState() => _HomeScreenState();
-}
-
-class _HomeScreenState extends State<HomeScreen> {
-  int _currentIndex = 0;
-
-  void _onBottomNavTap(int index) {
-    if (index == 0) {
-      // Home tab -- just stay on hub
-      setState(() => _currentIndex = 0);
-      return;
-    }
-
-    // For tabs 1-4, push to the screen and reset index to 0
-    final householdProvider = context.read<HouseholdProvider>();
-    if (householdProvider.selectedHousehold == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(AppLocalizations.of(context)!.selectHousehold),
-        ),
-      );
-      return;
-    }
-
-    Widget screen;
-    switch (index) {
-      case 1:
-        screen = const ElectricityScreen();
-      case 2:
-        screen = const GasScreen();
-      case 3:
-        screen = const WaterScreen();
-      case 4:
-        screen = const AnalyticsScreen();
-      default:
-        return;
-    }
-
-    Navigator.of(context)
-        .push(MaterialPageRoute(builder: (_) => screen))
-        .then((_) {
-      // Reset to home after returning from pushed screen
-      if (mounted) {
-        setState(() => _currentIndex = 0);
-      }
-    });
-  }
-
-  void _navigateToSettings() {
+  void _navigateToSettings(BuildContext context) {
     Navigator.of(context).push(
       MaterialPageRoute(builder: (_) => const SettingsScreen()),
     );
   }
 
-  void _navigateToScreen(Widget screen) {
+  void _navigateToScreen(BuildContext context, Widget screen) {
     final householdProvider = context.read<HouseholdProvider>();
     if (householdProvider.selectedHousehold == null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -357,39 +305,12 @@ class _HomeScreenState extends State<HomeScreen> {
           const HouseholdSelector(),
           IconButton(
             icon: const Icon(Icons.settings),
-            onPressed: _navigateToSettings,
+            onPressed: () => _navigateToSettings(context),
             tooltip: l10n.settings,
           ),
         ],
       ),
       body: _buildHomeHub(context, l10n),
-      bottomNavigationBar: GlassBottomNav(
-        currentIndex: _currentIndex,
-        onTap: _onBottomNavTap,
-        items: [
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.home),
-            label: l10n.home,
-          ),
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.electric_bolt),
-            label: l10n.electricity,
-          ),
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.local_fire_department),
-            label: l10n.gas,
-          ),
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.water_drop),
-            label: l10n.water,
-          ),
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.analytics),
-            label: l10n.analyticsHub,
-          ),
-        ],
-      ),
-      // NO floatingActionButton -- removed per FR-12.1.2
     );
   }
 
@@ -415,7 +336,7 @@ class _HomeScreenState extends State<HomeScreen> {
           const SizedBox(height: 8),
           _buildCurrentHousehold(context, l10n),
           const SizedBox(height: 24),
-          // 6 category GlassCards in a 2-column grid
+          // 4 category GlassCards in a 2-column grid
           GridView.count(
             crossAxisCount: 2,
             shrinkWrap: true,
@@ -430,7 +351,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 label: l10n.electricity,
                 color: AppColors.electricityColor,
                 onTap: () =>
-                    _navigateToScreen(const ElectricityScreen()),
+                    _navigateToScreen(context, const ElectricityScreen()),
               ),
               _buildCategoryCard(
                 context,
@@ -438,21 +359,15 @@ class _HomeScreenState extends State<HomeScreen> {
                 label: l10n.smartPlugs,
                 color: AppColors.electricityColor,
                 onTap: () =>
-                    _navigateToScreen(const SmartPlugsScreen()),
+                    _navigateToScreen(context, const SmartPlugsScreen()),
               ),
               _buildCategoryCard(
                 context,
                 icon: Icons.local_fire_department,
                 label: l10n.gas,
                 color: AppColors.gasColor,
-                onTap: () => _navigateToScreen(const GasScreen()),
-              ),
-              _buildCategoryCard(
-                context,
-                icon: Icons.water_drop,
-                label: l10n.water,
-                color: AppColors.waterColor,
-                onTap: () => _navigateToScreen(const WaterScreen()),
+                onTap: () =>
+                    _navigateToScreen(context, const GasScreen()),
               ),
               _buildCategoryCard(
                 context,
@@ -460,17 +375,27 @@ class _HomeScreenState extends State<HomeScreen> {
                 label: l10n.heating,
                 color: AppColors.heatingColor,
                 onTap: () =>
-                    _navigateToScreen(const HeatingScreen()),
-              ),
-              _buildCategoryCard(
-                context,
-                icon: Icons.analytics,
-                label: l10n.analyticsHub,
-                color: AppColors.ultraViolet,
-                onTap: () =>
-                    _navigateToScreen(const AnalyticsScreen()),
+                    _navigateToScreen(context, const HeatingScreen()),
               ),
             ],
+          ),
+          const SizedBox(height: 4),
+          // Water tile centered below the grid
+          Center(
+            child: SizedBox(
+              width: (MediaQuery.of(context).size.width - 16) / 2,
+              child: AspectRatio(
+                aspectRatio: 1.4,
+                child: _buildCategoryCard(
+                  context,
+                  icon: Icons.water_drop,
+                  label: l10n.water,
+                  color: AppColors.waterColor,
+                  onTap: () =>
+                      _navigateToScreen(context, const WaterScreen()),
+                ),
+              ),
+            ),
           ),
         ],
       ),

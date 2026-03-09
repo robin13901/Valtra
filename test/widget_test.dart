@@ -102,34 +102,18 @@ void main() {
       );
     }
 
-    testWidgets('renders GlassBottomNav', (tester) async {
+    testWidgets('does not render GlassBottomNav', (tester) async {
       await tester.pumpWidget(buildHomeScreen());
       await tester.pumpAndSettle();
 
-      expect(find.byType(GlassBottomNav), findsOneWidget);
+      expect(find.byType(GlassBottomNav), findsNothing);
     });
 
-    testWidgets('GlassBottomNav has 5 items', (tester) async {
+    testWidgets('does not render BottomNavigationBar', (tester) async {
       await tester.pumpWidget(buildHomeScreen());
       await tester.pumpAndSettle();
 
-      // BottomNavigationBar inside GlassBottomNav should have 5 items
-      final bottomNav = tester.widget<BottomNavigationBar>(
-        find.byType(BottomNavigationBar),
-      );
-      expect(bottomNav.items.length, 5);
-    });
-
-    testWidgets('bottom nav shows correct labels', (tester) async {
-      await tester.pumpWidget(buildHomeScreen());
-      await tester.pumpAndSettle();
-
-      // English labels (test defaults to en locale)
-      expect(find.text('Home'), findsOneWidget);
-      expect(find.text('Electricity'), findsWidgets);
-      expect(find.text('Gas'), findsWidgets);
-      expect(find.text('Water'), findsWidgets);
-      expect(find.text('Analytics'), findsWidgets);
+      expect(find.byType(BottomNavigationBar), findsNothing);
     });
 
     testWidgets('does not render Divider', (tester) async {
@@ -146,27 +130,58 @@ void main() {
       expect(find.byType(FloatingActionButton), findsNothing);
     });
 
-    testWidgets('renders 6 GlassCard navigation items on home hub',
+    testWidgets('renders 5 GlassCard navigation items on home hub',
         (tester) async {
       await tester.pumpWidget(buildHomeScreen());
       await tester.pumpAndSettle();
 
-      // 6 category GlassCards: Electricity, Smart Plugs, Gas, Water,
-      // Heating, Analytics
-      expect(find.byType(GlassCard), findsNWidgets(6));
+      // 5 category GlassCards: Electricity, Smart Plugs, Gas, Heating, Water
+      expect(find.byType(GlassCard), findsNWidgets(5));
     });
 
-    testWidgets('GlassCards show all 6 category labels', (tester) async {
+    testWidgets('GlassCards show correct 5 category labels in order',
+        (tester) async {
       await tester.pumpWidget(buildHomeScreen());
       await tester.pumpAndSettle();
 
-      // English labels for all 6 categories
-      expect(find.text('Electricity'), findsWidgets);
+      // English labels for all 5 categories
+      expect(find.text('Electricity'), findsOneWidget);
       expect(find.text('Smart Plugs'), findsOneWidget);
-      expect(find.text('Gas'), findsWidgets);
-      expect(find.text('Water'), findsWidgets);
+      expect(find.text('Gas'), findsOneWidget);
       expect(find.text('Heating'), findsOneWidget);
-      expect(find.text('Analytics'), findsWidgets);
+      expect(find.text('Water'), findsOneWidget);
+
+      // Analytics tile should NOT be present
+      expect(find.text('Analytics'), findsNothing);
+    });
+
+    testWidgets('tiles are in correct order: Electricity, Smart Home, Gas, '
+        'Heating, Water', (tester) async {
+      await tester.pumpWidget(buildHomeScreen());
+      await tester.pumpAndSettle();
+
+      final glassCards = find.byType(GlassCard);
+      expect(glassCards, findsNWidgets(5));
+
+      // Verify order by checking that each label is within its corresponding card
+      // We can verify by checking the vertical positions
+      final electricityPos = tester.getTopLeft(find.text('Electricity'));
+      final smartPlugsPos = tester.getTopLeft(find.text('Smart Plugs'));
+      final gasPos = tester.getTopLeft(find.text('Gas'));
+      final heatingPos = tester.getTopLeft(find.text('Heating'));
+      final waterPos = tester.getTopLeft(find.text('Water'));
+
+      // Row 1: Electricity (left), Smart Plugs (right) -- same vertical
+      expect(electricityPos.dy, smartPlugsPos.dy);
+      expect(electricityPos.dx, lessThan(smartPlugsPos.dx));
+
+      // Row 2: Gas (left), Heating (right) -- same vertical, below row 1
+      expect(gasPos.dy, heatingPos.dy);
+      expect(gasPos.dy, greaterThan(electricityPos.dy));
+      expect(gasPos.dx, lessThan(heatingPos.dx));
+
+      // Row 3: Water (centered) -- below row 2
+      expect(waterPos.dy, greaterThan(gasPos.dy));
     });
 
     testWidgets('settings gear icon is in AppBar', (tester) async {
@@ -205,29 +220,32 @@ void main() {
 
       expect(find.byIcon(Icons.electric_bolt), findsWidgets);
       expect(find.byIcon(Icons.power), findsOneWidget);
-      expect(find.byIcon(Icons.local_fire_department), findsWidgets);
-      expect(find.byIcon(Icons.water_drop), findsWidgets);
+      expect(find.byIcon(Icons.local_fire_department), findsOneWidget);
+      expect(find.byIcon(Icons.water_drop), findsOneWidget);
       expect(find.byIcon(Icons.thermostat), findsOneWidget);
-      expect(find.byIcon(Icons.analytics), findsWidgets);
     });
 
-    testWidgets('home nav icon is present', (tester) async {
+    testWidgets('does not show analytics icon', (tester) async {
       await tester.pumpWidget(buildHomeScreen());
       await tester.pumpAndSettle();
 
-      expect(find.byIcon(Icons.home), findsWidgets);
+      expect(find.byIcon(Icons.analytics), findsNothing);
     });
 
-    testWidgets('tapping bottom nav item for electricity does not push '
-        'when no household selected', (tester) async {
+    testWidgets('does not show home nav icon (no bottom nav)', (tester) async {
       await tester.pumpWidget(buildHomeScreen());
       await tester.pumpAndSettle();
 
-      // Tap the Electricity bottom nav item (index 1)
-      // Find BottomNavigationBar and tap the electricity label
-      final electricityLabels = find.text('Electricity');
-      // Tap the one in the bottom nav (last one)
-      await tester.tap(electricityLabels.last);
+      expect(find.byIcon(Icons.home), findsNothing);
+    });
+
+    testWidgets('tapping tile shows snackbar when no household selected',
+        (tester) async {
+      await tester.pumpWidget(buildHomeScreen());
+      await tester.pumpAndSettle();
+
+      // Tap the Electricity tile
+      await tester.tap(find.text('Electricity'));
       await tester.pumpAndSettle();
 
       // Should show a snackbar since no household is selected

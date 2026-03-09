@@ -515,9 +515,6 @@ class AppLocalizationsDe extends AppLocalizations {
   String get analyticsHub => 'Analyse';
 
   @override
-  String get consumptionOverview => 'Verbrauchsübersicht';
-
-  @override
   String get monthlyAnalytics => 'Monatsanalyse';
 
   @override
@@ -585,11 +582,6 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
-  String get exportAll => 'Alle Zähler exportieren';
-
-  @override
-  String get exportSuccess => 'Export bereit zum Teilen';
-
   @override
   String noYearlyData(String year) {
     return 'Keine Daten für $year';

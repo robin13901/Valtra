@@ -986,12 +986,6 @@ abstract class AppLocalizations {
   /// **'Analytics'**
   String get analyticsHub;
 
-  /// No description provided for @consumptionOverview.
-  ///
-  /// In en, this message translates to:
-  /// **'Consumption Overview'**
-  String get consumptionOverview;
-
   /// No description provided for @monthlyAnalytics.
   ///
   /// In en, this message translates to:
@@ -1099,18 +1093,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{change}% vs last year'**
   String changeFromLastYear(String change);
-
-  /// No description provided for @exportAll.
-  ///
-  /// In en, this message translates to:
-  /// **'Export All Meters'**
-  String get exportAll;
-
-  /// No description provided for @exportSuccess.
-  ///
-  /// In en, this message translates to:
-  /// **'Export ready to share'**
-  String get exportSuccess;
 
   /// No description provided for @noYearlyData.
   ///
