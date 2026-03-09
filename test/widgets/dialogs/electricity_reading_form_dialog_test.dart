@@ -30,106 +30,50 @@ void main() {
     );
   }
 
-  group('ElectricityReadingFormDialog - Quick Entry', () {
-    testWidgets('shows Save & Next button in add mode', (tester) async {
+  group('ElectricityReadingFormDialog - Buttons', () {
+    testWidgets('shows only Cancel and Save buttons in add mode',
+        (tester) async {
       await tester.pumpWidget(buildTestWidget());
       await tester.pumpAndSettle();
 
       await tester.tap(find.text('Open Dialog'));
       await tester.pumpAndSettle();
 
-      expect(find.text('Save & next'), findsOneWidget);
-      expect(find.text('Save'), findsOneWidget);
       expect(find.text('Cancel'), findsOneWidget);
+      expect(find.text('Save'), findsOneWidget);
+      expect(find.text('Save & next'), findsNothing);
     });
 
-    testWidgets('Save & Next keeps dialog open',
-        (tester) => tester.runAsync(() async {
-              int saveCount = 0;
+    testWidgets('shows only Cancel and Save buttons in edit mode',
+        (tester) async {
+      await tester.pumpWidget(MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: Builder(
+          builder: (context) => Scaffold(
+            body: ElevatedButton(
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (context) => const ElectricityReadingFormDialog(
+                    reading: null,
+                  ),
+                );
+              },
+              child: const Text('Open Dialog'),
+            ),
+          ),
+        ),
+      ));
+      await tester.pumpAndSettle();
 
-              await tester.pumpWidget(buildTestWidget(
-                onSaveCallback: (data) async {
-                  saveCount++;
-                },
-              ));
-              await tester.pumpAndSettle();
+      await tester.tap(find.text('Open Dialog'));
+      await tester.pumpAndSettle();
 
-              await tester.tap(find.text('Open Dialog'));
-              await tester.pumpAndSettle();
-
-              // Enter a value
-              await tester.enterText(
-                  find.widgetWithText(TextFormField, 'Meter Value'), '100');
-              await tester.pumpAndSettle();
-
-              // Tap Save & next
-              await tester.tap(find.text('Save & next'));
-              await tester.pumpAndSettle();
-
-              // Dialog should still be open
-              expect(find.text('Add reading (1)'), findsOneWidget);
-              expect(saveCount, 1);
-
-              // Value field should be cleared
-              final textField = tester.widget<TextFormField>(
-                find.widgetWithText(TextFormField, 'Meter Value'),
-              );
-              expect(textField.controller?.text, '');
-
-              await tester.pumpWidget(Container());
-            }));
-
-    testWidgets('Save & Next increments counter',
-        (tester) => tester.runAsync(() async {
-              await tester.pumpWidget(buildTestWidget(
-                onSaveCallback: (data) async {},
-              ));
-              await tester.pumpAndSettle();
-
-              await tester.tap(find.text('Open Dialog'));
-              await tester.pumpAndSettle();
-
-              // First save
-              await tester.enterText(
-                  find.widgetWithText(TextFormField, 'Meter Value'), '100');
-              await tester.pumpAndSettle();
-              await tester.tap(find.text('Save & next'));
-              await tester.pumpAndSettle();
-              expect(find.text('Add reading (1)'), findsOneWidget);
-
-              // Second save
-              await tester.enterText(
-                  find.widgetWithText(TextFormField, 'Meter Value'), '200');
-              await tester.pumpAndSettle();
-              await tester.tap(find.text('Save & next'));
-              await tester.pumpAndSettle();
-              expect(find.text('Add reading (2)'), findsOneWidget);
-
-              await tester.pumpWidget(Container());
-            }));
-
-    testWidgets('shows success indicator after Save & Next',
-        (tester) => tester.runAsync(() async {
-              await tester.pumpWidget(buildTestWidget(
-                onSaveCallback: (data) async {},
-              ));
-              await tester.pumpAndSettle();
-
-              await tester.tap(find.text('Open Dialog'));
-              await tester.pumpAndSettle();
-
-              await tester.enterText(
-                  find.widgetWithText(TextFormField, 'Meter Value'), '100');
-              await tester.pumpAndSettle();
-
-              await tester.tap(find.text('Save & next'));
-              await tester.pumpAndSettle();
-
-              // Should show "Saved" text as success indicator
-              expect(find.text('Saved'), findsOneWidget);
-
-              await tester.pumpWidget(Container());
-            }));
+      expect(find.text('Cancel'), findsOneWidget);
+      expect(find.text('Save'), findsOneWidget);
+      expect(find.text('Save & next'), findsNothing);
+    });
 
     testWidgets('Save closes dialog and returns data',
         (tester) => tester.runAsync(() async {
@@ -168,22 +112,19 @@ void main() {
               await tester.pumpWidget(Container());
             }));
 
-    testWidgets('no Save & Next in edit mode',
+    testWidgets('Cancel closes dialog without saving',
         (tester) => tester.runAsync(() async {
+              ElectricityReadingFormData? result;
+
               await tester.pumpWidget(MaterialApp(
                 localizationsDelegates: AppLocalizations.localizationsDelegates,
                 supportedLocales: AppLocalizations.supportedLocales,
                 home: Builder(
                   builder: (context) => Scaffold(
                     body: ElevatedButton(
-                      onPressed: () {
-                        showDialog(
-                          context: context,
-                          builder: (context) =>
-                              const ElectricityReadingFormDialog(
-                            reading: null,
-                          ),
-                        );
+                      onPressed: () async {
+                        result =
+                            await ElectricityReadingFormDialog.show(context);
                       },
                       child: const Text('Open Dialog'),
                     ),
@@ -192,11 +133,17 @@ void main() {
               ));
               await tester.pumpAndSettle();
 
-              // Without a reading, it's add mode so Save & next IS shown
               await tester.tap(find.text('Open Dialog'));
               await tester.pumpAndSettle();
 
-              expect(find.text('Save & next'), findsOneWidget);
+              await tester.enterText(
+                  find.widgetWithText(TextFormField, 'Meter Value'), '500');
+              await tester.pumpAndSettle();
+
+              await tester.tap(find.text('Cancel'));
+              await tester.pumpAndSettle();
+
+              expect(result, isNull);
 
               await tester.pumpWidget(Container());
             }));

@@ -828,9 +828,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get heatingRatioInvalid => 'Must be between 1 and 100';
 
   @override
-  String get saveAndNext => 'Save & next';
-
-  @override
   String previousReading(String value) {
     return 'Previous: $value';
   }
@@ -841,20 +838,12 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String addReadingCount(String count) {
-    return 'Add reading ($count)';
-  }
-
-  @override
   String deleteConfirmTitle(String item) {
     return 'Delete $item?';
   }
 
   @override
   String get deleteCannotUndo => 'This action cannot be undone.';
-
-  @override
-  String get saved => 'Saved';
 
   @override
   String get projected => 'Projected';

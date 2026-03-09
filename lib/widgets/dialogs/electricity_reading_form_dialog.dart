@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../l10n/app_localizations.dart';
 import '../../database/app_database.dart';
-import 'reading_form_base.dart';
 
 /// Dialog for creating or editing an electricity reading.
 ///
@@ -52,16 +51,14 @@ class ElectricityReadingFormDialog extends StatefulWidget {
 }
 
 class _ElectricityReadingFormDialogState
-    extends State<ElectricityReadingFormDialog>
-    with QuickEntryMixin {
+    extends State<ElectricityReadingFormDialog> {
   final _formKey = GlobalKey<FormState>();
   late final TextEditingController _valueController;
   late DateTime _selectedDateTime;
   String? _externalError;
   String? _validationError;
 
-  @override
-  bool get isEditMode => widget.reading != null;
+  bool get _isEditMode => widget.reading != null;
 
   @override
   void initState() {
@@ -78,15 +75,6 @@ class _ElectricityReadingFormDialogState
     _valueController.removeListener(_onValueChanged);
     _valueController.dispose();
     super.dispose();
-  }
-
-  @override
-  void clearValueField() {
-    _valueController.clear();
-    setState(() {
-      _validationError = null;
-      _externalError = null;
-    });
   }
 
   void _onValueChanged() {
@@ -118,11 +106,9 @@ class _ElectricityReadingFormDialogState
     final l10n = AppLocalizations.of(context)!;
 
     return AlertDialog(
-      title: Text(quickEntryTitle(
-        l10n,
-        l10n.addElectricityReading,
-        l10n.editElectricityReading,
-      )),
+      title: Text(
+        _isEditMode ? l10n.editElectricityReading : l10n.addElectricityReading,
+      ),
       content: Form(
         key: _formKey,
         child: Column(
@@ -164,7 +150,7 @@ class _ElectricityReadingFormDialogState
               inputFormatters: [
                 FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
               ],
-              autofocus: !isEditMode,
+              autofocus: !_isEditMode,
               validator: (value) {
                 if (value == null || value.trim().isEmpty) {
                   return l10n.readingMustBePositive;
@@ -176,15 +162,19 @@ class _ElectricityReadingFormDialogState
                 return null;
               },
             ),
-            buildSuccessIndicator(l10n),
           ],
         ),
       ),
-      actions: buildQuickEntryActions(
-        l10n,
-        onSavePressed: _hasValidationError ? null : _onSave,
-        onCancelPressed: () => Navigator.of(context).pop(null),
-      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(null),
+          child: Text(l10n.cancel),
+        ),
+        FilledButton(
+          onPressed: _hasValidationError ? null : _onSave,
+          child: Text(l10n.save),
+        ),
+      ],
     );
   }
 
@@ -229,21 +219,10 @@ class _ElectricityReadingFormDialogState
         valueKwh: value,
       );
 
-      // If there's a save callback (for quick entry), call it
       if (widget.onSaveCallback != null) {
         await widget.onSaveCallback!(data);
       }
 
-      // Check if "Save & Next" was pressed
-      if (handlePostSave()) {
-        // Reset the date/time for next entry
-        setState(() {
-          _selectedDateTime = DateTime.now();
-        });
-        return; // Stay open
-      }
-
-      // Normal save: close and return data
       if (mounted) {
         Navigator.of(context).pop(data);
       }

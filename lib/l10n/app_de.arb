@@ -320,7 +320,6 @@
   "heatingRatioHint": "Anteil an der Gesamtheizenergie",
   "heatingRatioRequired": "Heizanteil ist erforderlich",
   "heatingRatioInvalid": "Muss zwischen 1 und 100 liegen",
-  "saveAndNext": "Speichern & weiter",
   "previousReading": "Vorheriger Wert: {value}",
   "@previousReading": {
     "placeholders": {
@@ -333,12 +332,6 @@
       "value": {"type": "String"}
     }
   },
-  "addReadingCount": "Ablesung hinzuf\u00fcgen ({count})",
-  "@addReadingCount": {
-    "placeholders": {
-      "count": {"type": "String"}
-    }
-  },
   "deleteConfirmTitle": "{item} l\u00f6schen?",
   "@deleteConfirmTitle": {
     "placeholders": {
@@ -346,7 +339,6 @@
     }
   },
   "deleteCannotUndo": "Diese Aktion kann nicht r\u00fcckg\u00e4ngig gemacht werden.",
-  "saved": "Gespeichert",
   "projected": "Hochgerechnet",
   "projectedTotal": "Hochgerechnet: {value}",
   "@projectedTotal": {

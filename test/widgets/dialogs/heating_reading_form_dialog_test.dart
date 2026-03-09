@@ -23,6 +23,40 @@ void main() {
   }
 
   group('HeatingReadingFormDialog', () {
+    testWidgets('shows only Cancel and Save buttons in add mode',
+        (tester) async {
+      await tester.pumpWidget(buildTestWidget());
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Open Dialog'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Cancel'), findsOneWidget);
+      expect(find.text('Save'), findsOneWidget);
+      expect(find.text('Save & next'), findsNothing);
+    });
+
+    testWidgets('shows only Cancel and Save buttons in edit mode',
+        (tester) async {
+      final reading = HeatingReading(
+        id: 1,
+        heatingMeterId: 1,
+        timestamp: DateTime(2024, 1, 15, 10, 30),
+        value: 1234.5,
+      );
+
+      await tester.pumpWidget(buildTestWidget(reading: reading));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Open Dialog'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Cancel'), findsOneWidget);
+      expect(find.text('Save'), findsOneWidget);
+      expect(find.text('Save & next'), findsNothing);
+      expect(find.text('Edit Reading'), findsOneWidget);
+    });
+
     testWidgets('validates empty value', (tester) async {
       await tester.pumpWidget(buildTestWidget());
       await tester.pumpAndSettle();
@@ -159,8 +193,8 @@ void main() {
       await tester.tap(find.text('Open Dialog'));
       await tester.pumpAndSettle();
 
-      // Should NOT show m³ suffix (unit-less)
-      expect(find.text('m³'), findsNothing);
+      // Should NOT show m\u00B3 suffix (unit-less)
+      expect(find.text('m\u00B3'), findsNothing);
     });
   });
 }

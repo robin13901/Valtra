@@ -17,6 +17,78 @@ void main() {
   }
 
   group('GasReadingFormDialog', () {
+    testWidgets('shows only Cancel and Save buttons in add mode',
+        (tester) => tester.runAsync(() async {
+              await tester.pumpWidget(wrapWithMaterialApp(
+                Builder(builder: (context) {
+                  return ElevatedButton(
+                    onPressed: () => GasReadingFormDialog.show(context),
+                    child: const Text('Open'),
+                  );
+                }),
+              ));
+              await tester.pumpAndSettle();
+
+              await tester.tap(find.text('Open'));
+              await tester.pumpAndSettle();
+
+              expect(find.text('Cancel'), findsOneWidget);
+              expect(find.text('Save'), findsOneWidget);
+              expect(find.text('Save & next'), findsNothing);
+
+              await tester.pumpWidget(Container());
+            }));
+
+    testWidgets('shows only Cancel and Save buttons in edit mode',
+        (tester) => tester.runAsync(() async {
+              final database = createTestDatabase();
+              final dao = GasDao(database);
+
+              final householdId = await database
+                  .into(database.households)
+                  .insert(HouseholdsCompanion.insert(name: 'Test Household'));
+
+              final readingId =
+                  await dao.insertReading(GasReadingsCompanion.insert(
+                householdId: householdId,
+                timestamp: DateTime(2024, 3, 15, 10, 30),
+                valueCubicMeters: 1234.5,
+              ));
+
+              final existingReading = await dao.getReading(readingId);
+
+              await tester.pumpWidget(MaterialApp(
+                localizationsDelegates: AppLocalizations.localizationsDelegates,
+                supportedLocales: AppLocalizations.supportedLocales,
+                home: Scaffold(
+                  body: Builder(builder: (context) {
+                    return ElevatedButton(
+                      onPressed: () =>
+                          showDialog<GasReadingFormData>(
+                        context: context,
+                        builder: (context) => GasReadingFormDialog(
+                          reading: existingReading,
+                        ),
+                      ),
+                      child: const Text('Open'),
+                    );
+                  }),
+                ),
+              ));
+              await tester.pumpAndSettle();
+
+              await tester.tap(find.text('Open'));
+              await tester.pumpAndSettle();
+
+              expect(find.text('Cancel'), findsOneWidget);
+              expect(find.text('Save'), findsOneWidget);
+              expect(find.text('Save & next'), findsNothing);
+              expect(find.text('Edit Reading'), findsOneWidget);
+
+              await database.close();
+              await tester.pumpWidget(Container());
+            }));
+
     testWidgets('form validates empty value',
         (tester) => tester.runAsync(() async {
               await tester.pumpWidget(wrapWithMaterialApp(
@@ -197,7 +269,7 @@ void main() {
               await tester.pumpWidget(Container());
             }));
 
-    testWidgets('shows m³ unit suffix',
+    testWidgets('shows m\u00B3 unit suffix',
         (tester) => tester.runAsync(() async {
               await tester.pumpWidget(wrapWithMaterialApp(
                 Builder(builder: (context) {
@@ -213,8 +285,8 @@ void main() {
               await tester.tap(find.text('Open'));
               await tester.pumpAndSettle();
 
-              // Should show m³ suffix
-              expect(find.text('m³'), findsOneWidget);
+              // Should show m\u00B3 suffix
+              expect(find.text('m\u00B3'), findsOneWidget);
 
               await tester.pumpWidget(Container());
             }));
