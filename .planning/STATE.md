@@ -6,6 +6,7 @@
 - **Current Phase**: 21 - Smart Plug Screen Overhaul (complete)
 - **Current Plan**: —
 - **Last Updated**: 2026-03-09
+- **Tests**: 1070
 
 ## Completed Milestones
 - **Milestone 1**: Core Foundation (v0.1.0) -- 7 phases, 313 tests
@@ -16,6 +17,7 @@
 - **17-01**: Fix household dropdown text color (onSurface theme-aware colors)
 - **18**: Cost settings & household configuration (annual Grundpreis, expandable profile cards, household-scoped settings)
 - **19**: Electricity screen overhaul (bottom nav, IndexedStack, inline analysis, chart month-alignment fix, kWh/€ toggle)
+- **20**: Gas screen overhaul (bottom nav, IndexedStack, inline analysis, m³/€ toggle)
 - **21-01**: Smart Plug screen overhaul (bottom nav Analyse/Liste, monthly-only inline analytics, renamed stats, room percentages, 1070 tests)
 
 ## Blocked
