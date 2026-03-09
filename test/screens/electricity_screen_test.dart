@@ -442,4 +442,130 @@ void main() {
               await tester.pumpWidget(Container());
             }));
   });
+
+  group('ElectricityScreen - Cost Toggle on Analyse Tab', () {
+    testWidgets(
+        'toggling to EUR shows total cost in summary card',
+        (tester) => tester.runAsync(() async {
+              // Add readings across months for current year
+              final year = DateTime.now().year;
+              await electricityDao
+                  .insertReading(ElectricityReadingsCompanion.insert(
+                householdId: householdId,
+                timestamp: DateTime(year, 1, 1),
+                valueKwh: 1000.0,
+              ));
+              await electricityDao
+                  .insertReading(ElectricityReadingsCompanion.insert(
+                householdId: householdId,
+                timestamp: DateTime(year, 2, 1),
+                valueKwh: 1300.0,
+              ));
+              await electricityDao
+                  .insertReading(ElectricityReadingsCompanion.insert(
+                householdId: householdId,
+                timestamp: DateTime(year, 3, 1),
+                valueKwh: 1550.0,
+              ));
+
+              // Add cost config for electricity
+              await database.into(database.costConfigs).insert(
+                    CostConfigsCompanion.insert(
+                      householdId: householdId,
+                      meterType: CostMeterType.electricity,
+                      unitPrice: 0.30,
+                      standingCharge: const Value(120.0),
+                      validFrom: DateTime(year, 1, 1),
+                      currencySymbol: const Value('\u20AC'),
+                    ),
+                  );
+
+              await Future.delayed(const Duration(milliseconds: 200));
+
+              await tester
+                  .pumpWidget(wrapWithProviders(const ElectricityScreen()));
+              await tester.pumpAndSettle();
+
+              // Switch to Analyse tab
+              await tester.tap(find.text('Analysis'));
+              await Future.delayed(const Duration(milliseconds: 200));
+              await tester.pumpAndSettle();
+
+              // Verify the default shows kWh consumption
+              expect(find.textContaining('kWh'), findsAtLeast(1));
+
+              // Tap the cost toggle (electric_bolt icon toggles to euro)
+              await tester.tap(find.byIcon(Icons.electric_bolt).last);
+              await tester.pumpAndSettle();
+
+              // Now the summary should show EUR symbol
+              expect(find.byIcon(Icons.euro), findsOneWidget);
+
+              await tester.pumpWidget(Container());
+            }));
+
+    testWidgets(
+        'toggling back to kWh reverts to consumption display',
+        (tester) => tester.runAsync(() async {
+              final year = DateTime.now().year;
+              await electricityDao
+                  .insertReading(ElectricityReadingsCompanion.insert(
+                householdId: householdId,
+                timestamp: DateTime(year, 1, 1),
+                valueKwh: 1000.0,
+              ));
+              await electricityDao
+                  .insertReading(ElectricityReadingsCompanion.insert(
+                householdId: householdId,
+                timestamp: DateTime(year, 2, 1),
+                valueKwh: 1300.0,
+              ));
+              await electricityDao
+                  .insertReading(ElectricityReadingsCompanion.insert(
+                householdId: householdId,
+                timestamp: DateTime(year, 3, 1),
+                valueKwh: 1550.0,
+              ));
+
+              // Add cost config
+              await database.into(database.costConfigs).insert(
+                    CostConfigsCompanion.insert(
+                      householdId: householdId,
+                      meterType: CostMeterType.electricity,
+                      unitPrice: 0.30,
+                      standingCharge: const Value(120.0),
+                      validFrom: DateTime(year, 1, 1),
+                      currencySymbol: const Value('\u20AC'),
+                    ),
+                  );
+
+              await Future.delayed(const Duration(milliseconds: 200));
+
+              await tester
+                  .pumpWidget(wrapWithProviders(const ElectricityScreen()));
+              await tester.pumpAndSettle();
+
+              // Switch to Analyse tab
+              await tester.tap(find.text('Analysis'));
+              await Future.delayed(const Duration(milliseconds: 200));
+              await tester.pumpAndSettle();
+
+              // Toggle to EUR
+              await tester.tap(find.byIcon(Icons.electric_bolt).last);
+              await tester.pumpAndSettle();
+
+              // Verify euro icon is showing (cost mode active)
+              expect(find.byIcon(Icons.euro), findsOneWidget);
+
+              // Toggle back to kWh
+              await tester.tap(find.byIcon(Icons.euro));
+              await tester.pumpAndSettle();
+
+              // Should revert: electric_bolt icon visible again,
+              // consumption with kWh shown
+              expect(find.textContaining('kWh'), findsAtLeast(1));
+
+              await tester.pumpWidget(Container());
+            }));
+  });
 }

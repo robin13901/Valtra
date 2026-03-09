@@ -13,6 +13,15 @@ class MonthlyBarChart extends StatelessWidget {
   final DateTime? highlightMonth;
   final String locale;
 
+  /// Optional cost data for kWh/EUR toggle support (parallel to periods).
+  final List<double?>? periodCosts;
+
+  /// When true, chart displays cost values instead of consumption.
+  final bool showCosts;
+
+  /// Unit label for cost mode (e.g. 'EUR').
+  final String? costUnit;
+
   const MonthlyBarChart({
     super.key,
     required this.periods,
@@ -20,6 +29,9 @@ class MonthlyBarChart extends StatelessWidget {
     required this.unit,
     this.highlightMonth,
     this.locale = 'de',
+    this.periodCosts,
+    this.showCosts = false,
+    this.costUnit,
   });
 
   @override
@@ -44,11 +56,19 @@ class MonthlyBarChart extends StatelessWidget {
           period.startInterpolated || period.endInterpolated;
       final isExtrapolated = period.isExtrapolated;
 
+      // Use cost value when in cost mode, otherwise use consumption
+      final double barValue;
+      if (showCosts && periodCosts != null && i < periodCosts!.length && periodCosts![i] != null) {
+        barValue = periodCosts![i]!;
+      } else {
+        barValue = period.consumption;
+      }
+
       return BarChartGroupData(
         x: i,
         barRods: [
           BarChartRodData(
-            toY: period.consumption,
+            toY: barValue,
             color: isExtrapolated
                 ? primaryColor.withValues(alpha: 0.3)
                 : isHighlighted
@@ -85,8 +105,9 @@ class MonthlyBarChart extends StatelessWidget {
           getTooltipItem: (group, groupIndex, rod, rodIndex) {
             final period = periods[group.x.toInt()];
             final monthName = DateFormat.yMMM().format(period.periodStart);
+            final displayUnit = showCosts && costUnit != null ? costUnit! : unit;
             return BarTooltipItem(
-              '$monthName\n${ValtraNumberFormat.consumption(rod.toY, locale)} $unit',
+              '$monthName\n${ValtraNumberFormat.consumption(rod.toY, locale)} $displayUnit',
               TextStyle(color: primaryColor, fontWeight: FontWeight.bold),
             );
           },
@@ -140,8 +161,14 @@ class MonthlyBarChart extends StatelessWidget {
 
   double _calculateMaxY() {
     if (periods.isEmpty) return 1.0;
-    final maxVal =
-        periods.map((p) => p.consumption).reduce((a, b) => a > b ? a : b);
+    final values = periods.asMap().entries.map((entry) {
+      final i = entry.key;
+      if (showCosts && periodCosts != null && i < periodCosts!.length && periodCosts![i] != null) {
+        return periodCosts![i]!;
+      }
+      return entry.value.consumption;
+    });
+    final maxVal = values.reduce((a, b) => a > b ? a : b);
     return maxVal > 0 ? maxVal * 1.2 : 1.0;
   }
 }

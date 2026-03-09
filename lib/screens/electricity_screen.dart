@@ -213,6 +213,7 @@ class _ElectricityScreenState extends State<ElectricityScreen> {
           locale: locale,
           extrapolatedTotal: data.extrapolatedTotal,
           extrapolationBasisMonths: data.extrapolationBasisMonths,
+          showCosts: _showCosts,
         ),
         const SizedBox(height: 24),
 
@@ -227,6 +228,9 @@ class _ElectricityScreenState extends State<ElectricityScreen> {
             primaryColor: color,
             unit: data.unit,
             locale: locale,
+            showCosts: _showCosts,
+            periodCosts: _showCosts ? data.monthlyCosts : null,
+            costUnit: _showCosts ? (data.currencySymbol ?? '\u20AC') : null,
           ),
         ),
         const SizedBox(height: 24),
@@ -245,6 +249,10 @@ class _ElectricityScreenState extends State<ElectricityScreen> {
               primaryColor: color,
               unit: data.unit,
               locale: locale,
+              showCosts: _showCosts,
+              currentYearCosts: _showCosts ? data.monthlyCosts : null,
+              previousYearCosts: _showCosts ? data.previousYearMonthlyCosts : null,
+              costUnit: _showCosts ? (data.currencySymbol ?? '\u20AC') : null,
             ),
           ),
           const SizedBox(height: 8),
@@ -438,6 +446,7 @@ class _YearlySummaryCard extends StatelessWidget {
   final String locale;
   final double? extrapolatedTotal;
   final int? extrapolationBasisMonths;
+  final bool showCosts;
 
   const _YearlySummaryCard({
     required this.totalConsumption,
@@ -451,11 +460,19 @@ class _YearlySummaryCard extends StatelessWidget {
     required this.locale,
     this.extrapolatedTotal,
     this.extrapolationBasisMonths,
+    this.showCosts = false,
   });
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final symbol = currencySymbol ?? '\u20AC';
+
+    // Determine primary display value and unit based on cost toggle
+    final double? displayValue = showCosts ? totalCost : totalConsumption;
+    final String displayUnit = showCosts ? symbol : unit;
+    final double? previousValue = showCosts ? previousYearTotalCost : previousYearTotal;
+
     return GlassCard(
       child: Column(
         children: [
@@ -463,15 +480,17 @@ class _YearlySummaryCard extends StatelessWidget {
               style: Theme.of(context).textTheme.bodyMedium),
           const SizedBox(height: 8),
           Text(
-            totalConsumption != null
-                ? '${ValtraNumberFormat.consumption(totalConsumption!, locale)} $unit'
+            displayValue != null
+                ? showCosts
+                    ? '${ValtraNumberFormat.currency(displayValue, locale)} $displayUnit'
+                    : '${ValtraNumberFormat.consumption(displayValue, locale)} $displayUnit'
                 : '\u2014',
             style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                   color: color,
                   fontWeight: FontWeight.bold,
                 ),
           ),
-          if (extrapolatedTotal != null) ...[
+          if (!showCosts && extrapolatedTotal != null) ...[
             const SizedBox(height: 4),
             Text(
               l10n.projectedTotal(
@@ -490,16 +509,17 @@ class _YearlySummaryCard extends StatelessWidget {
                     ),
               ),
           ],
-          if (totalConsumption != null &&
-              previousYearTotal != null &&
-              previousYearTotal! > 0) ...[
+          if (displayValue != null &&
+              previousValue != null &&
+              previousValue > 0) ...[
             const SizedBox(height: 8),
-            _buildChangeText(context, l10n),
+            _buildChangeText(context, l10n, displayValue, previousValue),
           ],
-          if (totalCost != null) ...[
+          // Show cost as secondary info only when NOT in cost mode
+          if (!showCosts && totalCost != null) ...[
             const SizedBox(height: 8),
             Text(
-              '~${currencySymbol ?? '\u20AC'}${ValtraNumberFormat.currency(totalCost!, locale)}',
+              '~$symbol${ValtraNumberFormat.currency(totalCost!, locale)}',
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
                     color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
@@ -510,9 +530,10 @@ class _YearlySummaryCard extends StatelessWidget {
     );
   }
 
-  Widget _buildChangeText(BuildContext context, AppLocalizations l10n) {
+  Widget _buildChangeText(BuildContext context, AppLocalizations l10n,
+      double currentValue, double previousValue) {
     final change =
-        ((totalConsumption! - previousYearTotal!) / previousYearTotal!) * 100;
+        ((currentValue - previousValue) / previousValue) * 100;
     final prefix = change >= 0 ? '+' : '';
     final changeText = '$prefix${ValtraNumberFormat.consumption(change, locale)}';
 

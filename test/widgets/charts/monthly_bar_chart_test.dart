@@ -11,6 +11,9 @@ void main() {
     Color primaryColor = Colors.blue,
     String unit = 'kWh',
     DateTime? highlightMonth,
+    List<double?>? periodCosts,
+    bool showCosts = false,
+    String? costUnit,
   }) {
     return MaterialApp(
       localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -24,6 +27,9 @@ void main() {
             primaryColor: primaryColor,
             unit: unit,
             highlightMonth: highlightMonth,
+            periodCosts: periodCosts,
+            showCosts: showCosts,
+            costUnit: costUnit,
           ),
         ),
       ),
@@ -145,6 +151,122 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byType(BarChart), findsOneWidget);
+    });
+  });
+
+  group('MonthlyBarChart - cost mode', () {
+    testWidgets('showCosts=true renders bar heights from periodCosts',
+        (tester) async {
+      final periods = buildSamplePeriods();
+
+      await tester.pumpWidget(
+        buildTestWidget(
+          periods: periods,
+          showCosts: true,
+          periodCosts: [15.0, 21.0, 18.0],
+          costUnit: 'EUR',
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.byType(BarChart), findsOneWidget);
+
+      // Extract BarChartData to verify bar heights
+      final barChart = tester.widget<BarChart>(find.byType(BarChart));
+      final data = barChart.data;
+      expect(data.barGroups.length, 3);
+      expect(data.barGroups[0].barRods[0].toY, 15.0);
+      expect(data.barGroups[1].barRods[0].toY, 21.0);
+      expect(data.barGroups[2].barRods[0].toY, 18.0);
+    });
+
+    testWidgets('showCosts=false (default) uses consumption values',
+        (tester) async {
+      final periods = buildSamplePeriods();
+
+      await tester.pumpWidget(
+        buildTestWidget(
+          periods: periods,
+          showCosts: false,
+          periodCosts: [15.0, 21.0, 18.0],
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.byType(BarChart), findsOneWidget);
+
+      // Extract BarChartData to verify bar heights use consumption
+      final barChart = tester.widget<BarChart>(find.byType(BarChart));
+      final data = barChart.data;
+      expect(data.barGroups[0].barRods[0].toY, 50.0); // consumption
+      expect(data.barGroups[1].barRods[0].toY, 70.0);
+      expect(data.barGroups[2].barRods[0].toY, 60.0);
+    });
+
+    testWidgets('showCosts=true with null periodCosts falls back to consumption',
+        (tester) async {
+      final periods = buildSamplePeriods();
+
+      await tester.pumpWidget(
+        buildTestWidget(
+          periods: periods,
+          showCosts: true,
+          periodCosts: null,
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.byType(BarChart), findsOneWidget);
+
+      final barChart = tester.widget<BarChart>(find.byType(BarChart));
+      final data = barChart.data;
+      // Falls back to consumption values
+      expect(data.barGroups[0].barRods[0].toY, 50.0);
+      expect(data.barGroups[1].barRods[0].toY, 70.0);
+      expect(data.barGroups[2].barRods[0].toY, 60.0);
+    });
+
+    testWidgets('cost mode skips null cost entries (falls back to consumption)',
+        (tester) async {
+      final periods = buildSamplePeriods();
+
+      await tester.pumpWidget(
+        buildTestWidget(
+          periods: periods,
+          showCosts: true,
+          periodCosts: [15.0, null, 18.0],
+          costUnit: 'EUR',
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.byType(BarChart), findsOneWidget);
+
+      final barChart = tester.widget<BarChart>(find.byType(BarChart));
+      final data = barChart.data;
+      expect(data.barGroups[0].barRods[0].toY, 15.0);
+      expect(data.barGroups[1].barRods[0].toY, 70.0); // null cost -> consumption
+      expect(data.barGroups[2].barRods[0].toY, 18.0);
+    });
+
+    testWidgets('maxY is computed from cost values in cost mode',
+        (tester) async {
+      final periods = buildSamplePeriods();
+
+      await tester.pumpWidget(
+        buildTestWidget(
+          periods: periods,
+          showCosts: true,
+          periodCosts: [100.0, 200.0, 150.0],
+          costUnit: 'EUR',
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final barChart = tester.widget<BarChart>(find.byType(BarChart));
+      final data = barChart.data;
+      // maxY should be 200 * 1.2 = 240
+      expect(data.maxY, closeTo(240.0, 0.01));
     });
   });
 }
