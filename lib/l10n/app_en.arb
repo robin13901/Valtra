@@ -234,7 +234,6 @@
   },
   "defaultGasConversionFactor": "Default: 10.3 kWh/m³ (German natural gas)",
   "analyticsHub": "Analytics",
-  "consumptionOverview": "Consumption Overview",
   "monthlyAnalytics": "Monthly Analytics",
   "totalConsumption": "Total Consumption",
   "noAnalyticsData": "Not enough data for analytics. Add more readings!",
@@ -288,7 +287,6 @@
     }
   },
   "exportCsv": "Export CSV",
-  "exportAll": "Export All Meters",
   "exportSuccess": "Export ready to share",
   "noYearlyData": "No data for {year}",
   "@noYearlyData": {

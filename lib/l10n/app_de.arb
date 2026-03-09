@@ -168,7 +168,6 @@
   },
   "defaultGasConversionFactor": "Standard: 10,3 kWh/m³ (deutsches Erdgas)",
   "analyticsHub": "Analyse",
-  "consumptionOverview": "Verbrauchsübersicht",
   "monthlyAnalytics": "Monatsanalyse",
   "totalConsumption": "Gesamtverbrauch",
   "noAnalyticsData": "Nicht genügend Daten für Analysen. Fügen Sie weitere Ablesungen hinzu!",
@@ -222,7 +221,6 @@
     }
   },
   "exportCsv": "CSV exportieren",
-  "exportAll": "Alle Zähler exportieren",
   "exportSuccess": "Export bereit zum Teilen",
   "noYearlyData": "Keine Daten für {year}",
   "@noYearlyData": {

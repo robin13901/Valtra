@@ -986,12 +986,6 @@ abstract class AppLocalizations {
   /// **'Analytics'**
   String get analyticsHub;
 
-  /// No description provided for @consumptionOverview.
-  ///
-  /// In en, this message translates to:
-  /// **'Consumption Overview'**
-  String get consumptionOverview;
-
   /// No description provided for @monthlyAnalytics.
   ///
   /// In en, this message translates to:
@@ -1105,12 +1099,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Export CSV'**
   String get exportCsv;
-
-  /// No description provided for @exportAll.
-  ///
-  /// In en, this message translates to:
-  /// **'Export All Meters'**
-  String get exportAll;
 
   /// No description provided for @exportSuccess.
   ///
