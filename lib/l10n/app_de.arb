@@ -372,5 +372,9 @@
   "importConfirmMessage": "Alle aktuellen Daten werden durch die importierte Sicherung ersetzt. Eine Sicherheitskopie wird automatisch erstellt. Fortfahren?",
   "invalidBackupFile": "Ung\u00fcltige Sicherungsdatei. Bitte eine g\u00fcltige Valtra-Datenbank ausw\u00e4hlen.",
   "backupCreated": "Sicherheitskopie erstellt",
-  "validatingFile": "Datei wird \u00fcberpr\u00fcft..."
+  "validatingFile": "Datei wird \u00fcberpr\u00fcft...",
+  "list": "Liste",
+  "showCosts": "Kosten anzeigen",
+  "showConsumption": "Verbrauch anzeigen",
+  "costPerMonth": "Kosten pro Monat"
 }

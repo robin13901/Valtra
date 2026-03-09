@@ -438,5 +438,9 @@
   "importConfirmMessage": "This will replace all current data with the imported backup. A safety backup will be created automatically. Continue?",
   "invalidBackupFile": "Invalid backup file. Please select a valid Valtra database.",
   "backupCreated": "Safety backup created",
-  "validatingFile": "Validating file..."
+  "validatingFile": "Validating file...",
+  "list": "List",
+  "showCosts": "Show Costs",
+  "showConsumption": "Show Consumption",
+  "costPerMonth": "Cost per Month"
 }

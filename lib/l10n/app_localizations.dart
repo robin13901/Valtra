@@ -1705,6 +1705,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Validating file...'**
   String get validatingFile;
+
+  /// No description provided for @list.
+  ///
+  /// In en, this message translates to:
+  /// **'List'**
+  String get list;
+
+  /// No description provided for @showCosts.
+  ///
+  /// In en, this message translates to:
+  /// **'Show Costs'**
+  String get showCosts;
+
+  /// No description provided for @showConsumption.
+  ///
+  /// In en, this message translates to:
+  /// **'Show Consumption'**
+  String get showConsumption;
+
+  /// No description provided for @costPerMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'Cost per Month'**
+  String get costPerMonth;
 }
 
 class _AppLocalizationsDelegate

@@ -913,4 +913,16 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get validatingFile => 'Datei wird überprüft...';
+
+  @override
+  String get list => 'Liste';
+
+  @override
+  String get showCosts => 'Kosten anzeigen';
+
+  @override
+  String get showConsumption => 'Verbrauch anzeigen';
+
+  @override
+  String get costPerMonth => 'Kosten pro Monat';
 }

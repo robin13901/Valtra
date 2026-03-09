@@ -910,4 +910,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get validatingFile => 'Validating file...';
+
+  @override
+  String get list => 'List';
+
+  @override
+  String get showCosts => 'Show Costs';
+
+  @override
+  String get showConsumption => 'Show Consumption';
+
+  @override
+  String get costPerMonth => 'Cost per Month';
 }
