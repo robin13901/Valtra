@@ -3,15 +3,25 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 import 'package:valtra/app_theme.dart';
 import 'package:valtra/database/app_database.dart';
+import 'package:valtra/database/daos/cost_config_dao.dart';
+import 'package:valtra/database/daos/electricity_dao.dart';
 import 'package:valtra/database/daos/gas_dao.dart';
+import 'package:valtra/database/daos/heating_dao.dart';
 import 'package:valtra/database/daos/household_dao.dart';
+import 'package:valtra/database/daos/water_dao.dart';
 import 'package:valtra/l10n/app_localizations.dart';
+import 'package:valtra/providers/analytics_provider.dart';
+import 'package:valtra/providers/cost_config_provider.dart';
 import 'package:valtra/providers/gas_provider.dart';
 import 'package:valtra/providers/household_provider.dart';
+import 'package:valtra/providers/interpolation_settings_provider.dart';
 import 'package:valtra/providers/locale_provider.dart';
 import 'package:valtra/providers/theme_provider.dart';
 import 'package:valtra/screens/gas_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:valtra/services/cost_calculation_service.dart';
+import 'package:valtra/services/gas_conversion_service.dart';
+import 'package:valtra/services/interpolation/interpolation_service.dart';
 
 import 'helpers/test_database.dart';
 import 'helpers/test_locale_provider.dart';
@@ -22,6 +32,8 @@ void main() {
   late GasDao dao;
   late GasProvider gasProvider;
   late HouseholdProvider householdProvider;
+  late AnalyticsProvider analyticsProvider;
+  late CostConfigProvider costConfigProvider;
   late ThemeProvider themeProvider;
   late MockLocaleProvider localeProvider;
   late int householdId;
@@ -33,6 +45,10 @@ void main() {
         ChangeNotifierProvider<GasProvider>.value(value: gasProvider),
         ChangeNotifierProvider<HouseholdProvider>.value(
             value: householdProvider),
+        ChangeNotifierProvider<AnalyticsProvider>.value(
+            value: analyticsProvider),
+        ChangeNotifierProvider<CostConfigProvider>.value(
+            value: costConfigProvider),
         ChangeNotifierProvider<ThemeProvider>.value(value: themeProvider),
         ChangeNotifierProvider<LocaleProvider>.value(value: localeProvider),
       ],
@@ -57,18 +73,42 @@ void main() {
     await themeProvider.init();
     localeProvider = MockLocaleProvider();
 
+    final interpolationSettingsProvider = InterpolationSettingsProvider();
+    await interpolationSettingsProvider.init();
+
+    final costConfigDao = CostConfigDao(database);
+    costConfigProvider = CostConfigProvider(
+      costConfigDao: costConfigDao,
+      costCalculationService: CostCalculationService(),
+    );
+
+    analyticsProvider = AnalyticsProvider(
+      electricityDao: ElectricityDao(database),
+      gasDao: dao,
+      waterDao: WaterDao(database),
+      heatingDao: HeatingDao(database),
+      interpolationService: InterpolationService(),
+      gasConversionService: GasConversionService(),
+      settingsProvider: interpolationSettingsProvider,
+      costConfigProvider: costConfigProvider,
+    );
+
     // Create a test household and select it
     householdId = await database
         .into(database.households)
         .insert(HouseholdsCompanion.insert(name: 'Test Household'));
     householdProvider.selectHousehold(householdId);
     gasProvider.setHouseholdId(householdId);
+    analyticsProvider.setHouseholdId(householdId);
+    costConfigProvider.setHouseholdId(householdId);
     await Future.delayed(const Duration(milliseconds: 50));
   });
 
   tearDown(() async {
     gasProvider.dispose();
     householdProvider.dispose();
+    analyticsProvider.dispose();
+    costConfigProvider.dispose();
     await database.close();
   });
 

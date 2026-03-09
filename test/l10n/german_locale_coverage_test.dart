@@ -233,10 +233,35 @@ void main() {
               provider.setHouseholdId(householdId);
               await Future.delayed(const Duration(milliseconds: 50));
 
+              final interpolationSettings = InterpolationSettingsProvider();
+              await interpolationSettings.init();
+              final costConfigDao = CostConfigDao(database);
+              final costConfigProvider = CostConfigProvider(
+                costConfigDao: costConfigDao,
+                costCalculationService: CostCalculationService(),
+              );
+              final analyticsProvider = AnalyticsProvider(
+                electricityDao: ElectricityDao(database),
+                gasDao: dao,
+                waterDao: WaterDao(database),
+                heatingDao: HeatingDao(database),
+                interpolationService: InterpolationService(),
+                gasConversionService: GasConversionService(),
+                settingsProvider: interpolationSettings,
+                costConfigProvider: costConfigProvider,
+              );
+              analyticsProvider.setHouseholdId(householdId);
+              costConfigProvider.setHouseholdId(householdId);
+              await Future.delayed(const Duration(milliseconds: 200));
+
               await tester.pumpWidget(MultiProvider(
                 providers: [
                   Provider<AppDatabase>.value(value: database),
                   ChangeNotifierProvider<GasProvider>.value(value: provider),
+                  ChangeNotifierProvider<AnalyticsProvider>.value(
+                      value: analyticsProvider),
+                  ChangeNotifierProvider<CostConfigProvider>.value(
+                      value: costConfigProvider),
                   ChangeNotifierProvider<ThemeProvider>.value(
                       value: themeProvider),
                   ChangeNotifierProvider<LocaleProvider>.value(
@@ -259,9 +284,12 @@ void main() {
                       'Noch keine Ablesungen. Fügen Sie Ihre erste Zählerablesung hinzu!'),
                   findsOneWidget);
 
-              provider.dispose();
-              await database.close();
               await tester.pumpWidget(Container());
+              await Future.delayed(const Duration(milliseconds: 200));
+              provider.dispose();
+              analyticsProvider.dispose();
+              costConfigProvider.dispose();
+              await database.close();
             }));
 
     testWidgets('GasScreen with readings in German',
@@ -289,10 +317,35 @@ void main() {
               ));
               await Future.delayed(const Duration(milliseconds: 100));
 
+              final interpolationSettings = InterpolationSettingsProvider();
+              await interpolationSettings.init();
+              final costConfigDao = CostConfigDao(database);
+              final costConfigProvider = CostConfigProvider(
+                costConfigDao: costConfigDao,
+                costCalculationService: CostCalculationService(),
+              );
+              final analyticsProvider = AnalyticsProvider(
+                electricityDao: ElectricityDao(database),
+                gasDao: dao,
+                waterDao: WaterDao(database),
+                heatingDao: HeatingDao(database),
+                interpolationService: InterpolationService(),
+                gasConversionService: GasConversionService(),
+                settingsProvider: interpolationSettings,
+                costConfigProvider: costConfigProvider,
+              );
+              analyticsProvider.setHouseholdId(householdId);
+              costConfigProvider.setHouseholdId(householdId);
+              await Future.delayed(const Duration(milliseconds: 200));
+
               await tester.pumpWidget(MultiProvider(
                 providers: [
                   Provider<AppDatabase>.value(value: database),
                   ChangeNotifierProvider<GasProvider>.value(value: provider),
+                  ChangeNotifierProvider<AnalyticsProvider>.value(
+                      value: analyticsProvider),
+                  ChangeNotifierProvider<CostConfigProvider>.value(
+                      value: costConfigProvider),
                   ChangeNotifierProvider<ThemeProvider>.value(
                       value: themeProvider),
                   ChangeNotifierProvider<LocaleProvider>.value(
@@ -314,9 +367,12 @@ void main() {
               // Should show delta for newer reading
               expect(find.textContaining('+150,0'), findsOneWidget);
 
-              provider.dispose();
-              await database.close();
               await tester.pumpWidget(Container());
+              await Future.delayed(const Duration(milliseconds: 200));
+              provider.dispose();
+              analyticsProvider.dispose();
+              costConfigProvider.dispose();
+              await database.close();
             }));
 
     testWidgets('ElectricityScreen with readings in German',
