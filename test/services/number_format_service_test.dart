@@ -209,5 +209,56 @@ void main() {
         expect(result, contains('2025'));
       });
     });
+
+    group('dateTime', () {
+      test('formats date and time for de locale', () {
+        expect(
+          ValtraNumberFormat.dateTime(DateTime(2026, 3, 9, 14, 30), 'de'),
+          '09.03.2026, 14:30 Uhr',
+        );
+      });
+
+      test('formats date and time for en locale', () {
+        expect(
+          ValtraNumberFormat.dateTime(DateTime(2026, 3, 9, 14, 30), 'en'),
+          '09.03.2026, 14:30',
+        );
+      });
+
+      test('formats midnight for de locale', () {
+        expect(
+          ValtraNumberFormat.dateTime(DateTime(2026, 1, 1, 0, 0), 'de'),
+          '01.01.2026, 00:00 Uhr',
+        );
+      });
+
+      test('formats single-digit hour for de locale', () {
+        expect(
+          ValtraNumberFormat.dateTime(DateTime(2026, 3, 9, 9, 5), 'de'),
+          '09.03.2026, 09:05 Uhr',
+        );
+      });
+
+      test('formats single-digit hour for en locale', () {
+        expect(
+          ValtraNumberFormat.dateTime(DateTime(2026, 3, 9, 9, 5), 'en'),
+          '09.03.2026, 09:05',
+        );
+      });
+
+      test('formats end of day for de locale', () {
+        expect(
+          ValtraNumberFormat.dateTime(DateTime(2026, 12, 31, 23, 59), 'de'),
+          '31.12.2026, 23:59 Uhr',
+        );
+      });
+
+      test('formats end of day for en locale', () {
+        expect(
+          ValtraNumberFormat.dateTime(DateTime(2026, 12, 31, 23, 59), 'en'),
+          '31.12.2026, 23:59',
+        );
+      });
+    });
   });
 }
