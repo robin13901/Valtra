@@ -675,12 +675,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get unitPrice => 'Energy Price';
 
   @override
-  String get standingCharge => 'Standing Charge';
-
-  @override
-  String get standingChargePerMonth => 'Standing Charge (per month)';
-
-  @override
   String get priceTiers => 'Price Tiers';
 
   @override
@@ -767,9 +761,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get costConfigDeleted => 'Cost configuration deleted';
-
-  @override
-  String get perMonth => 'per month';
 
   @override
   String get annualBasePrice => 'Annual Base Price';

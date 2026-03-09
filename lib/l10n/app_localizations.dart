@@ -1274,18 +1274,6 @@ abstract class AppLocalizations {
   /// **'Energy Price'**
   String get unitPrice;
 
-  /// No description provided for @standingCharge.
-  ///
-  /// In en, this message translates to:
-  /// **'Standing Charge'**
-  String get standingCharge;
-
-  /// No description provided for @standingChargePerMonth.
-  ///
-  /// In en, this message translates to:
-  /// **'Standing Charge (per month)'**
-  String get standingChargePerMonth;
-
   /// No description provided for @priceTiers.
   ///
   /// In en, this message translates to:
@@ -1447,12 +1435,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Cost configuration deleted'**
   String get costConfigDeleted;
-
-  /// No description provided for @perMonth.
-  ///
-  /// In en, this message translates to:
-  /// **'per month'**
-  String get perMonth;
 
   /// No description provided for @annualBasePrice.
   ///

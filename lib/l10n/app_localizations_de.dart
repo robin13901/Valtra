@@ -677,12 +677,6 @@ class AppLocalizationsDe extends AppLocalizations {
   String get unitPrice => 'Arbeitspreis';
 
   @override
-  String get standingCharge => 'Grundgebühr';
-
-  @override
-  String get standingChargePerMonth => 'Grundgebühr (pro Monat)';
-
-  @override
   String get priceTiers => 'Preisstufen';
 
   @override
@@ -769,9 +763,6 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get costConfigDeleted => 'Kosteneinstellung gelöscht';
-
-  @override
-  String get perMonth => 'pro Monat';
 
   @override
   String get annualBasePrice => 'Grundpreis pro Jahr';
