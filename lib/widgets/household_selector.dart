@@ -95,17 +95,26 @@ class HouseholdSelector extends StatelessWidget {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Icon(Icons.home),
+                Icon(
+                  Icons.home,
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
                 const SizedBox(width: 8),
                 ConstrainedBox(
                   constraints: const BoxConstraints(maxWidth: 120),
                   child: Text(
                     selected?.name ?? l10n.selectHousehold,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(fontWeight: FontWeight.w500),
+                    style: TextStyle(
+                      fontWeight: FontWeight.w500,
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
                   ),
                 ),
-                const Icon(Icons.arrow_drop_down),
+                Icon(
+                  Icons.arrow_drop_down,
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
               ],
             ),
           ),

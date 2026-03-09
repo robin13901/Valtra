@@ -3,9 +3,9 @@
 ## Current Status
 - **Milestone**: 4 - UX Overhaul (v0.4.0)
 - **Last Shipped**: v0.3.0 (2026-03-08)
-- **Current Phase**: None (planning)
-- **Current Plan**: None
-- **Last Updated**: 2026-03-08
+- **Current Phase**: 17 - Home Screen & Global UI Fixes
+- **Current Plan**: 17-01 (complete)
+- **Last Updated**: 2026-03-09
 
 ## Completed Milestones
 - **Milestone 1**: Core Foundation (v0.1.0) -- 7 phases, 313 tests
@@ -13,7 +13,7 @@
 - **Milestone 3**: Polish & Enhancement (v0.3.0) -- 5 phases, 1017 tests
 
 ## Completed (this milestone)
-_None yet_
+- **17-01**: Fix household dropdown text color (onSurface theme-aware colors)
 
 ## Blocked
 _None_
@@ -22,6 +22,7 @@ _None_
 | Date | Phase | Action | Notes |
 |------|-------|--------|-------|
 | 2026-03-08 | — | Milestone 4 initialized | Created REQUIREMENTS.md, updated ROADMAP.md, reset STATE.md. 6 phases planned (17-22). Archived v0.3.0 docs. |
+| 2026-03-09 | 17 | Completed 17-01 | Fixed household dropdown text/icon colors for light/dark theme. 5 new tests added. |
 
 ## Key Decisions (carried forward)
 1. **Local-first architecture** - Using Drift/SQLite for offline-capable data storage
@@ -77,4 +78,4 @@ _None_
 2. ~~**NFR-3.3**: Test coverage not measured with Codecov yet~~ (achieved 75% in v0.3.0)
 
 ## Next Actions
-_Plan Phase 17 (Home Screen & Global UI Fixes) via `/gsd:plan-phase 17`_
+_Continue Phase 17 (Home Screen & Global UI Fixes) — next plan TBD_

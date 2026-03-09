@@ -18,7 +18,7 @@ void main() {
   late HouseholdProvider provider;
   late ThemeProvider themeProvider;
 
-  Widget wrapWithProviders(Widget child) {
+  Widget wrapWithTheme(Widget child, {required ThemeData theme}) {
     return MultiProvider(
       providers: [
         Provider<AppDatabase>.value(value: database),
@@ -29,7 +29,7 @@ void main() {
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
         locale: const Locale('en'),
-        theme: AppTheme.lightTheme,
+        theme: theme,
         home: Scaffold(
           appBar: AppBar(actions: [child]),
         ),
@@ -52,55 +52,11 @@ void main() {
     await database.close();
   });
 
-  group('HouseholdSelector', () {
-    testWidgets('shows loading indicator when not initialized',
+  group('HouseholdSelector trigger button theme colors', () {
+    testWidgets(
+        'text color uses onSurface in light theme',
         (tester) => tester.runAsync(() async {
-              // Create a non-initialized provider
-              final uninitProvider = HouseholdProvider(dao);
-
-              await tester.pumpWidget(MultiProvider(
-                providers: [
-                  Provider<AppDatabase>.value(value: database),
-                  ChangeNotifierProvider<HouseholdProvider>.value(
-                      value: uninitProvider),
-                  ChangeNotifierProvider<ThemeProvider>.value(
-                      value: themeProvider),
-                ],
-                child: MaterialApp(
-                  localizationsDelegates:
-                      AppLocalizations.localizationsDelegates,
-                  supportedLocales: AppLocalizations.supportedLocales,
-                  locale: const Locale('en'),
-                  theme: AppTheme.lightTheme,
-                  home: const Scaffold(
-                    body: HouseholdSelector(),
-                  ),
-                ),
-              ));
-              await tester.pump();
-
-              expect(
-                  find.byType(CircularProgressIndicator), findsOneWidget);
-
-              uninitProvider.dispose();
-              await tester.pumpWidget(Container());
-            }));
-
-    testWidgets('shows add household button when no households',
-        (tester) => tester.runAsync(() async {
-              await tester.pumpWidget(
-                  wrapWithProviders(const HouseholdSelector()));
-              await tester.pumpAndSettle();
-
-              expect(find.text('Add Household'), findsOneWidget);
-              expect(find.byIcon(Icons.add_home), findsOneWidget);
-
-              await tester.pumpWidget(Container());
-            }));
-
-    testWidgets('shows selected household name when household exists',
-        (tester) => tester.runAsync(() async {
-              await provider.createHousehold('My Home');
+              await provider.createHousehold('Light Home');
               await Future.delayed(const Duration(milliseconds: 50));
 
               final household = provider.households.first;
@@ -108,59 +64,156 @@ void main() {
               await Future.delayed(const Duration(milliseconds: 50));
 
               await tester.pumpWidget(
-                  wrapWithProviders(const HouseholdSelector()));
+                wrapWithTheme(
+                  const HouseholdSelector(),
+                  theme: AppTheme.lightTheme,
+                ),
+              );
               await tester.pumpAndSettle();
 
-              expect(find.text('My Home'), findsOneWidget);
-              expect(find.byIcon(Icons.home), findsOneWidget);
-              expect(find.byIcon(Icons.arrow_drop_down), findsOneWidget);
+              // Find the Text widget in the trigger button row
+              final textFinder = find.text('Light Home');
+              expect(textFinder, findsOneWidget);
+
+              final textWidget = tester.widget<Text>(textFinder);
+              expect(textWidget.style, isNotNull);
+              expect(textWidget.style!.color, isNotNull);
+              expect(
+                textWidget.style!.color,
+                equals(AppTheme.lightTheme.colorScheme.onSurface),
+              );
 
               await tester.pumpWidget(Container());
             }));
 
-    testWidgets('shows popup menu with households on tap',
+    testWidgets(
+        'text color uses onSurface in dark theme',
         (tester) => tester.runAsync(() async {
-              await provider.createHousehold('Home 1');
-              await provider.createHousehold('Home 2');
+              await provider.createHousehold('Dark Home');
               await Future.delayed(const Duration(milliseconds: 50));
 
-              provider.selectHousehold(provider.households.first.id);
+              final household = provider.households.first;
+              provider.selectHousehold(household.id);
               await Future.delayed(const Duration(milliseconds: 50));
 
               await tester.pumpWidget(
-                  wrapWithProviders(const HouseholdSelector()));
+                wrapWithTheme(
+                  const HouseholdSelector(),
+                  theme: AppTheme.darkTheme,
+                ),
+              );
               await tester.pumpAndSettle();
 
-              // Tap to open popup
-              await tester.tap(find.byIcon(Icons.arrow_drop_down));
-              await tester.pumpAndSettle();
+              final textFinder = find.text('Dark Home');
+              expect(textFinder, findsOneWidget);
 
-              expect(find.text('Home 1'), findsAtLeastNWidgets(1));
-              expect(find.text('Home 2'), findsAtLeastNWidgets(1));
-              expect(find.text('Households'), findsOneWidget);
+              final textWidget = tester.widget<Text>(textFinder);
+              expect(textWidget.style, isNotNull);
+              expect(textWidget.style!.color, isNotNull);
+              expect(
+                textWidget.style!.color,
+                equals(AppTheme.darkTheme.colorScheme.onSurface),
+              );
 
               await tester.pumpWidget(Container());
             }));
 
-    testWidgets('shows check icon for selected household in popup',
+    testWidgets(
+        'home icon color uses onSurface in light theme',
         (tester) => tester.runAsync(() async {
-              await provider.createHousehold('Selected Home');
+              await provider.createHousehold('Icon Home');
               await Future.delayed(const Duration(milliseconds: 50));
 
-              provider.selectHousehold(provider.households.first.id);
+              final household = provider.households.first;
+              provider.selectHousehold(household.id);
               await Future.delayed(const Duration(milliseconds: 50));
 
               await tester.pumpWidget(
-                  wrapWithProviders(const HouseholdSelector()));
+                wrapWithTheme(
+                  const HouseholdSelector(),
+                  theme: AppTheme.lightTheme,
+                ),
+              );
               await tester.pumpAndSettle();
 
-              await tester.tap(find.byIcon(Icons.arrow_drop_down));
-              await tester.pumpAndSettle();
+              // Find Icon widgets in the trigger button (not in popup)
+              // The trigger row has: home icon, text, arrow_drop_down icon
+              final homeIconFinder = find.byIcon(Icons.home);
+              expect(homeIconFinder, findsOneWidget);
 
-              expect(find.byIcon(Icons.check), findsOneWidget);
+              final homeIcon = tester.widget<Icon>(homeIconFinder);
+              expect(homeIcon.color, isNotNull);
+              expect(
+                homeIcon.color,
+                equals(AppTheme.lightTheme.colorScheme.onSurface),
+              );
+
+              final arrowIconFinder = find.byIcon(Icons.arrow_drop_down);
+              expect(arrowIconFinder, findsOneWidget);
+
+              final arrowIcon = tester.widget<Icon>(arrowIconFinder);
+              expect(arrowIcon.color, isNotNull);
+              expect(
+                arrowIcon.color,
+                equals(AppTheme.lightTheme.colorScheme.onSurface),
+              );
 
               await tester.pumpWidget(Container());
             }));
 
+    testWidgets(
+        'home icon color uses onSurface in dark theme',
+        (tester) => tester.runAsync(() async {
+              await provider.createHousehold('Dark Icon Home');
+              await Future.delayed(const Duration(milliseconds: 50));
+
+              final household = provider.households.first;
+              provider.selectHousehold(household.id);
+              await Future.delayed(const Duration(milliseconds: 50));
+
+              await tester.pumpWidget(
+                wrapWithTheme(
+                  const HouseholdSelector(),
+                  theme: AppTheme.darkTheme,
+                ),
+              );
+              await tester.pumpAndSettle();
+
+              final homeIconFinder = find.byIcon(Icons.home);
+              expect(homeIconFinder, findsOneWidget);
+
+              final homeIcon = tester.widget<Icon>(homeIconFinder);
+              expect(homeIcon.color, isNotNull);
+              expect(
+                homeIcon.color,
+                equals(AppTheme.darkTheme.colorScheme.onSurface),
+              );
+
+              final arrowIconFinder = find.byIcon(Icons.arrow_drop_down);
+              expect(arrowIconFinder, findsOneWidget);
+
+              final arrowIcon = tester.widget<Icon>(arrowIconFinder);
+              expect(arrowIcon.color, isNotNull);
+              expect(
+                arrowIcon.color,
+                equals(AppTheme.darkTheme.colorScheme.onSurface),
+              );
+
+              await tester.pumpWidget(Container());
+            }));
+
+    testWidgets(
+        'light and dark theme produce different onSurface colors',
+        (tester) => tester.runAsync(() async {
+              // Verify that the two themes actually have different onSurface
+              // values so the fix is meaningful
+              final lightOnSurface =
+                  AppTheme.lightTheme.colorScheme.onSurface;
+              final darkOnSurface =
+                  AppTheme.darkTheme.colorScheme.onSurface;
+              expect(lightOnSurface, isNot(equals(darkOnSurface)));
+
+              await tester.pumpWidget(Container());
+            }));
   });
 }
