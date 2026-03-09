@@ -14,32 +14,32 @@
 ## Milestone 4: UX Overhaul (v0.4.0)
 **Goal**: Overhaul navigation and screen architecture — unified list/analysis bottom nav on all meter screens, cost profile history per household, remove redundancies, consistent date formatting
 
-### Phase 17: Home Screen & Global UI Fixes
+### Phase 17: Home Screen & Global UI Fixes - COMPLETED
 **Requirements**: FR-15 (Home Screen & Global UI Fixes)
 **Dependencies**: Milestone 3 (v0.3.0 complete)
-- [ ] Fix household dropdown text color in light mode (dark/black text on light background)
-- [ ] Remove GlassBottomNav from home screen entirely
-- [ ] Remove Analyse tile and AnalyticsScreen (analytics hub) — each meter has its own analysis now
-- [ ] Reorder tiles: [Strom, Smart Home] [Gas, Heizung] [Wasser centered]
-- [ ] Remove "Save & Continue" button from all form dialogs; Cancel and Save side-by-side only
-- [ ] Remove QuickEntryMixin and related logic
-- [ ] Global date/time format: "dd.MM.yyyy, HH:mm Uhr" with localized "Uhr" (DE="Uhr", EN="")
-- [ ] Remove CSV export feature entirely (buttons, service, dead code)
-- [ ] Localize all new/changed strings (EN + DE)
-- [ ] Comprehensive tests for all changes
+- [x] Fix household dropdown text color in light mode (dark/black text on light background)
+- [x] Remove GlassBottomNav from home screen entirely
+- [x] Remove Analyse tile and AnalyticsScreen (analytics hub) — each meter has its own analysis now
+- [x] Reorder tiles: [Strom, Smart Home] [Gas, Heizung] [Wasser centered]
+- [x] Remove "Save & Continue" button from all form dialogs; Cancel and Save side-by-side only
+- [x] Remove QuickEntryMixin and related logic
+- [x] Global date/time format: "dd.MM.yyyy, HH:mm Uhr" with localized "Uhr" (DE="Uhr", EN="")
+- [x] Remove CSV export feature entirely (buttons, service, dead code)
+- [x] Localize all new/changed strings (EN + DE)
+- [x] Comprehensive tests for all changes
 
-### Phase 18: Cost Settings & Household Configuration
+### Phase 18: Cost Settings & Household Configuration - COMPLETED
 **Requirements**: FR-16 (Cost Settings & Household Configuration)
 **Dependencies**: Phase 17 (global UI fixes complete)
-- [ ] Extend cost_configs to support multiple profiles per meter type per household (history)
-- [ ] Rename fields: "Grundgebühr pro Monat" → "Grundpreis pro Jahr", "Preis pro Einheit" → "Arbeitspreis"
-- [ ] Update cost calculation to use annual Grundpreis (÷12 for monthly)
-- [ ] Field order in forms: Gültig ab, Grundpreis pro Jahr, Arbeitspreis
-- [ ] Card design like water meters: main header per meter type, expandable sub-entries per cost profile
-- [ ] Move cost configuration from general settings to household-specific settings
-- [ ] Cost lookup by date: calculation uses correct profile for each time period
-- [ ] Localize all new/changed strings (EN + DE)
-- [ ] Comprehensive tests for cost profile CRUD and date-based lookup
+- [x] Extend cost_configs to support multiple profiles per meter type per household (history)
+- [x] Rename fields: "Grundgebühr pro Monat" → "Grundpreis pro Jahr", "Preis pro Einheit" → "Arbeitspreis"
+- [x] Update cost calculation to use annual Grundpreis (÷12 for monthly)
+- [x] Field order in forms: Gültig ab, Grundpreis pro Jahr, Arbeitspreis
+- [x] Card design like water meters: main header per meter type, expandable sub-entries per cost profile
+- [x] Move cost configuration from general settings to household-specific settings
+- [x] Cost lookup by date: calculation uses correct profile for each time period
+- [x] Localize all new/changed strings (EN + DE)
+- [x] Comprehensive tests for cost profile CRUD and date-based lookup
 
 ### Phase 19: Electricity Screen Overhaul
 **Requirements**: FR-17 (Electricity Screen Overhaul)
@@ -116,6 +116,6 @@ Milestone 3 (v0.3.0) --> Milestone 4 (v0.4.0)
 ## Current Status
 - **Completed**: Milestone 1 (v0.1.0), Milestone 2 (v0.2.0), Milestone 3 (v0.3.0)
 - **Active Milestone**: 4 — UX Overhaul (v0.4.0)
-- **Active Phase**: None (planning)
-- **Next Phase**: 17 — Home Screen & Global UI Fixes
+- **Active Phase**: None
+- **Next Phase**: 19 — Electricity Screen Overhaul
 - **Blockers**: None
