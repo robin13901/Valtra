@@ -1,3 +1,4 @@
+import 'package:drift/drift.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
@@ -106,7 +107,118 @@ void main() {
     await database.close();
   });
 
-  group('WaterScreen', () {
+  group('WaterScreen - Bottom Navigation', () {
+    testWidgets('renders bottom nav with Analysis and List labels',
+        (tester) => tester.runAsync(() async {
+              await tester
+                  .pumpWidget(wrapWithProviders(const WaterScreen()));
+              await tester.pumpAndSettle();
+
+              expect(find.text('Analysis'), findsOneWidget);
+              expect(find.text('List'), findsOneWidget);
+              expect(find.byType(GlassBottomNav), findsOneWidget);
+
+              await tester.pumpWidget(Container());
+            }));
+
+    testWidgets('default tab is Liste (index 1)',
+        (tester) => tester.runAsync(() async {
+              await tester
+                  .pumpWidget(wrapWithProviders(const WaterScreen()));
+              await tester.pumpAndSettle();
+
+              // Liste tab should be active - empty state should show
+              expect(
+                  find.text(
+                      'No water meters yet. Add one to start tracking water consumption!'),
+                  findsOneWidget);
+              expect(find.byIcon(Icons.water_drop), findsOneWidget);
+
+              await tester.pumpWidget(Container());
+            }));
+
+    testWidgets('tapping Analysis switches to analysis content',
+        (tester) => tester.runAsync(() async {
+              await tester
+                  .pumpWidget(wrapWithProviders(const WaterScreen()));
+              await tester.pumpAndSettle();
+
+              // Tap on Analysis tab
+              await tester.tap(find.text('Analysis'));
+              await Future.delayed(const Duration(milliseconds: 200));
+              await tester.pumpAndSettle();
+
+              // With no readings, analytics shows the year
+              final year = DateTime.now().year.toString();
+              expect(find.textContaining(year), findsAtLeast(1));
+
+              await tester.pumpWidget(Container());
+            }));
+
+    testWidgets('FAB visible on Liste tab',
+        (tester) => tester.runAsync(() async {
+              await tester
+                  .pumpWidget(wrapWithProviders(const WaterScreen()));
+              await tester.pumpAndSettle();
+
+              expect(find.byType(FloatingActionButton), findsOneWidget);
+
+              await tester.pumpWidget(Container());
+            }));
+
+    testWidgets('FAB hidden on Analyse tab',
+        (tester) => tester.runAsync(() async {
+              await tester
+                  .pumpWidget(wrapWithProviders(const WaterScreen()));
+              await tester.pumpAndSettle();
+
+              // Switch to Analyse tab
+              await tester.tap(find.text('Analysis'));
+              await tester.pumpAndSettle();
+
+              expect(find.byType(FloatingActionButton), findsNothing);
+
+              await tester.pumpWidget(Container());
+            }));
+
+    testWidgets('visibility toggle only in app bar on Liste tab',
+        (tester) => tester.runAsync(() async {
+              await tester
+                  .pumpWidget(wrapWithProviders(const WaterScreen()));
+              await tester.pumpAndSettle();
+
+              // On Liste tab, visibility toggle should be present
+              expect(find.byIcon(Icons.visibility_off), findsOneWidget);
+
+              // Switch to Analyse tab
+              await tester.tap(find.text('Analysis'));
+              await tester.pumpAndSettle();
+
+              // Visibility toggle should be gone
+              expect(find.byIcon(Icons.visibility_off), findsNothing);
+              expect(find.byIcon(Icons.visibility), findsNothing);
+
+              await tester.pumpWidget(Container());
+            }));
+
+    testWidgets('cost toggle hidden when no cost config',
+        (tester) => tester.runAsync(() async {
+              await tester
+                  .pumpWidget(wrapWithProviders(const WaterScreen()));
+              await tester.pumpAndSettle();
+
+              // Switch to Analyse tab
+              await tester.tap(find.text('Analysis'));
+              await tester.pumpAndSettle();
+
+              // No cost config exists, so euro/water_drop toggle should not appear
+              expect(find.byIcon(Icons.euro), findsNothing);
+
+              await tester.pumpWidget(Container());
+            }));
+  });
+
+  group('WaterScreen - Liste Tab', () {
     testWidgets('displays empty state when no meters',
         (tester) => tester.runAsync(() async {
               await tester.pumpWidget(wrapWithProviders(const WaterScreen()));
@@ -331,6 +443,232 @@ void main() {
               // Should show empty readings message
               expect(find.text('No readings yet. Add your first meter reading!'),
                   findsOneWidget);
+
+              await tester.pumpWidget(Container());
+            }));
+  });
+
+  group('WaterScreen - Analyse Tab', () {
+    testWidgets('shows no data message when no readings on Analyse tab',
+        (tester) => tester.runAsync(() async {
+              await tester
+                  .pumpWidget(wrapWithProviders(const WaterScreen()));
+              await tester.pumpAndSettle();
+
+              // Switch to Analyse tab
+              await tester.tap(find.text('Analysis'));
+              await Future.delayed(const Duration(milliseconds: 200));
+              await tester.pumpAndSettle();
+
+              // With no readings, analytics loads empty monthlyBreakdown
+              final year = DateTime.now().year.toString();
+              expect(find.textContaining(year), findsAtLeast(1));
+
+              await tester.pumpWidget(Container());
+            }));
+
+    testWidgets(
+        'shows year navigation and analytics content with readings',
+        (tester) => tester.runAsync(() async {
+              // Add a water meter first
+              final meterId = await dao.insertMeter(WaterMetersCompanion.insert(
+                householdId: householdId,
+                name: 'Cold Water',
+                type: WaterMeterType.cold,
+              ));
+
+              // Add readings across months for current year
+              final year = DateTime.now().year;
+              await dao.insertReading(WaterReadingsCompanion.insert(
+                waterMeterId: meterId,
+                timestamp: DateTime(year, 1, 1),
+                valueCubicMeters: 100.0,
+              ));
+              await dao.insertReading(WaterReadingsCompanion.insert(
+                waterMeterId: meterId,
+                timestamp: DateTime(year, 2, 1),
+                valueCubicMeters: 130.0,
+              ));
+              await dao.insertReading(WaterReadingsCompanion.insert(
+                waterMeterId: meterId,
+                timestamp: DateTime(year, 3, 1),
+                valueCubicMeters: 155.0,
+              ));
+              await Future.delayed(const Duration(milliseconds: 200));
+
+              await tester
+                  .pumpWidget(wrapWithProviders(const WaterScreen()));
+              await tester.pumpAndSettle();
+
+              // Switch to Analyse tab
+              await tester.tap(find.text('Analysis'));
+              await tester.pumpAndSettle();
+
+              // Should show current year in navigation
+              expect(
+                  find.text(DateTime.now().year.toString()), findsOneWidget);
+
+              // Should show chevron navigation icons
+              expect(find.byIcon(Icons.chevron_left), findsOneWidget);
+              expect(find.byIcon(Icons.chevron_right), findsOneWidget);
+
+              // Should show monthly breakdown heading
+              expect(find.text('Monthly Breakdown'), findsOneWidget);
+
+              await tester.pumpWidget(Container());
+            }));
+  });
+
+  group('WaterScreen - Cost Toggle on Analyse Tab', () {
+    testWidgets('cost toggle shown when water cost config exists on Analyse tab',
+        (tester) => tester.runAsync(() async {
+              // Add a cost config for water
+              await database.into(database.costConfigs).insert(
+                    CostConfigsCompanion.insert(
+                      householdId: householdId,
+                      meterType: CostMeterType.water,
+                      unitPrice: 2.50,
+                      standingCharge: const Value(120.0),
+                      validFrom: DateTime(2024, 1, 1),
+                      currencySymbol: const Value('\u20AC'),
+                    ),
+                  );
+              await Future.delayed(const Duration(milliseconds: 100));
+
+              await tester
+                  .pumpWidget(wrapWithProviders(const WaterScreen()));
+              await tester.pumpAndSettle();
+
+              // Switch to Analyse tab
+              await tester.tap(find.text('Analysis'));
+              await tester.pumpAndSettle();
+
+              // Cost toggle should appear with water_drop icon (default: consumption)
+              expect(find.byIcon(Icons.water_drop), findsAtLeast(1));
+
+              await tester.pumpWidget(Container());
+            }));
+
+    testWidgets('toggling to EUR shows euro icon',
+        (tester) => tester.runAsync(() async {
+              final year = DateTime.now().year;
+
+              // Add a water meter with readings
+              final meterId = await dao.insertMeter(WaterMetersCompanion.insert(
+                householdId: householdId,
+                name: 'Cold Water',
+                type: WaterMeterType.cold,
+              ));
+              await dao.insertReading(WaterReadingsCompanion.insert(
+                waterMeterId: meterId,
+                timestamp: DateTime(year, 1, 1),
+                valueCubicMeters: 100.0,
+              ));
+              await dao.insertReading(WaterReadingsCompanion.insert(
+                waterMeterId: meterId,
+                timestamp: DateTime(year, 2, 1),
+                valueCubicMeters: 130.0,
+              ));
+              await dao.insertReading(WaterReadingsCompanion.insert(
+                waterMeterId: meterId,
+                timestamp: DateTime(year, 3, 1),
+                valueCubicMeters: 155.0,
+              ));
+
+              // Add cost config for water
+              await database.into(database.costConfigs).insert(
+                    CostConfigsCompanion.insert(
+                      householdId: householdId,
+                      meterType: CostMeterType.water,
+                      unitPrice: 2.50,
+                      standingCharge: const Value(120.0),
+                      validFrom: DateTime(year, 1, 1),
+                      currencySymbol: const Value('\u20AC'),
+                    ),
+                  );
+
+              await Future.delayed(const Duration(milliseconds: 200));
+
+              await tester
+                  .pumpWidget(wrapWithProviders(const WaterScreen()));
+              await tester.pumpAndSettle();
+
+              // Switch to Analyse tab
+              await tester.tap(find.text('Analysis'));
+              await Future.delayed(const Duration(milliseconds: 200));
+              await tester.pumpAndSettle();
+
+              // Tap the cost toggle (water_drop icon toggles to euro)
+              await tester.tap(find.byIcon(Icons.water_drop).last);
+              await tester.pumpAndSettle();
+
+              // Now euro icon should be visible
+              expect(find.byIcon(Icons.euro), findsOneWidget);
+
+              await tester.pumpWidget(Container());
+            }));
+
+    testWidgets('toggling back to m³ reverts to consumption display',
+        (tester) => tester.runAsync(() async {
+              final year = DateTime.now().year;
+
+              final meterId = await dao.insertMeter(WaterMetersCompanion.insert(
+                householdId: householdId,
+                name: 'Cold Water',
+                type: WaterMeterType.cold,
+              ));
+              await dao.insertReading(WaterReadingsCompanion.insert(
+                waterMeterId: meterId,
+                timestamp: DateTime(year, 1, 1),
+                valueCubicMeters: 100.0,
+              ));
+              await dao.insertReading(WaterReadingsCompanion.insert(
+                waterMeterId: meterId,
+                timestamp: DateTime(year, 2, 1),
+                valueCubicMeters: 130.0,
+              ));
+              await dao.insertReading(WaterReadingsCompanion.insert(
+                waterMeterId: meterId,
+                timestamp: DateTime(year, 3, 1),
+                valueCubicMeters: 155.0,
+              ));
+
+              // Add cost config
+              await database.into(database.costConfigs).insert(
+                    CostConfigsCompanion.insert(
+                      householdId: householdId,
+                      meterType: CostMeterType.water,
+                      unitPrice: 2.50,
+                      standingCharge: const Value(120.0),
+                      validFrom: DateTime(year, 1, 1),
+                      currencySymbol: const Value('\u20AC'),
+                    ),
+                  );
+
+              await Future.delayed(const Duration(milliseconds: 200));
+
+              await tester
+                  .pumpWidget(wrapWithProviders(const WaterScreen()));
+              await tester.pumpAndSettle();
+
+              // Switch to Analyse tab
+              await tester.tap(find.text('Analysis'));
+              await Future.delayed(const Duration(milliseconds: 200));
+              await tester.pumpAndSettle();
+
+              // Toggle to EUR
+              await tester.tap(find.byIcon(Icons.water_drop).last);
+              await tester.pumpAndSettle();
+
+              // Verify euro icon is showing
+              expect(find.byIcon(Icons.euro), findsOneWidget);
+
+              // Toggle back to m³
+              await tester.tap(find.byIcon(Icons.euro));
+              await tester.pumpAndSettle();
+
+              // Should revert to consumption with m³
+              expect(find.textContaining('m³'), findsAtLeast(1));
 
               await tester.pumpWidget(Container());
             }));
