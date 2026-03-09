@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../app_theme.dart';
@@ -371,7 +370,6 @@ class _HeatingMeterCardState extends State<_HeatingMeterCard> {
   ) {
     final theme = Theme.of(context);
     final locale = context.watch<LocaleProvider>().localeString;
-    final dateFormatter = DateFormat('dd.MM.yyyy HH:mm');
 
     return Column(
       children: [
@@ -431,7 +429,7 @@ class _HeatingMeterCardState extends State<_HeatingMeterCard> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      dateFormatter.format(reading.timestamp),
+                      ValtraNumberFormat.dateTime(reading.timestamp, locale),
                       style: theme.textTheme.bodySmall,
                     ),
                     if (delta != null)
@@ -507,7 +505,6 @@ class _HeatingMeterCardState extends State<_HeatingMeterCard> {
   ) {
     final theme = Theme.of(context);
     final locale = context.watch<LocaleProvider>().localeString;
-    final dateFormatter = DateFormat('dd.MM.yyyy HH:mm');
 
     return Column(
       children: [
@@ -566,7 +563,7 @@ class _HeatingMeterCardState extends State<_HeatingMeterCard> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        dateFormatter.format(item.timestamp),
+                        ValtraNumberFormat.dateTime(item.timestamp, locale),
                         style: theme.textTheme.bodySmall,
                       ),
                       Container(
@@ -605,7 +602,7 @@ class _HeatingMeterCardState extends State<_HeatingMeterCard> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      dateFormatter.format(item.timestamp),
+                      ValtraNumberFormat.dateTime(item.timestamp, locale),
                       style: theme.textTheme.bodySmall,
                     ),
                     if (item.delta != null)

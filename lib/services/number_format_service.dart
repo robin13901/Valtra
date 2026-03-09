@@ -59,4 +59,17 @@ class ValtraNumberFormat {
     final formatter = DateFormat.yMMMM(locale);
     return formatter.format(dt);
   }
+
+  /// Format a date and time value.
+  ///
+  /// DE: "09.03.2026, 14:30 Uhr" | EN: "09.03.2026, 14:30"
+  static String dateTime(DateTime dt, String locale) {
+    final datePart = DateFormat('dd.MM.yyyy', locale).format(dt);
+    final timePart = DateFormat('HH:mm', locale).format(dt);
+    if (locale == 'de') {
+      return '$datePart, $timePart Uhr';
+    } else {
+      return '$datePart, $timePart';
+    }
+  }
 }

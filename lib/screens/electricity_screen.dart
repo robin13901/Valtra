@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../app_theme.dart';
@@ -215,8 +214,6 @@ class _ReadingCard extends StatelessWidget {
     final theme = Theme.of(context);
     final locale = context.watch<LocaleProvider>().localeString;
 
-    final dateFormatter = DateFormat('dd.MM.yyyy HH:mm');
-
     return GlassCard(
       margin: const EdgeInsets.only(bottom: 12),
       padding: EdgeInsets.zero,
@@ -238,7 +235,7 @@ class _ReadingCard extends StatelessWidget {
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      dateFormatter.format(item.timestamp),
+                      ValtraNumberFormat.dateTime(item.timestamp, locale),
                       style: theme.textTheme.bodyMedium?.copyWith(
                         color: theme.colorScheme.onSurfaceVariant,
                       ),
@@ -330,8 +327,6 @@ class _InterpolatedReadingCard extends StatelessWidget {
     final theme = Theme.of(context);
     final locale = context.watch<LocaleProvider>().localeString;
 
-    final dateFormatter = DateFormat('dd.MM.yyyy HH:mm');
-
     return GlassCard(
       margin: const EdgeInsets.only(bottom: 12),
       padding: EdgeInsets.zero,
@@ -351,7 +346,7 @@ class _InterpolatedReadingCard extends StatelessWidget {
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    dateFormatter.format(item.timestamp),
+                    ValtraNumberFormat.dateTime(item.timestamp, locale),
                     style: theme.textTheme.bodyMedium?.copyWith(
                       color: theme.colorScheme.onSurfaceVariant,
                     ),
