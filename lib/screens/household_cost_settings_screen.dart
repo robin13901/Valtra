@@ -57,6 +57,8 @@ class _CostMeterTypeCardState extends State<_CostMeterTypeCard> {
         return l10n.gas;
       case CostMeterType.water:
         return l10n.water;
+      case CostMeterType.heating:
+        return l10n.heating;
     }
   }
 
@@ -68,6 +70,8 @@ class _CostMeterTypeCardState extends State<_CostMeterTypeCard> {
         return Icons.local_fire_department;
       case CostMeterType.water:
         return Icons.water_drop;
+      case CostMeterType.heating:
+        return Icons.thermostat;
     }
   }
 

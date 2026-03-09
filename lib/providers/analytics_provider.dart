@@ -339,7 +339,7 @@ class AnalyticsProvider extends ChangeNotifier {
     return unitForMeterType(type);
   }
 
-  /// Map MeterType to CostMeterType (heating has no cost tracking).
+  /// Map MeterType to CostMeterType.
   CostMeterType? _toCostMeterType(MeterType type) {
     switch (type) {
       case MeterType.electricity:
@@ -349,7 +349,7 @@ class AnalyticsProvider extends ChangeNotifier {
       case MeterType.water:
         return CostMeterType.water;
       case MeterType.heating:
-        return null;
+        return CostMeterType.heating;
     }
   }
 

@@ -97,8 +97,8 @@ class SmartPlugConsumptions extends Table {
   RealColumn get valueKwh => real()();
 }
 
-/// Meter types that support cost tracking (heating excluded — unit-less)
-enum CostMeterType { electricity, gas, water }
+/// Meter types that support cost tracking
+enum CostMeterType { electricity, gas, water, heating }
 
 /// Cost configuration per meter type per household
 @DataClassName('CostConfig')
