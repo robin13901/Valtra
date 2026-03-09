@@ -70,6 +70,9 @@
 ### Phase 21: Smart Plug Screen Overhaul
 **Requirements**: FR-19 (Smart Plug Screen Overhaul)
 **Dependencies**: Phase 19 (bottom nav pattern established)
+**Plans:** 1 plan
+Plans:
+- [ ] 21-01-PLAN.md — Bottom nav, inline monthly-only analysis, renamed stats, percentages, localization, tests
 - [ ] Add bottom nav: Analyse (left) | Liste (right), default Liste
 - [ ] LiquidGlass FAB visible on Liste only
 - [ ] Remove app bar analytics icon (pie_chart)
@@ -116,6 +119,6 @@ Milestone 3 (v0.3.0) --> Milestone 4 (v0.4.0)
 ## Current Status
 - **Completed**: Milestone 1 (v0.1.0), Milestone 2 (v0.2.0), Milestone 3 (v0.3.0)
 - **Active Milestone**: 4 — UX Overhaul (v0.4.0)
-- **Active Phase**: None
-- **Next Phase**: 21 — Smart Plug Screen Overhaul
+- **Active Phase**: 21 — Smart Plug Screen Overhaul
+- **Next Phase**: 22 — Water & Heating Screen Overhaul
 - **Blockers**: None
