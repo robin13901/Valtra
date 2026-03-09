@@ -112,6 +112,7 @@ void main() {
         expect(find.text('Electricity'), findsOneWidget);
         expect(find.text('Gas'), findsOneWidget);
         expect(find.text('Water'), findsOneWidget);
+        expect(find.text('Heating'), findsOneWidget);
       });
 
       testWidgets('renders app bar with Cost Profiles title', (tester) async {
@@ -128,6 +129,7 @@ void main() {
         expect(find.byIcon(Icons.electric_bolt), findsOneWidget);
         expect(find.byIcon(Icons.local_fire_department), findsOneWidget);
         expect(find.byIcon(Icons.water_drop), findsOneWidget);
+        expect(find.byIcon(Icons.thermostat), findsOneWidget);
       });
 
       testWidgets('all cards start collapsed', (tester) async {
@@ -135,7 +137,7 @@ void main() {
         await tester.pumpAndSettle();
 
         // All cards should show expand_more (collapsed)
-        expect(find.byIcon(Icons.expand_more), findsNWidgets(3));
+        expect(find.byIcon(Icons.expand_more), findsNWidgets(4));
         expect(find.byIcon(Icons.expand_less), findsNothing);
       });
 
@@ -143,7 +145,7 @@ void main() {
         await tester.pumpWidget(buildScreen());
         await tester.pumpAndSettle();
 
-        expect(find.byIcon(Icons.add), findsNWidgets(3));
+        expect(find.byIcon(Icons.add), findsNWidgets(4));
       });
     });
 
@@ -158,14 +160,14 @@ void main() {
 
         // Should show expand_less for Electricity, expand_more for others
         expect(find.byIcon(Icons.expand_less), findsOneWidget);
-        expect(find.byIcon(Icons.expand_more), findsNWidgets(2));
+        expect(find.byIcon(Icons.expand_more), findsNWidgets(3));
 
         // Tap again to collapse
         await tester.tap(find.text('Electricity'));
         await tester.pumpAndSettle();
 
         // All collapsed again
-        expect(find.byIcon(Icons.expand_more), findsNWidgets(3));
+        expect(find.byIcon(Icons.expand_more), findsNWidgets(4));
         expect(find.byIcon(Icons.expand_less), findsNothing);
       });
     });
@@ -443,7 +445,7 @@ void main() {
 
         // Find add buttons - should have tooltips
         final addButtons = find.byIcon(Icons.add);
-        expect(addButtons, findsNWidgets(3));
+        expect(addButtons, findsNWidgets(4));
 
         // Verify tooltip on first add button
         final iconButton =
