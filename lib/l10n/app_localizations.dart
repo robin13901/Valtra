@@ -1271,7 +1271,7 @@ abstract class AppLocalizations {
   /// No description provided for @unitPrice.
   ///
   /// In en, this message translates to:
-  /// **'Unit Price'**
+  /// **'Energy Price'**
   String get unitPrice;
 
   /// No description provided for @standingCharge.
@@ -1427,7 +1427,7 @@ abstract class AppLocalizations {
   /// No description provided for @costNotConfigured.
   ///
   /// In en, this message translates to:
-  /// **'Configure pricing in Settings to see costs'**
+  /// **'Configure pricing in Household Settings to see costs'**
   String get costNotConfigured;
 
   /// No description provided for @saveCostConfig.
@@ -1453,6 +1453,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'per month'**
   String get perMonth;
+
+  /// No description provided for @annualBasePrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Annual Base Price'**
+  String get annualBasePrice;
+
+  /// No description provided for @perYear.
+  ///
+  /// In en, this message translates to:
+  /// **'per year'**
+  String get perYear;
+
+  /// No description provided for @costProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Cost Profile'**
+  String get costProfile;
+
+  /// No description provided for @costProfiles.
+  ///
+  /// In en, this message translates to:
+  /// **'Cost Profiles'**
+  String get costProfiles;
+
+  /// No description provided for @addCostProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Cost Profile'**
+  String get addCostProfile;
+
+  /// No description provided for @editCostProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Cost Profile'**
+  String get editCostProfile;
+
+  /// No description provided for @noCostProfiles.
+  ///
+  /// In en, this message translates to:
+  /// **'No cost profiles configured'**
+  String get noCostProfiles;
+
+  /// No description provided for @householdSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Household Settings'**
+  String get householdSettings;
+
+  /// No description provided for @activeProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get activeProfile;
+
+  /// No description provided for @profileValidFrom.
+  ///
+  /// In en, this message translates to:
+  /// **'Valid from {date}'**
+  String profileValidFrom(String date);
 
   /// No description provided for @monthlyProgress.
   ///

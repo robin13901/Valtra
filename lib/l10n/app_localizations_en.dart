@@ -580,7 +580,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  @override
   String noYearlyData(String year) {
     return 'No data for $year';
   }
@@ -673,7 +672,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get costTracking => 'Cost Tracking';
 
   @override
-  String get unitPrice => 'Unit Price';
+  String get unitPrice => 'Energy Price';
 
   @override
   String get standingCharge => 'Standing Charge';
@@ -757,7 +756,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get pricePerCubicMeter => '€/m³';
 
   @override
-  String get costNotConfigured => 'Configure pricing in Settings to see costs';
+  String get costNotConfigured =>
+      'Configure pricing in Household Settings to see costs';
 
   @override
   String get saveCostConfig => 'Save';
@@ -770,6 +770,38 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get perMonth => 'per month';
+
+  @override
+  String get annualBasePrice => 'Annual Base Price';
+
+  @override
+  String get perYear => 'per year';
+
+  @override
+  String get costProfile => 'Cost Profile';
+
+  @override
+  String get costProfiles => 'Cost Profiles';
+
+  @override
+  String get addCostProfile => 'Add Cost Profile';
+
+  @override
+  String get editCostProfile => 'Edit Cost Profile';
+
+  @override
+  String get noCostProfiles => 'No cost profiles configured';
+
+  @override
+  String get householdSettings => 'Household Settings';
+
+  @override
+  String get activeProfile => 'Active';
+
+  @override
+  String profileValidFrom(String date) {
+    return 'Valid from $date';
+  }
 
   @override
   String get monthlyProgress => 'Monthly Progress';

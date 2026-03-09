@@ -582,7 +582,6 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
-  @override
   String noYearlyData(String year) {
     return 'Keine Daten für $year';
   }
@@ -675,7 +674,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get costTracking => 'Kostenverfolgung';
 
   @override
-  String get unitPrice => 'Preis pro Einheit';
+  String get unitPrice => 'Arbeitspreis';
 
   @override
   String get standingCharge => 'Grundgebühr';
@@ -760,7 +759,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get costNotConfigured =>
-      'Preise in Einstellungen konfigurieren, um Kosten zu sehen';
+      'Preise in Haushalt-Einstellungen konfigurieren, um Kosten zu sehen';
 
   @override
   String get saveCostConfig => 'Speichern';
@@ -773,6 +772,38 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get perMonth => 'pro Monat';
+
+  @override
+  String get annualBasePrice => 'Grundpreis pro Jahr';
+
+  @override
+  String get perYear => 'pro Jahr';
+
+  @override
+  String get costProfile => 'Kostenprofil';
+
+  @override
+  String get costProfiles => 'Kostenprofile';
+
+  @override
+  String get addCostProfile => 'Kostenprofil hinzufügen';
+
+  @override
+  String get editCostProfile => 'Kostenprofil bearbeiten';
+
+  @override
+  String get noCostProfiles => 'Keine Kostenprofile konfiguriert';
+
+  @override
+  String get householdSettings => 'Haushalt-Einstellungen';
+
+  @override
+  String get activeProfile => 'Aktiv';
+
+  @override
+  String profileValidFrom(String date) {
+    return 'Gültig ab $date';
+  }
 
   @override
   String get monthlyProgress => 'Monatsverlauf';

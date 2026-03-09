@@ -159,7 +159,7 @@ void main() {
         householdId: householdId,
         meterType: CostMeterType.electricity,
         unitPrice: 0.30,
-        standingCharge: const Value(10.0),
+        standingCharge: const Value(120.0),
         currencySymbol: const Value('EUR'),
         validFrom: DateTime(2024, 1, 1),
       ));
@@ -176,6 +176,64 @@ void main() {
 
       expect(result, isNotNull);
       expect(result!.totalCost, greaterThan(0));
+    });
+
+    test('calculateCost divides annual standing charge by 12', () async {
+      // standingCharge=120.0 (annual) → 120/12=10.0/month
+      // consumption=100 * 0.30 = 30.0 unitCost
+      await dao.insertConfig(CostConfigsCompanion.insert(
+        householdId: householdId,
+        meterType: CostMeterType.electricity,
+        unitPrice: 0.30,
+        standingCharge: const Value(120.0),
+        currencySymbol: const Value('EUR'),
+        validFrom: DateTime(2024, 1, 1),
+      ));
+
+      provider.setHouseholdId(householdId);
+      await Future.delayed(const Duration(milliseconds: 100));
+
+      // Use June (30 days) for clean month arithmetic
+      final result = provider.calculateCost(
+        meterType: CostMeterType.electricity,
+        consumption: 100.0,
+        periodStart: DateTime(2024, 6, 1),
+        periodEnd: DateTime(2024, 7, 1),
+      );
+
+      expect(result, isNotNull);
+      // Annual 120 / 12 = 10.0 monthly standing charge
+      expect(result!.standingCost, closeTo(10.0, 0.01));
+      expect(result.unitCost, closeTo(30.0, 0.01));
+      expect(result.totalCost, closeTo(40.0, 0.01));
+    });
+
+    test('calculateCost pro-rates annual standing charge for partial month',
+        () async {
+      // standingCharge=120.0 (annual) → 120/12=10.0/month
+      // 15 days in a 30-day month → standingCost = 10.0 * (15/30) = 5.0
+      await dao.insertConfig(CostConfigsCompanion.insert(
+        householdId: householdId,
+        meterType: CostMeterType.electricity,
+        unitPrice: 0.30,
+        standingCharge: const Value(120.0),
+        currencySymbol: const Value('EUR'),
+        validFrom: DateTime(2024, 1, 1),
+      ));
+
+      provider.setHouseholdId(householdId);
+      await Future.delayed(const Duration(milliseconds: 100));
+
+      // June has 30 days, period is 15 days (June 1-16)
+      final result = provider.calculateCost(
+        meterType: CostMeterType.electricity,
+        consumption: 50.0,
+        periodStart: DateTime(2024, 6, 1),
+        periodEnd: DateTime(2024, 6, 16),
+      );
+
+      expect(result, isNotNull);
+      expect(result!.standingCost, closeTo(5.0, 0.01));
     });
 
     test('calculateCost returns null when no config exists', () async {

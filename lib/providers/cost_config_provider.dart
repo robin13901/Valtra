@@ -83,7 +83,7 @@ class CostConfigProvider extends ChangeNotifier {
     return _costCalculationService.calculateMonthlyCost(
       consumption: consumption,
       unitPrice: config.unitPrice,
-      standingCharge: config.standingCharge,
+      standingCharge: config.standingCharge / 12,
       currencySymbol: config.currencySymbol,
       tiers: tiers.isNotEmpty ? tiers : null,
       daysInPeriod: daysInPeriod,
