@@ -23,6 +23,40 @@ void main() {
   }
 
   group('WaterReadingFormDialog', () {
+    testWidgets('shows only Cancel and Save buttons in add mode',
+        (tester) async {
+      await tester.pumpWidget(buildTestWidget());
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Open Dialog'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Cancel'), findsOneWidget);
+      expect(find.text('Save'), findsOneWidget);
+      expect(find.text('Save & next'), findsNothing);
+    });
+
+    testWidgets('shows only Cancel and Save buttons in edit mode',
+        (tester) async {
+      final reading = WaterReading(
+        id: 1,
+        waterMeterId: 1,
+        timestamp: DateTime(2024, 1, 15, 10, 30),
+        valueCubicMeters: 456.789,
+      );
+
+      await tester.pumpWidget(buildTestWidget(reading: reading));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Open Dialog'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Cancel'), findsOneWidget);
+      expect(find.text('Save'), findsOneWidget);
+      expect(find.text('Save & next'), findsNothing);
+      expect(find.text('Edit Reading'), findsOneWidget);
+    });
+
     testWidgets('validates empty value', (tester) async {
       await tester.pumpWidget(buildTestWidget());
       await tester.pumpAndSettle();
@@ -50,17 +84,13 @@ void main() {
       await tester.tap(find.text('Open Dialog'));
       await tester.pumpAndSettle();
 
-      // Enter negative value (but input filter will prevent this, so let's test with empty)
-      // The FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')) blocks negative numbers
-      // So we just verify the form works
-
       // Enter valid value
       await tester.enterText(
           find.widgetWithText(TextFormField, 'Meter Value'), '100.5');
       await tester.pumpAndSettle();
 
-      // Should show m³ suffix
-      expect(find.text('m³'), findsOneWidget);
+      // Should show m\u00B3 suffix
+      expect(find.text('m\u00B3'), findsOneWidget);
     });
 
     testWidgets('submits form with valid data', (tester) async {
@@ -203,8 +233,8 @@ void main() {
       await tester.tap(find.text('Open Dialog'));
       await tester.pumpAndSettle();
 
-      // Should show m³ as the unit suffix
-      expect(find.text('m³'), findsOneWidget);
+      // Should show m\u00B3 as the unit suffix
+      expect(find.text('m\u00B3'), findsOneWidget);
     });
   });
 }

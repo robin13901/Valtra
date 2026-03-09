@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../l10n/app_localizations.dart';
 import '../../database/app_database.dart';
-import 'reading_form_base.dart';
 
 /// Dialog for creating or editing a gas reading.
 ///
@@ -50,16 +49,14 @@ class GasReadingFormDialog extends StatefulWidget {
   State<GasReadingFormDialog> createState() => _GasReadingFormDialogState();
 }
 
-class _GasReadingFormDialogState extends State<GasReadingFormDialog>
-    with QuickEntryMixin {
+class _GasReadingFormDialogState extends State<GasReadingFormDialog> {
   final _formKey = GlobalKey<FormState>();
   late final TextEditingController _valueController;
   late DateTime _selectedDateTime;
   String? _externalError;
   String? _validationError;
 
-  @override
-  bool get isEditMode => widget.reading != null;
+  bool get _isEditMode => widget.reading != null;
 
   @override
   void initState() {
@@ -76,15 +73,6 @@ class _GasReadingFormDialogState extends State<GasReadingFormDialog>
     _valueController.removeListener(_onValueChanged);
     _valueController.dispose();
     super.dispose();
-  }
-
-  @override
-  void clearValueField() {
-    _valueController.clear();
-    setState(() {
-      _validationError = null;
-      _externalError = null;
-    });
   }
 
   void _onValueChanged() {
@@ -116,11 +104,9 @@ class _GasReadingFormDialogState extends State<GasReadingFormDialog>
     final l10n = AppLocalizations.of(context)!;
 
     return AlertDialog(
-      title: Text(quickEntryTitle(
-        l10n,
-        l10n.addGasReading,
-        l10n.editGasReading,
-      )),
+      title: Text(
+        _isEditMode ? l10n.editGasReading : l10n.addGasReading,
+      ),
       content: Form(
         key: _formKey,
         child: Column(
@@ -163,7 +149,7 @@ class _GasReadingFormDialogState extends State<GasReadingFormDialog>
               inputFormatters: [
                 FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
               ],
-              autofocus: !isEditMode,
+              autofocus: !_isEditMode,
               validator: (value) {
                 if (value == null || value.trim().isEmpty) {
                   return l10n.readingMustBePositive;
@@ -175,15 +161,19 @@ class _GasReadingFormDialogState extends State<GasReadingFormDialog>
                 return null;
               },
             ),
-            buildSuccessIndicator(l10n),
           ],
         ),
       ),
-      actions: buildQuickEntryActions(
-        l10n,
-        onSavePressed: _hasValidationError ? null : _onSave,
-        onCancelPressed: () => Navigator.of(context).pop(null),
-      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(null),
+          child: Text(l10n.cancel),
+        ),
+        FilledButton(
+          onPressed: _hasValidationError ? null : _onSave,
+          child: Text(l10n.save),
+        ),
+      ],
     );
   }
 
@@ -230,13 +220,6 @@ class _GasReadingFormDialogState extends State<GasReadingFormDialog>
 
       if (widget.onSaveCallback != null) {
         await widget.onSaveCallback!(data);
-      }
-
-      if (handlePostSave()) {
-        setState(() {
-          _selectedDateTime = DateTime.now();
-        });
-        return;
       }
 
       if (mounted) {

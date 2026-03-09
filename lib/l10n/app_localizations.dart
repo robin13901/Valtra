@@ -1568,12 +1568,6 @@ abstract class AppLocalizations {
   /// **'Must be between 1 and 100'**
   String get heatingRatioInvalid;
 
-  /// No description provided for @saveAndNext.
-  ///
-  /// In en, this message translates to:
-  /// **'Save & next'**
-  String get saveAndNext;
-
   /// No description provided for @previousReading.
   ///
   /// In en, this message translates to:
@@ -1586,12 +1580,6 @@ abstract class AppLocalizations {
   /// **'Must be >= {value}'**
   String readingTooLow(String value);
 
-  /// No description provided for @addReadingCount.
-  ///
-  /// In en, this message translates to:
-  /// **'Add reading ({count})'**
-  String addReadingCount(String count);
-
   /// No description provided for @deleteConfirmTitle.
   ///
   /// In en, this message translates to:
@@ -1603,12 +1591,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This action cannot be undone.'**
   String get deleteCannotUndo;
-
-  /// No description provided for @saved.
-  ///
-  /// In en, this message translates to:
-  /// **'Saved'**
-  String get saved;
 
   /// No description provided for @projected.
   ///

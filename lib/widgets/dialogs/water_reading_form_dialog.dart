@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../l10n/app_localizations.dart';
 import '../../database/app_database.dart';
-import 'reading_form_base.dart';
 
 /// Dialog for creating or editing a water reading.
 ///
@@ -50,16 +49,14 @@ class WaterReadingFormDialog extends StatefulWidget {
   State<WaterReadingFormDialog> createState() => _WaterReadingFormDialogState();
 }
 
-class _WaterReadingFormDialogState extends State<WaterReadingFormDialog>
-    with QuickEntryMixin {
+class _WaterReadingFormDialogState extends State<WaterReadingFormDialog> {
   final _formKey = GlobalKey<FormState>();
   late final TextEditingController _valueController;
   late DateTime _selectedDateTime;
   String? _externalError;
   String? _validationError;
 
-  @override
-  bool get isEditMode => widget.reading != null;
+  bool get _isEditMode => widget.reading != null;
 
   @override
   void initState() {
@@ -76,15 +73,6 @@ class _WaterReadingFormDialogState extends State<WaterReadingFormDialog>
     _valueController.removeListener(_onValueChanged);
     _valueController.dispose();
     super.dispose();
-  }
-
-  @override
-  void clearValueField() {
-    _valueController.clear();
-    setState(() {
-      _validationError = null;
-      _externalError = null;
-    });
   }
 
   void _onValueChanged() {
@@ -116,11 +104,9 @@ class _WaterReadingFormDialogState extends State<WaterReadingFormDialog>
     final l10n = AppLocalizations.of(context)!;
 
     return AlertDialog(
-      title: Text(quickEntryTitle(
-        l10n,
-        l10n.addWaterReading,
-        l10n.editWaterReading,
-      )),
+      title: Text(
+        _isEditMode ? l10n.editWaterReading : l10n.addWaterReading,
+      ),
       content: Form(
         key: _formKey,
         child: Column(
@@ -162,7 +148,7 @@ class _WaterReadingFormDialogState extends State<WaterReadingFormDialog>
               inputFormatters: [
                 FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
               ],
-              autofocus: !isEditMode,
+              autofocus: !_isEditMode,
               validator: (value) {
                 if (value == null || value.trim().isEmpty) {
                   return l10n.readingMustBePositive;
@@ -174,15 +160,19 @@ class _WaterReadingFormDialogState extends State<WaterReadingFormDialog>
                 return null;
               },
             ),
-            buildSuccessIndicator(l10n),
           ],
         ),
       ),
-      actions: buildQuickEntryActions(
-        l10n,
-        onSavePressed: _hasValidationError ? null : _onSave,
-        onCancelPressed: () => Navigator.of(context).pop(null),
-      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(null),
+          child: Text(l10n.cancel),
+        ),
+        FilledButton(
+          onPressed: _hasValidationError ? null : _onSave,
+          child: Text(l10n.save),
+        ),
+      ],
     );
   }
 
@@ -229,13 +219,6 @@ class _WaterReadingFormDialogState extends State<WaterReadingFormDialog>
 
       if (widget.onSaveCallback != null) {
         await widget.onSaveCallback!(data);
-      }
-
-      if (handlePostSave()) {
-        setState(() {
-          _selectedDateTime = DateTime.now();
-        });
-        return;
       }
 
       if (mounted) {
