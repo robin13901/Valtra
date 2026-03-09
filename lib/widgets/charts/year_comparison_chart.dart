@@ -7,12 +7,26 @@ import '../../services/interpolation/models.dart';
 import '../../services/number_format_service.dart';
 
 /// A line chart overlaying current year vs previous year monthly consumption.
+///
+/// X-axis positions use calendar month indices (0=Jan, 11=Dec) so both
+/// current and previous year lines are aligned by calendar month regardless
+/// of which months have data.
 class YearComparisonChart extends StatelessWidget {
   final List<PeriodConsumption> currentYear;
   final List<PeriodConsumption>? previousYear;
   final Color primaryColor;
   final String unit;
   final String locale;
+
+  /// Optional cost data for kWh/EUR toggle support (parallel to consumption periods).
+  final List<double?>? currentYearCosts;
+  final List<double?>? previousYearCosts;
+
+  /// When true, chart displays cost values instead of consumption.
+  final bool showCosts;
+
+  /// Unit label for cost mode (e.g. 'EUR').
+  final String? costUnit;
 
   const YearComparisonChart({
     super.key,
@@ -21,6 +35,10 @@ class YearComparisonChart extends StatelessWidget {
     required this.primaryColor,
     required this.unit,
     this.locale = 'de',
+    this.currentYearCosts,
+    this.previousYearCosts,
+    this.showCosts = false,
+    this.costUnit,
   });
 
   @override
@@ -34,31 +52,80 @@ class YearComparisonChart extends StatelessWidget {
     );
   }
 
-  LineChartData _buildData(BuildContext context) {
-    final currentSpots = currentYear
-        .asMap()
-        .entries
-        .map((e) => FlSpot(e.key.toDouble(), e.value.consumption))
-        .toList();
+  /// Compute the maximum calendar month index across both datasets.
+  double _computeMaxX() {
+    double maxMonth = 0;
+    for (final p in currentYear) {
+      final m = (p.periodStart.month - 1).toDouble();
+      if (m > maxMonth) maxMonth = m;
+    }
+    if (previousYear != null) {
+      for (final p in previousYear!) {
+        final m = (p.periodStart.month - 1).toDouble();
+        if (m > maxMonth) maxMonth = m;
+      }
+    }
+    return maxMonth;
+  }
 
-    final previousSpots = previousYear
-        ?.asMap()
-        .entries
-        .map((e) => FlSpot(e.key.toDouble(), e.value.consumption))
-        .toList();
+  LineChartData _buildData(BuildContext context) {
+    List<FlSpot> currentSpots;
+    List<FlSpot>? previousSpots;
+
+    if (showCosts && currentYearCosts != null) {
+      // Cost mode: pair each period's calendar month with its cost value
+      currentSpots = [];
+      for (int i = 0; i < currentYear.length; i++) {
+        final cost =
+            i < currentYearCosts!.length ? currentYearCosts![i] : null;
+        if (cost != null) {
+          currentSpots.add(FlSpot(
+            (currentYear[i].periodStart.month - 1).toDouble(),
+            cost,
+          ));
+        }
+      }
+    } else {
+      // Consumption mode: use calendar month position
+      currentSpots = currentYear
+          .map((p) =>
+              FlSpot((p.periodStart.month - 1).toDouble(), p.consumption))
+          .toList();
+    }
+
+    if (showCosts && previousYearCosts != null && previousYear != null) {
+      previousSpots = [];
+      for (int i = 0; i < previousYear!.length; i++) {
+        final cost =
+            i < previousYearCosts!.length ? previousYearCosts![i] : null;
+        if (cost != null) {
+          previousSpots.add(FlSpot(
+            (previousYear![i].periodStart.month - 1).toDouble(),
+            cost,
+          ));
+        }
+      }
+    } else {
+      previousSpots = previousYear
+          ?.map((p) =>
+              FlSpot((p.periodStart.month - 1).toDouble(), p.consumption))
+          .toList();
+    }
 
     final allValues = [
-      ...currentYear.map((p) => p.consumption),
-      if (previousYear != null) ...previousYear!.map((p) => p.consumption),
+      ...currentSpots.map((s) => s.y),
+      if (previousSpots != null) ...previousSpots.map((s) => s.y),
     ];
     final maxVal = allValues.isEmpty
         ? 1.0
         : allValues.reduce((a, b) => a > b ? a : b);
     final maxY = maxVal > 0 ? maxVal * 1.15 : 1.0;
 
+    final displayUnit = showCosts && costUnit != null ? costUnit! : unit;
+
     return LineChartData(
       minX: 0,
-      maxX: (currentYear.length - 1).toDouble(),
+      maxX: _computeMaxX(),
       minY: 0,
       maxY: maxY,
       lineBarsData: [
@@ -126,13 +193,12 @@ class YearComparisonChart extends StatelessWidget {
         touchTooltipData: LineTouchTooltipData(
           getTooltipItems: (touchedSpots) {
             return touchedSpots.map((spot) {
-              final index = spot.x.toInt();
-              final monthName = index < currentYear.length
-                  ? DateFormat.MMM().format(currentYear[index].periodStart)
-                  : '';
+              final monthIndex = spot.x.toInt();
+              final monthName =
+                  DateFormat.MMM().format(DateTime(2024, monthIndex + 1));
               final valueStr = ValtraNumberFormat.consumption(spot.y, locale);
               return LineTooltipItem(
-                '$monthName\n$valueStr $unit',
+                '$monthName\n$valueStr $displayUnit',
                 TextStyle(
                   color: spot.bar.color ?? primaryColor,
                   fontWeight: FontWeight.bold,
@@ -157,15 +223,16 @@ class YearComparisonChart extends StatelessWidget {
           interval: 1,
           getTitlesWidget: (value, meta) {
             final index = value.toInt();
-            if (index < 0 || index >= currentYear.length) {
+            if (index < 0 || index > 11) {
               return const SizedBox.shrink();
             }
-            // Show every other month label to avoid crowding
-            if (currentYear.length > 6 && index % 2 != 0) {
+            // Show every other month label if range > 6 months
+            final monthRange = _computeMaxX().toInt() + 1;
+            if (monthRange > 6 && index % 2 != 0) {
               return const SizedBox.shrink();
             }
             final monthName =
-                DateFormat.MMM().format(currentYear[index].periodStart);
+                DateFormat.MMM().format(DateTime(2024, index + 1));
             return SideTitleWidget(
               axisSide: meta.axisSide,
               child: Text(monthName,
