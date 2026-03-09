@@ -925,4 +925,24 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get costPerMonth => 'Kosten pro Monat';
+
+  @override
+  String get totalConsumptionLabel => 'Gesamtverbrauch';
+
+  @override
+  String get trackedByPlugs => 'Davon erfasst';
+
+  @override
+  String get notTracked => 'Nicht erfasst';
+
+  @override
+  String get consumptionByRoomTitle => 'Verbrauch nach Raum';
+
+  @override
+  String get consumptionByPlugTitle => 'Verbrauch nach Steckdose';
+
+  @override
+  String consumptionWithPercent(String value, String percent) {
+    return '$value kWh ($percent%)';
+  }
 }

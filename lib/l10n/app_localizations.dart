@@ -1729,6 +1729,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Cost per Month'**
   String get costPerMonth;
+
+  /// No description provided for @totalConsumptionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Consumption'**
+  String get totalConsumptionLabel;
+
+  /// No description provided for @trackedByPlugs.
+  ///
+  /// In en, this message translates to:
+  /// **'Tracked by Plugs'**
+  String get trackedByPlugs;
+
+  /// No description provided for @notTracked.
+  ///
+  /// In en, this message translates to:
+  /// **'Not Tracked'**
+  String get notTracked;
+
+  /// No description provided for @consumptionByRoomTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Consumption by Room'**
+  String get consumptionByRoomTitle;
+
+  /// No description provided for @consumptionByPlugTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Consumption by Plug'**
+  String get consumptionByPlugTitle;
+
+  /// No description provided for @consumptionWithPercent.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} kWh ({percent}%)'**
+  String consumptionWithPercent(String value, String percent);
 }
 
 class _AppLocalizationsDelegate

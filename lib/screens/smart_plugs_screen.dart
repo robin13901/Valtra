@@ -7,6 +7,7 @@ import '../database/app_database.dart';
 import '../l10n/app_localizations.dart';
 import '../providers/locale_provider.dart';
 import '../providers/room_provider.dart';
+import '../providers/smart_plug_analytics_provider.dart';
 import '../providers/smart_plug_provider.dart';
 import '../services/number_format_service.dart';
 import '../widgets/dialogs/smart_plug_form_dialog.dart';
@@ -15,29 +16,35 @@ import 'rooms_screen.dart';
 import 'smart_plug_analytics_screen.dart';
 import 'smart_plug_consumption_screen.dart';
 
-/// Screen displaying smart plugs organized by room.
-class SmartPlugsScreen extends StatelessWidget {
+/// Screen displaying smart plugs organized by room with bottom navigation
+/// for switching between Analyse and Liste tabs.
+class SmartPlugsScreen extends StatefulWidget {
   const SmartPlugsScreen({super.key});
+
+  @override
+  State<SmartPlugsScreen> createState() => _SmartPlugsScreenState();
+}
+
+class _SmartPlugsScreenState extends State<SmartPlugsScreen> {
+  int _currentTab = 1; // 0=Analyse, 1=Liste (default Liste)
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<SmartPlugAnalyticsProvider>().loadData();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final provider = context.watch<SmartPlugProvider>();
-    final plugsByRoom = provider.plugsByRoom;
 
     return Scaffold(
       appBar: buildGlassAppBar(
         context: context,
         title: l10n.smartPlugs,
         actions: [
-          IconButton(
-            icon: const Icon(Icons.pie_chart),
-            onPressed: () => Navigator.of(context).push(
-              MaterialPageRoute(
-                  builder: (context) => const SmartPlugAnalyticsScreen()),
-            ),
-            tooltip: l10n.smartPlugAnalytics,
-          ),
           IconButton(
             icon: const Icon(Icons.meeting_room),
             onPressed: () => _navigateToRooms(context),
@@ -46,15 +53,51 @@ class SmartPlugsScreen extends StatelessWidget {
           const SizedBox(width: 8),
         ],
       ),
-      body: plugsByRoom.isEmpty
-          ? _buildEmptyState(context, l10n)
-          : _SmartPlugsList(plugsByRoom: plugsByRoom),
-      floatingActionButton: buildGlassFAB(
-        context: context,
-        icon: Icons.add,
-        onPressed: () => _addSmartPlug(context),
+      body: IndexedStack(
+        index: _currentTab,
+        children: [
+          _buildAnalyseTab(context),
+          _buildListeTab(context),
+        ],
+      ),
+      floatingActionButton: _currentTab == 1
+          ? buildGlassFAB(
+              context: context,
+              icon: Icons.add,
+              onPressed: () => _addSmartPlug(context),
+            )
+          : null,
+      bottomNavigationBar: GlassBottomNav(
+        currentIndex: _currentTab,
+        onTap: (index) => setState(() => _currentTab = index),
+        items: [
+          BottomNavigationBarItem(
+            icon: const Icon(Icons.analytics),
+            label: l10n.analysis,
+          ),
+          BottomNavigationBarItem(
+            icon: const Icon(Icons.list),
+            label: l10n.list,
+          ),
+        ],
       ),
     );
+  }
+
+  Widget _buildAnalyseTab(BuildContext context) {
+    return const SmartPlugAnalyseTab();
+  }
+
+  Widget _buildListeTab(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final provider = context.watch<SmartPlugProvider>();
+    final plugsByRoom = provider.plugsByRoom;
+
+    if (plugsByRoom.isEmpty) {
+      return _buildEmptyState(context, l10n);
+    }
+
+    return _SmartPlugsList(plugsByRoom: plugsByRoom);
   }
 
   Widget _buildEmptyState(BuildContext context, AppLocalizations l10n) {

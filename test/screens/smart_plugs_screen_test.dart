@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:valtra/app_theme.dart';
@@ -10,13 +11,18 @@ import 'package:valtra/database/daos/smart_plug_dao.dart';
 import 'package:valtra/l10n/app_localizations.dart';
 import 'package:valtra/providers/locale_provider.dart';
 import 'package:valtra/providers/room_provider.dart';
+import 'package:valtra/providers/smart_plug_analytics_provider.dart';
 import 'package:valtra/providers/smart_plug_provider.dart';
 import 'package:valtra/providers/theme_provider.dart';
 import 'package:valtra/screens/smart_plugs_screen.dart';
-
+import 'package:valtra/widgets/liquid_glass_widgets.dart';
 
 import '../helpers/test_database.dart';
 import '../helpers/test_locale_provider.dart';
+
+class MockSmartPlugAnalyticsProvider extends ChangeNotifier
+    with Mock
+    implements SmartPlugAnalyticsProvider {}
 
 void main() {
   late AppDatabase database;
@@ -26,6 +32,7 @@ void main() {
   late RoomProvider roomProvider;
   late ThemeProvider themeProvider;
   late MockLocaleProvider localeProvider;
+  late MockSmartPlugAnalyticsProvider mockAnalyticsProvider;
   late int householdId;
   late int roomId;
 
@@ -42,6 +49,8 @@ void main() {
         ChangeNotifierProvider<RoomProvider>.value(value: roomProvider),
         ChangeNotifierProvider<ThemeProvider>.value(value: themeProvider),
         ChangeNotifierProvider<LocaleProvider>.value(value: localeProvider),
+        ChangeNotifierProvider<SmartPlugAnalyticsProvider>.value(
+            value: mockAnalyticsProvider),
       ],
       child: MaterialApp(
         localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -63,6 +72,16 @@ void main() {
     themeProvider = ThemeProvider();
     await themeProvider.init();
     localeProvider = MockLocaleProvider();
+    mockAnalyticsProvider = MockSmartPlugAnalyticsProvider();
+
+    // Set up analytics provider stubs
+    when(() => mockAnalyticsProvider.isLoading).thenReturn(false);
+    when(() => mockAnalyticsProvider.data).thenReturn(null);
+    when(() => mockAnalyticsProvider.selectedMonth)
+        .thenReturn(DateTime(2026, 3, 1));
+    when(() => mockAnalyticsProvider.householdId).thenReturn(1);
+    when(() => mockAnalyticsProvider.loadData())
+        .thenAnswer((_) async {});
 
     householdId = await database
         .into(database.households)
@@ -180,13 +199,13 @@ void main() {
               await tester.pumpWidget(Container());
             }));
 
-    testWidgets('has analytics and rooms buttons in app bar',
+    testWidgets('no pie_chart icon in app bar, rooms button remains',
         (tester) => tester.runAsync(() async {
               await tester
                   .pumpWidget(wrapWithProviders(const SmartPlugsScreen()));
               await tester.pumpAndSettle();
 
-              expect(find.byIcon(Icons.pie_chart), findsOneWidget);
+              expect(find.byIcon(Icons.pie_chart), findsNothing);
               expect(find.byIcon(Icons.meeting_room), findsOneWidget);
 
               await tester.pumpWidget(Container());
@@ -231,6 +250,98 @@ void main() {
 
               await tester.tap(find.text('Cancel'));
               await tester.pumpAndSettle();
+
+              await tester.pumpWidget(Container());
+            }));
+  });
+
+  group('Bottom Navigation', () {
+    testWidgets('renders bottom nav with Analysis and List labels',
+        (tester) => tester.runAsync(() async {
+              await tester
+                  .pumpWidget(wrapWithProviders(const SmartPlugsScreen()));
+              await tester.pumpAndSettle();
+
+              expect(find.text('Analysis'), findsOneWidget);
+              expect(find.text('List'), findsOneWidget);
+              expect(find.byType(GlassBottomNav), findsOneWidget);
+
+              await tester.pumpWidget(Container());
+            }));
+
+    testWidgets('default tab is Liste',
+        (tester) => tester.runAsync(() async {
+              await tester
+                  .pumpWidget(wrapWithProviders(const SmartPlugsScreen()));
+              await tester.pumpAndSettle();
+
+              // On Liste tab, should see empty state or plug list
+              expect(find.byIcon(Icons.power_outlined), findsOneWidget);
+
+              await tester.pumpWidget(Container());
+            }));
+
+    testWidgets('tapping Analysis switches to Analyse tab',
+        (tester) => tester.runAsync(() async {
+              await tester
+                  .pumpWidget(wrapWithProviders(const SmartPlugsScreen()));
+              await tester.pumpAndSettle();
+
+              await tester.tap(find.text('Analysis'));
+              await tester.pumpAndSettle();
+
+              // Should show analytics content (empty state since data is null)
+              expect(
+                  find.text(
+                      'No smart plug consumption data for this period.'),
+                  findsOneWidget);
+
+              await tester.pumpWidget(Container());
+            }));
+
+    testWidgets('FAB visible on Liste tab',
+        (tester) => tester.runAsync(() async {
+              await tester
+                  .pumpWidget(wrapWithProviders(const SmartPlugsScreen()));
+              await tester.pumpAndSettle();
+
+              expect(find.byType(FloatingActionButton), findsOneWidget);
+
+              await tester.pumpWidget(Container());
+            }));
+
+    testWidgets('FAB hidden on Analyse tab',
+        (tester) => tester.runAsync(() async {
+              await tester
+                  .pumpWidget(wrapWithProviders(const SmartPlugsScreen()));
+              await tester.pumpAndSettle();
+
+              await tester.tap(find.text('Analysis'));
+              await tester.pumpAndSettle();
+
+              expect(find.byType(FloatingActionButton), findsNothing);
+
+              await tester.pumpWidget(Container());
+            }));
+
+    testWidgets('no pie_chart icon in app bar',
+        (tester) => tester.runAsync(() async {
+              await tester
+                  .pumpWidget(wrapWithProviders(const SmartPlugsScreen()));
+              await tester.pumpAndSettle();
+
+              expect(find.byIcon(Icons.pie_chart), findsNothing);
+
+              await tester.pumpWidget(Container());
+            }));
+
+    testWidgets('rooms button remains in app bar',
+        (tester) => tester.runAsync(() async {
+              await tester
+                  .pumpWidget(wrapWithProviders(const SmartPlugsScreen()));
+              await tester.pumpAndSettle();
+
+              expect(find.byIcon(Icons.meeting_room), findsOneWidget);
 
               await tester.pumpWidget(Container());
             }));

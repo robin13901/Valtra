@@ -442,5 +442,17 @@
   "list": "List",
   "showCosts": "Show Costs",
   "showConsumption": "Show Consumption",
-  "costPerMonth": "Cost per Month"
+  "costPerMonth": "Cost per Month",
+  "totalConsumptionLabel": "Total Consumption",
+  "trackedByPlugs": "Tracked by Plugs",
+  "notTracked": "Not Tracked",
+  "consumptionByRoomTitle": "Consumption by Room",
+  "consumptionByPlugTitle": "Consumption by Plug",
+  "consumptionWithPercent": "{value} kWh ({percent}%)",
+  "@consumptionWithPercent": {
+    "placeholders": {
+      "value": {"type": "String"},
+      "percent": {"type": "String"}
+    }
+  }
 }

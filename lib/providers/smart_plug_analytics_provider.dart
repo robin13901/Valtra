@@ -23,10 +23,8 @@ class SmartPlugAnalyticsProvider extends ChangeNotifier {
   int? _householdId;
   SmartPlugAnalyticsData? _data;
   bool _isLoading = false;
-  AnalyticsPeriod _period = AnalyticsPeriod.monthly;
   DateTime _selectedMonth =
       DateTime(DateTime.now().year, DateTime.now().month, 1);
-  int _selectedYear = DateTime.now().year;
 
   SmartPlugAnalyticsProvider({
     required SmartPlugDao smartPlugDao,
@@ -42,9 +40,7 @@ class SmartPlugAnalyticsProvider extends ChangeNotifier {
   int? get householdId => _householdId;
   SmartPlugAnalyticsData? get data => _data;
   bool get isLoading => _isLoading;
-  AnalyticsPeriod get period => _period;
   DateTime get selectedMonth => _selectedMonth;
-  int get selectedYear => _selectedYear;
 
   void setHouseholdId(int? id) {
     _householdId = id;
@@ -55,12 +51,6 @@ class SmartPlugAnalyticsProvider extends ChangeNotifier {
       notifyListeners();
       loadData();
     }
-  }
-
-  void setPeriod(AnalyticsPeriod period) {
-    _period = period;
-    notifyListeners();
-    loadData();
   }
 
   void setSelectedMonth(DateTime month) {
@@ -76,19 +66,7 @@ class SmartPlugAnalyticsProvider extends ChangeNotifier {
     loadData();
   }
 
-  void setSelectedYear(int year) {
-    _selectedYear = year;
-    notifyListeners();
-    loadData();
-  }
-
-  void navigateYear(int delta) {
-    _selectedYear += delta;
-    notifyListeners();
-    loadData();
-  }
-
-  /// Loads all smart plug analytics data for the current household and period.
+  /// Loads all smart plug analytics data for the current household (monthly).
   Future<void> loadData() async {
     if (_householdId == null) return;
     final householdId = _householdId!;
@@ -97,17 +75,9 @@ class SmartPlugAnalyticsProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      // 1. Compute date range from period
-      final DateTime from;
-      final DateTime to;
-      switch (_period) {
-        case AnalyticsPeriod.monthly:
-          from = _selectedMonth;
-          to = DateTime(_selectedMonth.year, _selectedMonth.month + 1, 1);
-        case AnalyticsPeriod.yearly:
-          from = DateTime(_selectedYear, 1, 1);
-          to = DateTime(_selectedYear + 1, 1, 1);
-      }
+      // 1. Compute date range (monthly only)
+      final from = _selectedMonth;
+      final to = DateTime(_selectedMonth.year, _selectedMonth.month + 1, 1);
 
       // 2. Get all plugs and rooms for household
       final plugs =

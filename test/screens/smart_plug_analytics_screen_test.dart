@@ -33,7 +33,7 @@ void main() {
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
         locale: const Locale('en'),
-        home: const SmartPlugAnalyticsScreen(),
+        home: const Scaffold(body: SmartPlugAnalyseTab()),
       ),
     );
   }
@@ -89,19 +89,12 @@ void main() {
   void setUpDefaultStubs({
     bool isLoading = false,
     SmartPlugAnalyticsData? data,
-    AnalyticsPeriod period = AnalyticsPeriod.monthly,
   }) {
     when(() => mockProvider.isLoading).thenReturn(isLoading);
     when(() => mockProvider.data).thenReturn(data);
-    when(() => mockProvider.period).thenReturn(period);
     when(() => mockProvider.selectedMonth).thenReturn(DateTime(2026, 3, 1));
-    when(() => mockProvider.selectedYear).thenReturn(2026);
     when(() => mockProvider.householdId).thenReturn(1);
   }
-
-  setUpAll(() {
-    registerFallbackValue(AnalyticsPeriod.monthly);
-  });
 
   setUp(() async {
     SharedPreferences.setMockInitialValues({});
@@ -112,15 +105,7 @@ void main() {
     setUpDefaultStubs();
   });
 
-  group('SmartPlugAnalyticsScreen', () {
-    testWidgets('renders AppBar with title "Smart Plug Analytics"',
-        (tester) async {
-      await tester.pumpWidget(buildSubject());
-      await tester.pumpAndSettle();
-
-      expect(find.text('Smart Plug Analytics'), findsOneWidget);
-    });
-
+  group('SmartPlugAnalyseTab', () {
     testWidgets('shows CircularProgressIndicator when isLoading is true',
         (tester) async {
       setUpDefaultStubs(isLoading: true);
@@ -131,8 +116,7 @@ void main() {
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
     });
 
-    testWidgets(
-        'shows empty state text when data has empty byPlug',
+    testWidgets('shows empty state text when data has empty byPlug',
         (tester) async {
       setUpDefaultStubs(
         data: const SmartPlugAnalyticsData(
@@ -151,39 +135,17 @@ void main() {
       );
     });
 
-    testWidgets(
-        'renders SegmentedButton with two segments (Monthly, Yearly)',
-        (tester) async {
+    testWidgets('does not render SegmentedButton', (tester) async {
       setUpDefaultStubs(data: createSampleData());
 
       await tester.pumpWidget(buildSubject());
       await tester.pumpAndSettle();
 
-      expect(find.text('Monthly'), findsOneWidget);
-      expect(find.text('Yearly'), findsOneWidget);
+      expect(find.byType(SegmentedButton<AnalyticsPeriod>), findsNothing);
     });
 
-    testWidgets('tapping "Yearly" segment calls setPeriod',
-        (tester) async {
+    testWidgets('renders month navigation with arrows', (tester) async {
       setUpDefaultStubs(data: createSampleData());
-      when(() => mockProvider.setPeriod(any())).thenReturn(null);
-
-      await tester.pumpWidget(buildSubject());
-      await tester.pumpAndSettle();
-
-      await tester.tap(find.text('Yearly'));
-      await tester.pumpAndSettle();
-
-      verify(() => mockProvider.setPeriod(AnalyticsPeriod.yearly)).called(1);
-    });
-
-    testWidgets(
-        'renders month navigation header when period is monthly',
-        (tester) async {
-      setUpDefaultStubs(
-        data: createSampleData(),
-        period: AnalyticsPeriod.monthly,
-      );
 
       await tester.pumpWidget(buildSubject());
       await tester.pumpAndSettle();
@@ -196,28 +158,9 @@ void main() {
     });
 
     testWidgets(
-        'renders year navigation header when period is yearly',
-        (tester) async {
-      setUpDefaultStubs(
-        data: createSampleData(),
-        period: AnalyticsPeriod.yearly,
-      );
-
-      await tester.pumpWidget(buildSubject());
-      await tester.pumpAndSettle();
-
-      expect(find.text('2026'), findsOneWidget);
-      expect(find.byIcon(Icons.chevron_left), findsOneWidget);
-      expect(find.byIcon(Icons.chevron_right), findsOneWidget);
-    });
-
-    testWidgets(
         'tapping left chevron in month navigation calls navigateMonth(-1)',
         (tester) async {
-      setUpDefaultStubs(
-        data: createSampleData(),
-        period: AnalyticsPeriod.monthly,
-      );
+      setUpDefaultStubs(data: createSampleData());
       when(() => mockProvider.navigateMonth(any())).thenReturn(null);
 
       await tester.pumpWidget(buildSubject());
@@ -229,50 +172,89 @@ void main() {
       verify(() => mockProvider.navigateMonth(-1)).called(1);
     });
 
-    testWidgets(
-        'renders "Consumption by Plug" section title when byPlug data exists',
-        (tester) async {
+    testWidgets('stats card shows renamed labels', (tester) async {
       setUpDefaultStubs(data: createSampleData());
 
       await tester.pumpWidget(buildSubject());
+      await tester.pumpAndSettle();
+
+      expect(find.text('Total Consumption'), findsOneWidget);
+      expect(find.text('Tracked by Plugs'), findsOneWidget);
+      expect(find.text('Not Tracked'), findsOneWidget);
+    });
+
+    testWidgets('stats card does NOT show old labels', (tester) async {
+      setUpDefaultStubs(data: createSampleData());
+
+      await tester.pumpWidget(buildSubject());
+      await tester.pumpAndSettle();
+
+      expect(find.text('Total Tracked'), findsNothing);
+      expect(find.text('Total Electricity'), findsNothing);
+      expect(find.text('Other (Untracked)'), findsNothing);
+    });
+
+    testWidgets('section titles use new l10n keys', (tester) async {
+      setUpDefaultStubs(data: createSampleData());
+
+      await tester.pumpWidget(buildSubject());
+      await tester.pumpAndSettle();
+
+      // Scroll to find section titles
+      await tester.scrollUntilVisible(
+        find.text('Consumption by Room'),
+        200,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('Consumption by Room'), findsOneWidget);
+
+      await tester.scrollUntilVisible(
+        find.text('Consumption by Plug'),
+        200,
+        scrollable: find.byType(Scrollable).first,
+      );
       await tester.pumpAndSettle();
 
       expect(find.text('Consumption by Plug'), findsOneWidget);
     });
 
-    testWidgets(
-        'renders "Consumption by Room" section title when byRoom data exists',
-        (tester) async {
+    testWidgets('room breakdown shows kWh and percentage', (tester) async {
       setUpDefaultStubs(data: createSampleData());
 
       await tester.pumpWidget(buildSubject());
       await tester.pumpAndSettle();
 
-      expect(find.text('Consumption by Room'), findsOneWidget);
+      // Office = 35.0 / 50.0 = 70%
+      // Living Room = 15.0 / 50.0 = 30%
+      // Scroll to find room breakdown
+      await tester.scrollUntilVisible(
+        find.text('Consumption by Room'),
+        200,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.pumpAndSettle();
+
+      // Room items should show percentage
+      expect(find.textContaining('70%'), findsOneWidget);
+      expect(find.textContaining('30%'), findsOneWidget);
     });
 
     testWidgets(
-        'renders "Other (Untracked)" card with value when otherConsumption is not null',
+        'renders "Not Tracked" with value when otherConsumption is not null',
         (tester) async {
       setUpDefaultStubs(data: createSampleData(otherConsumption: 15.0));
 
       await tester.pumpWidget(buildSubject());
       await tester.pumpAndSettle();
 
-      // Scroll down to reveal summary card
-      await tester.scrollUntilVisible(
-        find.text('Other (Untracked)'),
-        200,
-        scrollable: find.byType(Scrollable).first,
-      );
-      await tester.pumpAndSettle();
-
-      expect(find.text('Other (Untracked)'), findsOneWidget);
+      expect(find.text('Not Tracked'), findsOneWidget);
       expect(find.text('15.0 kWh'), findsAtLeastNWidgets(1));
     });
 
     testWidgets(
-        'does NOT show "Other" card when otherConsumption is null',
+        'does NOT show "Not Tracked" card when otherConsumption is null',
         (tester) async {
       setUpDefaultStubs(
         data: createSampleData(
@@ -284,16 +266,7 @@ void main() {
       await tester.pumpWidget(buildSubject());
       await tester.pumpAndSettle();
 
-      // Scroll to the bottom to check entire list
-      await tester.scrollUntilVisible(
-        find.text('Room Breakdown'),
-        200,
-        scrollable: find.byType(Scrollable).first,
-      );
-      await tester.pumpAndSettle();
-
-      // Should show noElectricityData instead of Other card
-      expect(find.text('Other (Untracked)'), findsNothing);
+      expect(find.text('Not Tracked'), findsNothing);
     });
 
     testWidgets(
@@ -304,15 +277,15 @@ void main() {
       await tester.pumpWidget(buildSubject());
       await tester.pumpAndSettle();
 
-      // Scroll down to plug breakdown
+      // Scroll down to plug section
       await tester.scrollUntilVisible(
-        find.text('Plug Breakdown'),
+        find.text('Consumption by Plug'),
         200,
         scrollable: find.byType(Scrollable).first,
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('Plug Breakdown'), findsOneWidget);
+      expect(find.text('Consumption by Plug'), findsOneWidget);
       expect(find.text('Desk Lamp'), findsOneWidget);
       expect(find.text('TV'), findsOneWidget);
       expect(find.text('Monitor'), findsOneWidget);
@@ -323,52 +296,7 @@ void main() {
       expect(find.text('20.0 kWh'), findsOneWidget);
     });
 
-    testWidgets(
-        'renders room breakdown list items with room name and consumption',
-        (tester) async {
-      setUpDefaultStubs(data: createSampleData());
-
-      await tester.pumpWidget(buildSubject());
-      await tester.pumpAndSettle();
-
-      // Scroll down to room breakdown
-      await tester.scrollUntilVisible(
-        find.text('Room Breakdown'),
-        200,
-        scrollable: find.byType(Scrollable).first,
-      );
-      await tester.pumpAndSettle();
-
-      expect(find.text('Room Breakdown'), findsOneWidget);
-      // Room consumption values
-      expect(find.text('35.0 kWh'), findsOneWidget);
-    });
-
-    testWidgets(
-        'shows "Total Tracked" and "Total Electricity" summary values',
-        (tester) async {
-      setUpDefaultStubs(data: createSampleData());
-
-      await tester.pumpWidget(buildSubject());
-      await tester.pumpAndSettle();
-
-      // Scroll down to summary card
-      await tester.scrollUntilVisible(
-        find.text('Total Tracked'),
-        200,
-        scrollable: find.byType(Scrollable).first,
-      );
-      await tester.pumpAndSettle();
-
-      expect(find.text('Total Tracked'), findsOneWidget);
-      expect(find.text('Total Electricity'), findsOneWidget);
-      expect(find.text('50.0 kWh'), findsAtLeastNWidgets(1));
-      expect(find.text('65.0 kWh'), findsAtLeastNWidgets(1));
-    });
-
-    testWidgets(
-        'shows empty state when data is null',
-        (tester) async {
+    testWidgets('shows empty state when data is null', (tester) async {
       setUpDefaultStubs(data: null);
 
       await tester.pumpWidget(buildSubject());
@@ -378,6 +306,58 @@ void main() {
         find.text('No smart plug consumption data for this period.'),
         findsOneWidget,
       );
+    });
+
+    testWidgets('UI sections appear in correct order', (tester) async {
+      setUpDefaultStubs(data: createSampleData());
+
+      await tester.pumpWidget(buildSubject());
+      await tester.pumpAndSettle();
+
+      // Verify month nav, then stats, then room, then plug
+      // Month label should be at top
+      expect(find.text('March 2026'), findsOneWidget);
+
+      // Stats labels should be visible
+      expect(find.text('Total Consumption'), findsOneWidget);
+      expect(find.text('Tracked by Plugs'), findsOneWidget);
+
+      // Scroll down to find room section then plug section
+      await tester.scrollUntilVisible(
+        find.text('Consumption by Room'),
+        200,
+        scrollable: find.byType(Scrollable).first,
+      );
+      expect(find.text('Consumption by Room'), findsOneWidget);
+
+      await tester.scrollUntilVisible(
+        find.text('Consumption by Plug'),
+        200,
+        scrollable: find.byType(Scrollable).first,
+      );
+      expect(find.text('Consumption by Plug'), findsOneWidget);
+    });
+
+    testWidgets('reduced padding on list items', (tester) async {
+      setUpDefaultStubs(data: createSampleData());
+
+      await tester.pumpWidget(buildSubject());
+      await tester.pumpAndSettle();
+
+      // Scroll to see room breakdown items with dense ListTile
+      await tester.scrollUntilVisible(
+        find.text('Consumption by Room'),
+        200,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.pumpAndSettle();
+
+      // Find ListTile widgets and verify they have dense property
+      final listTiles = tester.widgetList<ListTile>(find.byType(ListTile));
+      expect(listTiles, isNotEmpty);
+      for (final tile in listTiles) {
+        expect(tile.dense, isTrue);
+      }
     });
   });
 }

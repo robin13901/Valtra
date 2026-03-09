@@ -376,5 +376,17 @@
   "list": "Liste",
   "showCosts": "Kosten anzeigen",
   "showConsumption": "Verbrauch anzeigen",
-  "costPerMonth": "Kosten pro Monat"
+  "costPerMonth": "Kosten pro Monat",
+  "totalConsumptionLabel": "Gesamtverbrauch",
+  "trackedByPlugs": "Davon erfasst",
+  "notTracked": "Nicht erfasst",
+  "consumptionByRoomTitle": "Verbrauch nach Raum",
+  "consumptionByPlugTitle": "Verbrauch nach Steckdose",
+  "consumptionWithPercent": "{value} kWh ({percent}%)",
+  "@consumptionWithPercent": {
+    "placeholders": {
+      "value": {"type": "String"},
+      "percent": {"type": "String"}
+    }
+  }
 }

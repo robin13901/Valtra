@@ -33,7 +33,6 @@ void main() {
   late SmartPlugAnalyticsProvider provider;
 
   setUpAll(() {
-    registerFallbackValue(InterpolationMethod.linear);
     registerFallbackValue(DateTime(2024));
     registerFallbackValue(<ReadingPoint>[]);
   });
@@ -170,17 +169,9 @@ void main() {
       expect(provider.isLoading, false);
     });
 
-    test('period is monthly', () {
-      expect(provider.period, AnalyticsPeriod.monthly);
-    });
-
     test('selectedMonth is first of current month', () {
       final now = DateTime.now();
       expect(provider.selectedMonth, DateTime(now.year, now.month, 1));
-    });
-
-    test('selectedYear is current year', () {
-      expect(provider.selectedYear, DateTime.now().year);
     });
 
   });
@@ -331,46 +322,6 @@ void main() {
     });
   });
 
-  group('period switching', () {
-    test('setPeriod(monthly) + setSelectedMonth changes date range and reloads',
-        () async {
-      stubEmptyData();
-
-      provider.setHouseholdId(1);
-      await Future.delayed(const Duration(milliseconds: 50));
-
-      provider.setPeriod(AnalyticsPeriod.monthly);
-      provider.setSelectedMonth(DateTime(2026, 3, 1));
-
-      await Future.delayed(const Duration(milliseconds: 100));
-
-      expect(provider.period, AnalyticsPeriod.monthly);
-      expect(provider.selectedMonth, DateTime(2026, 3, 1));
-      // Verify loadData was called (by checking DAO calls)
-      verify(() => mockSmartPlugDao.getSmartPlugsForHousehold(1))
-          .called(greaterThanOrEqualTo(2));
-    });
-
-    test('setPeriod(yearly) + setSelectedYear changes date range and reloads',
-        () async {
-      stubEmptyData();
-
-      provider.setHouseholdId(1);
-      await Future.delayed(const Duration(milliseconds: 50));
-
-      provider.setPeriod(AnalyticsPeriod.yearly);
-      provider.setSelectedYear(2025);
-
-      await Future.delayed(const Duration(milliseconds: 100));
-
-      expect(provider.period, AnalyticsPeriod.yearly);
-      expect(provider.selectedYear, 2025);
-      verify(() => mockSmartPlugDao.getSmartPlugsForHousehold(1))
-          .called(greaterThanOrEqualTo(2));
-    });
-
-  });
-
   group('month navigation', () {
     test('navigateMonth(1) increments month', () async {
       stubEmptyData();
@@ -398,36 +349,6 @@ void main() {
       provider.navigateMonth(-1);
 
       expect(provider.selectedMonth, DateTime(2026, 2, 1));
-    });
-  });
-
-  group('year navigation', () {
-    test('navigateYear(1) increments year', () async {
-      stubEmptyData();
-
-      provider.setHouseholdId(1);
-      await Future.delayed(const Duration(milliseconds: 50));
-
-      provider.setSelectedYear(2025);
-      await Future.delayed(const Duration(milliseconds: 50));
-
-      provider.navigateYear(1);
-
-      expect(provider.selectedYear, 2026);
-    });
-
-    test('navigateYear(-1) decrements year', () async {
-      stubEmptyData();
-
-      provider.setHouseholdId(1);
-      await Future.delayed(const Duration(milliseconds: 50));
-
-      provider.setSelectedYear(2026);
-      await Future.delayed(const Duration(milliseconds: 50));
-
-      provider.navigateYear(-1);
-
-      expect(provider.selectedYear, 2025);
     });
   });
 

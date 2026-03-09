@@ -922,4 +922,24 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get costPerMonth => 'Cost per Month';
+
+  @override
+  String get totalConsumptionLabel => 'Total Consumption';
+
+  @override
+  String get trackedByPlugs => 'Tracked by Plugs';
+
+  @override
+  String get notTracked => 'Not Tracked';
+
+  @override
+  String get consumptionByRoomTitle => 'Consumption by Room';
+
+  @override
+  String get consumptionByPlugTitle => 'Consumption by Plug';
+
+  @override
+  String consumptionWithPercent(String value, String percent) {
+    return '$value kWh ($percent%)';
+  }
 }
