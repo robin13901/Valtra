@@ -67,22 +67,22 @@
 - [x] Localize all new strings (EN + DE)
 - [x] Tests mirroring electricity screen tests
 
-### Phase 21: Smart Plug Screen Overhaul
+### Phase 21: Smart Plug Screen Overhaul (COMPLETE)
 **Requirements**: FR-19 (Smart Plug Screen Overhaul)
 **Dependencies**: Phase 19 (bottom nav pattern established)
-**Plans:** 1 plan
+**Plans:** 1 plan (1/1 complete)
 Plans:
-- [ ] 21-01-PLAN.md — Bottom nav, inline monthly-only analysis, renamed stats, percentages, localization, tests
-- [ ] Add bottom nav: Analyse (left) | Liste (right), default Liste
-- [ ] LiquidGlass FAB visible on Liste only
-- [ ] Remove app bar analytics icon (pie_chart)
-- [ ] Analysis page: monthly-only (no yearly option), month navigation with arrows
-- [ ] Rename stats: Gesamtverbrauch, Davon erfasst, Nicht erfasst
-- [ ] UI order: month nav → stats card → Verbrauch nach Raum (title, pie, list with %) → Verbrauch nach Steckdose (title, pie, list)
-- [ ] Room list items show kWh value + percentage
-- [ ] Reduced padding between list items
-- [ ] Localize all new/changed strings (EN + DE)
-- [ ] Tests for renamed stats, percentage display, UI order
+- [x] 21-01-PLAN.md — Bottom nav, inline monthly-only analysis, renamed stats, percentages, localization, tests
+- [x] Add bottom nav: Analyse (left) | Liste (right), default Liste
+- [x] LiquidGlass FAB visible on Liste only
+- [x] Remove app bar analytics icon (pie_chart)
+- [x] Analysis page: monthly-only (no yearly option), month navigation with arrows
+- [x] Rename stats: Gesamtverbrauch, Davon erfasst, Nicht erfasst
+- [x] UI order: month nav → stats card → Verbrauch nach Raum (title, pie, list with %) → Verbrauch nach Steckdose (title, pie, list)
+- [x] Room list items show kWh value + percentage
+- [x] Reduced padding between list items
+- [x] Localize all new/changed strings (EN + DE)
+- [x] Tests for renamed stats, percentage display, UI order
 
 ### Phase 22: Water & Heating Screen Overhaul
 **Requirements**: FR-20 (Water), FR-21 (Heating)
@@ -119,6 +119,6 @@ Milestone 3 (v0.3.0) --> Milestone 4 (v0.4.0)
 ## Current Status
 - **Completed**: Milestone 1 (v0.1.0), Milestone 2 (v0.2.0), Milestone 3 (v0.3.0)
 - **Active Milestone**: 4 — UX Overhaul (v0.4.0)
-- **Active Phase**: 21 — Smart Plug Screen Overhaul
-- **Next Phase**: 22 — Water & Heating Screen Overhaul
+- **Active Phase**: 22 — Water & Heating Screen Overhaul
+- **Next Phase**: —
 - **Blockers**: None

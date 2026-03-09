@@ -132,22 +132,22 @@
 ### FR-19: Smart Plug Screen Overhaul
 
 #### FR-19.1: Bottom Navigation
-- [ ] **FR-19.1.1**: Add bottom navigation (Analyse left, Liste right, default Liste)
-- [ ] **FR-19.1.2**: LiquidGlass FAB visible on Liste only
-- [ ] **FR-19.1.3**: Remove app bar analytics icon (pie_chart)
+- [x] **FR-19.1.1**: Add bottom navigation (Analyse left, Liste right, default Liste)
+- [x] **FR-19.1.2**: LiquidGlass FAB visible on Liste only
+- [x] **FR-19.1.3**: Remove app bar analytics icon (pie_chart)
 
 #### FR-19.2: Monthly-Only Analysis
-- [ ] **FR-19.2.1**: No yearly/monthly tab choice — only monthly view
-- [ ] **FR-19.2.2**: Start on current month
-- [ ] **FR-19.2.3**: Month navigation with arrow buttons (previous/next)
+- [x] **FR-19.2.1**: No yearly/monthly tab choice — only monthly view
+- [x] **FR-19.2.2**: Start on current month
+- [x] **FR-19.2.3**: Month navigation with arrow buttons (previous/next)
 
 #### FR-19.3: Rename Statistics
-- [ ] **FR-19.3.1**: "Gesamtstrom" → "Gesamtverbrauch" (total consumption from main meter)
-- [ ] **FR-19.3.2**: "Gesamt erfasst" → "Davon erfasst" (of which captured)
-- [ ] **FR-19.3.3**: "Sonstiger nicht erfasst" → "Nicht erfasst" (not captured)
+- [x] **FR-19.3.1**: "Gesamtstrom" → "Gesamtverbrauch" (total consumption from main meter)
+- [x] **FR-19.3.2**: "Gesamt erfasst" → "Davon erfasst" (of which captured)
+- [x] **FR-19.3.3**: "Sonstiger nicht erfasst" → "Nicht erfasst" (not captured)
 
 #### FR-19.4: UI Element Order
-- [ ] **FR-19.4.1**: Order from top to bottom:
+- [x] **FR-19.4.1**: Order from top to bottom:
   1. Month navigation (arrows + month label)
   2. Statistics card (Gesamtverbrauch, Davon erfasst, Nicht erfasst)
   3. Section title "Verbrauch nach Raum"
@@ -158,8 +158,8 @@
   8. Plug list with consumption values
 
 #### FR-19.5: List Enhancements
-- [ ] **FR-19.5.1**: Room breakdown list shows both kWh value and percentage (e.g., "12.5 kWh — 35%")
-- [ ] **FR-19.5.2**: Reduced padding between list items for denser layout
+- [x] **FR-19.5.1**: Room breakdown list shows both kWh value and percentage (e.g., "12.5 kWh — 35%")
+- [x] **FR-19.5.2**: Reduced padding between list items for denser layout
 
 ---
 
