@@ -345,5 +345,28 @@ void main() {
 
               await tester.pumpWidget(Container());
             }));
+
+    testWidgets('tab state preserved when switching (IndexedStack)',
+        (tester) => tester.runAsync(() async {
+              await tester
+                  .pumpWidget(wrapWithProviders(const SmartPlugsScreen()));
+              await tester.pumpAndSettle();
+
+              // Default is Liste tab - verify empty state
+              expect(find.byIcon(Icons.power_outlined), findsOneWidget);
+
+              // Switch to Analysis
+              await tester.tap(find.text('Analysis'));
+              await tester.pumpAndSettle();
+
+              // Switch back to Liste - state should be preserved
+              await tester.tap(find.text('List'));
+              await tester.pumpAndSettle();
+
+              // Empty state should still be visible (IndexedStack preserves state)
+              expect(find.byIcon(Icons.power_outlined), findsOneWidget);
+
+              await tester.pumpWidget(Container());
+            }));
   });
 }
