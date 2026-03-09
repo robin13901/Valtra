@@ -583,9 +583,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get exportCsv => 'Export CSV';
-
-  @override
   String get exportAll => 'Export All Meters';
 
   @override

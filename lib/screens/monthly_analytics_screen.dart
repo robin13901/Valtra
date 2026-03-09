@@ -6,9 +6,7 @@ import '../l10n/app_localizations.dart';
 import '../providers/analytics_provider.dart';
 import '../providers/locale_provider.dart';
 import '../services/analytics/analytics_models.dart';
-import '../services/csv_export_service.dart';
 import '../services/number_format_service.dart';
-import '../services/share_service.dart';
 import '../widgets/liquid_glass_widgets.dart';
 import '../widgets/charts/monthly_bar_chart.dart';
 import 'yearly_analytics_screen.dart';
@@ -78,14 +76,6 @@ class MonthlyAnalyticsScreen extends StatelessWidget {
                     ),
                   ],
                 ),
-      floatingActionButton: data != null && data.recentMonths.isNotEmpty
-          ? buildGlassFAB(
-              context: context,
-              icon: Icons.file_download,
-              onPressed: () => _exportMonthlyCsv(context, data),
-              tooltip: l10n.exportCsv,
-            )
-          : null,
     );
   }
 
@@ -111,24 +101,6 @@ class MonthlyAnalyticsScreen extends StatelessWidget {
     );
   }
 
-  Future<void> _exportMonthlyCsv(
-      BuildContext context, MonthlyAnalyticsData data) async {
-    final l10n = AppLocalizations.of(context)!;
-    const csvService = CsvExportService();
-    final shareService = ShareService();
-
-    final csv = csvService.exportMonthlyData(data);
-    final filename =
-        'valtra_${data.meterType.name}_${DateFormat('yyyy-MM').format(data.month)}.csv';
-
-    await shareService.shareCsvFile(csvContent: csv, filename: filename);
-
-    if (context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.exportSuccess)),
-      );
-    }
-  }
 }
 
 class _MonthNavigationHeader extends StatelessWidget {

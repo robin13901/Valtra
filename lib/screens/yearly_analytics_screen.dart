@@ -6,9 +6,7 @@ import '../l10n/app_localizations.dart';
 import '../providers/analytics_provider.dart';
 import '../providers/locale_provider.dart';
 import '../services/analytics/analytics_models.dart';
-import '../services/csv_export_service.dart';
 import '../services/number_format_service.dart';
-import '../services/share_service.dart';
 import '../widgets/liquid_glass_widgets.dart';
 import '../widgets/charts/chart_legend.dart';
 import '../widgets/charts/monthly_bar_chart.dart';
@@ -51,14 +49,6 @@ class _YearlyAnalyticsScreenState extends State<YearlyAnalyticsScreen> {
           : data == null
               ? Center(child: Text(l10n.noData))
               : _buildContent(context, data, color, l10n, provider),
-      floatingActionButton: data != null && data.monthlyBreakdown.isNotEmpty
-          ? buildGlassFAB(
-              context: context,
-              icon: Icons.file_download,
-              onPressed: () => _exportCsv(context, data),
-              tooltip: l10n.exportCsv,
-            )
-          : null,
     );
   }
 
@@ -161,25 +151,6 @@ class _YearlyAnalyticsScreenState extends State<YearlyAnalyticsScreen> {
         ],
       ],
     );
-  }
-
-  Future<void> _exportCsv(
-      BuildContext context, YearlyAnalyticsData data) async {
-    final l10n = AppLocalizations.of(context)!;
-    const csvService = CsvExportService();
-    final shareService = ShareService();
-
-    final csv = csvService.exportYearlyData(data);
-    final filename =
-        'valtra_${data.meterType.name}_${data.year}.csv';
-
-    await shareService.shareCsvFile(csvContent: csv, filename: filename);
-
-    if (context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.exportSuccess)),
-      );
-    }
   }
 
   String _meterTypeLabel(AppLocalizations l10n, MeterType type) {

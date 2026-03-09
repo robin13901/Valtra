@@ -287,7 +287,6 @@
       "change": {"type": "String"}
     }
   },
-  "exportCsv": "Export CSV",
   "exportAll": "Export All Meters",
   "exportSuccess": "Export ready to share",
   "noYearlyData": "No data for {year}",

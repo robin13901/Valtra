@@ -221,7 +221,6 @@
       "change": {"type": "String"}
     }
   },
-  "exportCsv": "CSV exportieren",
   "exportAll": "Alle Zähler exportieren",
   "exportSuccess": "Export bereit zum Teilen",
   "noYearlyData": "Keine Daten für {year}",
