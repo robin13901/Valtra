@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:drift/drift.dart' hide Column;
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -8,15 +7,13 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 
 import '../app_theme.dart';
-import '../database/app_database.dart';
-import '../database/tables.dart';
 import '../l10n/app_localizations.dart';
 import '../providers/backup_restore_provider.dart';
-import '../providers/cost_config_provider.dart';
 import '../providers/interpolation_settings_provider.dart';
 import '../providers/locale_provider.dart';
 import '../providers/theme_provider.dart';
 import '../widgets/liquid_glass_widgets.dart';
+import 'household_cost_settings_screen.dart';
 
 /// Settings screen with theme toggle, meter settings, and app info.
 class SettingsScreen extends StatelessWidget {
@@ -37,7 +34,7 @@ class SettingsScreen extends StatelessWidget {
           const SizedBox(height: 8),
           _buildMeterSettingsSection(context, l10n),
           const SizedBox(height: 8),
-          _buildCostConfigSection(context, l10n),
+          _buildCostProfilesNavTile(context, l10n),
           const SizedBox(height: 8),
           _buildBackupRestoreSection(context, l10n),
           const SizedBox(height: 8),
@@ -186,25 +183,22 @@ class SettingsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildCostConfigSection(BuildContext context, AppLocalizations l10n) {
-    final costProvider = context.watch<CostConfigProvider>();
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _buildSectionHeader(context, l10n.costConfiguration),
-        ...CostMeterType.values.map(
-          (type) => Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-            child: _CostConfigCard(
-              meterType: type,
-              config: costProvider.getActiveConfig(type, DateTime.now()),
-              l10n: l10n,
-              costProvider: costProvider,
+  Widget _buildCostProfilesNavTile(BuildContext context, AppLocalizations l10n) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: GlassCard(
+        child: ListTile(
+          contentPadding: EdgeInsets.zero,
+          leading: const Icon(Icons.euro),
+          title: Text(l10n.costProfiles),
+          trailing: const Icon(Icons.chevron_right),
+          onTap: () => Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (_) => const HouseholdCostSettingsScreen(),
             ),
           ),
         ),
-      ],
+      ),
     );
   }
 
@@ -445,268 +439,6 @@ class _GasConversionFieldState extends State<_GasConversionField> {
           onEditingComplete: () => _onSubmitted(_controller.text),
         ),
       ],
-    );
-  }
-}
-
-/// Card for configuring cost per meter type.
-class _CostConfigCard extends StatefulWidget {
-  const _CostConfigCard({
-    required this.meterType,
-    required this.config,
-    required this.l10n,
-    required this.costProvider,
-  });
-
-  final CostMeterType meterType;
-  final CostConfig? config;
-  final AppLocalizations l10n;
-  final CostConfigProvider costProvider;
-
-  @override
-  State<_CostConfigCard> createState() => _CostConfigCardState();
-}
-
-class _CostConfigCardState extends State<_CostConfigCard> {
-  late TextEditingController _unitPriceController;
-  late TextEditingController _standingChargeController;
-  late DateTime _validFrom;
-  String? _unitPriceError;
-  String? _standingChargeError;
-
-  @override
-  void initState() {
-    super.initState();
-    _unitPriceController = TextEditingController(
-      text: widget.config?.unitPrice.toString() ?? '',
-    );
-    _standingChargeController = TextEditingController(
-      text: widget.config?.standingCharge.toString() ?? '0.0',
-    );
-    _validFrom = widget.config?.validFrom ??
-        DateTime(DateTime.now().year, DateTime.now().month, 1);
-  }
-
-  @override
-  void didUpdateWidget(covariant _CostConfigCard oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (widget.config?.id != oldWidget.config?.id) {
-      _unitPriceController.text =
-          widget.config?.unitPrice.toString() ?? '';
-      _standingChargeController.text =
-          widget.config?.standingCharge.toString() ?? '0.0';
-      _validFrom = widget.config?.validFrom ??
-          DateTime(DateTime.now().year, DateTime.now().month, 1);
-    }
-  }
-
-  @override
-  void dispose() {
-    _unitPriceController.dispose();
-    _standingChargeController.dispose();
-    super.dispose();
-  }
-
-  String _meterTypeLabel() {
-    switch (widget.meterType) {
-      case CostMeterType.electricity:
-        return widget.l10n.electricity;
-      case CostMeterType.gas:
-        return widget.l10n.gas;
-      case CostMeterType.water:
-        return widget.l10n.water;
-    }
-  }
-
-  IconData _meterTypeIcon() {
-    switch (widget.meterType) {
-      case CostMeterType.electricity:
-        return Icons.electric_bolt;
-      case CostMeterType.gas:
-        return Icons.local_fire_department;
-      case CostMeterType.water:
-        return Icons.water_drop;
-    }
-  }
-
-  String _unitSuffix() {
-    switch (widget.meterType) {
-      case CostMeterType.electricity:
-      case CostMeterType.gas:
-        return widget.l10n.pricePerKwh;
-      case CostMeterType.water:
-        return widget.l10n.pricePerCubicMeter;
-    }
-  }
-
-  Future<void> _save() async {
-    final unitPrice = double.tryParse(_unitPriceController.text);
-    final standingCharge = double.tryParse(_standingChargeController.text);
-
-    setState(() {
-      _unitPriceError =
-          (unitPrice == null || unitPrice <= 0) ? widget.l10n.invalidNumber : null;
-      _standingChargeError =
-          (standingCharge == null || standingCharge < 0)
-              ? widget.l10n.invalidNumber
-              : null;
-    });
-
-    if (_unitPriceError != null || _standingChargeError != null) return;
-
-    if (widget.config != null) {
-      await widget.costProvider.updateConfig(
-        widget.config!.copyWith(
-          unitPrice: unitPrice!,
-          standingCharge: standingCharge!,
-          validFrom: _validFrom,
-        ),
-      );
-    } else {
-      await widget.costProvider.addConfig(
-        CostConfigsCompanion.insert(
-          householdId: widget.costProvider.householdId!,
-          meterType: widget.meterType,
-          unitPrice: unitPrice!,
-          standingCharge: Value(standingCharge!),
-          validFrom: _validFrom,
-        ),
-      );
-    }
-
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(widget.l10n.costConfigSaved)),
-      );
-    }
-  }
-
-  Future<void> _delete() async {
-    if (widget.config == null) return;
-
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(widget.l10n.deleteCostConfig),
-        content: Text(
-          widget.l10n.deleteCostConfigConfirm(_meterTypeLabel()),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: Text(widget.l10n.cancel),
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            child: Text(widget.l10n.delete),
-          ),
-        ],
-      ),
-    );
-
-    if (confirmed == true) {
-      await widget.costProvider.deleteConfig(widget.config!.id);
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(widget.l10n.costConfigDeleted)),
-        );
-      }
-    }
-  }
-
-  Future<void> _pickValidFrom() async {
-    final date = await showDatePicker(
-      context: context,
-      initialDate: _validFrom,
-      firstDate: DateTime(2020),
-      lastDate: DateTime(2030),
-    );
-    if (date != null) {
-      setState(() => _validFrom = date);
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final hasConfig = widget.config != null;
-
-    return GlassCard(
-      child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Icon(_meterTypeIcon(), color: AppColors.ultraViolet),
-                const SizedBox(width: 8),
-                Text(
-                  _meterTypeLabel(),
-                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                ),
-                const Spacer(),
-                if (hasConfig)
-                  IconButton(
-                    icon: const Icon(Icons.delete_outline),
-                    onPressed: _delete,
-                    tooltip: widget.l10n.deleteCostConfig,
-                    iconSize: 20,
-                  ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: _unitPriceController,
-              keyboardType:
-                  const TextInputType.numberWithOptions(decimal: true),
-              inputFormatters: [
-                FilteringTextInputFormatter.allow(RegExp(r'[\d.]')),
-              ],
-              decoration: InputDecoration(
-                labelText: widget.l10n.unitPrice,
-                suffixText: _unitSuffix(),
-                errorText: _unitPriceError,
-                isDense: true,
-              ),
-            ),
-            const SizedBox(height: 8),
-            TextField(
-              controller: _standingChargeController,
-              keyboardType:
-                  const TextInputType.numberWithOptions(decimal: true),
-              inputFormatters: [
-                FilteringTextInputFormatter.allow(RegExp(r'[\d.]')),
-              ],
-              decoration: InputDecoration(
-                labelText: widget.l10n.standingChargePerMonth,
-                suffixText: widget.l10n.perMonth,
-                errorText: _standingChargeError,
-                isDense: true,
-              ),
-            ),
-            const SizedBox(height: 8),
-            InkWell(
-              onTap: _pickValidFrom,
-              child: InputDecorator(
-                decoration: InputDecoration(
-                  labelText: widget.l10n.validFrom,
-                  isDense: true,
-                ),
-                child: Text(
-                  '${_validFrom.day}.${_validFrom.month}.${_validFrom.year}',
-                ),
-              ),
-            ),
-            const SizedBox(height: 12),
-            SizedBox(
-              width: double.infinity,
-              child: FilledButton(
-                onPressed: _save,
-                child: Text(widget.l10n.saveCostConfig),
-              ),
-            ),
-          ],
-        ),
     );
   }
 }

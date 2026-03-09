@@ -11,6 +11,7 @@ mixin _$HouseholdDaoMixin on DatabaseAccessor<AppDatabase> {
   $WaterMetersTable get waterMeters => attachedDatabase.waterMeters;
   $RoomsTable get rooms => attachedDatabase.rooms;
   $HeatingMetersTable get heatingMeters => attachedDatabase.heatingMeters;
+  $CostConfigsTable get costConfigs => attachedDatabase.costConfigs;
   HouseholdDaoManager get managers => HouseholdDaoManager(this);
 }
 
@@ -32,4 +33,6 @@ class HouseholdDaoManager {
       $$RoomsTableTableManager(_db.attachedDatabase, _db.rooms);
   $$HeatingMetersTableTableManager get heatingMeters =>
       $$HeatingMetersTableTableManager(_db.attachedDatabase, _db.heatingMeters);
+  $$CostConfigsTableTableManager get costConfigs =>
+      $$CostConfigsTableTableManager(_db.attachedDatabase, _db.costConfigs);
 }

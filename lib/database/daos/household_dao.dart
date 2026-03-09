@@ -11,6 +11,7 @@ part 'household_dao.g.dart';
   WaterMeters,
   HeatingMeters,
   Rooms,
+  CostConfigs,
 ])
 class HouseholdDao extends DatabaseAccessor<AppDatabase>
     with _$HouseholdDaoMixin {
@@ -86,6 +87,12 @@ class HouseholdDao extends DatabaseAccessor<AppDatabase>
           ..where((r) => r.householdId.equals(householdId)))
         .get();
     if (roomCount.isNotEmpty) return true;
+
+    // Check cost configs
+    final costCount = await (select(costConfigs)
+          ..where((c) => c.householdId.equals(householdId)))
+        .get();
+    if (costCount.isNotEmpty) return true;
 
     return false;
   }

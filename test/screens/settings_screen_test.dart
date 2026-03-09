@@ -3,16 +3,12 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:valtra/database/tables.dart';
 import 'package:valtra/l10n/app_localizations.dart';
 import 'package:valtra/providers/backup_restore_provider.dart';
-import 'package:valtra/providers/cost_config_provider.dart';
 import 'package:valtra/providers/interpolation_settings_provider.dart';
 import 'package:valtra/providers/locale_provider.dart';
 import 'package:valtra/providers/theme_provider.dart';
 import 'package:valtra/screens/settings_screen.dart';
-
-class MockCostConfigProvider extends Mock implements CostConfigProvider {}
 
 class MockBackupRestoreProvider extends Mock implements BackupRestoreProvider {}
 
@@ -34,13 +30,10 @@ class MockLocaleProvider extends ChangeNotifier implements LocaleProvider {
 void main() {
   late ThemeProvider themeProvider;
   late InterpolationSettingsProvider settingsProvider;
-  late MockCostConfigProvider costConfigProvider;
   late MockBackupRestoreProvider backupRestoreProvider;
   late MockLocaleProvider localeProvider;
 
   setUpAll(() {
-    registerFallbackValue(CostMeterType.electricity);
-    registerFallbackValue(DateTime(2026, 1, 1));
   });
 
   Widget buildSettingsScreen({ThemeMode? initialTheme}) {
@@ -49,9 +42,6 @@ void main() {
         ChangeNotifierProvider<ThemeProvider>.value(value: themeProvider),
         ChangeNotifierProvider<InterpolationSettingsProvider>.value(
           value: settingsProvider,
-        ),
-        ChangeNotifierProvider<CostConfigProvider>.value(
-          value: costConfigProvider,
         ),
         ChangeNotifierProvider<LocaleProvider>.value(value: localeProvider),
         ChangeNotifierProvider<BackupRestoreProvider>.value(
@@ -74,12 +64,6 @@ void main() {
     await themeProvider.init();
     settingsProvider = InterpolationSettingsProvider();
     await settingsProvider.init();
-    costConfigProvider = MockCostConfigProvider();
-    when(() => costConfigProvider.getActiveConfig(any(), any()))
-        .thenReturn(null);
-    when(() => costConfigProvider.configs).thenReturn([]);
-    when(() => costConfigProvider.hasCostConfigs).thenReturn(false);
-    when(() => costConfigProvider.householdId).thenReturn(null);
     backupRestoreProvider = MockBackupRestoreProvider();
     when(() => backupRestoreProvider.state).thenReturn(BackupRestoreState.idle);
     when(() => backupRestoreProvider.isLoading).thenReturn(false);
@@ -317,6 +301,24 @@ void main() {
       });
     });
 
+    group('cost profiles navigation', () {
+      testWidgets('shows Cost Profiles navigation tile', (tester) async {
+        await tester.pumpWidget(buildSettingsScreen());
+        await tester.pumpAndSettle();
+
+        expect(find.text('Cost Profiles'), findsOneWidget);
+        expect(find.byIcon(Icons.euro), findsOneWidget);
+        expect(find.byIcon(Icons.chevron_right), findsWidgets);
+      });
+
+      testWidgets('cost config section no longer appears', (tester) async {
+        await tester.pumpWidget(buildSettingsScreen());
+        await tester.pumpAndSettle();
+
+        expect(find.text('Cost Configuration'), findsNothing);
+      });
+    });
+
     group('backup & restore section', () {
       testWidgets('shows Backup & Restore section header', (tester) async {
         await tester.pumpWidget(buildSettingsScreen());
@@ -439,9 +441,6 @@ void main() {
             ChangeNotifierProvider<ThemeProvider>.value(value: tp),
             ChangeNotifierProvider<InterpolationSettingsProvider>.value(
               value: settingsProvider,
-            ),
-            ChangeNotifierProvider<CostConfigProvider>.value(
-              value: costConfigProvider,
             ),
             ChangeNotifierProvider<LocaleProvider>.value(value: localeProvider),
             ChangeNotifierProvider<BackupRestoreProvider>.value(

@@ -184,6 +184,22 @@ void main() {
         final hasData = await dao.hasRelatedData(id);
         expect(hasData, isTrue);
       });
+
+      test('returns true when cost configs exist', () async {
+        final id = await dao
+            .insert(HouseholdsCompanion.insert(name: 'With Cost Configs'));
+
+        await database.into(database.costConfigs).insert(
+            CostConfigsCompanion.insert(
+          householdId: id,
+          meterType: CostMeterType.electricity,
+          unitPrice: 0.30,
+          validFrom: DateTime(2024, 1, 1),
+        ));
+
+        final hasData = await dao.hasRelatedData(id);
+        expect(hasData, isTrue);
+      });
     });
   });
 }
