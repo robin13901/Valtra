@@ -1,13 +1,13 @@
 {
   "project": "valtra",
-  "captured_at": "2026-03-08",
+  "captured_at": "2026-03-09",
   "language": {
     "primary": "dart",
     "version": "^3.10.0"
   },
   "framework": {
     "name": "flutter",
-    "patterns": ["provider", "drift", "material3", "sharedpreferences", "fl_chart", "csv", "share_plus", "path_provider", "package_info_plus"]
+    "patterns": ["provider", "drift", "material3", "sharedpreferences", "fl_chart", "share_plus", "path_provider", "package_info_plus"]
   },
   "naming": {
     "files": {
@@ -59,10 +59,10 @@
       "services": ["{conversion}_service.dart", "csv_export_service.dart", "share_service.dart"],
       "services/{domain}": ["models.dart", "{domain}_service.dart", "reading_converters.dart"],
       "services/analytics": ["analytics_models.dart", "analytics_helpers.dart"],
-      "screens": ["{entity}s_screen.dart", "settings_screen.dart", "analytics_screen.dart", "monthly_analytics_screen.dart", "yearly_analytics_screen.dart"],
+      "screens": ["{entity}s_screen.dart", "settings_screen.dart", "household_cost_settings_screen.dart"],
       "widgets": ["liquid_glass_widgets.dart", "{entity}_selector.dart"],
       "widgets/charts": ["consumption_line_chart.dart", "monthly_bar_chart.dart", "chart_legend.dart", "year_comparison_chart.dart", "consumption_pie_chart.dart"],
-      "widgets/dialogs": ["{entity}_form_dialog.dart", "confirm_delete_dialog.dart", "reading_form_base.dart"],
+      "widgets/dialogs": ["{entity}_form_dialog.dart", "confirm_delete_dialog.dart", "cost_profile_form_dialog.dart"],
       "l10n": ["app_en.arb", "app_de.arb"]
     },
     "test": {
@@ -71,7 +71,7 @@
       "providers": ["{entity}_provider_test.dart", "analytics_provider_yearly_test.dart"],
       "services": ["{conversion}_service_test.dart", "csv_export_service_test.dart"],
       "services/{domain}": ["models_test.dart", "{domain}_service_test.dart", "reading_converters_test.dart"],
-      "screens": ["{entity}s_screen_test.dart", "analytics_screen_test.dart", "monthly_analytics_screen_test.dart", "yearly_analytics_screen_test.dart", "smart_plug_analytics_screen_test.dart"],
+      "screens": ["{entity}s_screen_test.dart", "smart_plug_analytics_screen_test.dart"],
       "widgets": ["{entity}_form_dialog_test.dart", "{entity}_selector_test.dart"],
       "widgets/charts": ["consumption_line_chart_test.dart", "monthly_bar_chart_test.dart", "chart_legend_test.dart", "year_comparison_chart_test.dart", "consumption_pie_chart_test.dart"]
     }
@@ -177,6 +177,15 @@
     "Extrapolated bar visual: alpha 0.3 + borderDashArray [6,3] for dashed lighter appearance",
     "QuickEntryMixin: Save&Next keeps dialog open, clears value field, increments counter in title, shows brief SnackBar",
     "ConfirmDeleteDialog.show() static factory — shared widget across all 5 meter screens for consistent UX",
-    "Parallel data-layer plans for independent tables (smart plugs vs heating meters) — halves wall-clock time"
+    "Parallel data-layer plans for independent tables (smart plugs vs heating meters) — halves wall-clock time",
+    "IndexedStack with bottom nav: _currentTab state, default=1 (Liste), FAB conditional on tab, analytics loads via addPostFrameCallback",
+    "Cost toggle pattern: IconButton in app bar, meter-specific icon ↔ euro, hidden when no CostConfig exists",
+    "Year comparison chart: use periodStart.month-1 as X-axis position, not array index — calendar-aligned",
+    "Smart plug monthly-only analytics: remove yearly code path from provider entirely, keep AnalyticsPeriod enum for compat",
+    "Duplicate private widgets per meter screen (_YearNavigationHeader, _YearlySummaryCard) rather than extracting shared — allows independent evolution",
+    "Dead code removal: grep for all imports before deleting — last consumer phase owns the deletion",
+    "Adding enum value to intEnum: append at end to preserve ordinals — no DB migration needed",
+    "Meter screen overhaul replication: copy electricity as template, replace MeterType/Provider/color/unit/icon/CostMeterType — ~30 min per screen",
+    "Test provider setup for analytics screens: AnalyticsProvider needs ALL 4 meter DAOs even when testing single meter"
   ]
 }

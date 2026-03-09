@@ -3,10 +3,10 @@
 ## Current Status
 - **Milestone**: 4 - UX Overhaul (v0.4.0)
 - **Last Shipped**: v0.3.0 (2026-03-08)
-- **Current Phase**: 21 - Smart Plug Screen Overhaul (complete)
+- **Current Phase**: — (all phases complete)
 - **Current Plan**: —
 - **Last Updated**: 2026-03-09
-- **Tests**: 1070
+- **Tests**: 1077
 
 ## Completed Milestones
 - **Milestone 1**: Core Foundation (v0.1.0) -- 7 phases, 313 tests
@@ -19,6 +19,7 @@
 - **19**: Electricity screen overhaul (bottom nav, IndexedStack, inline analysis, chart month-alignment fix, kWh/€ toggle)
 - **20**: Gas screen overhaul (bottom nav, IndexedStack, inline analysis, m³/€ toggle)
 - **21-01**: Smart Plug screen overhaul (bottom nav Analyse/Liste, monthly-only inline analytics, renamed stats, room percentages, 1070 tests)
+- **22**: Water & Heating screen overhaul (bottom nav, inline analysis, m³/€ and kWh/€ toggles, dead code cleanup, 1077 tests)
 
 ## Blocked
 _None_
@@ -30,6 +31,7 @@ _None_
 | 2026-03-09 | 17 | Completed 17-01 | Fixed household dropdown text/icon colors for light/dark theme. 5 new tests added. |
 | 2026-03-09 | 19 | Phase complete | Electricity screen overhaul: bottom nav (Analyse/Liste), IndexedStack, inline analysis, year chart month-alignment fix, kWh/€ toggle, per-month costs. 1057 tests, 0 analyze issues. |
 | 2026-03-09 | 21 | 21-01 complete | Smart Plug screen overhaul: GlassBottomNav, monthly-only inline analytics, renamed stats, room percentages, dense list items. 1070 tests, 0 analyze issues. |
+| 2026-03-09 | 22 | Phase complete | Water & Heating screen overhaul: bottom nav, inline analysis, cost toggles (m³/€, kWh/€), CostMeterType.heating, dead code removal (MonthlyAnalyticsScreen, YearlyAnalyticsScreen). 1077 tests, 0 analyze issues. |
 
 ## Key Decisions (carried forward)
 1. **Local-first architecture** - Using Drift/SQLite for offline-capable data storage
@@ -84,10 +86,14 @@ _None_
 50. **Smart plug analytics monthly-only** - Provider simplified: period/year fields removed, always monthly date range
 51. **Smart plug stats renamed** - Gesamtverbrauch (totalElectricity), Davon erfasst (totalSmartPlug), Nicht erfasst (otherConsumption)
 52. **Room breakdown percentages** - Room items show "X.X kWh (YY%)" format, calculated as room/totalSmartPlug*100
+53. **Water/heating bottom nav** - Same Analyse/Liste pattern as electricity/gas; water uses m³/€ toggle, heating uses kWh/€ toggle
+54. **CostMeterType.heating** - Added as ordinal 3 to intEnum; no DB migration needed (appended at end)
+55. **Dead analytics screens removed** - MonthlyAnalyticsScreen and YearlyAnalyticsScreen deleted after all consumers migrated to inline tabs
 
 ## Technical Debt
 1. **LiquidGlass integration** - Using standard Flutter glass-style widgets instead of full liquid_glass_renderer integration
 2. ~~**NFR-3.3**: Test coverage not measured with Codecov yet~~ (achieved 75% in v0.3.0)
+3. **Duplicate private widgets** - _YearNavigationHeader and _YearlySummaryCard duplicated in 4 meter screens (electricity, gas, water, heating) — could be extracted to shared widgets
 
 ## Next Actions
-_Plan Phase 22 or continue with remaining phases for v0.4.0_
+_Milestone 4 (v0.4.0) complete. Run `/gsd:complete-milestone` to archive and prepare next milestone._

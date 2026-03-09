@@ -21,7 +21,10 @@ patterns/
 │   ├── flutter-settings-dark-mode-audit.md
 │   ├── flutter-cost-tracking.md
 │   ├── flutter-ui-ux-polish-localization.md
-│   └── flutter-data-model-rework.md
+│   ├── flutter-data-model-rework.md
+│   ├── flutter-home-screen-cleanup.md
+│   ├── flutter-cost-settings-household-config.md
+│   └── flutter-meter-screen-bottom-nav-overhaul.md
 ├── conventions-learned/  # Project-specific conventions (JSON)
 │   └── valtra.json
 └── routing-history.json  # Agent/model performance tracking
@@ -85,7 +88,10 @@ Tracks which models work best for which task types:
 | flutter-cost-tracking | service, db, ui, settings | flutter, dart, drift, provider, mocktail | 100% | 1 |
 | flutter-ui-ux-polish-localization | ui, localization, polish | flutter, dart, intl, provider, shared_preferences, material3 | 100% | 1 |
 | flutter-data-model-rework | db, service, ui, analytics | flutter, dart, drift, provider, fl_chart, intl, mocktail | 100% | 1 |
+| flutter-home-screen-cleanup | ui, cleanup | flutter, dart, material3, provider, intl | 100% | 1 |
+| flutter-cost-settings-household-config | settings, db, ui | flutter, dart, drift, provider, material3, intl | 100% | 1 |
+| flutter-meter-screen-bottom-nav-overhaul | ui, navigation, analytics | flutter, dart, provider, fl_chart, material3, intl | 100% | 5 |
 
 ---
 
-*Last updated: 2026-03-08 (Phase 15 captured)*
+*Last updated: 2026-03-09 (Milestone 4 / Phases 17-22 captured)*
