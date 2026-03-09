@@ -1100,12 +1100,6 @@ abstract class AppLocalizations {
   /// **'{change}% vs last year'**
   String changeFromLastYear(String change);
 
-  /// No description provided for @exportCsv.
-  ///
-  /// In en, this message translates to:
-  /// **'Export CSV'**
-  String get exportCsv;
-
   /// No description provided for @exportAll.
   ///
   /// In en, this message translates to:

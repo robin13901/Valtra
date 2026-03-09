@@ -273,39 +273,6 @@ void main() {
       expect(find.text('Year-over-Year'), findsNothing);
     });
 
-    testWidgets('shows export FAB when data exists', (tester) async {
-      setUpDefaultStubs(yearlyData: _buildYearlyData());
-
-      await tester.pumpWidget(
-        _wrap(
-          const YearlyAnalyticsScreen(meterType: MeterType.electricity),
-          provider,
-          themeProvider,
-          localeProvider,
-        ),
-      );
-      await tester.pumpAndSettle();
-
-      expect(find.byType(FloatingActionButton), findsOneWidget);
-      expect(find.byIcon(Icons.file_download), findsOneWidget);
-    });
-
-    testWidgets('hides export FAB when no data', (tester) async {
-      setUpDefaultStubs(yearlyData: null);
-
-      await tester.pumpWidget(
-        _wrap(
-          const YearlyAnalyticsScreen(meterType: MeterType.electricity),
-          provider,
-          themeProvider,
-          localeProvider,
-        ),
-      );
-      await tester.pumpAndSettle();
-
-      expect(find.byType(FloatingActionButton), findsNothing);
-    });
-
     testWidgets('shows projected total when extrapolation data exists',
         (tester) async {
       final data = _buildYearlyData(

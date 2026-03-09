@@ -585,9 +585,6 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
-  String get exportCsv => 'CSV exportieren';
-
-  @override
   String get exportAll => 'Alle Zähler exportieren';
 
   @override
