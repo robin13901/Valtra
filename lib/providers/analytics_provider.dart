@@ -456,10 +456,12 @@ class AnalyticsProvider extends ChangeNotifier {
         }
       }
 
-      // Calculate yearly cost totals
+      // Calculate yearly cost totals and per-month cost lists
       double? totalCost;
       double? prevYearTotalCost;
       String? currencySymbol;
+      List<double?>? monthlyCosts;
+      List<double?>? prevMonthlyCosts;
       final costMeterType = _toCostMeterType(_selectedMeterType);
       if (costMeterType != null && monthlyBreakdown.isNotEmpty) {
         final costs = monthlyBreakdown
@@ -469,6 +471,7 @@ class AnalyticsProvider extends ChangeNotifier {
           totalCost = costs
               .where((c) => c != null)
               .fold<double>(0, (sum, c) => sum + c!);
+          monthlyCosts = costs;
         }
         final config = _costConfigProvider.getActiveConfig(
           costMeterType,
@@ -484,6 +487,7 @@ class AnalyticsProvider extends ChangeNotifier {
             prevYearTotalCost = prevCosts
                 .where((c) => c != null)
                 .fold<double>(0, (sum, c) => sum + c!);
+            prevMonthlyCosts = prevCosts;
           }
         }
       }
@@ -522,6 +526,8 @@ class AnalyticsProvider extends ChangeNotifier {
         currencySymbol: currencySymbol,
         extrapolatedTotal: extrapolatedTotal,
         extrapolationBasisMonths: extrapolationBasisMonths,
+        monthlyCosts: monthlyCosts,
+        previousYearMonthlyCosts: prevMonthlyCosts,
       );
     } catch (e) {
       _yearlyData = null;

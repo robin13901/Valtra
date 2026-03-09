@@ -10,6 +10,7 @@ import 'package:valtra/providers/analytics_provider.dart';
 import 'package:valtra/providers/cost_config_provider.dart';
 import 'package:valtra/providers/interpolation_settings_provider.dart';
 import 'package:valtra/services/analytics/analytics_models.dart';
+import 'package:valtra/services/cost_calculation_service.dart';
 import 'package:valtra/services/gas_conversion_service.dart';
 import 'package:valtra/services/interpolation/interpolation_service.dart';
 import 'package:valtra/services/interpolation/models.dart';
@@ -976,6 +977,279 @@ void main() {
       // Consumption 100.0 * 1.0 = 100.0
       expect(provider.monthlyData, isNotNull);
       expect(provider.monthlyData!.totalConsumption, 100.0);
+    });
+  });
+
+  group('yearly data per-month costs', () {
+    test('monthlyCosts is populated when cost config exists', () async {
+      _stubEmptyDaos(
+        mockElectricityDao,
+        mockGasDao,
+        mockWaterDao,
+        mockHeatingDao,
+      );
+
+      // Stub electricity readings for yearly data
+      final elReading1 = _createElectricityReading(
+        id: 1,
+        householdId: 1,
+        timestamp: DateTime(2024, 1, 1),
+        valueKwh: 100.0,
+      );
+      final elReading2 = _createElectricityReading(
+        id: 2,
+        householdId: 1,
+        timestamp: DateTime(2024, 12, 31),
+        valueKwh: 1300.0,
+      );
+      when(() => mockElectricityDao.getReadingsForRange(1, any(), any()))
+          .thenAnswer((_) async => [elReading1, elReading2]);
+
+      // Stub interpolation to return monthly breakdown
+      when(() => mockInterpolationService.getMonthlyConsumption(
+            readings: any(named: 'readings'),
+            rangeStart: any(named: 'rangeStart'),
+            rangeEnd: any(named: 'rangeEnd'),
+          )).thenReturn([
+        PeriodConsumption(
+          periodStart: DateTime(2024, 1, 1),
+          periodEnd: DateTime(2024, 2, 1),
+          startValue: 100.0,
+          endValue: 200.0,
+          consumption: 100.0,
+          startInterpolated: false,
+          endInterpolated: false,
+        ),
+        PeriodConsumption(
+          periodStart: DateTime(2024, 2, 1),
+          periodEnd: DateTime(2024, 3, 1),
+          startValue: 200.0,
+          endValue: 350.0,
+          consumption: 150.0,
+          startInterpolated: false,
+          endInterpolated: false,
+        ),
+      ]);
+
+      // Stub extrapolation (for current year)
+      when(() => mockInterpolationService.extrapolateYearEnd(
+            actualMonths: any(named: 'actualMonths'),
+            year: any(named: 'year'),
+          )).thenReturn(null);
+
+      // Stub cost config to return costs
+      when(() => mockCostConfigProvider.calculateCost(
+            meterType: CostMeterType.electricity,
+            consumption: 100.0,
+            periodStart: DateTime(2024, 1, 1),
+            periodEnd: DateTime(2024, 2, 1),
+          )).thenReturn(const CostResult(
+        unitCost: 30.0,
+        standingCost: 5.0,
+        totalCost: 35.0,
+        currencySymbol: '\u20AC',
+      ));
+      when(() => mockCostConfigProvider.calculateCost(
+            meterType: CostMeterType.electricity,
+            consumption: 150.0,
+            periodStart: DateTime(2024, 2, 1),
+            periodEnd: DateTime(2024, 3, 1),
+          )).thenReturn(const CostResult(
+        unitCost: 45.0,
+        standingCost: 5.0,
+        totalCost: 50.0,
+        currencySymbol: '\u20AC',
+      ));
+      when(() => mockCostConfigProvider.getActiveConfig(
+            CostMeterType.electricity,
+            any(),
+          )).thenReturn(null);
+
+      // Use a fixed non-current year so extrapolation is skipped
+      provider.setHouseholdId(1);
+      await Future.delayed(const Duration(milliseconds: 50));
+
+      provider.setSelectedMeterType(MeterType.electricity);
+      provider.setSelectedYear(2024);
+      await Future.delayed(const Duration(milliseconds: 150));
+
+      expect(provider.yearlyData, isNotNull);
+      expect(provider.yearlyData!.monthlyCosts, isNotNull);
+      expect(provider.yearlyData!.monthlyCosts!.length, 2);
+      expect(provider.yearlyData!.monthlyCosts![0], 35.0);
+      expect(provider.yearlyData!.monthlyCosts![1], 50.0);
+      expect(provider.yearlyData!.totalCost, 85.0);
+    });
+
+    test('monthlyCosts is null when no cost config exists', () async {
+      _stubEmptyDaos(
+        mockElectricityDao,
+        mockGasDao,
+        mockWaterDao,
+        mockHeatingDao,
+      );
+
+      // Stub electricity readings
+      final elReading1 = _createElectricityReading(
+        id: 1,
+        householdId: 1,
+        timestamp: DateTime(2024, 1, 1),
+        valueKwh: 100.0,
+      );
+      final elReading2 = _createElectricityReading(
+        id: 2,
+        householdId: 1,
+        timestamp: DateTime(2024, 12, 31),
+        valueKwh: 1300.0,
+      );
+      when(() => mockElectricityDao.getReadingsForRange(1, any(), any()))
+          .thenAnswer((_) async => [elReading1, elReading2]);
+
+      when(() => mockInterpolationService.getMonthlyConsumption(
+            readings: any(named: 'readings'),
+            rangeStart: any(named: 'rangeStart'),
+            rangeEnd: any(named: 'rangeEnd'),
+          )).thenReturn([
+        PeriodConsumption(
+          periodStart: DateTime(2024, 1, 1),
+          periodEnd: DateTime(2024, 2, 1),
+          startValue: 100.0,
+          endValue: 200.0,
+          consumption: 100.0,
+          startInterpolated: false,
+          endInterpolated: false,
+        ),
+      ]);
+
+      when(() => mockInterpolationService.extrapolateYearEnd(
+            actualMonths: any(named: 'actualMonths'),
+            year: any(named: 'year'),
+          )).thenReturn(null);
+
+      // Cost config returns null (no config)
+      // Default stub already returns null for calculateCost and getActiveConfig
+
+      provider.setHouseholdId(1);
+      await Future.delayed(const Duration(milliseconds: 50));
+
+      provider.setSelectedMeterType(MeterType.electricity);
+      provider.setSelectedYear(2024);
+      await Future.delayed(const Duration(milliseconds: 150));
+
+      expect(provider.yearlyData, isNotNull);
+      expect(provider.yearlyData!.monthlyCosts, isNull);
+      expect(provider.yearlyData!.totalCost, isNull);
+    });
+
+    test('previousYearMonthlyCosts is populated when previous year data and cost config exist', () async {
+      _stubEmptyDaos(
+        mockElectricityDao,
+        mockGasDao,
+        mockWaterDao,
+        mockHeatingDao,
+      );
+
+      // Stub electricity readings - need to return data for both years
+      final elReading1 = _createElectricityReading(
+        id: 1,
+        householdId: 1,
+        timestamp: DateTime(2023, 1, 1),
+        valueKwh: 100.0,
+      );
+      final elReading2 = _createElectricityReading(
+        id: 2,
+        householdId: 1,
+        timestamp: DateTime(2024, 12, 31),
+        valueKwh: 2000.0,
+      );
+      when(() => mockElectricityDao.getReadingsForRange(1, any(), any()))
+          .thenAnswer((_) async => [elReading1, elReading2]);
+
+      // Stub interpolation: differentiate by rangeStart year
+      when(() => mockInterpolationService.getMonthlyConsumption(
+            readings: any(named: 'readings'),
+            rangeStart: any(named: 'rangeStart'),
+            rangeEnd: any(named: 'rangeEnd'),
+          )).thenAnswer((invocation) {
+        final rangeStart =
+            invocation.namedArguments[#rangeStart] as DateTime;
+        if (rangeStart.year == 2024) {
+          // Current year breakdown
+          return [
+            PeriodConsumption(
+              periodStart: DateTime(2024, 1, 1),
+              periodEnd: DateTime(2024, 2, 1),
+              startValue: 100.0,
+              endValue: 200.0,
+              consumption: 100.0,
+              startInterpolated: false,
+              endInterpolated: false,
+            ),
+          ];
+        } else if (rangeStart.year == 2023) {
+          // Previous year breakdown
+          return [
+            PeriodConsumption(
+              periodStart: DateTime(2023, 1, 1),
+              periodEnd: DateTime(2023, 2, 1),
+              startValue: 50.0,
+              endValue: 130.0,
+              consumption: 80.0,
+              startInterpolated: false,
+              endInterpolated: false,
+            ),
+          ];
+        }
+        // Overview or other calls - return empty
+        return <PeriodConsumption>[];
+      });
+
+      when(() => mockInterpolationService.extrapolateYearEnd(
+            actualMonths: any(named: 'actualMonths'),
+            year: any(named: 'year'),
+          )).thenReturn(null);
+
+      // Stub cost config for both years
+      when(() => mockCostConfigProvider.calculateCost(
+            meterType: CostMeterType.electricity,
+            consumption: 100.0,
+            periodStart: DateTime(2024, 1, 1),
+            periodEnd: DateTime(2024, 2, 1),
+          )).thenReturn(const CostResult(
+        unitCost: 30.0,
+        standingCost: 5.0,
+        totalCost: 35.0,
+        currencySymbol: '\u20AC',
+      ));
+      when(() => mockCostConfigProvider.calculateCost(
+            meterType: CostMeterType.electricity,
+            consumption: 80.0,
+            periodStart: DateTime(2023, 1, 1),
+            periodEnd: DateTime(2023, 2, 1),
+          )).thenReturn(const CostResult(
+        unitCost: 24.0,
+        standingCost: 5.0,
+        totalCost: 29.0,
+        currencySymbol: '\u20AC',
+      ));
+      when(() => mockCostConfigProvider.getActiveConfig(
+            CostMeterType.electricity,
+            any(),
+          )).thenReturn(null);
+
+      provider.setHouseholdId(1);
+      await Future.delayed(const Duration(milliseconds: 50));
+
+      provider.setSelectedMeterType(MeterType.electricity);
+      provider.setSelectedYear(2024);
+      await Future.delayed(const Duration(milliseconds: 150));
+
+      expect(provider.yearlyData, isNotNull);
+      expect(provider.yearlyData!.monthlyCosts, isNotNull);
+      expect(provider.yearlyData!.monthlyCosts![0], 35.0);
+      expect(provider.yearlyData!.previousYearMonthlyCosts, isNotNull);
+      expect(provider.yearlyData!.previousYearMonthlyCosts![0], 29.0);
+      expect(provider.yearlyData!.previousYearTotalCost, 29.0);
     });
   });
 }
