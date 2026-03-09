@@ -3,8 +3,8 @@
 ## Current Status
 - **Milestone**: 4 - UX Overhaul (v0.4.0)
 - **Last Shipped**: v0.3.0 (2026-03-08)
-- **Current Phase**: 17 - Home Screen & Global UI Fixes
-- **Current Plan**: 17-01 (complete)
+- **Current Phase**: 19 - Electricity Screen Overhaul (complete)
+- **Current Plan**: —
 - **Last Updated**: 2026-03-09
 
 ## Completed Milestones
@@ -14,6 +14,8 @@
 
 ## Completed (this milestone)
 - **17-01**: Fix household dropdown text color (onSurface theme-aware colors)
+- **18**: Cost settings & household configuration (annual Grundpreis, expandable profile cards, household-scoped settings)
+- **19**: Electricity screen overhaul (bottom nav, IndexedStack, inline analysis, chart month-alignment fix, kWh/€ toggle)
 
 ## Blocked
 _None_
@@ -23,6 +25,7 @@ _None_
 |------|-------|--------|-------|
 | 2026-03-08 | — | Milestone 4 initialized | Created REQUIREMENTS.md, updated ROADMAP.md, reset STATE.md. 6 phases planned (17-22). Archived v0.3.0 docs. |
 | 2026-03-09 | 17 | Completed 17-01 | Fixed household dropdown text/icon colors for light/dark theme. 5 new tests added. |
+| 2026-03-09 | 19 | Phase complete | Electricity screen overhaul: bottom nav (Analyse/Liste), IndexedStack, inline analysis, year chart month-alignment fix, kWh/€ toggle, per-month costs. 1057 tests, 0 analyze issues. |
 
 ## Key Decisions (carried forward)
 1. **Local-first architecture** - Using Drift/SQLite for offline-capable data storage
@@ -72,10 +75,11 @@ _None_
 45. **Form dialogs: Cancel + Save only** - "Save & Continue" removed; Cancel and Save buttons side-by-side horizontally
 46. **Global date format** - "dd.MM.yyyy, HH:mm Uhr" with localized "Uhr" suffix (DE="Uhr", EN="")
 47. **Per-household cost profiles** - Multiple cost configs per meter type per household with valid-from dates; Grundpreis pro Jahr, Arbeitspreis
+48. **Electricity screen bottom nav** - Analyse/Liste tabs with IndexedStack; FAB on Liste only; kWh/€ toggle on Analyse only; inline yearly analytics (no separate screen navigation)
 
 ## Technical Debt
 1. **LiquidGlass integration** - Using standard Flutter glass-style widgets instead of full liquid_glass_renderer integration
 2. ~~**NFR-3.3**: Test coverage not measured with Codecov yet~~ (achieved 75% in v0.3.0)
 
 ## Next Actions
-_Continue Phase 17 (Home Screen & Global UI Fixes) — next plan TBD_
+_Plan Phase 20 (Gas Screen Overhaul) — mirror electricity architecture_
