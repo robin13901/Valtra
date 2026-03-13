@@ -3,12 +3,12 @@
 ## Current Status
 - **Milestone**: 5 - Visual & UX Polish (v0.5.0)
 - **Last Shipped**: v0.4.0 (2026-03-09)
-- **Current Phase**: 25 - Chart Localization & Labels (complete)
-- **Current Plan**: 25-01 complete (phase done)
+- **Current Phase**: 26 - Home Screen & Cost Profile Fixes (in progress)
+- **Current Plan**: 26-01 complete
 - **Last Updated**: 2026-03-13
-- **Tests**: 1104
+- **Tests**: 1105
 
-Progress: ██████░░░░░░░░░░░░░░░░░░░ (6/? plans in milestone)
+Progress: ███████░░░░░░░░░░░░░░░░░░ (7/? plans in milestone)
 
 ## Completed Milestones
 - **Milestone 1**: Core Foundation (v0.1.0) -- 7 phases, 313 tests
@@ -23,6 +23,7 @@ Progress: ██████░░░░░░░░░░░░░░░░░�
 - **24-01**: LiquidGlassBottomNav widget + buildLiquidCircleButton + liquidGlassSettings added to liquid_glass_widgets.dart; 14 new tests; old widgets preserved
 - **24-03**: Electricity, Water, Heating screens migrated from GlassBottomNav+FAB to LiquidGlassBottomNav Stack overlay; old widgets deprecated; 1 new dark mode test; bug fix for key propagation; 1094 tests
 - **25-01**: MonthlyBarChart + YearComparisonChart locale-aware DateFormat.MMM(locale) on X-axis and tooltips; Y-axis axisNameWidget shows kWh/m3/EUR; 10 new tests; 1104 tests
+- **26-01**: Empty app bar title on HomeScreen; Aktiv badge removed from cost profile tiles; German currency hardcoded; dd.MM.yyyy zero-padded date in form dialog; 1 new test; 1105 tests
 
 ## Blocked
 _None_
@@ -30,6 +31,7 @@ _None_
 ## Session History
 | Date | Phase | Action | Notes |
 |------|-------|--------|-------|
+| 2026-03-13 | 26-01 | Completed plan 01 | Empty app bar title; Aktiv badge removed; German currency hardcoded; dd.MM.yyyy zero-padded in form dialog; 1 new test; 1105 tests. |
 | 2026-03-13 | 25-01 | Completed plan 01 | MonthlyBarChart + YearComparisonChart: DateFormat.MMM(locale) on X-axis/tooltips, axisNameWidget for Y-axis unit; 10 new tests; 1104 tests. |
 | 2026-03-13 | 24-03 | Completed plan 03 | Electricity/Water/Heating migrated to LiquidGlassBottomNav; old widgets deprecated; key bug fixed; 1094 tests. |
 | 2026-03-13 | 24-02 | Completed plan 02 | SmartPlugsScreen + GasScreen migrated to LiquidGlassBottomNav; Stack+Positioned layout; FAB on Liste only; fixed buildLiquidCircleButton key bug; phase6_uat_test gas tests updated; 1093 tests. |
@@ -106,10 +108,14 @@ _None_
 64. **Chart DateFormat locale always explicit** - DateFormat.MMM(locale) and DateFormat.yMMM(locale) always pass locale string from widget field; never rely on implicit system locale in chart widgets
 65. **Chart Y-axis unit via axisNameWidget** - axisNameWidget: Text(displayUnit) + axisNameSize: 18 on leftTitles AxisTitles; displayUnit = showCosts && costUnit != null ? costUnit! : unit
 
+66. **Home app bar title empty** - buildGlassAppBar(title: '') on HomeScreen; Valtra branding shows only in hub body (headlineMedium text widget), not in app bar
+67. **No Aktiv badge on cost profiles** - Chip/Active badge removed entirely from cost profile tiles; LocaleProvider removed from HouseholdCostSettingsScreen
+68. **dd.MM.yyyy in cost profile dialog** - Date display uses padLeft(2,'0') on day and month; matches list tile format already in household_cost_settings_screen.dart
+
 ## Technical Debt
 1. ~~**LiquidGlass integration** - Using standard Flutter glass-style widgets instead of full liquid_glass_renderer integration~~ (resolved in 24-01: LiquidGlassBottomNav uses real liquid_glass_renderer)
 2. ~~**NFR-3.3**: Test coverage not measured with Codecov yet~~ (achieved 75% in v0.3.0)
 3. **Duplicate private widgets** - _YearNavigationHeader and _YearlySummaryCard duplicated in 4 meter screens (electricity, gas, water, heating) — could be extracted to shared widgets
 
 ## Next Actions
-_Phase 25 complete. 1 plan executed and verified (6/6 must-haves). Next: Phase 26 — Home Screen & Cost Profile Fixes._
+_Phase 26 in progress. Plan 26-01 complete (4 fixes: HOME-01, COST-01, COST-02, COST-03). Next: Plan 26-02._
