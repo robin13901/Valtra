@@ -206,12 +206,20 @@ void main() {
       expect(find.byType(Chip), findsNothing);
     });
 
-    testWidgets('shows app title in AppBar', (tester) async {
+    testWidgets('does not show Valtra title text in AppBar', (tester) async {
       await tester.pumpWidget(buildHomeScreen());
       await tester.pumpAndSettle();
 
-      // AppBar title is "Valtra"
-      expect(find.text('Valtra'), findsWidgets);
+      // AppBar title is empty -- 'Valtra' text should not be in the AppBar widget
+      final appBar = find.byType(AppBar);
+      expect(appBar, findsOneWidget);
+      // The AppBar's title should be empty string, not 'Valtra'
+      final appBarWidget = tester.widget<AppBar>(appBar);
+      final titleWidget = appBarWidget.title;
+      if (titleWidget is Text) {
+        expect((titleWidget).data, isNot('Valtra'));
+        expect((titleWidget).data, isEmpty);
+      }
     });
 
     testWidgets('shows category icons', (tester) async {

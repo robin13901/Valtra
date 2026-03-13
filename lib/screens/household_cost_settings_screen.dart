@@ -6,7 +6,6 @@ import '../database/app_database.dart';
 import '../database/tables.dart';
 import '../l10n/app_localizations.dart';
 import '../providers/cost_config_provider.dart';
-import '../providers/locale_provider.dart';
 import '../services/number_format_service.dart';
 import '../widgets/dialogs/cost_profile_form_dialog.dart';
 import '../widgets/liquid_glass_widgets.dart';
@@ -79,18 +78,7 @@ class _CostMeterTypeCardState extends State<_CostMeterTypeCard> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final costProvider = context.watch<CostConfigProvider>();
-    final locale = context.watch<LocaleProvider>().localeString;
     final configs = costProvider.getConfigsForMeterType(widget.meterType);
-
-    // Determine active profile (latest validFrom <= now)
-    final now = DateTime.now();
-    CostConfig? activeConfig;
-    for (final c in configs) {
-      if (!c.validFrom.isAfter(now)) {
-        activeConfig = c;
-        break; // configs are ordered by validFrom DESC
-      }
-    }
 
     return GlassCard(
       child: Column(
@@ -137,8 +125,7 @@ class _CostMeterTypeCardState extends State<_CostMeterTypeCard> {
               )
             else
               ...configs.map((config) => _buildProfileTile(
-                    context, l10n, locale, config, costProvider,
-                    isActive: config.id == activeConfig?.id,
+                    context, l10n, config, costProvider,
                   )),
           ],
         ],
@@ -149,16 +136,14 @@ class _CostMeterTypeCardState extends State<_CostMeterTypeCard> {
   Widget _buildProfileTile(
     BuildContext context,
     AppLocalizations l10n,
-    String locale,
     CostConfig config,
-    CostConfigProvider costProvider, {
-    required bool isActive,
-  }) {
+    CostConfigProvider costProvider,
+  ) {
     final dateStr =
         '${config.validFrom.day.toString().padLeft(2, '0')}.${config.validFrom.month.toString().padLeft(2, '0')}.${config.validFrom.year}';
     final basePriceStr =
-        ValtraNumberFormat.currency(config.standingCharge, locale);
-    final unitPriceStr = ValtraNumberFormat.currency(config.unitPrice, locale);
+        ValtraNumberFormat.currency(config.standingCharge, 'de');
+    final unitPriceStr = ValtraNumberFormat.currency(config.unitPrice, 'de');
 
     return ListTile(
       title: Text(l10n.profileValidFrom(dateStr)),
@@ -168,15 +153,6 @@ class _CostMeterTypeCardState extends State<_CostMeterTypeCard> {
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          if (isActive)
-            Padding(
-              padding: const EdgeInsets.only(right: 8),
-              child: Chip(
-                label: Text(l10n.activeProfile),
-                visualDensity: VisualDensity.compact,
-                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              ),
-            ),
           PopupMenuButton<String>(
             onSelected: (value) {
               if (value == 'edit') {

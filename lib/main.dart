@@ -336,7 +336,7 @@ class HomeScreen extends StatelessWidget {
     return Scaffold(
       appBar: buildGlassAppBar(
         context: context,
-        title: l10n.appTitle,
+        title: '',
         actions: [
           const HouseholdSelector(),
           IconButton(

@@ -208,7 +208,7 @@ void main() {
         expect(find.text('Valid from 01.01.2024'), findsOneWidget);
       });
 
-      testWidgets('active profile badge shown on correct profile',
+      testWidgets('no active badge chip shown on profiles',
           (tester) async {
         final configs = createTestConfigs();
         when(() => costProvider.getConfigsForMeterType(
@@ -222,9 +222,9 @@ void main() {
         await tester.tap(find.text('Electricity'));
         await tester.pumpAndSettle();
 
-        // The first config (id=1, validFrom=2025-01-01) should be active
-        // since it is <= now and configs are ordered DESC
-        expect(find.text('Active'), findsOneWidget);
+        // No Chip / badge should ever be shown (COST-01: badge removed)
+        expect(find.byType(Chip), findsNothing);
+        expect(find.text('Active'), findsNothing);
       });
 
       testWidgets('profiles ordered by validFrom DESC', (tester) async {
@@ -455,7 +455,7 @@ void main() {
     });
 
     group('no active profile', () {
-      testWidgets('no active badge when all profiles are in the future',
+      testWidgets('no Chip badge shown for any profile (badge removed)',
           (tester) async {
         final futureConfigs = [
           CostConfig(
@@ -481,8 +481,9 @@ void main() {
         await tester.tap(find.text('Electricity'));
         await tester.pumpAndSettle();
 
-        // No active badge should be shown
+        // No active badge should be shown (badge removed entirely, COST-01)
         expect(find.text('Active'), findsNothing);
+        expect(find.byType(Chip), findsNothing);
       });
     });
 
