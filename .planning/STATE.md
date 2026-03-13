@@ -3,10 +3,12 @@
 ## Current Status
 - **Milestone**: 5 - Visual & UX Polish (v0.5.0)
 - **Last Shipped**: v0.4.0 (2026-03-09)
-- **Current Phase**: 23 - App Branding & Splash (pending plan)
-- **Current Plan**: —
+- **Current Phase**: 23 - App Branding & Splash (in progress)
+- **Current Plan**: 23-01 complete
 - **Last Updated**: 2026-03-13
 - **Tests**: 1077
+
+Progress: ░░░░░░░░░░░░░░░░░░░░░░░░░ (1/? plans in milestone)
 
 ## Completed Milestones
 - **Milestone 1**: Core Foundation (v0.1.0) -- 7 phases, 313 tests
@@ -15,7 +17,7 @@
 - **Milestone 4**: UX Overhaul (v0.4.0) -- 6 phases, 1077 tests
 
 ## Completed (this milestone)
-_None yet_
+- **23-01**: App icon generated (flutter_launcher_icons), app name capitalized to "Valtra" on Android + iOS
 
 ## Blocked
 _None_
@@ -23,6 +25,7 @@ _None_
 ## Session History
 | Date | Phase | Action | Notes |
 |------|-------|--------|-------|
+| 2026-03-13 | 23-01 | Completed plan 01 | Custom icon generated, app name "Valtra" capitalized on both platforms. |
 | 2026-03-13 | — | Milestone 5 initialized | Created REQUIREMENTS.md (16 reqs), updated PROJECT.md, ROADMAP.md with 4 phases (23-26). |
 
 ## Key Decisions (carried forward)
@@ -83,6 +86,8 @@ _None_
 55. **Dead analytics screens removed** - MonthlyAnalyticsScreen and YearlyAnalyticsScreen deleted after all consumers migrated to inline tabs
 56. **Heating meters are unitless** - Consumption counters for central heating; show only percentage distribution per room, no cost calculation possible (no access to total building gas consumption)
 57. **German currency format always** - Cost displays use German format (123,45 €) regardless of app language setting
+58. **Icon source at assets/icon/icon.png** - flutter_launcher_icons reads it directly from filesystem; no flutter.assets declaration needed; regenerate with python assets/icon/generate_icon.py + dart run flutter_launcher_icons
+59. **Icon RGBA alpha channel** - Generated PNG has alpha channel; acceptable for development; set remove_alpha_ios: true in pubspec.yaml if submitting to Apple App Store
 
 ## Technical Debt
 1. **LiquidGlass integration** - Using standard Flutter glass-style widgets instead of full liquid_glass_renderer integration
@@ -90,4 +95,4 @@ _None_
 3. **Duplicate private widgets** - _YearNavigationHeader and _YearlySummaryCard duplicated in 4 meter screens (electricity, gas, water, heating) — could be extracted to shared widgets
 
 ## Next Actions
-_Plan phase 23 to begin implementation._
+_Execute phase 23 plan 02: Splash screen._
