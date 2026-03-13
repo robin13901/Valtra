@@ -3,12 +3,12 @@
 ## Current Status
 - **Milestone**: 5 - Visual & UX Polish (v0.5.0)
 - **Last Shipped**: v0.4.0 (2026-03-09)
-- **Current Phase**: 23 - App Branding & Splash (in progress)
-- **Current Plan**: 23-01 complete
+- **Current Phase**: 23 - App Branding & Splash (complete)
+- **Current Plan**: 23-02 complete (phase done)
 - **Last Updated**: 2026-03-13
-- **Tests**: 1077
+- **Tests**: 1079
 
-Progress: ░░░░░░░░░░░░░░░░░░░░░░░░░ (1/? plans in milestone)
+Progress: ██░░░░░░░░░░░░░░░░░░░░░░░ (2/? plans in milestone)
 
 ## Completed Milestones
 - **Milestone 1**: Core Foundation (v0.1.0) -- 7 phases, 313 tests
@@ -18,6 +18,7 @@ Progress: ░░░░░░░░░░░░░░░░░░░░░░░�
 
 ## Completed (this milestone)
 - **23-01**: App icon generated (flutter_launcher_icons), app name capitalized to "Valtra" on Android + iOS
+- **23-02**: Native splash screen with Ultra Violet (#5F4A8B) background; persists until HouseholdProvider stream fires; eliminates empty-screen flicker
 
 ## Blocked
 _None_
@@ -25,6 +26,7 @@ _None_
 ## Session History
 | Date | Phase | Action | Notes |
 |------|-------|--------|-------|
+| 2026-03-13 | 23-02 | Completed plan 02 | Native splash screen generated (Android pre-12, 12+, iOS, Web); FlutterNativeSplash preserve/remove lifecycle wired in main.dart; 2 new tests. |
 | 2026-03-13 | 23-01 | Completed plan 01 | Custom icon generated, app name "Valtra" capitalized on both platforms. |
 | 2026-03-13 | — | Milestone 5 initialized | Created REQUIREMENTS.md (16 reqs), updated PROJECT.md, ROADMAP.md with 4 phases (23-26). |
 
@@ -88,6 +90,9 @@ _None_
 57. **German currency format always** - Cost displays use German format (123,45 €) regardless of app language setting
 58. **Icon source at assets/icon/icon.png** - flutter_launcher_icons reads it directly from filesystem; no flutter.assets declaration needed; regenerate with python assets/icon/generate_icon.py + dart run flutter_launcher_icons
 59. **Icon RGBA alpha channel** - Generated PNG has alpha channel; acceptable for development; set remove_alpha_ios: true in pubspec.yaml if submitting to Apple App Store
+60. **Splash logo = icon copy** - assets/splash/splash_logo.png copied from assets/icon/icon.png; update later when dedicated brand asset is ready
+61. **Splash test listener order** - In testWidgets, removeSplashWhenReady must be called BEFORE tester.pumpWidget; pumpWidget drains the Drift stream event queue, consuming the notification before the listener is added
+62. **android_12 splash block mandatory** - flutter_native_splash requires explicit android_12: config block in pubspec.yaml to generate values-v31/styles.xml; without it, Android 12+ shows white flash
 
 ## Technical Debt
 1. **LiquidGlass integration** - Using standard Flutter glass-style widgets instead of full liquid_glass_renderer integration
@@ -95,4 +100,4 @@ _None_
 3. **Duplicate private widgets** - _YearNavigationHeader and _YearlySummaryCard duplicated in 4 meter screens (electricity, gas, water, heating) — could be extracted to shared widgets
 
 ## Next Actions
-_Execute phase 23 plan 02: Splash screen._
+_Phase 23 complete. Execute phase 24: Bottom Nav Redesign._
