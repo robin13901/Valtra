@@ -12,6 +12,7 @@ bool _isDarkFromTheme(BuildContext context) =>
     Theme.of(context).brightness == Brightness.dark;
 
 /// Styled bottom navigation bar with glassmorphism effect.
+@Deprecated('Use LiquidGlassBottomNav instead. Will be removed in v0.6.0.')
 class GlassBottomNav extends StatelessWidget {
   final int currentIndex;
   final ValueChanged<int> onTap;
@@ -97,6 +98,7 @@ Widget buildCircleButton({
 }
 
 /// Builds a floating action button with glass effect.
+@Deprecated('FAB is now part of LiquidGlassBottomNav. Will be removed in v0.6.0.')
 Widget buildGlassFAB({
   required BuildContext context,
   required IconData icon,
@@ -195,6 +197,7 @@ Widget buildLiquidCircleButton({
   Key? key,
 }) {
   final btn = SizedBox(
+    key: onTap == null ? key : null,
     width: size,
     height: size,
     child: LiquidGlassLayer(
