@@ -16,10 +16,10 @@
 
 ### Navigation
 
-- [ ] **NAV-01**: Bottom nav bar matches XFin LiquidGlass design exactly (pill shape, glass effect, icon+label tabs)
-- [ ] **NAV-02**: FAB (+button) visible only on Liste tab, hidden on Analyse tab
-- [ ] **NAV-03**: Bottom nav renders correctly in both light and dark mode
-- [ ] **NAV-04**: Bottom nav applied consistently to all 5 meter screens (Strom, Gas, Wasser, Smart Plugs, Heizung)
+- [x] **NAV-01**: Bottom nav bar matches XFin LiquidGlass design exactly (pill shape, glass effect, icon+label tabs)
+- [x] **NAV-02**: FAB (+button) visible only on Liste tab, hidden on Analyse tab
+- [x] **NAV-03**: Bottom nav renders correctly in both light and dark mode
+- [x] **NAV-04**: Bottom nav applied consistently to all 5 meter screens (Strom, Gas, Wasser, Smart Plugs, Heizung)
 
 ### Charts
 
@@ -55,10 +55,10 @@
 | BRAND-01 | Phase 23 | Complete |
 | BRAND-02 | Phase 23 | Complete |
 | LOAD-01 | Phase 23 | Complete |
-| NAV-01 | Phase 24 | Pending |
-| NAV-02 | Phase 24 | Pending |
-| NAV-03 | Phase 24 | Pending |
-| NAV-04 | Phase 24 | Pending |
+| NAV-01 | Phase 24 | Complete |
+| NAV-02 | Phase 24 | Complete |
+| NAV-03 | Phase 24 | Complete |
+| NAV-04 | Phase 24 | Complete |
 | CHART-01 | Phase 25 | Pending |
 | CHART-02 | Phase 25 | Pending |
 | CHART-03 | Phase 25 | Pending |
@@ -76,4 +76,4 @@
 
 ---
 *Requirements defined: 2026-03-13*
-*Last updated: 2026-03-13 after phase 23 completion*
+*Last updated: 2026-03-13 after phase 24 completion*

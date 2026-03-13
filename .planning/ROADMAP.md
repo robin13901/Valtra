@@ -33,7 +33,7 @@ Plans:
 2. Device home screen shows "Valtra" with capital V
 3. No empty home screen flicker on app startup — splash persists until households loaded
 
-### Phase 24: Bottom Navigation Redesign
+### Phase 24: Bottom Navigation Redesign — COMPLETED
 
 **Goal:** Replicate XFin LiquidGlass bottom nav exactly on all meter screens.
 
@@ -42,9 +42,9 @@ Plans:
 **Plans:** 3 plans
 
 Plans:
-- [ ] 24-01-PLAN.md — Create LiquidGlassBottomNav widget + tests (NAV-01, NAV-03)
-- [ ] 24-02-PLAN.md — Migrate Smart Plugs + Gas screens to new nav (NAV-04)
-- [ ] 24-03-PLAN.md — Migrate Electricity + Water + Heating screens, deprecate old widgets (NAV-02, NAV-04)
+- [x] 24-01-PLAN.md — Create LiquidGlassBottomNav widget + tests (NAV-01, NAV-03)
+- [x] 24-02-PLAN.md — Migrate Smart Plugs + Gas screens to new nav (NAV-04)
+- [x] 24-03-PLAN.md — Migrate Electricity + Water + Heating screens, deprecate old widgets (NAV-02, NAV-04)
 
 **Success Criteria:**
 1. Bottom nav shows pill shape with glass/blur effect matching XFin design
@@ -84,4 +84,4 @@ Plans:
 ## Current Status
 - **Completed**: Milestone 1 (v0.1.0), Milestone 2 (v0.2.0), Milestone 3 (v0.3.0), Milestone 4 (v0.4.0)
 - **Active Milestone**: Milestone 5 — Visual & UX Polish (v0.5.0)
-- **Next Phase**: Phase 24 — Bottom Navigation Redesign
+- **Next Phase**: Phase 25 — Chart Localization & Labels

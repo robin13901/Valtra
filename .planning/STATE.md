@@ -3,7 +3,7 @@
 ## Current Status
 - **Milestone**: 5 - Visual & UX Polish (v0.5.0)
 - **Last Shipped**: v0.4.0 (2026-03-09)
-- **Current Phase**: 24 - Bottom Navigation Redesign (in progress)
+- **Current Phase**: 24 - Bottom Navigation Redesign (complete)
 - **Current Plan**: 24-03 complete (phase done)
 - **Last Updated**: 2026-03-13
 - **Tests**: 1094
@@ -108,4 +108,4 @@ _None_
 3. **Duplicate private widgets** - _YearNavigationHeader and _YearlySummaryCard duplicated in 4 meter screens (electricity, gas, water, heating) — could be extracted to shared widgets
 
 ## Next Actions
-_Phase 24 complete. All 3 plans executed. Proceed to verification._
+_Phase 24 complete. All 3 plans executed and verified. Next: Phase 25 — Chart Localization & Labels._
