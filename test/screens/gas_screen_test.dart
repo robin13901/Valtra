@@ -117,7 +117,7 @@ void main() {
               // Check bottom nav items
               expect(find.text('Analysis'), findsOneWidget);
               expect(find.text('List'), findsOneWidget);
-              expect(find.byType(GlassBottomNav), findsOneWidget);
+              expect(find.byType(LiquidGlassBottomNav), findsOneWidget);
 
               await tester.pumpWidget(Container());
             }));
@@ -165,7 +165,7 @@ void main() {
               await tester.pumpAndSettle();
 
               // Should find FAB on Liste tab (default)
-              expect(find.byType(FloatingActionButton), findsOneWidget);
+              expect(find.byKey(const Key('right_fab')), findsOneWidget);
 
               await tester.pumpWidget(Container());
             }));
@@ -181,7 +181,7 @@ void main() {
               await tester.pumpAndSettle();
 
               // FAB should not be present
-              expect(find.byType(FloatingActionButton), findsNothing);
+              expect(find.byKey(const Key('right_fab')), findsNothing);
 
               await tester.pumpWidget(Container());
             }));
@@ -276,7 +276,7 @@ void main() {
               await tester.pumpAndSettle();
 
               // Tap FAB
-              await tester.tap(find.byType(FloatingActionButton));
+              await tester.tap(find.byKey(const Key('right_fab')));
               await tester.pumpAndSettle();
 
               // Dialog should appear

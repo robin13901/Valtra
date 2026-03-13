@@ -195,6 +195,7 @@ Widget buildLiquidCircleButton({
   Key? key,
 }) {
   final btn = SizedBox(
+    key: onTap == null ? key : null,
     width: size,
     height: size,
     child: LiquidGlassLayer(

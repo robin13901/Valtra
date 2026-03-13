@@ -125,7 +125,7 @@ void main() {
                   findsOneWidget);
 
               // Tap FAB to add
-              await tester.tap(find.byType(FloatingActionButton));
+              await tester.tap(find.byKey(const Key('right_fab')));
               await tester.pumpAndSettle();
 
               // Enter 100.5 m³
@@ -163,7 +163,7 @@ void main() {
               await tester.pumpAndSettle();
 
               // Tap FAB to add new reading
-              await tester.tap(find.byType(FloatingActionButton));
+              await tester.tap(find.byKey(const Key('right_fab')));
               await tester.pumpAndSettle();
 
               // Enter 115.2 m³
@@ -271,7 +271,7 @@ void main() {
 
               // Verify we're on the Gas screen
               expect(find.text('Gas'), findsOneWidget);
-              expect(find.byType(FloatingActionButton), findsOneWidget);
+              expect(find.byKey(const Key('right_fab')), findsOneWidget);
 
               await tester.pumpWidget(Container());
             }));

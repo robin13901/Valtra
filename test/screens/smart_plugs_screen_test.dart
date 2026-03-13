@@ -169,7 +169,7 @@ void main() {
                   .pumpWidget(wrapWithProviders(const SmartPlugsScreen()));
               await tester.pumpAndSettle();
 
-              await tester.tap(find.byType(FloatingActionButton));
+              await tester.tap(find.byKey(const Key('right_fab')));
               await tester.pumpAndSettle();
 
               // SnackBar with "no rooms" message
@@ -264,7 +264,7 @@ void main() {
 
               expect(find.text('Analysis'), findsOneWidget);
               expect(find.text('List'), findsOneWidget);
-              expect(find.byType(GlassBottomNav), findsOneWidget);
+              expect(find.byType(LiquidGlassBottomNav), findsOneWidget);
 
               await tester.pumpWidget(Container());
             }));
@@ -305,7 +305,7 @@ void main() {
                   .pumpWidget(wrapWithProviders(const SmartPlugsScreen()));
               await tester.pumpAndSettle();
 
-              expect(find.byType(FloatingActionButton), findsOneWidget);
+              expect(find.byKey(const Key('right_fab')), findsOneWidget);
 
               await tester.pumpWidget(Container());
             }));
@@ -319,7 +319,7 @@ void main() {
               await tester.tap(find.text('Analysis'));
               await tester.pumpAndSettle();
 
-              expect(find.byType(FloatingActionButton), findsNothing);
+              expect(find.byKey(const Key('right_fab')), findsNothing);
 
               await tester.pumpWidget(Container());
             }));
