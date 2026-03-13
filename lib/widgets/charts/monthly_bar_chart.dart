@@ -104,7 +104,7 @@ class MonthlyBarChart extends StatelessWidget {
         touchTooltipData: BarTouchTooltipData(
           getTooltipItem: (group, groupIndex, rod, rodIndex) {
             final period = periods[group.x.toInt()];
-            final monthName = DateFormat.yMMM().format(period.periodStart);
+            final monthName = DateFormat.yMMM(locale).format(period.periodStart);
             final displayUnit = showCosts && costUnit != null ? costUnit! : unit;
             return BarTooltipItem(
               '$monthName\n${ValtraNumberFormat.consumption(rod.toY, locale)} $displayUnit',
@@ -117,6 +117,7 @@ class MonthlyBarChart extends StatelessWidget {
   }
 
   FlTitlesData _buildTitles(BuildContext context) {
+    final displayUnit = showCosts && costUnit != null ? costUnit! : unit;
     return FlTitlesData(
       topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
       rightTitles:
@@ -131,7 +132,7 @@ class MonthlyBarChart extends StatelessWidget {
               return const SizedBox.shrink();
             }
             final monthName =
-                DateFormat.MMM().format(periods[index].periodStart);
+                DateFormat.MMM(locale).format(periods[index].periodStart);
             return SideTitleWidget(
               axisSide: meta.axisSide,
               child: Text(monthName,
@@ -141,6 +142,11 @@ class MonthlyBarChart extends StatelessWidget {
         ),
       ),
       leftTitles: AxisTitles(
+        axisNameWidget: Text(
+          displayUnit,
+          style: Theme.of(context).textTheme.bodySmall,
+        ),
+        axisNameSize: 18,
         sideTitles: SideTitles(
           showTitles: true,
           reservedSize: 50,

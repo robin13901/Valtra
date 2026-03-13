@@ -1,11 +1,17 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:valtra/l10n/app_localizations.dart';
 import 'package:valtra/services/interpolation/models.dart';
 import 'package:valtra/widgets/charts/monthly_bar_chart.dart';
 
 void main() {
+  setUpAll(() async {
+    await initializeDateFormatting('de');
+    await initializeDateFormatting('en');
+  });
+
   Widget buildTestWidget({
     List<PeriodConsumption> periods = const [],
     Color primaryColor = Colors.blue,
@@ -14,10 +20,12 @@ void main() {
     List<double?>? periodCosts,
     bool showCosts = false,
     String? costUnit,
+    String locale = 'de',
   }) {
     return MaterialApp(
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
+      locale: Locale(locale),
       home: Scaffold(
         body: SizedBox(
           height: 300,
@@ -30,6 +38,7 @@ void main() {
             periodCosts: periodCosts,
             showCosts: showCosts,
             costUnit: costUnit,
+            locale: locale,
           ),
         ),
       ),
@@ -71,7 +80,7 @@ void main() {
   group('MonthlyBarChart', () {
     testWidgets('shows noData text when periods list is empty',
         (tester) async {
-      await tester.pumpWidget(buildTestWidget());
+      await tester.pumpWidget(buildTestWidget(locale: 'en'));
       await tester.pumpAndSettle();
 
       expect(find.text('No data available'), findsOneWidget);
@@ -267,6 +276,139 @@ void main() {
       final data = barChart.data;
       // maxY should be 200 * 1.2 = 240
       expect(data.maxY, closeTo(240.0, 0.01));
+    });
+  });
+
+  // ---------------------------------------------------------------
+  // Locale-aware month label tests
+  // ---------------------------------------------------------------
+
+  group('MonthlyBarChart - locale-aware month labels', () {
+    TitleMeta buildMeta() => TitleMeta(
+          min: 0,
+          max: 100,
+          parentAxisSize: 300,
+          axisPosition: 0,
+          appliedInterval: 1,
+          sideTitles: SideTitles(),
+          formattedValue: '',
+          axisSide: AxisSide.bottom,
+        );
+
+    testWidgets('locale=de renders German month abbreviations on X-axis',
+        (tester) async {
+      final periods = buildSamplePeriods();
+
+      await tester.pumpWidget(
+        buildTestWidget(periods: periods, locale: 'de'),
+      );
+      await tester.pumpAndSettle();
+
+      final barChart = tester.widget<BarChart>(find.byType(BarChart));
+      final data = barChart.data;
+      final getTitles =
+          data.titlesData.bottomTitles.sideTitles.getTitlesWidget;
+
+      // Index 0 = January -> 'Jan' (same in DE and EN)
+      final janWidget = getTitles(0.0, buildMeta());
+      expect(janWidget, isA<SideTitleWidget>());
+      final janSide = janWidget as SideTitleWidget;
+      final janText = janSide.child as Text;
+      expect(janText.data, 'Jan');
+
+      // Index 2 = March -> German abbreviation 'Mrz' or 'März'
+      final marWidget = getTitles(2.0, buildMeta());
+      expect(marWidget, isA<SideTitleWidget>());
+      final marSide = marWidget as SideTitleWidget;
+      final marText = marSide.child as Text;
+      // German abbreviation for March varies by platform (Mrz or Mär)
+      expect(marText.data, isNotNull);
+      expect(marText.data, isNot('Mar')); // Must not be English
+    });
+
+    testWidgets('locale=en renders English month abbreviations on X-axis',
+        (tester) async {
+      final periods = buildSamplePeriods();
+
+      await tester.pumpWidget(
+        buildTestWidget(periods: periods, locale: 'en'),
+      );
+      await tester.pumpAndSettle();
+
+      final barChart = tester.widget<BarChart>(find.byType(BarChart));
+      final data = barChart.data;
+      final getTitles =
+          data.titlesData.bottomTitles.sideTitles.getTitlesWidget;
+
+      // Index 2 = March -> English 'Mar'
+      final marWidget = getTitles(2.0, buildMeta());
+      expect(marWidget, isA<SideTitleWidget>());
+      final marSide = marWidget as SideTitleWidget;
+      final marText = marSide.child as Text;
+      expect(marText.data, 'Mar');
+    });
+
+    testWidgets('Y-axis shows unit label in consumption mode', (tester) async {
+      final periods = buildSamplePeriods();
+
+      await tester.pumpWidget(
+        buildTestWidget(periods: periods, unit: 'kWh', showCosts: false),
+      );
+      await tester.pumpAndSettle();
+
+      final barChart = tester.widget<BarChart>(find.byType(BarChart));
+      final data = barChart.data;
+      final axisNameWidget = data.titlesData.leftTitles.axisNameWidget;
+
+      expect(axisNameWidget, isNotNull);
+      expect(axisNameWidget, isA<Text>());
+      expect((axisNameWidget as Text).data, 'kWh');
+    });
+
+    testWidgets('Y-axis shows costUnit label in cost mode', (tester) async {
+      final periods = buildSamplePeriods();
+
+      await tester.pumpWidget(
+        buildTestWidget(
+          periods: periods,
+          unit: 'kWh',
+          showCosts: true,
+          costUnit: 'EUR',
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final barChart = tester.widget<BarChart>(find.byType(BarChart));
+      final data = barChart.data;
+      final axisNameWidget = data.titlesData.leftTitles.axisNameWidget;
+
+      expect(axisNameWidget, isNotNull);
+      expect(axisNameWidget, isA<Text>());
+      expect((axisNameWidget as Text).data, 'EUR');
+    });
+
+    testWidgets('Y-axis shows unit when showCosts=true but costUnit is null',
+        (tester) async {
+      final periods = buildSamplePeriods();
+
+      await tester.pumpWidget(
+        buildTestWidget(
+          periods: periods,
+          unit: 'kWh',
+          showCosts: true,
+          costUnit: null,
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final barChart = tester.widget<BarChart>(find.byType(BarChart));
+      final data = barChart.data;
+      final axisNameWidget = data.titlesData.leftTitles.axisNameWidget;
+
+      expect(axisNameWidget, isNotNull);
+      expect(axisNameWidget, isA<Text>());
+      // Falls back to unit when costUnit is null
+      expect((axisNameWidget as Text).data, 'kWh');
     });
   });
 }
