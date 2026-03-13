@@ -3,12 +3,12 @@
 ## Current Status
 - **Milestone**: 5 - Visual & UX Polish (v0.5.0)
 - **Last Shipped**: v0.4.0 (2026-03-09)
-- **Current Phase**: 23 - App Branding & Splash (complete)
-- **Current Plan**: 23-02 complete (phase done)
+- **Current Phase**: 24 - Bottom Navigation Redesign (in progress)
+- **Current Plan**: 24-01 complete
 - **Last Updated**: 2026-03-13
-- **Tests**: 1079
+- **Tests**: 1093
 
-Progress: ██░░░░░░░░░░░░░░░░░░░░░░░ (2/? plans in milestone)
+Progress: ███░░░░░░░░░░░░░░░░░░░░░░ (3/? plans in milestone)
 
 ## Completed Milestones
 - **Milestone 1**: Core Foundation (v0.1.0) -- 7 phases, 313 tests
@@ -19,6 +19,7 @@ Progress: ██░░░░░░░░░░░░░░░░░░░░░�
 ## Completed (this milestone)
 - **23-01**: App icon generated (flutter_launcher_icons), app name capitalized to "Valtra" on Android + iOS
 - **23-02**: Native splash screen with Ultra Violet (#5F4A8B) background; persists until HouseholdProvider stream fires; eliminates empty-screen flicker
+- **24-01**: LiquidGlassBottomNav widget + buildLiquidCircleButton + liquidGlassSettings added to liquid_glass_widgets.dart; 14 new tests; old widgets preserved
 
 ## Blocked
 _None_
@@ -26,6 +27,7 @@ _None_
 ## Session History
 | Date | Phase | Action | Notes |
 |------|-------|--------|-------|
+| 2026-03-13 | 24-01 | Completed plan 01 | LiquidGlassBottomNav + buildLiquidCircleButton + liquidGlassSettings added; key-on-SizedBox fix; 14 new tests; 1093 total. |
 | 2026-03-13 | 23-02 | Completed plan 02 | Native splash screen generated (Android pre-12, 12+, iOS, Web); FlutterNativeSplash preserve/remove lifecycle wired in main.dart; 2 new tests. |
 | 2026-03-13 | 23-01 | Completed plan 01 | Custom icon generated, app name "Valtra" capitalized on both platforms. |
 | 2026-03-13 | — | Milestone 5 initialized | Created REQUIREMENTS.md (16 reqs), updated PROJECT.md, ROADMAP.md with 4 phases (23-26). |
@@ -94,10 +96,12 @@ _None_
 61. **Splash test listener order** - In testWidgets, removeSplashWhenReady must be called BEFORE tester.pumpWidget; pumpWidget drains the Drift stream event queue, consuming the notification before the listener is added
 62. **android_12 splash block mandatory** - flutter_native_splash requires explicit android_12: config block in pubspec.yaml to generate values-v31/styles.xml; without it, Android 12+ shows white flash
 
+63. **LiquidGlassBottomNav key fix** - buildLiquidCircleButton places key on SizedBox when onTap is null (no GestureDetector wrapping); key propagates correctly for testability and widget identification
+
 ## Technical Debt
-1. **LiquidGlass integration** - Using standard Flutter glass-style widgets instead of full liquid_glass_renderer integration
+1. ~~**LiquidGlass integration** - Using standard Flutter glass-style widgets instead of full liquid_glass_renderer integration~~ (resolved in 24-01: LiquidGlassBottomNav uses real liquid_glass_renderer)
 2. ~~**NFR-3.3**: Test coverage not measured with Codecov yet~~ (achieved 75% in v0.3.0)
 3. **Duplicate private widgets** - _YearNavigationHeader and _YearlySummaryCard duplicated in 4 meter screens (electricity, gas, water, heating) — could be extracted to shared widgets
 
 ## Next Actions
-_Phase 23 complete. Execute phase 24: Bottom Nav Redesign._
+_Execute phase 24 plan 02: Migrate electricity and smart plug screens to LiquidGlassBottomNav._
