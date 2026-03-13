@@ -39,6 +39,13 @@ Plans:
 
 **Requirements:** NAV-01, NAV-02, NAV-03, NAV-04
 
+**Plans:** 3 plans
+
+Plans:
+- [ ] 24-01-PLAN.md — Create LiquidGlassBottomNav widget + tests (NAV-01, NAV-03)
+- [ ] 24-02-PLAN.md — Migrate Smart Plugs + Gas screens to new nav (NAV-04)
+- [ ] 24-03-PLAN.md — Migrate Electricity + Water + Heating screens, deprecate old widgets (NAV-02, NAV-04)
+
 **Success Criteria:**
 1. Bottom nav shows pill shape with glass/blur effect matching XFin design
 2. FAB (+button) appears only on Liste tab, hidden on Analyse tab
