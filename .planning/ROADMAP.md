@@ -22,6 +22,12 @@
 
 **Requirements:** BRAND-01, BRAND-02, LOAD-01
 
+**Plans:** 2 plans
+
+Plans:
+- [ ] 23-01-PLAN.md — App icon generation + app name capitalization (BRAND-01, BRAND-02)
+- [ ] 23-02-PLAN.md — Native splash screen with data-loading gate (LOAD-01)
+
 **Success Criteria:**
 1. App displays new glassmorphism house/gauge icon on Android & iOS
 2. Device home screen shows "Valtra" with capital V
@@ -47,9 +53,9 @@
 **Requirements:** CHART-01, CHART-02, CHART-03
 
 **Success Criteria:**
-1. German month abbreviations shown when language=DE (Mär, Dez instead of Mar, Dec)
+1. German month abbreviations shown when language=DE (Mar, Dez instead of Mar, Dec)
 2. English month abbreviations shown when language=EN
-3. Y-axis displays unit (kWh, m³) or currency (€) depending on active toggle
+3. Y-axis displays unit (kWh, m3) or currency (EUR) depending on active toggle
 4. Applied to all analysis pages (Strom, Gas, Wasser)
 
 ### Phase 26: Home Screen & Cost Profile Fixes
@@ -61,10 +67,10 @@
 **Success Criteria:**
 1. Home screen app bar shows only household selector (left) and settings icon (right) — no "Valtra" title
 2. No "Aktiv" badge on cost profile cards
-3. Currency always displayed in German format (123,45 €) regardless of app language
-4. "Gültig ab" date formatted as dd.MM.yyyy (01.03.2026)
+3. Currency always displayed in German format (123,45 EUR) regardless of app language
+4. "Gueltig ab" date formatted as dd.MM.yyyy (01.03.2026)
 5. Heating not available as CostMeterType (no cost profiles for heating)
-6. No kWh/€ toggle on heating analysis page (unitless counters, percentage-only)
+6. No kWh/EUR toggle on heating analysis page (unitless counters, percentage-only)
 
 ---
 
