@@ -43,6 +43,7 @@ class SmartPlugAnalyticsProvider extends ChangeNotifier {
   DateTime get selectedMonth => _selectedMonth;
 
   void setHouseholdId(int? id) {
+    if (_householdId == id) return;
     _householdId = id;
     if (id == null) {
       _data = null;

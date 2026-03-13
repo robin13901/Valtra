@@ -1,7 +1,13 @@
 {
   "permissions": {
     "allow": [
-      "Bash(flutter pub run build_runner build --delete-conflicting-outputs)"
+      "Bash(flutter pub run build_runner build --delete-conflicting-outputs)",
+      "mcp__filesystem__directory_tree",
+      "mcp__filesystem__read_multiple_files",
+      "mcp__filesystem__list_allowed_directories",
+      "mcp__filesystem__list_directory",
+      "Bash(grep -n \"Future.*init\\\\|async init\" /c/SAPDevelop/Privat/Valtra/lib/providers/*.dart)",
+      "Bash(flutter test:*)"
     ]
   }
 }

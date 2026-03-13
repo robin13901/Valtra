@@ -148,11 +148,11 @@ void main() async {
   removeSplashWhenReady(householdProvider);
 }
 
-/// Removes the native splash screen once household data is loaded.
+/// Removes the native splash screen once the [HouseholdProvider] is ready.
 ///
-/// Waits for the first [notifyListeners] call from [provider] after
-/// [init] completes (i.e., the first DB stream event), then schedules
-/// splash removal on the next frame to avoid flicker.
+/// If the provider is already initialized (the normal case — [init] is
+/// awaited before this is called), the splash is removed on the next frame.
+/// Otherwise falls back to waiting for the first [notifyListeners] call.
 ///
 /// An optional [removeSplash] callback can be injected for testing.
 @visibleForTesting
@@ -162,11 +162,25 @@ void removeSplashWhenReady(
 }) {
   final remove = removeSplash ?? FlutterNativeSplash.remove;
 
-  void listener() {
-    provider.removeListener(listener);
+  void scheduleRemove() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       remove();
     });
+  }
+
+  // init() is awaited in main() before this is called, so the provider is
+  // always initialized here.  Remove the splash on the next frame.
+  if (provider.isInitialized) {
+    scheduleRemove();
+    return;
+  }
+
+  // Fallback: wait for init to complete (defensive, shouldn't happen).
+  void listener() {
+    if (provider.isInitialized) {
+      provider.removeListener(listener);
+      scheduleRemove();
+    }
   }
 
   provider.addListener(listener);

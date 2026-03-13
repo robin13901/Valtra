@@ -31,6 +31,7 @@ class CostConfigProvider extends ChangeNotifier {
   bool get hasCostConfigs => _configs.isNotEmpty;
 
   void setHouseholdId(int? id) {
+    if (_householdId == id) return;
     _householdId = id;
     _configsSubscription?.cancel();
     _configsSubscription = null;

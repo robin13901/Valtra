@@ -20,30 +20,29 @@ void main() {
       await db.close();
     });
 
-    testWidgets('removes splash after provider notifies listeners',
+    testWidgets(
+        'removes splash immediately when provider is already initialized',
         (tester) async {
       final provider = HouseholdProvider(HouseholdDao(db));
       await provider.init();
 
+      // Provider is initialized — this mirrors the production flow where
+      // removeSplashWhenReady is called after await householdProvider.init().
+      expect(provider.isInitialized, isTrue);
+
       bool splashRemoved = false;
 
-      // Register splash removal BEFORE pumpWidget to mirror the production flow:
-      // In main(), removeSplashWhenReady is called before the widget tree builds,
-      // so the listener is registered before pumpWidget drains the stream event.
       removeSplashWhenReady(
         provider,
         removeSplash: () => splashRemoved = true,
       );
 
+      // Build a widget tree so the post-frame callback can fire.
       await tester.pumpWidget(const MaterialApp(home: SizedBox()));
-
-      // pumpWidget processes the stream event (triggering the listener)
-      // and addPostFrameCallback is scheduled; pump() fires the callback.
       await tester.pump();
 
       expect(splashRemoved, isTrue);
 
-      // Dispose provider and let Drift stream cleanup timers complete
       provider.dispose();
       await tester.pumpWidget(Container());
       await tester.pump(const Duration(seconds: 1));
@@ -55,8 +54,6 @@ void main() {
 
       bool splashRemoved = false;
 
-      // Register before pumpWidget to ensure listener is in place
-      // before the widget binding drains the stream event.
       removeSplashWhenReady(
         provider,
         removeSplash: () => splashRemoved = true,
@@ -68,7 +65,6 @@ void main() {
       expect(splashRemoved, isTrue);
       expect(provider.households, isEmpty);
 
-      // Dispose provider and let Drift stream cleanup timers complete
       provider.dispose();
       await tester.pumpWidget(Container());
       await tester.pump(const Duration(seconds: 1));
