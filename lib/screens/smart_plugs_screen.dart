@@ -53,31 +53,35 @@ class _SmartPlugsScreenState extends State<SmartPlugsScreen> {
           const SizedBox(width: 8),
         ],
       ),
-      body: IndexedStack(
-        index: _currentTab,
+      body: Stack(
         children: [
-          _buildAnalyseTab(context),
-          _buildListeTab(context),
-        ],
-      ),
-      floatingActionButton: _currentTab == 1
-          ? buildGlassFAB(
-              context: context,
-              icon: Icons.add,
-              onPressed: () => _addSmartPlug(context),
-            )
-          : null,
-      bottomNavigationBar: GlassBottomNav(
-        currentIndex: _currentTab,
-        onTap: (index) => setState(() => _currentTab = index),
-        items: [
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.analytics),
-            label: l10n.analysis,
+          IndexedStack(
+            index: _currentTab,
+            children: [
+              _buildAnalyseTab(context),
+              _buildListeTab(context),
+            ],
           ),
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.list),
-            label: l10n.list,
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: LiquidGlassBottomNav(
+              icons: const [Icons.analytics, Icons.list],
+              labels: [l10n.analysis, l10n.list],
+              keys: const [
+                Key('smart_plugs_nav_analyse'),
+                Key('smart_plugs_nav_liste'),
+              ],
+              currentIndex: _currentTab,
+              onTap: (index) => setState(() => _currentTab = index),
+              rightIcon: Icons.add,
+              onRightTap: () => _addSmartPlug(context),
+              rightVisibleForIndices: const {1},
+              onLeftTap: null,
+              leftVisibleForIndices: const {},
+              keepLeftPlaceholder: false,
+            ),
           ),
         ],
       ),
@@ -166,7 +170,7 @@ class _SmartPlugsList extends StatelessWidget {
     final roomNames = plugsByRoom.keys.toList()..sort();
 
     return ListView.builder(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
       itemCount: roomNames.length,
       itemBuilder: (context, index) {
         final roomName = roomNames[index];
