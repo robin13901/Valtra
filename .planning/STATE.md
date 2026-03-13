@@ -3,12 +3,12 @@
 ## Current Status
 - **Milestone**: 5 - Visual & UX Polish (v0.5.0)
 - **Last Shipped**: v0.4.0 (2026-03-09)
-- **Current Phase**: 24 - Bottom Navigation Redesign (complete)
-- **Current Plan**: 24-03 complete (phase done)
+- **Current Phase**: 25 - Chart Localization & Labels (in progress)
+- **Current Plan**: 25-01 complete
 - **Last Updated**: 2026-03-13
-- **Tests**: 1094
+- **Tests**: 1104
 
-Progress: █████░░░░░░░░░░░░░░░░░░░░ (5/? plans in milestone)
+Progress: ██████░░░░░░░░░░░░░░░░░░░ (6/? plans in milestone)
 
 ## Completed Milestones
 - **Milestone 1**: Core Foundation (v0.1.0) -- 7 phases, 313 tests
@@ -22,6 +22,7 @@ Progress: █████░░░░░░░░░░░░░░░░░░�
 - **24-02**: SmartPlugsScreen and GasScreen migrated to LiquidGlassBottomNav with Stack+Positioned layout; FAB on Liste tab only; fixed buildLiquidCircleButton key propagation bug; 1093 tests
 - **24-01**: LiquidGlassBottomNav widget + buildLiquidCircleButton + liquidGlassSettings added to liquid_glass_widgets.dart; 14 new tests; old widgets preserved
 - **24-03**: Electricity, Water, Heating screens migrated from GlassBottomNav+FAB to LiquidGlassBottomNav Stack overlay; old widgets deprecated; 1 new dark mode test; bug fix for key propagation; 1094 tests
+- **25-01**: MonthlyBarChart + YearComparisonChart locale-aware DateFormat.MMM(locale) on X-axis and tooltips; Y-axis axisNameWidget shows kWh/m3/EUR; 10 new tests; 1104 tests
 
 ## Blocked
 _None_
@@ -29,6 +30,7 @@ _None_
 ## Session History
 | Date | Phase | Action | Notes |
 |------|-------|--------|-------|
+| 2026-03-13 | 25-01 | Completed plan 01 | MonthlyBarChart + YearComparisonChart: DateFormat.MMM(locale) on X-axis/tooltips, axisNameWidget for Y-axis unit; 10 new tests; 1104 tests. |
 | 2026-03-13 | 24-03 | Completed plan 03 | Electricity/Water/Heating migrated to LiquidGlassBottomNav; old widgets deprecated; key bug fixed; 1094 tests. |
 | 2026-03-13 | 24-02 | Completed plan 02 | SmartPlugsScreen + GasScreen migrated to LiquidGlassBottomNav; Stack+Positioned layout; FAB on Liste only; fixed buildLiquidCircleButton key bug; phase6_uat_test gas tests updated; 1093 tests. |
 | 2026-03-13 | 24-01 | Completed plan 01 | LiquidGlassBottomNav + buildLiquidCircleButton + liquidGlassSettings added; key-on-SizedBox fix; 14 new tests; 1093 total. |
@@ -101,6 +103,8 @@ _None_
 62. **android_12 splash block mandatory** - flutter_native_splash requires explicit android_12: config block in pubspec.yaml to generate values-v31/styles.xml; without it, Android 12+ shows white flash
 
 63. **LiquidGlassBottomNav key fix** - buildLiquidCircleButton places key on SizedBox when onTap is null (no GestureDetector wrapping); key propagates correctly for testability and widget identification
+64. **Chart DateFormat locale always explicit** - DateFormat.MMM(locale) and DateFormat.yMMM(locale) always pass locale string from widget field; never rely on implicit system locale in chart widgets
+65. **Chart Y-axis unit via axisNameWidget** - axisNameWidget: Text(displayUnit) + axisNameSize: 18 on leftTitles AxisTitles; displayUnit = showCosts && costUnit != null ? costUnit! : unit
 
 ## Technical Debt
 1. ~~**LiquidGlass integration** - Using standard Flutter glass-style widgets instead of full liquid_glass_renderer integration~~ (resolved in 24-01: LiquidGlassBottomNav uses real liquid_glass_renderer)
@@ -108,4 +112,4 @@ _None_
 3. **Duplicate private widgets** - _YearNavigationHeader and _YearlySummaryCard duplicated in 4 meter screens (electricity, gas, water, heating) — could be extracted to shared widgets
 
 ## Next Actions
-_Phase 24 complete. All 3 plans executed and verified. Next: Phase 25 — Chart Localization & Labels._
+_Phase 25 plan 01 complete. CHART-01/02/03 requirements fulfilled. Next: Phase 25 plan 02 (if exists) or Phase 26 — Home & Cost Fixes._
