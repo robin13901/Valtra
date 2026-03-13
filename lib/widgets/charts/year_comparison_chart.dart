@@ -195,7 +195,7 @@ class YearComparisonChart extends StatelessWidget {
             return touchedSpots.map((spot) {
               final monthIndex = spot.x.toInt();
               final monthName =
-                  DateFormat.MMM().format(DateTime(2024, monthIndex + 1));
+                  DateFormat.MMM(locale).format(DateTime(2024, monthIndex + 1));
               final valueStr = ValtraNumberFormat.consumption(spot.y, locale);
               return LineTooltipItem(
                 '$monthName\n$valueStr $displayUnit',
@@ -212,6 +212,7 @@ class YearComparisonChart extends StatelessWidget {
   }
 
   FlTitlesData _buildTitles(BuildContext context) {
+    final displayUnit = showCosts && costUnit != null ? costUnit! : unit;
     return FlTitlesData(
       topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
       rightTitles:
@@ -232,7 +233,7 @@ class YearComparisonChart extends StatelessWidget {
               return const SizedBox.shrink();
             }
             final monthName =
-                DateFormat.MMM().format(DateTime(2024, index + 1));
+                DateFormat.MMM(locale).format(DateTime(2024, index + 1));
             return SideTitleWidget(
               axisSide: meta.axisSide,
               child: Text(monthName,
@@ -242,6 +243,11 @@ class YearComparisonChart extends StatelessWidget {
         ),
       ),
       leftTitles: AxisTitles(
+        axisNameWidget: Text(
+          displayUnit,
+          style: Theme.of(context).textTheme.bodySmall,
+        ),
+        axisNameSize: 18,
         sideTitles: SideTitles(
           showTitles: true,
           reservedSize: 50,

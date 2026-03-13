@@ -1,15 +1,16 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:valtra/l10n/app_localizations.dart';
 import 'package:valtra/services/interpolation/models.dart';
 import 'package:valtra/widgets/charts/year_comparison_chart.dart';
 
-Widget _wrap(Widget child) {
+Widget _wrap(Widget child, {Locale locale = const Locale('en')}) {
   return MaterialApp(
     localizationsDelegates: AppLocalizations.localizationsDelegates,
     supportedLocales: AppLocalizations.supportedLocales,
-    locale: const Locale('en'),
+    locale: locale,
     home: Scaffold(body: SizedBox(height: 300, width: 400, child: child)),
   );
 }
@@ -34,6 +35,11 @@ LineChartData _extractChartData(WidgetTester tester) {
 }
 
 void main() {
+  setUpAll(() async {
+    await initializeDateFormatting('de');
+    await initializeDateFormatting('en');
+  });
+
   group('YearComparisonChart', () {
     testWidgets('renders with current year data only', (tester) async {
       final currentYear = [
@@ -656,6 +662,166 @@ void main() {
         // Index 12 should be out of range
         final over = getTitles(12.0, buildMeta());
         expect(over, isA<SizedBox>());
+      });
+    });
+
+    // ---------------------------------------------------------------
+    // Locale-aware month label tests
+    // ---------------------------------------------------------------
+
+    group('locale-aware month labels', () {
+      TitleMeta buildMeta() => TitleMeta(
+            min: 0,
+            max: 11,
+            parentAxisSize: 400,
+            axisPosition: 0,
+            appliedInterval: 1,
+            sideTitles: SideTitles(),
+            formattedValue: '',
+            axisSide: AxisSide.bottom,
+          );
+
+      testWidgets('locale=de renders German month abbreviations on X-axis',
+          (tester) async {
+        final currentYear = [
+          _period(DateTime(2026, 1, 1), 100),
+          _period(DateTime(2026, 2, 1), 120),
+          _period(DateTime(2026, 3, 1), 90),
+        ];
+
+        await tester.pumpWidget(
+          _wrap(
+            YearComparisonChart(
+              currentYear: currentYear,
+              primaryColor: Colors.blue,
+              unit: 'kWh',
+              locale: 'de',
+            ),
+            locale: const Locale('de'),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        final data = _extractChartData(tester);
+        final getTitles =
+            data.titlesData.bottomTitles.sideTitles.getTitlesWidget;
+
+        // Index 2 = March -> German abbreviation (not English 'Mar')
+        final marWidget = getTitles(2.0, buildMeta());
+        expect(marWidget, isA<SideTitleWidget>());
+        final marSide = marWidget as SideTitleWidget;
+        final marText = marSide.child as Text;
+        expect(marText.data, isNotNull);
+        expect(marText.data, isNot('Mar')); // Must not be English
+      });
+
+      testWidgets('locale=en renders English month abbreviations on X-axis',
+          (tester) async {
+        final currentYear = [
+          _period(DateTime(2026, 1, 1), 100),
+          _period(DateTime(2026, 2, 1), 120),
+          _period(DateTime(2026, 3, 1), 90),
+        ];
+
+        await tester.pumpWidget(
+          _wrap(
+            YearComparisonChart(
+              currentYear: currentYear,
+              primaryColor: Colors.blue,
+              unit: 'kWh',
+              locale: 'en',
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        final data = _extractChartData(tester);
+        final getTitles =
+            data.titlesData.bottomTitles.sideTitles.getTitlesWidget;
+
+        // Index 2 = March -> English 'Mar'
+        final marWidget = getTitles(2.0, buildMeta());
+        expect(marWidget, isA<SideTitleWidget>());
+        final marSide = marWidget as SideTitleWidget;
+        final marText = marSide.child as Text;
+        expect(marText.data, 'Mar');
+      });
+
+      testWidgets('Y-axis shows unit label in consumption mode', (tester) async {
+        final currentYear = [
+          _period(DateTime(2026, 1, 1), 100),
+          _period(DateTime(2026, 2, 1), 120),
+        ];
+
+        await tester.pumpWidget(
+          _wrap(YearComparisonChart(
+            currentYear: currentYear,
+            primaryColor: Colors.blue,
+            unit: 'kWh',
+            showCosts: false,
+          )),
+        );
+        await tester.pumpAndSettle();
+
+        final data = _extractChartData(tester);
+        final axisNameWidget = data.titlesData.leftTitles.axisNameWidget;
+
+        expect(axisNameWidget, isNotNull);
+        expect(axisNameWidget, isA<Text>());
+        expect((axisNameWidget as Text).data, 'kWh');
+      });
+
+      testWidgets('Y-axis shows costUnit label in cost mode', (tester) async {
+        final currentYear = [
+          _period(DateTime(2026, 1, 1), 100),
+          _period(DateTime(2026, 2, 1), 120),
+        ];
+
+        await tester.pumpWidget(
+          _wrap(YearComparisonChart(
+            currentYear: currentYear,
+            primaryColor: Colors.blue,
+            unit: 'kWh',
+            showCosts: true,
+            costUnit: 'EUR',
+            currentYearCosts: [25.0, 30.0],
+          )),
+        );
+        await tester.pumpAndSettle();
+
+        final data = _extractChartData(tester);
+        final axisNameWidget = data.titlesData.leftTitles.axisNameWidget;
+
+        expect(axisNameWidget, isNotNull);
+        expect(axisNameWidget, isA<Text>());
+        expect((axisNameWidget as Text).data, 'EUR');
+      });
+
+      testWidgets('Y-axis shows unit when costUnit is null in cost mode',
+          (tester) async {
+        final currentYear = [
+          _period(DateTime(2026, 1, 1), 100),
+          _period(DateTime(2026, 2, 1), 120),
+        ];
+
+        await tester.pumpWidget(
+          _wrap(YearComparisonChart(
+            currentYear: currentYear,
+            primaryColor: Colors.blue,
+            unit: 'kWh',
+            showCosts: true,
+            costUnit: null,
+          )),
+        );
+        await tester.pumpAndSettle();
+
+        final data = _extractChartData(tester);
+        final axisNameWidget = data.titlesData.leftTitles.axisNameWidget;
+
+        expect(axisNameWidget, isNotNull);
+        expect(axisNameWidget, isA<Text>());
+        // Falls back to unit when costUnit is null
+        expect((axisNameWidget as Text).data, 'kWh');
       });
     });
   });
