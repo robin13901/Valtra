@@ -126,7 +126,7 @@ class _CostProfileFormDialogState extends State<CostProfileFormDialog> {
                   labelText: l10n.validFrom,
                 ),
                 child: Text(
-                  '${_validFrom.day}.${_validFrom.month}.${_validFrom.year}',
+                  '${_validFrom.day.toString().padLeft(2, '0')}.${_validFrom.month.toString().padLeft(2, '0')}.${_validFrom.year}',
                 ),
               ),
             ),

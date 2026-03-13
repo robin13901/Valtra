@@ -114,7 +114,7 @@ void main() {
       // Verify the date display updated to include 15
       final now = DateTime.now();
       expect(
-        find.text('15.${now.month}.${now.year}'),
+        find.text('15.${now.month.toString().padLeft(2, '0')}.${now.year}'),
         findsOneWidget,
       );
     });
@@ -227,7 +227,7 @@ void main() {
       // Verify fields are pre-filled
       expect(find.text('120.0'), findsOneWidget); // standingCharge
       expect(find.text('0.3'), findsOneWidget); // unitPrice
-      expect(find.text('1.6.2024'), findsOneWidget); // validFrom date
+      expect(find.text('01.06.2024'), findsOneWidget); // validFrom date zero-padded
     });
 
     testWidgets('cancel returns null', (tester) async {
@@ -300,6 +300,28 @@ void main() {
 
       // Verify electricity-specific suffix is shown
       expect(find.text('\u20AC/kWh'), findsOneWidget);
+    });
+
+    testWidgets('date displays with zero-padded day and month', (tester) async {
+      await tester.pumpWidget(buildDialog());
+      await tester.pumpAndSettle();
+
+      // Open dialog in create mode
+      await tester.tap(find.text('Open'));
+      await tester.pumpAndSettle();
+
+      // Default validFrom is first of current month
+      final now = DateTime.now();
+      final expectedDay = '01';
+      final expectedMonth = now.month.toString().padLeft(2, '0');
+      final expectedYear = now.year.toString();
+      final expectedDate = '$expectedDay.$expectedMonth.$expectedYear';
+
+      // Date must use dd.MM.yyyy format (e.g. '01.03.2026', not '1.3.2026')
+      expect(find.text(expectedDate), findsOneWidget);
+      // Verify unpadded format is NOT shown
+      final unpaddedDate = '1.${now.month}.${now.year}';
+      expect(find.text(unpaddedDate), findsNothing);
     });
   });
 }
