@@ -72,6 +72,7 @@ class AnalyticsProvider extends ChangeNotifier {
   bool get isLoading => _isLoading;
 
   void setHouseholdId(int? id) {
+    if (_householdId == id) return;
     _householdId = id;
     notifyListeners();
     if (id != null) {
@@ -349,7 +350,7 @@ class AnalyticsProvider extends ChangeNotifier {
       case MeterType.water:
         return CostMeterType.water;
       case MeterType.heating:
-        return CostMeterType.heating;
+        return null;
     }
   }
 

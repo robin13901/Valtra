@@ -98,7 +98,7 @@ class SmartPlugConsumptions extends Table {
 }
 
 /// Meter types that support cost tracking
-enum CostMeterType { electricity, gas, water, heating }
+enum CostMeterType { electricity, gas, water }
 
 /// Cost configuration per meter type per household
 @DataClassName('CostConfig')

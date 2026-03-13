@@ -90,7 +90,6 @@ class _CostProfileFormDialogState extends State<CostProfileFormDialog> {
     switch (widget.meterType) {
       case CostMeterType.electricity:
       case CostMeterType.gas:
-      case CostMeterType.heating:
         return l10n.pricePerKwh;
       case CostMeterType.water:
         return l10n.pricePerCubicMeter;
