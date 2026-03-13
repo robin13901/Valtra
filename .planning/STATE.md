@@ -3,12 +3,12 @@
 ## Current Status
 - **Milestone**: 5 - Visual & UX Polish (v0.5.0)
 - **Last Shipped**: v0.4.0 (2026-03-09)
-- **Current Phase**: 26 - Home Screen & Cost Profile Fixes (in progress)
-- **Current Plan**: 26-01 complete
+- **Current Phase**: 26 - Home Screen & Cost Profile Fixes (complete)
+- **Current Plan**: 26-02 complete (phase complete)
 - **Last Updated**: 2026-03-13
-- **Tests**: 1105
+- **Tests**: 1103
 
-Progress: ███████░░░░░░░░░░░░░░░░░░ (7/? plans in milestone)
+Progress: ████████░░░░░░░░░░░░░░░░░ (8/? plans in milestone)
 
 ## Completed Milestones
 - **Milestone 1**: Core Foundation (v0.1.0) -- 7 phases, 313 tests
@@ -24,6 +24,7 @@ Progress: ███████░░░░░░░░░░░░░░░░�
 - **24-03**: Electricity, Water, Heating screens migrated from GlassBottomNav+FAB to LiquidGlassBottomNav Stack overlay; old widgets deprecated; 1 new dark mode test; bug fix for key propagation; 1094 tests
 - **25-01**: MonthlyBarChart + YearComparisonChart locale-aware DateFormat.MMM(locale) on X-axis and tooltips; Y-axis axisNameWidget shows kWh/m3/EUR; 10 new tests; 1104 tests
 - **26-01**: Empty app bar title on HomeScreen; Aktiv badge removed from cost profile tiles; German currency hardcoded; dd.MM.yyyy zero-padded date in form dialog; 1 new test; 1105 tests
+- **26-02**: CostMeterType enum reduced to 3 values (no heating); heating screen made consumption-only (no cost toggle); _toCostMeterType returns null for heating; 1103 tests
 
 ## Blocked
 _None_
@@ -31,6 +32,7 @@ _None_
 ## Session History
 | Date | Phase | Action | Notes |
 |------|-------|--------|-------|
+| 2026-03-13 | 26-02 | Completed plan 02 | CostMeterType enum to 3 values (no heating); heating screen consumption-only (no cost toggle); analytics returns null for heating cost; 1103 tests. Phase 26 complete. |
 | 2026-03-13 | 26-01 | Completed plan 01 | Empty app bar title; Aktiv badge removed; German currency hardcoded; dd.MM.yyyy zero-padded in form dialog; 1 new test; 1105 tests. |
 | 2026-03-13 | 25-01 | Completed plan 01 | MonthlyBarChart + YearComparisonChart: DateFormat.MMM(locale) on X-axis/tooltips, axisNameWidget for Y-axis unit; 10 new tests; 1104 tests. |
 | 2026-03-13 | 24-03 | Completed plan 03 | Electricity/Water/Heating migrated to LiquidGlassBottomNav; old widgets deprecated; key bug fixed; 1094 tests. |
@@ -93,8 +95,8 @@ _None_
 50. **Smart plug analytics monthly-only** - Provider simplified: period/year fields removed, always monthly date range
 51. **Smart plug stats renamed** - Gesamtverbrauch (totalElectricity), Davon erfasst (totalSmartPlug), Nicht erfasst (otherConsumption)
 52. **Room breakdown percentages** - Room items show "X.X kWh (YY%)" format, calculated as room/totalSmartPlug*100
-53. **Water/heating bottom nav** - Same Analyse/Liste pattern as electricity/gas; water uses m³/€ toggle, heating uses kWh/€ toggle
-54. **CostMeterType.heating** - Added as ordinal 3 to intEnum; no DB migration needed (appended at end)
+53. **Water/heating bottom nav** - Same Analyse/Liste pattern as electricity/gas; water uses m³/€ toggle; heating is consumption-only (no cost toggle -- see decision 70)
+54. ~~**CostMeterType.heating**~~ - Added as ordinal 3 then removed in 26-02 (see decision 69); never had production data
 55. **Dead analytics screens removed** - MonthlyAnalyticsScreen and YearlyAnalyticsScreen deleted after all consumers migrated to inline tabs
 56. **Heating meters are unitless** - Consumption counters for central heating; show only percentage distribution per room, no cost calculation possible (no access to total building gas consumption)
 57. **German currency format always** - Cost displays use German format (123,45 €) regardless of app language setting
@@ -111,6 +113,8 @@ _None_
 66. **Home app bar title empty** - buildGlassAppBar(title: '') on HomeScreen; Valtra branding shows only in hub body (headlineMedium text widget), not in app bar
 67. **No Aktiv badge on cost profiles** - Chip/Active badge removed entirely from cost profile tiles; LocaleProvider removed from HouseholdCostSettingsScreen
 68. **dd.MM.yyyy in cost profile dialog** - Date display uses padLeft(2,'0') on day and month; matches list tile format already in household_cost_settings_screen.dart
+69. **CostMeterType.heating removed** - Enum reduced to 3 values (electricity, gas, water); DB-safe removal since ordinal 3 never persisted in production CostConfig rows; _toCostMeterType returns null for heating
+70. **Heating consumption-only** - HeatingScreen has no cost toggle, no _showCosts state; all charts receive showCosts=false, periodCosts=null, costUnit=null permanently
 
 ## Technical Debt
 1. ~~**LiquidGlass integration** - Using standard Flutter glass-style widgets instead of full liquid_glass_renderer integration~~ (resolved in 24-01: LiquidGlassBottomNav uses real liquid_glass_renderer)
@@ -118,4 +122,4 @@ _None_
 3. **Duplicate private widgets** - _YearNavigationHeader and _YearlySummaryCard duplicated in 4 meter screens (electricity, gas, water, heating) — could be extracted to shared widgets
 
 ## Next Actions
-_Phase 26 in progress. Plan 26-01 complete (4 fixes: HOME-01, COST-01, COST-02, COST-03). Next: Plan 26-02._
+_Phase 26 complete. All 5 fixes shipped (HOME-01, COST-01 through COST-05). Milestone v0.5.0 phases 23-26 all done. Ready for v0.5.0 tag or further polish._
