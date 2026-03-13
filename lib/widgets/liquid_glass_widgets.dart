@@ -1,8 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:liquid_glass_renderer/liquid_glass_renderer.dart';
 import 'package:provider/provider.dart';
 
 import '../app_theme.dart';
 import '../providers/theme_provider.dart';
+
+/// Helper to detect dark mode from the current [Theme] without subscribing
+/// to a provider.  Safe to call from top-level builder functions where the
+/// passed-in [context] may belong to a different widget.
+bool _isDarkFromTheme(BuildContext context) =>
+    Theme.of(context).brightness == Brightness.dark;
 
 /// Styled bottom navigation bar with glassmorphism effect.
 class GlassBottomNav extends StatelessWidget {
@@ -61,7 +68,7 @@ Widget buildCircleButton({
   required VoidCallback onPressed,
   double size = 56,
 }) {
-  final isDark = context.watch<ThemeProvider>().isDark(context);
+  final isDark = _isDarkFromTheme(context);
 
   return Container(
     width: size,
@@ -96,7 +103,7 @@ Widget buildGlassFAB({
   required VoidCallback onPressed,
   String? tooltip,
 }) {
-  final isDark = context.watch<ThemeProvider>().isDark(context);
+  final isDark = _isDarkFromTheme(context);
 
   return Container(
     decoration: BoxDecoration(
@@ -133,7 +140,7 @@ PreferredSizeWidget buildGlassAppBar({
   Widget? leading,
   bool centerTitle = true,
 }) {
-  final isDark = context.watch<ThemeProvider>().isDark(context);
+  final isDark = _isDarkFromTheme(context);
   final textColor = isDark ? AppColors.lemonChiffon : AppColors.ultraViolet;
 
   return PreferredSize(
@@ -166,6 +173,272 @@ PreferredSizeWidget buildGlassAppBar({
       ),
     ),
   );
+}
+
+/// Shared LiquidGlass rendering settings for nav bar and buttons.
+LiquidGlassSettings liquidGlassSettings(BuildContext context) {
+  final isDark = Theme.of(context).brightness == Brightness.dark;
+  return LiquidGlassSettings(
+    thickness: 30,
+    blur: 1.4,
+    glassColor:
+        isDark ? const Color(0x33000000) : const Color(0x18E1E1E1),
+  );
+}
+
+/// Builds a circular button using real LiquidGlass renderer.
+Widget buildLiquidCircleButton({
+  required Widget child,
+  required double size,
+  required LiquidGlassSettings settings,
+  VoidCallback? onTap,
+  Key? key,
+}) {
+  final btn = SizedBox(
+    width: size,
+    height: size,
+    child: LiquidGlassLayer(
+      settings: settings,
+      child: LiquidGlass.grouped(
+        shape: const LiquidRoundedSuperellipse(borderRadius: 100),
+        child: Center(child: child),
+      ),
+    ),
+  );
+
+  if (onTap == null) return btn;
+  return GestureDetector(
+    onTap: onTap,
+    behavior: HitTestBehavior.opaque,
+    key: key,
+    child: btn,
+  );
+}
+
+/// Bottom navigation bar with LiquidGlass pill shape and optional circular FAB buttons.
+///
+/// Replaces the old [GlassBottomNav] with real liquid_glass_renderer effects.
+/// Layout: [optional left circle] [expanded center pill] [right circle / placeholder]
+class LiquidGlassBottomNav extends StatelessWidget {
+  final List<IconData> icons;
+  final List<String> labels;
+  final List<Key> keys;
+  final int currentIndex;
+  final ValueChanged<int> onTap;
+
+  // LEFT circular button (optional)
+  final VoidCallback? onLeftTap;
+  final Set<int> leftVisibleForIndices;
+
+  // RIGHT circular button (FAB equivalent)
+  final IconData rightIcon;
+  final VoidCallback? onRightTap;
+  final Set<int>? rightVisibleForIndices; // null = always visible
+
+  final bool keepLeftPlaceholder;
+  final double height;
+  final double horizontalPadding;
+
+  const LiquidGlassBottomNav({
+    super.key,
+    required this.icons,
+    required this.labels,
+    required this.keys,
+    required this.currentIndex,
+    required this.onTap,
+    this.onLeftTap,
+    this.leftVisibleForIndices = const {},
+    this.rightIcon = Icons.more_horiz,
+    this.onRightTap,
+    this.rightVisibleForIndices,
+    this.keepLeftPlaceholder = false,
+    this.height = 56.0,
+    this.horizontalPadding = 16.0,
+  }) : assert(
+            icons.length == labels.length, 'icons and labels must be same length');
+
+  @override
+  Widget build(BuildContext context) {
+    final ThemeData theme = Theme.of(context);
+    final settings = liquidGlassSettings(context);
+    const double circleSize = 64.0;
+    final double navHeight = height < circleSize ? circleSize : height;
+
+    final bool showLeft =
+        leftVisibleForIndices.contains(currentIndex) && onLeftTap != null;
+    final bool showRight = rightVisibleForIndices == null ||
+        rightVisibleForIndices!.contains(currentIndex);
+    const double itemHorizontalPadding = 12.0;
+
+    return SafeArea(
+      bottom: true,
+      child: Padding(
+        padding:
+            EdgeInsets.fromLTRB(horizontalPadding, 8, horizontalPadding, 8),
+        child: SizedBox(
+          width: double.infinity,
+          height: navHeight,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // Left circular button (may be hidden)
+              if (showLeft)
+                Padding(
+                  padding: const EdgeInsets.only(right: 12),
+                  child: buildLiquidCircleButton(
+                    child: Icon(Icons.add, size: 26, color: theme.iconTheme.color),
+                    size: circleSize,
+                    onTap: onLeftTap!,
+                    key: const Key('left_fab'),
+                    settings: settings,
+                  ),
+                )
+              else if (keepLeftPlaceholder)
+                const Padding(
+                  padding: EdgeInsets.only(right: 12),
+                  child: SizedBox(width: circleSize, height: circleSize),
+                ),
+
+              // Center pill
+              Expanded(
+                child: SizedBox(
+                  height: navHeight,
+                  child: LiquidGlassLayer(
+                    settings: settings,
+                    child: LiquidGlass.grouped(
+                      shape: const LiquidRoundedSuperellipse(
+                        borderRadius: circleSize / 2,
+                      ),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: itemHorizontalPadding,
+                        ),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(circleSize / 2),
+                        ),
+                        child: LayoutBuilder(
+                          builder: (context, constraints) {
+                            final int itemCount = icons.length;
+                            final double totalAvailable =
+                                constraints.maxWidth.isFinite
+                                    ? constraints.maxWidth
+                                    : MediaQuery.of(context).size.width;
+
+                            const double minItemWidth = 56.0;
+                            const double maxItemWidth = 140.0;
+
+                            double perItemWidth = totalAvailable / itemCount;
+                            perItemWidth =
+                                perItemWidth.clamp(minItemWidth, maxItemWidth);
+
+                            final bool fits =
+                                perItemWidth * itemCount <= totalAvailable + 0.5;
+
+                            if (fits) {
+                              return Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                children: List.generate(itemCount, (index) {
+                                  final bool isSelected = index == currentIndex;
+                                  return GestureDetector(
+                                    behavior: HitTestBehavior.opaque,
+                                    onTap: () => onTap(index),
+                                    key: keys[index],
+                                    child: SizedBox(
+                                      width: perItemWidth,
+                                      height: navHeight,
+                                      child: _buildNavColumn(
+                                        icon: icons[index],
+                                        label: labels[index],
+                                        isSelected: isSelected,
+                                        theme: theme,
+                                      ),
+                                    ),
+                                  );
+                                }),
+                              );
+                            } else {
+                              return Row(
+                                children: List.generate(itemCount, (index) {
+                                  final bool isSelected = index == currentIndex;
+                                  return Expanded(
+                                    child: GestureDetector(
+                                      behavior: HitTestBehavior.opaque,
+                                      onTap: () => onTap(index),
+                                      key: keys[index],
+                                      child: _buildNavColumn(
+                                        icon: icons[index],
+                                        label: labels[index],
+                                        isSelected: isSelected,
+                                        theme: theme,
+                                      ),
+                                    ),
+                                  );
+                                }),
+                              );
+                            }
+                          },
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+
+              // Right circular button (FAB)
+              Padding(
+                padding: const EdgeInsets.only(left: 12),
+                child: showRight
+                    ? buildLiquidCircleButton(
+                        child: Icon(rightIcon,
+                            size: 26, color: theme.iconTheme.color),
+                        size: circleSize,
+                        onTap: onRightTap,
+                        settings: settings,
+                        key: const Key('right_fab'),
+                      )
+                    : const SizedBox(width: circleSize, height: circleSize),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNavColumn({
+    required IconData icon,
+    required String label,
+    required bool isSelected,
+    required ThemeData theme,
+  }) {
+    final bool isDark = theme.brightness == Brightness.dark;
+    final Color selectedColor = isDark ? Colors.white : Colors.black;
+    final Color unselectedColor = isDark ? Colors.grey : Colors.black54;
+
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Icon(icon, size: 22, color: isSelected ? selectedColor : unselectedColor),
+        const SizedBox(height: 6),
+        AnimatedDefaultTextStyle(
+          duration: const Duration(milliseconds: 180),
+          style: theme.textTheme.labelSmall?.copyWith(
+                fontSize: 9,
+                color: isSelected ? selectedColor : unselectedColor,
+              ) ??
+              TextStyle(
+                fontSize: 11,
+                color: isSelected ? selectedColor : unselectedColor,
+              ),
+          child: Text(
+            label,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+      ],
+    );
+  }
 }
 
 /// A card with glass effect.
