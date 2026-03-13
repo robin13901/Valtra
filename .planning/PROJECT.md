@@ -5,7 +5,7 @@ Valtra is a personal utility meter tracking and analysis app for recording and a
 
 ## Problem Statement
 Managing utility consumption across multiple households requires manual tracking of various meter types with different units and reading patterns. Users need to:
-- Track electricity (kWh), gas (m³), and water (m³) meters
+- Track electricity (kWh), gas (m3), and water (m3) meters
 - Monitor smart plug consumption at device/room level
 - Compare consumption patterns over time
 - Interpolate values for consistent monthly comparisons
@@ -21,34 +21,33 @@ Managing utility consumption across multiple households requires manual tracking
 - **Database**: Drift (SQLite) - local-first with offline capability
 - **State Management**: Provider
 - **Charts**: fl_chart
-- **UI Components**: LiquidGlass widgets (from XFin reference)
+- **UI Components**: LiquidGlass widgets (liquid_glass_renderer) with glassmorphism effects
 - **Localization**: Flutter intl (EN/DE)
+- **Splash**: flutter_native_splash
+- **Icons**: flutter_launcher_icons
 
 ## Design System
 - **Primary Color**: Ultra Violet (#5F4A8B)
 - **Accent Color**: Lemon Chiffon (#FEFACD)
-- **UI Style**: Modern LiquidGlass aesthetic with glassmorphism effects
+- **UI Style**: LiquidGlass aesthetic with real liquid_glass_renderer effects (pill nav, squircle buttons)
+- **App Icon**: Glassmorphism house + gauge design on Ultra Violet gradient
 
 ## Key Constraints
 - Must work fully offline (local-first architecture)
 - All strings must be localized (EN + DE)
 - Comprehensive test coverage with Codecov integration
 - GitHub Actions CI/CD pipeline
-
-## Current Milestone: v0.5.0 - Visual & UX Polish
-
-**Goal:** Polish the app's visual identity, fix UX issues, and align bottom navigation with XFin reference design.
-
-**Target features:**
-- New glassmorphism app icon + proper app name capitalization
-- Native splash screen (no empty-state flicker on startup)
-- Bottom nav bar matching XFin LiquidGlass design exactly
-- Localized chart labels (month abbreviations, Y-axis units/currency)
-- Home screen app bar cleanup (remove redundant title)
-- Cost profile formatting fixes (remove "Aktiv" badge, German currency, date format)
-- Heating cost profile removal (unitless consumption counters, percentage-only analysis)
+- Currency always displayed in German format regardless of app language
 
 ## Current State
+
+**Last shipped:** v0.5.0 — Visual & UX Polish (2026-03-13)
+
+- 56,003 LOC Dart (source + test), 1103 tests, DB schema v3
+- 5 milestones shipped (v0.1.0 through v0.5.0), 26 phases completed
+- Custom glassmorphism app icon, native splash screen, LiquidGlass bottom nav on all screens
+- Locale-aware charts, clean home app bar, correct cost profile formatting
+- Heating modeled as consumption-only (unitless counters, percentage distribution)
 
 <details>
 <summary>v0.4.0 - UX Overhaul (2026-03-09)</summary>
@@ -57,7 +56,7 @@ Managing utility consumption across multiple households requires manual tracking
 - 1077 tests passing, 78 source files (27,482 LOC), 81 test files (24,887 LOC), DB schema v3
 - Unified Analyse/Liste bottom nav on all 5 meter screens (IndexedStack, LiquidGlass FAB)
 - Per-household cost profile history with date-based lookup (Grundpreis pro Jahr, Arbeitspreis)
-- kWh/€ (or m³/€) cost toggle on electricity, gas, water, and heating analysis pages
+- kWh/EUR (or m3/EUR) cost toggle on electricity, gas, water, and heating analysis pages
 - Year comparison chart fixed (calendar month alignment)
 - Dead code removed: CSV export, analytics hub, MonthlyAnalyticsScreen, YearlyAnalyticsScreen, QuickEntryMixin
 - Global date format "dd.MM.yyyy, HH:mm Uhr" with locale support
@@ -71,7 +70,7 @@ Managing utility consumption across multiple households requires manual tracking
 - Theme toggle (light/dark/system), language toggle (DE/EN), cost tracking with tiered pricing
 - LiquidGlass widgets on all screens, German locale formatting, umlaut fixes
 - Interpolation rework (linear only, 1st-of-month boundaries, toggle visibility)
-- Smart plug monthly entry, heating meter room assignment, gas analysis in m³
+- Smart plug monthly entry, heating meter room assignment, gas analysis in m3
 - Database backup/restore via file export/import
 </details>
 
@@ -96,33 +95,74 @@ Managing utility consumption across multiple households requires manual tracking
 - Architecture: Drift DAOs -> Provider state management -> Material 3 + LiquidGlass UI
 </details>
 
-## Success Criteria
-1. ~~All meter types can be recorded with timestamps~~ (v0.1.0)
-2. ~~Smart plug data aggregates correctly by room with pie chart visualization~~ (v0.2.0)
-3. ~~Interpolation produces accurate monthly boundary values with configurable methods~~ (v0.2.0)
-4. ~~Multi-household data remains properly isolated~~ (v0.1.0)
-5. ~~Analytics views show meaningful consumption insights with line/bar/pie charts~~ (v0.2.0)
-6. ~~CSV export works for all meter types via system share sheet~~ (v0.2.0 — removed in v0.4.0)
-7. ~~80%+ test coverage maintained~~ (v0.3.0 -- 75% achieved, limited by generated l10n files)
-8. ~~Cost tracking shows accurate cost calculations with tiered pricing~~ (v0.3.0)
-9. ~~Dark/light/system theme toggle works with full UI consistency~~ (v0.3.0)
-10. ~~Database backup/restore works via file export/import~~ (v0.3.0)
-11. ~~German locale: correct number formatting, umlauts, localized month names~~ (v0.3.0)
-12. ~~Interpolation reworked: values at 1st of month 00:00, toggle visibility~~ (v0.3.0)
-13. ~~Heating meters assigned to rooms with per-room energy ratio support~~ (v0.3.0)
-14. ~~In-app language toggle (DE/EN) works independently of device locale~~ (v0.3.0)
-15. ~~Every meter screen has unified list/analysis bottom navigation with LiquidGlass FAB~~ (v0.4.0)
-16. ~~Per-household cost profile history with date-based lookup~~ (v0.4.0)
-17. ~~kWh/€ (or m³/€) toggle on all meter analysis pages~~ (v0.4.0)
-18. ~~Year comparison chart shows previous year data at correct month positions~~ (v0.4.0)
-19. ~~Global date format "dd.MM.yyyy, HH:mm Uhr" with localized suffix~~ (v0.4.0)
-20. New glassmorphism app icon with proper "Valtra" capitalization on home screen
-21. Native splash screen persists until data loaded (no empty-state flicker)
-22. Bottom nav matches XFin LiquidGlass reference design exactly
-23. Chart month abbreviations localized (DE/EN), Y-axis shows units/currency
-24. Home app bar shows only household selector + settings (no redundant title)
-25. Cost profiles: no "Aktiv" badge, German currency always, dd.MM.yyyy date format
-26. Heating has no cost profiles (unitless counters, percentage distribution only)
+## Requirements
+
+### Validated
+- ✓ All meter types can be recorded with timestamps — v0.1.0
+- ✓ Smart plug data aggregates correctly by room with pie chart visualization — v0.2.0
+- ✓ Interpolation produces accurate monthly boundary values — v0.2.0
+- ✓ Multi-household data remains properly isolated — v0.1.0
+- ✓ Analytics views show meaningful consumption insights with line/bar/pie charts — v0.2.0
+- ✓ CSV export works for all meter types via system share sheet — v0.2.0 (removed in v0.4.0)
+- ✓ 75%+ test coverage maintained — v0.3.0
+- ✓ Cost tracking shows accurate cost calculations with tiered pricing — v0.3.0
+- ✓ Dark/light/system theme toggle works with full UI consistency — v0.3.0
+- ✓ Database backup/restore works via file export/import — v0.3.0
+- ✓ German locale: correct number formatting, umlauts, localized month names — v0.3.0
+- ✓ Interpolation reworked: values at 1st of month 00:00, toggle visibility — v0.3.0
+- ✓ Heating meters assigned to rooms with per-room energy ratio support — v0.3.0
+- ✓ In-app language toggle (DE/EN) works independently of device locale — v0.3.0
+- ✓ Every meter screen has unified list/analysis bottom navigation with LiquidGlass FAB — v0.4.0
+- ✓ Per-household cost profile history with date-based lookup — v0.4.0
+- ✓ kWh/EUR (or m3/EUR) toggle on all meter analysis pages — v0.4.0
+- ✓ Year comparison chart shows previous year data at correct month positions — v0.4.0
+- ✓ Global date format "dd.MM.yyyy, HH:mm Uhr" with localized suffix — v0.4.0
+- ✓ New glassmorphism app icon with proper "Valtra" capitalization on home screen — v0.5.0
+- ✓ Native splash screen persists until data loaded (no empty-state flicker) — v0.5.0
+- ✓ Bottom nav matches XFin LiquidGlass reference design exactly — v0.5.0
+- ✓ Chart month abbreviations localized (DE/EN), Y-axis shows units/currency — v0.5.0
+- ✓ Home app bar shows only household selector + settings (no redundant title) — v0.5.0
+- ✓ Cost profiles: no "Aktiv" badge, German currency always, dd.MM.yyyy date format — v0.5.0
+- ✓ Heating has no cost profiles (unitless counters, percentage distribution only) — v0.5.0
+
+### Active
+(None — next milestone not yet planned)
+
+### Out of Scope
+- Mobile app stores — development/personal use only (App Store requires alpha channel fix)
+- Cloud sync — local-first architecture, deferred
+- CSV export — removed in v0.4.0, not bringing back
+- Heating cost calculation — no access to total building gas consumption; heating meters are unitless proportional counters
+- Offline mode complexity — already local-first, no cloud to go offline from
+
+## Context
+
+Shipped v0.5.0 with 56,003 LOC Dart across 5 milestones.
+Tech stack: Flutter, Drift (SQLite), Provider, fl_chart, liquid_glass_renderer.
+App has custom glassmorphism icon, native splash, LiquidGlass pill nav on all 5 meter screens.
+1103 tests passing, DB schema v3.
+All v0.5.0 requirements met (16/16), audit passed.
+
+## Key Decisions
+
+| # | Decision | Outcome |
+|---|----------|---------|
+| 1 | Local-first architecture (Drift/SQLite) | ✓ Good — works offline, fast, no server dependency |
+| 2 | LiquidGlass UI from XFin reference | ✓ Good — consistent design language, real glass effects |
+| 3 | Ultra Violet + Lemon Chiffon color scheme | ✓ Good — distinctive brand identity |
+| 4 | Provider for state management | ✓ Good — simple, sufficient for personal app |
+| 5 | fl_chart for charts | ✓ Good — flexible, supports localization |
+| 6 | Single main branch | ✓ Good — simple for personal project |
+| 7 | German currency always hardcoded | ✓ Good — consistent UX, user is German |
+| 8 | Heating as consumption-only | ✓ Good — correct model for unitless proportional counters |
+| 9 | CSV export removed (v0.4.0) | — Pending — may revisit if needed |
+| 10 | Deprecated GlassBottomNav kept (v0.5.0) | ⚠️ Revisit — clean up in v0.6.0 |
+
+## Technical Debt
+1. Deprecated GlassBottomNav/buildGlassFAB in liquid_glass_widgets.dart (remove in v0.6.0)
+2. App icon alpha channel (RGBA) — needs remove_alpha_ios if submitting to App Store
+3. Duplicate private widgets (_YearNavigationHeader, _YearlySummaryCard) in 4 meter screens
+4. 8 info-level deprecation warnings in flutter analyze (deprecated widget refs in test file)
 
 ## Repository
 - Location: c:\SAPDevelop\Privat\Valtra
@@ -130,3 +170,6 @@ Managing utility consumption across multiple households requires manual tracking
 
 ## Reference Project
 - XFin (C:\SAPDevelop\Privat\XFin) - for architecture patterns, LiquidGlass widgets, and CI/CD pipeline
+
+---
+*Last updated: 2026-03-13 after v0.5.0 milestone*
