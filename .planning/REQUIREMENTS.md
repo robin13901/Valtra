@@ -7,12 +7,12 @@
 
 ### Branding
 
-- [ ] **BRAND-01**: App uses new glassmorphism house/gauge icon (provided image asset)
-- [ ] **BRAND-02**: App name on device home screen shows "Valtra" with capital V
+- [x] **BRAND-01**: App uses new glassmorphism house/gauge icon (provided image asset)
+- [x] **BRAND-02**: App name on device home screen shows "Valtra" with capital V
 
 ### Loading
 
-- [ ] **LOAD-01**: Native splash screen remains visible until households are fully loaded (no empty-state flicker on startup)
+- [x] **LOAD-01**: Native splash screen remains visible until households are fully loaded (no empty-state flicker on startup)
 
 ### Navigation
 
@@ -52,9 +52,9 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| BRAND-01 | Phase 23 | Pending |
-| BRAND-02 | Phase 23 | Pending |
-| LOAD-01 | Phase 23 | Pending |
+| BRAND-01 | Phase 23 | Complete |
+| BRAND-02 | Phase 23 | Complete |
+| LOAD-01 | Phase 23 | Complete |
 | NAV-01 | Phase 24 | Pending |
 | NAV-02 | Phase 24 | Pending |
 | NAV-03 | Phase 24 | Pending |
@@ -76,4 +76,4 @@
 
 ---
 *Requirements defined: 2026-03-13*
-*Last updated: 2026-03-13 after milestone initialization*
+*Last updated: 2026-03-13 after phase 23 completion*

@@ -16,7 +16,7 @@
 
 **Goal:** Polish the app's visual identity, fix UX issues, and align bottom navigation with XFin reference design.
 
-### Phase 23: App Branding & Splash
+### Phase 23: App Branding & Splash — COMPLETED
 
 **Goal:** Set new app icon, capitalize app name on home screen, native splash until data loaded.
 
@@ -25,8 +25,8 @@
 **Plans:** 2 plans
 
 Plans:
-- [ ] 23-01-PLAN.md — App icon generation + app name capitalization (BRAND-01, BRAND-02)
-- [ ] 23-02-PLAN.md — Native splash screen with data-loading gate (LOAD-01)
+- [x] 23-01-PLAN.md — App icon generation + app name capitalization (BRAND-01, BRAND-02)
+- [x] 23-02-PLAN.md — Native splash screen with data-loading gate (LOAD-01)
 
 **Success Criteria:**
 1. App displays new glassmorphism house/gauge icon on Android & iOS
@@ -77,4 +77,4 @@ Plans:
 ## Current Status
 - **Completed**: Milestone 1 (v0.1.0), Milestone 2 (v0.2.0), Milestone 3 (v0.3.0), Milestone 4 (v0.4.0)
 - **Active Milestone**: Milestone 5 — Visual & UX Polish (v0.5.0)
-- **Next Phase**: Phase 23 — App Branding & Splash
+- **Next Phase**: Phase 24 — Bottom Navigation Redesign
