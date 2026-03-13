@@ -6,7 +6,6 @@ import '../database/app_database.dart';
 import '../database/tables.dart';
 import '../l10n/app_localizations.dart';
 import '../providers/analytics_provider.dart';
-import '../providers/cost_config_provider.dart';
 import '../providers/heating_provider.dart';
 import '../providers/locale_provider.dart';
 import '../screens/rooms_screen.dart';
@@ -32,7 +31,6 @@ class HeatingScreen extends StatefulWidget {
 
 class _HeatingScreenState extends State<HeatingScreen> {
   int _currentTab = 1; // 0=Analyse, 1=Liste (default Liste)
-  bool _showCosts = false; // kWh/€ toggle for Analyse tab
 
   @override
   void initState() {
@@ -77,8 +75,6 @@ class _HeatingScreenState extends State<HeatingScreen> {
               onPressed: () => _navigateToRooms(context),
               tooltip: l10n.manageRooms,
             ),
-          // Cost toggle: only on Analyse tab + cost config exists
-          if (_currentTab == 0) _buildCostToggle(context, l10n),
           const SizedBox(width: 8),
         ],
       ),
@@ -114,20 +110,6 @@ class _HeatingScreenState extends State<HeatingScreen> {
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildCostToggle(BuildContext context, AppLocalizations l10n) {
-    final costProvider = context.watch<CostConfigProvider>();
-    final hasHeatingCostConfig =
-        costProvider.getConfigsForMeterType(CostMeterType.heating).isNotEmpty;
-
-    if (!hasHeatingCostConfig) return const SizedBox.shrink();
-
-    return IconButton(
-      icon: Icon(_showCosts ? Icons.euro : Icons.thermostat),
-      onPressed: () => setState(() => _showCosts = !_showCosts),
-      tooltip: _showCosts ? l10n.showConsumption : l10n.showCosts,
     );
   }
 
@@ -210,7 +192,7 @@ class _HeatingScreenState extends State<HeatingScreen> {
           locale: locale,
           extrapolatedTotal: data.extrapolatedTotal,
           extrapolationBasisMonths: data.extrapolationBasisMonths,
-          showCosts: _showCosts,
+          showCosts: false,
         ),
         const SizedBox(height: 24),
 
@@ -225,9 +207,9 @@ class _HeatingScreenState extends State<HeatingScreen> {
             primaryColor: color,
             unit: data.unit,
             locale: locale,
-            showCosts: _showCosts,
-            periodCosts: _showCosts ? data.monthlyCosts : null,
-            costUnit: _showCosts ? (data.currencySymbol ?? '\u20AC') : null,
+            showCosts: false,
+            periodCosts: null,
+            costUnit: null,
           ),
         ),
         const SizedBox(height: 24),
@@ -246,12 +228,10 @@ class _HeatingScreenState extends State<HeatingScreen> {
               primaryColor: color,
               unit: data.unit,
               locale: locale,
-              showCosts: _showCosts,
-              currentYearCosts: _showCosts ? data.monthlyCosts : null,
-              previousYearCosts:
-                  _showCosts ? data.previousYearMonthlyCosts : null,
-              costUnit:
-                  _showCosts ? (data.currencySymbol ?? '\u20AC') : null,
+              showCosts: false,
+              currentYearCosts: null,
+              previousYearCosts: null,
+              costUnit: null,
             ),
           ),
           const SizedBox(height: 8),

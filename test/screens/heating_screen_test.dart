@@ -539,8 +539,27 @@ void main() {
               await tester.tap(find.text('Analysis'));
               await tester.pumpAndSettle();
 
-              // No cost config exists, so euro/thermostat toggle should not appear
+              // No cost toggle exists at all on heating screen (COST-05)
               expect(find.byIcon(Icons.euro), findsNothing);
+
+              await tester.pumpWidget(Container());
+            }));
+
+    testWidgets('no cost toggle visible on Analyse tab',
+        (tester) => tester.runAsync(() async {
+              await tester
+                  .pumpWidget(wrapWithProviders(const HeatingScreen()));
+              await tester.pumpAndSettle();
+
+              // Switch to Analyse tab
+              await tester.tap(find.text('Analysis'));
+              await tester.pumpAndSettle();
+
+              // No cost toggle should exist (heating is consumption-only)
+              expect(find.byIcon(Icons.euro), findsNothing);
+              // thermostat icon only appears in meter list items (empty state here)
+              // so when on Analyse tab with empty state, no thermostat icon at all
+              expect(find.byIcon(Icons.thermostat), findsNothing);
 
               await tester.pumpWidget(Container());
             }));
@@ -611,163 +630,6 @@ void main() {
 
               // Should show monthly breakdown heading
               expect(find.text('Monthly Breakdown'), findsOneWidget);
-
-              await tester.pumpWidget(Container());
-            }));
-  });
-
-  group('HeatingScreen - Cost Toggle on Analyse Tab', () {
-    testWidgets('cost toggle shown when cost config exists on Analyse tab',
-        (tester) => tester.runAsync(() async {
-              // Add a cost config for heating
-              await database.into(database.costConfigs).insert(
-                    CostConfigsCompanion.insert(
-                      householdId: householdId,
-                      meterType: CostMeterType.heating,
-                      unitPrice: 0.12,
-                      standingCharge: const drift.Value(200.0),
-                      validFrom: DateTime(2024, 1, 1),
-                      currencySymbol: const drift.Value('\u20AC'),
-                    ),
-                  );
-              await Future.delayed(const Duration(milliseconds: 100));
-
-              await tester
-                  .pumpWidget(wrapWithProviders(const HeatingScreen()));
-              await tester.pumpAndSettle();
-
-              // Switch to Analyse tab
-              await tester.tap(find.text('Analysis'));
-              await tester.pumpAndSettle();
-
-              // Cost toggle should appear with thermostat icon
-              // (default: show consumption)
-              expect(find.byIcon(Icons.thermostat), findsAtLeast(1));
-
-              await tester.pumpWidget(Container());
-            }));
-
-    testWidgets('toggling to EUR shows euro icon',
-        (tester) => tester.runAsync(() async {
-              // Add meter and readings for current year
-              final year = DateTime.now().year;
-              final meterId =
-                  await dao.insertMeter(HeatingMetersCompanion.insert(
-                householdId: householdId,
-                roomId: roomId,
-                name: 'Test Meter',
-              ));
-              await dao.insertReading(HeatingReadingsCompanion.insert(
-                heatingMeterId: meterId,
-                timestamp: DateTime(year, 1, 1),
-                value: 1000.0,
-              ));
-              await dao.insertReading(HeatingReadingsCompanion.insert(
-                heatingMeterId: meterId,
-                timestamp: DateTime(year, 2, 1),
-                value: 1300.0,
-              ));
-              await dao.insertReading(HeatingReadingsCompanion.insert(
-                heatingMeterId: meterId,
-                timestamp: DateTime(year, 3, 1),
-                value: 1550.0,
-              ));
-
-              // Add cost config for heating
-              await database.into(database.costConfigs).insert(
-                    CostConfigsCompanion.insert(
-                      householdId: householdId,
-                      meterType: CostMeterType.heating,
-                      unitPrice: 0.12,
-                      standingCharge: const drift.Value(200.0),
-                      validFrom: DateTime(year, 1, 1),
-                      currencySymbol: const drift.Value('\u20AC'),
-                    ),
-                  );
-
-              await Future.delayed(const Duration(milliseconds: 200));
-
-              await tester
-                  .pumpWidget(wrapWithProviders(const HeatingScreen()));
-              await tester.pumpAndSettle();
-
-              // Switch to Analyse tab
-              await tester.tap(find.text('Analysis'));
-              await Future.delayed(const Duration(milliseconds: 200));
-              await tester.pumpAndSettle();
-
-              // Tap the cost toggle (thermostat icon toggles to euro)
-              await tester.tap(find.byIcon(Icons.thermostat).last);
-              await tester.pumpAndSettle();
-
-              // Now euro icon should be visible
-              expect(find.byIcon(Icons.euro), findsOneWidget);
-
-              await tester.pumpWidget(Container());
-            }));
-
-    testWidgets('toggling back to kWh reverts to consumption display',
-        (tester) => tester.runAsync(() async {
-              final year = DateTime.now().year;
-              final meterId =
-                  await dao.insertMeter(HeatingMetersCompanion.insert(
-                householdId: householdId,
-                roomId: roomId,
-                name: 'Test Meter',
-              ));
-              await dao.insertReading(HeatingReadingsCompanion.insert(
-                heatingMeterId: meterId,
-                timestamp: DateTime(year, 1, 1),
-                value: 1000.0,
-              ));
-              await dao.insertReading(HeatingReadingsCompanion.insert(
-                heatingMeterId: meterId,
-                timestamp: DateTime(year, 2, 1),
-                value: 1300.0,
-              ));
-              await dao.insertReading(HeatingReadingsCompanion.insert(
-                heatingMeterId: meterId,
-                timestamp: DateTime(year, 3, 1),
-                value: 1550.0,
-              ));
-
-              // Add cost config
-              await database.into(database.costConfigs).insert(
-                    CostConfigsCompanion.insert(
-                      householdId: householdId,
-                      meterType: CostMeterType.heating,
-                      unitPrice: 0.12,
-                      standingCharge: const drift.Value(200.0),
-                      validFrom: DateTime(year, 1, 1),
-                      currencySymbol: const drift.Value('\u20AC'),
-                    ),
-                  );
-
-              await Future.delayed(const Duration(milliseconds: 200));
-
-              await tester
-                  .pumpWidget(wrapWithProviders(const HeatingScreen()));
-              await tester.pumpAndSettle();
-
-              // Switch to Analyse tab
-              await tester.tap(find.text('Analysis'));
-              await Future.delayed(const Duration(milliseconds: 200));
-              await tester.pumpAndSettle();
-
-              // Toggle to EUR
-              await tester.tap(find.byIcon(Icons.thermostat).last);
-              await tester.pumpAndSettle();
-
-              // Verify euro icon is showing (cost mode active)
-              expect(find.byIcon(Icons.euro), findsOneWidget);
-
-              // Toggle back to kWh
-              await tester.tap(find.byIcon(Icons.euro));
-              await tester.pumpAndSettle();
-
-              // Should revert: thermostat icon visible again,
-              // consumption with units shown
-              expect(find.textContaining('units'), findsAtLeast(1));
 
               await tester.pumpWidget(Container());
             }));
