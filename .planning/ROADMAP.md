@@ -53,7 +53,7 @@ Plans:
 4. All 5 meter screens use the new bottom nav (Strom, Gas, Wasser, Smart Plugs, Heizung)
 5. Analyse tab on left, Liste tab on right (matching XFin layout)
 
-### Phase 25: Chart Localization & Labels
+### Phase 25: Chart Localization & Labels — COMPLETED
 
 **Goal:** Charts display localized month abbreviations and show units/currency on Y-axis.
 
@@ -62,7 +62,7 @@ Plans:
 **Plans:** 1 plan
 
 Plans:
-- [ ] 25-01-PLAN.md — Localize DateFormat calls in MonthlyBarChart + YearComparisonChart; add Y-axis unit labels (CHART-01, CHART-02, CHART-03)
+- [x] 25-01-PLAN.md — Localize DateFormat calls in MonthlyBarChart + YearComparisonChart; add Y-axis unit labels (CHART-01, CHART-02, CHART-03)
 
 **Success Criteria:**
 1. German month abbreviations shown when language=DE (Mar, Dez instead of Mar, Dec)
@@ -89,4 +89,4 @@ Plans:
 ## Current Status
 - **Completed**: Milestone 1 (v0.1.0), Milestone 2 (v0.2.0), Milestone 3 (v0.3.0), Milestone 4 (v0.4.0)
 - **Active Milestone**: Milestone 5 — Visual & UX Polish (v0.5.0)
-- **Next Phase**: Phase 25 — Chart Localization & Labels
+- **Next Phase**: Phase 26 — Home Screen & Cost Profile Fixes

@@ -23,9 +23,9 @@
 
 ### Charts
 
-- [ ] **CHART-01**: Month abbreviations on X-axis are localized per app language (DE: Jan, Feb, Mär, Apr, Mai, Jun, Jul, Aug, Sep, Okt, Nov, Dez / EN: Jan, Feb, Mar...)
-- [ ] **CHART-02**: Y-axis displays unit or currency label (€, kWh, m³) depending on active toggle mode
-- [ ] **CHART-03**: Chart localization applied to Strom, Gas, and Wasser analysis pages
+- [x] **CHART-01**: Month abbreviations on X-axis are localized per app language (DE: Jan, Feb, Mär, Apr, Mai, Jun, Jul, Aug, Sep, Okt, Nov, Dez / EN: Jan, Feb, Mar...)
+- [x] **CHART-02**: Y-axis displays unit or currency label (€, kWh, m³) depending on active toggle mode
+- [x] **CHART-03**: Chart localization applied to Strom, Gas, and Wasser analysis pages
 
 ### Home Screen
 
@@ -59,9 +59,9 @@
 | NAV-02 | Phase 24 | Complete |
 | NAV-03 | Phase 24 | Complete |
 | NAV-04 | Phase 24 | Complete |
-| CHART-01 | Phase 25 | Pending |
-| CHART-02 | Phase 25 | Pending |
-| CHART-03 | Phase 25 | Pending |
+| CHART-01 | Phase 25 | Complete |
+| CHART-02 | Phase 25 | Complete |
+| CHART-03 | Phase 25 | Complete |
 | HOME-01 | Phase 26 | Pending |
 | COST-01 | Phase 26 | Pending |
 | COST-02 | Phase 26 | Pending |
@@ -76,4 +76,4 @@
 
 ---
 *Requirements defined: 2026-03-13*
-*Last updated: 2026-03-13 after phase 24 completion*
+*Last updated: 2026-03-13 after phase 25 completion*
