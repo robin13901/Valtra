@@ -72,31 +72,35 @@ class _WaterScreenState extends State<WaterScreen> {
           const SizedBox(width: 8),
         ],
       ),
-      body: IndexedStack(
-        index: _currentTab,
+      body: Stack(
         children: [
-          _buildAnalyseTab(context),
-          _buildListeTab(context),
-        ],
-      ),
-      floatingActionButton: _currentTab == 1
-          ? buildGlassFAB(
-              context: context,
-              icon: Icons.add,
-              onPressed: () => _addMeter(context),
-            )
-          : null,
-      bottomNavigationBar: GlassBottomNav(
-        currentIndex: _currentTab,
-        onTap: (index) => setState(() => _currentTab = index),
-        items: [
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.analytics),
-            label: l10n.analysis,
+          IndexedStack(
+            index: _currentTab,
+            children: [
+              _buildAnalyseTab(context),
+              _buildListeTab(context),
+            ],
           ),
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.list),
-            label: l10n.list,
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: LiquidGlassBottomNav(
+              icons: const [Icons.analytics, Icons.list],
+              labels: [l10n.analysis, l10n.list],
+              keys: const [
+                Key('water_nav_analyse'),
+                Key('water_nav_liste'),
+              ],
+              currentIndex: _currentTab,
+              onTap: (index) => setState(() => _currentTab = index),
+              rightIcon: Icons.add,
+              onRightTap: () => _addMeter(context),
+              rightVisibleForIndices: const {1},
+              onLeftTap: null,
+              leftVisibleForIndices: const {},
+              keepLeftPlaceholder: false,
+            ),
           ),
         ],
       ),
@@ -173,7 +177,7 @@ class _WaterScreenState extends State<WaterScreen> {
     }
 
     return ListView(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
       children: [
         // Year navigation header
         _YearNavigationHeader(
@@ -460,7 +464,7 @@ class _WaterMetersList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
       itemCount: meters.length,
       itemBuilder: (context, index) {
         return _WaterMeterCard(meter: meters[index]);
