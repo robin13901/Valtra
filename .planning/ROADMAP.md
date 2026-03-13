@@ -70,7 +70,7 @@ Plans:
 3. Y-axis displays unit (kWh, m3) or currency (EUR) depending on active toggle
 4. Applied to all analysis pages (Strom, Gas, Wasser)
 
-### Phase 26: Home Screen & Cost Profile Fixes
+### Phase 26: Home Screen & Cost Profile Fixes — COMPLETED
 
 **Goal:** Clean up home app bar, fix cost profile formatting, correct heating meter understanding.
 
@@ -79,8 +79,8 @@ Plans:
 **Plans:** 2 plans
 
 Plans:
-- [ ] 26-01-PLAN.md — Remove app bar title, Aktiv badge, hardcode German currency, fix date padding (HOME-01, COST-01, COST-02, COST-03)
-- [ ] 26-02-PLAN.md — Remove CostMeterType.heating and cost toggle from heating screen (COST-04, COST-05)
+- [x] 26-01-PLAN.md — Remove app bar title, Aktiv badge, hardcode German currency, fix date padding (HOME-01, COST-01, COST-02, COST-03)
+- [x] 26-02-PLAN.md — Remove CostMeterType.heating and cost toggle from heating screen (COST-04, COST-05)
 
 **Success Criteria:**
 1. Home screen app bar shows only household selector (left) and settings icon (right) — no "Valtra" title
@@ -95,4 +95,4 @@ Plans:
 ## Current Status
 - **Completed**: Milestone 1 (v0.1.0), Milestone 2 (v0.2.0), Milestone 3 (v0.3.0), Milestone 4 (v0.4.0)
 - **Active Milestone**: Milestone 5 — Visual & UX Polish (v0.5.0)
-- **Next Phase**: Phase 26 — Home Screen & Cost Profile Fixes
+- **All phases complete**: Phases 23–26 executed and verified. Ready for milestone audit/completion.

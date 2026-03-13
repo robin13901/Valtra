@@ -29,15 +29,15 @@
 
 ### Home Screen
 
-- [ ] **HOME-01**: Home screen app bar shows only household selector (left) and settings icon (right) — no "Valtra" title text
+- [x] **HOME-01**: Home screen app bar shows only household selector (left) and settings icon (right) — no "Valtra" title text
 
 ### Cost Profiles
 
-- [ ] **COST-01**: "Aktiv" badge removed from currently active cost profile card
-- [ ] **COST-02**: German currency format always used (123,45 €) regardless of selected app language
-- [ ] **COST-03**: "Gültig ab" date field formatted as dd.MM.yyyy (e.g., 01.03.2026, not 1.3.2026)
-- [ ] **COST-04**: Heating removed from CostMeterType — no cost profiles for heating meters
-- [ ] **COST-05**: kWh/€ cost toggle removed from heating analysis page (unitless consumption counters show only percentage distribution)
+- [x] **COST-01**: "Aktiv" badge removed from currently active cost profile card
+- [x] **COST-02**: German currency format always used (123,45 €) regardless of selected app language
+- [x] **COST-03**: "Gültig ab" date field formatted as dd.MM.yyyy (e.g., 01.03.2026, not 1.3.2026)
+- [x] **COST-04**: Heating removed from CostMeterType — no cost profiles for heating meters
+- [x] **COST-05**: kWh/€ cost toggle removed from heating analysis page (unitless consumption counters show only percentage distribution)
 
 ## Out of Scope
 
@@ -62,12 +62,12 @@
 | CHART-01 | Phase 25 | Complete |
 | CHART-02 | Phase 25 | Complete |
 | CHART-03 | Phase 25 | Complete |
-| HOME-01 | Phase 26 | Pending |
-| COST-01 | Phase 26 | Pending |
-| COST-02 | Phase 26 | Pending |
-| COST-03 | Phase 26 | Pending |
-| COST-04 | Phase 26 | Pending |
-| COST-05 | Phase 26 | Pending |
+| HOME-01 | Phase 26 | Complete |
+| COST-01 | Phase 26 | Complete |
+| COST-02 | Phase 26 | Complete |
+| COST-03 | Phase 26 | Complete |
+| COST-04 | Phase 26 | Complete |
+| COST-05 | Phase 26 | Complete |
 
 **Coverage:**
 - v0.5.0 requirements: 16 total
@@ -76,4 +76,4 @@
 
 ---
 *Requirements defined: 2026-03-13*
-*Last updated: 2026-03-13 after phase 25 completion*
+*Last updated: 2026-03-13 after phase 26 completion*
