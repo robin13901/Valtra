@@ -4,11 +4,11 @@
 - **Milestone**: 5 - Visual & UX Polish (v0.5.0)
 - **Last Shipped**: v0.4.0 (2026-03-09)
 - **Current Phase**: 24 - Bottom Navigation Redesign (in progress)
-- **Current Plan**: 24-01 complete
+- **Current Plan**: 24-02 complete
 - **Last Updated**: 2026-03-13
 - **Tests**: 1093
 
-Progress: ███░░░░░░░░░░░░░░░░░░░░░░ (3/? plans in milestone)
+Progress: ████░░░░░░░░░░░░░░░░░░░░░ (4/? plans in milestone)
 
 ## Completed Milestones
 - **Milestone 1**: Core Foundation (v0.1.0) -- 7 phases, 313 tests
@@ -19,6 +19,7 @@ Progress: ███░░░░░░░░░░░░░░░░░░░░�
 ## Completed (this milestone)
 - **23-01**: App icon generated (flutter_launcher_icons), app name capitalized to "Valtra" on Android + iOS
 - **23-02**: Native splash screen with Ultra Violet (#5F4A8B) background; persists until HouseholdProvider stream fires; eliminates empty-screen flicker
+- **24-02**: SmartPlugsScreen and GasScreen migrated to LiquidGlassBottomNav with Stack+Positioned layout; FAB on Liste tab only; fixed buildLiquidCircleButton key propagation bug; 1093 tests
 - **24-01**: LiquidGlassBottomNav widget + buildLiquidCircleButton + liquidGlassSettings added to liquid_glass_widgets.dart; 14 new tests; old widgets preserved
 
 ## Blocked
@@ -27,6 +28,7 @@ _None_
 ## Session History
 | Date | Phase | Action | Notes |
 |------|-------|--------|-------|
+| 2026-03-13 | 24-02 | Completed plan 02 | SmartPlugsScreen + GasScreen migrated to LiquidGlassBottomNav; Stack+Positioned layout; FAB on Liste only; fixed buildLiquidCircleButton key bug; phase6_uat_test gas tests updated; 1093 tests. |
 | 2026-03-13 | 24-01 | Completed plan 01 | LiquidGlassBottomNav + buildLiquidCircleButton + liquidGlassSettings added; key-on-SizedBox fix; 14 new tests; 1093 total. |
 | 2026-03-13 | 23-02 | Completed plan 02 | Native splash screen generated (Android pre-12, 12+, iOS, Web); FlutterNativeSplash preserve/remove lifecycle wired in main.dart; 2 new tests. |
 | 2026-03-13 | 23-01 | Completed plan 01 | Custom icon generated, app name "Valtra" capitalized on both platforms. |
@@ -104,4 +106,4 @@ _None_
 3. **Duplicate private widgets** - _YearNavigationHeader and _YearlySummaryCard duplicated in 4 meter screens (electricity, gas, water, heating) — could be extracted to shared widgets
 
 ## Next Actions
-_Execute phase 24 plan 02: Migrate electricity and smart plug screens to LiquidGlassBottomNav._
+_Execute phase 24 plan 03: Migrate electricity, water and heating screens to LiquidGlassBottomNav._
