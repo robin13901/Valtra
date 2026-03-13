@@ -59,6 +59,11 @@ Plans:
 
 **Requirements:** CHART-01, CHART-02, CHART-03
 
+**Plans:** 1 plan
+
+Plans:
+- [ ] 25-01-PLAN.md — Localize DateFormat calls in MonthlyBarChart + YearComparisonChart; add Y-axis unit labels (CHART-01, CHART-02, CHART-03)
+
 **Success Criteria:**
 1. German month abbreviations shown when language=DE (Mar, Dez instead of Mar, Dec)
 2. English month abbreviations shown when language=EN
