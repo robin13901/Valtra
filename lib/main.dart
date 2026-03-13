@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:provider/provider.dart';
 
 import 'app_theme.dart';
@@ -41,7 +42,8 @@ import 'widgets/household_selector.dart';
 import 'widgets/liquid_glass_widgets.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
 
   // Initialize theme provider
   final themeProvider = ThemeProvider();
@@ -142,6 +144,32 @@ void main() async {
     costConfigProvider: costConfigProvider,
     backupRestoreProvider: backupRestoreProvider,
   ));
+
+  removeSplashWhenReady(householdProvider);
+}
+
+/// Removes the native splash screen once household data is loaded.
+///
+/// Waits for the first [notifyListeners] call from [provider] after
+/// [init] completes (i.e., the first DB stream event), then schedules
+/// splash removal on the next frame to avoid flicker.
+///
+/// An optional [removeSplash] callback can be injected for testing.
+@visibleForTesting
+void removeSplashWhenReady(
+  HouseholdProvider provider, {
+  void Function()? removeSplash,
+}) {
+  final remove = removeSplash ?? FlutterNativeSplash.remove;
+
+  void listener() {
+    provider.removeListener(listener);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      remove();
+    });
+  }
+
+  provider.addListener(listener);
 }
 
 class ValtraApp extends StatefulWidget {
@@ -199,16 +227,24 @@ class _ValtraAppState extends State<ValtraApp> {
   }
 
   void _onHouseholdChanged() {
-    final householdId = widget.householdProvider.selectedHouseholdId;
-    widget.electricityProvider.setHouseholdId(householdId);
-    widget.roomProvider.setHouseholdId(householdId);
-    widget.smartPlugProvider.setHouseholdId(householdId);
-    widget.waterProvider.setHouseholdId(householdId);
-    widget.gasProvider.setHouseholdId(householdId);
-    widget.heatingProvider.setHouseholdId(householdId);
-    widget.analyticsProvider.setHouseholdId(householdId);
-    widget.smartPlugAnalyticsProvider.setHouseholdId(householdId);
-    widget.costConfigProvider.setHouseholdId(householdId);
+    // Schedule provider updates after the current frame to avoid cascading
+    // notifyListeners() calls during an active build/notification cycle.
+    // Without this, cold-start triggers a stream event on HouseholdProvider
+    // that synchronously notifies 9+ child providers, which can cause a
+    // '_elements.contains(element)' assertion in the framework.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final householdId = widget.householdProvider.selectedHouseholdId;
+      widget.electricityProvider.setHouseholdId(householdId);
+      widget.roomProvider.setHouseholdId(householdId);
+      widget.smartPlugProvider.setHouseholdId(householdId);
+      widget.waterProvider.setHouseholdId(householdId);
+      widget.gasProvider.setHouseholdId(householdId);
+      widget.heatingProvider.setHouseholdId(householdId);
+      widget.analyticsProvider.setHouseholdId(householdId);
+      widget.smartPlugAnalyticsProvider.setHouseholdId(householdId);
+      widget.costConfigProvider.setHouseholdId(householdId);
+    });
   }
 
   @override
