@@ -106,7 +106,7 @@ void main() {
       await tester.pumpWidget(buildHomeScreen());
       await tester.pumpAndSettle();
 
-      expect(find.byType(GlassBottomNav), findsNothing);
+      expect(find.byType(LiquidGlassBottomNav), findsNothing);
     });
 
     testWidgets('does not render BottomNavigationBar', (tester) async {

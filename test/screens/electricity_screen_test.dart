@@ -118,7 +118,7 @@ void main() {
               // Check bottom nav items
               expect(find.text('Analysis'), findsOneWidget);
               expect(find.text('List'), findsOneWidget);
-              expect(find.byType(GlassBottomNav), findsOneWidget);
+              expect(find.byType(LiquidGlassBottomNav), findsOneWidget);
 
               await tester.pumpWidget(Container());
             }));
@@ -167,7 +167,7 @@ void main() {
               await tester.pumpAndSettle();
 
               // Should find FAB on Liste tab (default)
-              expect(find.byType(FloatingActionButton), findsOneWidget);
+              expect(find.byKey(const Key('right_fab')), findsOneWidget);
 
               await tester.pumpWidget(Container());
             }));
@@ -183,7 +183,7 @@ void main() {
               await tester.pumpAndSettle();
 
               // FAB should not be present
-              expect(find.byType(FloatingActionButton), findsNothing);
+              expect(find.byKey(const Key('right_fab')), findsNothing);
 
               await tester.pumpWidget(Container());
             }));
@@ -312,7 +312,7 @@ void main() {
               await tester.pumpAndSettle();
 
               // Tap FAB
-              await tester.tap(find.byType(FloatingActionButton));
+              await tester.tap(find.byKey(const Key('right_fab')));
               await tester.pumpAndSettle();
 
               // Dialog should appear
@@ -564,6 +564,46 @@ void main() {
               // Should revert: electric_bolt icon visible again,
               // consumption with kWh shown
               expect(find.textContaining('kWh'), findsAtLeast(1));
+
+              await tester.pumpWidget(Container());
+            }));
+  });
+
+  group('ElectricityScreen - Dark Mode', () {
+    testWidgets('renders LiquidGlassBottomNav in dark mode',
+        (tester) => tester.runAsync(() async {
+              await tester.pumpWidget(
+                MultiProvider(
+                  providers: [
+                    Provider<AppDatabase>.value(value: database),
+                    ChangeNotifierProvider<ElectricityProvider>.value(
+                        value: electricityProvider),
+                    ChangeNotifierProvider<AnalyticsProvider>.value(
+                        value: analyticsProvider),
+                    ChangeNotifierProvider<CostConfigProvider>.value(
+                        value: costConfigProvider),
+                    ChangeNotifierProvider<ThemeProvider>.value(
+                        value: themeProvider),
+                    ChangeNotifierProvider<LocaleProvider>.value(
+                        value: localeProvider),
+                  ],
+                  child: MaterialApp(
+                    localizationsDelegates:
+                        AppLocalizations.localizationsDelegates,
+                    supportedLocales: AppLocalizations.supportedLocales,
+                    locale: const Locale('en'),
+                    theme: AppTheme.lightTheme,
+                    darkTheme: AppTheme.darkTheme,
+                    themeMode: ThemeMode.dark,
+                    home: const ElectricityScreen(),
+                  ),
+                ),
+              );
+              await tester.pumpAndSettle();
+
+              expect(find.byType(LiquidGlassBottomNav), findsOneWidget);
+              expect(find.text('Analysis'), findsOneWidget);
+              expect(find.text('List'), findsOneWidget);
 
               await tester.pumpWidget(Container());
             }));

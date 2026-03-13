@@ -116,7 +116,7 @@ void main() {
 
               expect(find.text('Analysis'), findsOneWidget);
               expect(find.text('List'), findsOneWidget);
-              expect(find.byType(GlassBottomNav), findsOneWidget);
+              expect(find.byType(LiquidGlassBottomNav), findsOneWidget);
 
               await tester.pumpWidget(Container());
             }));
@@ -161,7 +161,7 @@ void main() {
                   .pumpWidget(wrapWithProviders(const WaterScreen()));
               await tester.pumpAndSettle();
 
-              expect(find.byType(FloatingActionButton), findsOneWidget);
+              expect(find.byKey(const Key('right_fab')), findsOneWidget);
 
               await tester.pumpWidget(Container());
             }));
@@ -176,7 +176,7 @@ void main() {
               await tester.tap(find.text('Analysis'));
               await tester.pumpAndSettle();
 
-              expect(find.byType(FloatingActionButton), findsNothing);
+              expect(find.byKey(const Key('right_fab')), findsNothing);
 
               await tester.pumpWidget(Container());
             }));
@@ -266,7 +266,7 @@ void main() {
               await tester.pumpAndSettle();
 
               // Tap FAB
-              await tester.tap(find.byType(FloatingActionButton));
+              await tester.tap(find.byKey(const Key('right_fab')));
               await tester.pumpAndSettle();
 
               // Dialog should appear
