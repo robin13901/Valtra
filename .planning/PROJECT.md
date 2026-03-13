@@ -35,9 +35,24 @@ Managing utility consumption across multiple households requires manual tracking
 - Comprehensive test coverage with Codecov integration
 - GitHub Actions CI/CD pipeline
 
+## Current Milestone: v0.5.0 - Visual & UX Polish
+
+**Goal:** Polish the app's visual identity, fix UX issues, and align bottom navigation with XFin reference design.
+
+**Target features:**
+- New glassmorphism app icon + proper app name capitalization
+- Native splash screen (no empty-state flicker on startup)
+- Bottom nav bar matching XFin LiquidGlass design exactly
+- Localized chart labels (month abbreviations, Y-axis units/currency)
+- Home screen app bar cleanup (remove redundant title)
+- Cost profile formatting fixes (remove "Aktiv" badge, German currency, date format)
+- Heating cost profile removal (unitless consumption counters, percentage-only analysis)
+
 ## Current State
 
-### Shipped: v0.4.0 - UX Overhaul (2026-03-09)
+<details>
+<summary>v0.4.0 - UX Overhaul (2026-03-09)</summary>
+
 - 6 phases completed: Home Screen, Cost Settings, Electricity, Gas, Smart Plugs, Water & Heating
 - 1077 tests passing, 78 source files (27,482 LOC), 81 test files (24,887 LOC), DB schema v3
 - Unified Analyse/Liste bottom nav on all 5 meter screens (IndexedStack, LiquidGlass FAB)
@@ -46,6 +61,7 @@ Managing utility consumption across multiple households requires manual tracking
 - Year comparison chart fixed (calendar month alignment)
 - Dead code removed: CSV export, analytics hub, MonthlyAnalyticsScreen, YearlyAnalyticsScreen, QuickEntryMixin
 - Global date format "dd.MM.yyyy, HH:mm Uhr" with locale support
+</details>
 
 <details>
 <summary>v0.3.0 - Polish & Enhancement (2026-03-08)</summary>
@@ -100,6 +116,13 @@ Managing utility consumption across multiple households requires manual tracking
 17. ~~kWh/€ (or m³/€) toggle on all meter analysis pages~~ (v0.4.0)
 18. ~~Year comparison chart shows previous year data at correct month positions~~ (v0.4.0)
 19. ~~Global date format "dd.MM.yyyy, HH:mm Uhr" with localized suffix~~ (v0.4.0)
+20. New glassmorphism app icon with proper "Valtra" capitalization on home screen
+21. Native splash screen persists until data loaded (no empty-state flicker)
+22. Bottom nav matches XFin LiquidGlass reference design exactly
+23. Chart month abbreviations localized (DE/EN), Y-axis shows units/currency
+24. Home app bar shows only household selector + settings (no redundant title)
+25. Cost profiles: no "Aktiv" badge, German currency always, dd.MM.yyyy date format
+26. Heating has no cost profiles (unitless counters, percentage distribution only)
 
 ## Repository
 - Location: c:\SAPDevelop\Privat\Valtra

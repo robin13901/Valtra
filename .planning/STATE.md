@@ -1,25 +1,21 @@
 # Valtra - Project State
 
 ## Current Status
-- **Milestone**: 4 - UX Overhaul (v0.4.0)
-- **Last Shipped**: v0.3.0 (2026-03-08)
-- **Current Phase**: — (all phases complete)
+- **Milestone**: 5 - Visual & UX Polish (v0.5.0)
+- **Last Shipped**: v0.4.0 (2026-03-09)
+- **Current Phase**: 23 - App Branding & Splash (pending plan)
 - **Current Plan**: —
-- **Last Updated**: 2026-03-09
+- **Last Updated**: 2026-03-13
 - **Tests**: 1077
 
 ## Completed Milestones
 - **Milestone 1**: Core Foundation (v0.1.0) -- 7 phases, 313 tests
 - **Milestone 2**: Analytics & Visualization (v0.2.0) -- 4 phases, 625 tests
 - **Milestone 3**: Polish & Enhancement (v0.3.0) -- 5 phases, 1017 tests
+- **Milestone 4**: UX Overhaul (v0.4.0) -- 6 phases, 1077 tests
 
 ## Completed (this milestone)
-- **17-01**: Fix household dropdown text color (onSurface theme-aware colors)
-- **18**: Cost settings & household configuration (annual Grundpreis, expandable profile cards, household-scoped settings)
-- **19**: Electricity screen overhaul (bottom nav, IndexedStack, inline analysis, chart month-alignment fix, kWh/€ toggle)
-- **20**: Gas screen overhaul (bottom nav, IndexedStack, inline analysis, m³/€ toggle)
-- **21-01**: Smart Plug screen overhaul (bottom nav Analyse/Liste, monthly-only inline analytics, renamed stats, room percentages, 1070 tests)
-- **22**: Water & Heating screen overhaul (bottom nav, inline analysis, m³/€ and kWh/€ toggles, dead code cleanup, 1077 tests)
+_None yet_
 
 ## Blocked
 _None_
@@ -27,11 +23,7 @@ _None_
 ## Session History
 | Date | Phase | Action | Notes |
 |------|-------|--------|-------|
-| 2026-03-08 | — | Milestone 4 initialized | Created REQUIREMENTS.md, updated ROADMAP.md, reset STATE.md. 6 phases planned (17-22). Archived v0.3.0 docs. |
-| 2026-03-09 | 17 | Completed 17-01 | Fixed household dropdown text/icon colors for light/dark theme. 5 new tests added. |
-| 2026-03-09 | 19 | Phase complete | Electricity screen overhaul: bottom nav (Analyse/Liste), IndexedStack, inline analysis, year chart month-alignment fix, kWh/€ toggle, per-month costs. 1057 tests, 0 analyze issues. |
-| 2026-03-09 | 21 | 21-01 complete | Smart Plug screen overhaul: GlassBottomNav, monthly-only inline analytics, renamed stats, room percentages, dense list items. 1070 tests, 0 analyze issues. |
-| 2026-03-09 | 22 | Phase complete | Water & Heating screen overhaul: bottom nav, inline analysis, cost toggles (m³/€, kWh/€), CostMeterType.heating, dead code removal (MonthlyAnalyticsScreen, YearlyAnalyticsScreen). 1077 tests, 0 analyze issues. |
+| 2026-03-13 | — | Milestone 5 initialized | Created REQUIREMENTS.md (16 reqs), updated PROJECT.md, ROADMAP.md with 4 phases (23-26). |
 
 ## Key Decisions (carried forward)
 1. **Local-first architecture** - Using Drift/SQLite for offline-capable data storage
@@ -89,6 +81,8 @@ _None_
 53. **Water/heating bottom nav** - Same Analyse/Liste pattern as electricity/gas; water uses m³/€ toggle, heating uses kWh/€ toggle
 54. **CostMeterType.heating** - Added as ordinal 3 to intEnum; no DB migration needed (appended at end)
 55. **Dead analytics screens removed** - MonthlyAnalyticsScreen and YearlyAnalyticsScreen deleted after all consumers migrated to inline tabs
+56. **Heating meters are unitless** - Consumption counters for central heating; show only percentage distribution per room, no cost calculation possible (no access to total building gas consumption)
+57. **German currency format always** - Cost displays use German format (123,45 €) regardless of app language setting
 
 ## Technical Debt
 1. **LiquidGlass integration** - Using standard Flutter glass-style widgets instead of full liquid_glass_renderer integration
@@ -96,4 +90,4 @@ _None_
 3. **Duplicate private widgets** - _YearNavigationHeader and _YearlySummaryCard duplicated in 4 meter screens (electricity, gas, water, heating) — could be extracted to shared widgets
 
 ## Next Actions
-_Milestone 4 (v0.4.0) complete. Run `/gsd:complete-milestone` to archive and prepare next milestone._
+_Plan phase 23 to begin implementation._
