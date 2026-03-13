@@ -76,6 +76,12 @@ Plans:
 
 **Requirements:** HOME-01, COST-01, COST-02, COST-03, COST-04, COST-05
 
+**Plans:** 2 plans
+
+Plans:
+- [ ] 26-01-PLAN.md — Remove app bar title, Aktiv badge, hardcode German currency, fix date padding (HOME-01, COST-01, COST-02, COST-03)
+- [ ] 26-02-PLAN.md — Remove CostMeterType.heating and cost toggle from heating screen (COST-04, COST-05)
+
 **Success Criteria:**
 1. Home screen app bar shows only household selector (left) and settings icon (right) — no "Valtra" title
 2. No "Aktiv" badge on cost profile cards
