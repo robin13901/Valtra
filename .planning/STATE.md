@@ -45,6 +45,8 @@ Progress: █░░░░░░░░░░░░░░░░░░░░░░�
 - Gradient fill pattern: LinearGradient 0.3→0.0 alpha for current year line belowBarData (YCMP-02)
 - HouseholdChartData.color is caller-assigned (provider assigns pieChartColors[index]); widget is color-agnostic
 - Unified interpolated/extrapolated flag: any period with startInterpolated|endInterpolated|isExtrapolated renders as dashed
+- MonthlyBarChart scroll: visibleBars=12 threshold; Row(fixed-Y-axis BarChart + Expanded ScrollView) for AXIS-03
+- MonthlyBarChart alpha scheme: past=0.85, future/extrapolated=0.3, highlighted=1.0 (BAR-03)
 
 ### Pending Todos
 None yet.
@@ -60,6 +62,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-04-01T09:19:37Z
-Stopped at: Completed 27-04-PLAN.md
+Last session: 2026-04-01T09:35:00Z
+Stopped at: Completed 27-02-PLAN.md (MonthlyBarChart scrolling/glow/opacity/axis style)
 Resume file: None
