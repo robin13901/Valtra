@@ -8,6 +8,7 @@ import 'package:valtra/database/daos/cost_config_dao.dart';
 import 'package:valtra/database/daos/electricity_dao.dart';
 import 'package:valtra/database/daos/gas_dao.dart';
 import 'package:valtra/database/daos/heating_dao.dart';
+import 'package:valtra/database/daos/household_dao.dart';
 import 'package:valtra/database/daos/water_dao.dart';
 import 'package:valtra/l10n/app_localizations.dart';
 import 'package:valtra/providers/analytics_provider.dart';
@@ -80,6 +81,7 @@ void main() {
       gasDao: GasDao(database),
       waterDao: WaterDao(database),
       heatingDao: HeatingDao(database),
+      householdDao: HouseholdDao(database),
       interpolationService: InterpolationService(),
       gasConversionService: GasConversionService(),
       settingsProvider: interpolationSettingsProvider,

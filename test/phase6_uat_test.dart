@@ -87,6 +87,7 @@ void main() {
       gasDao: dao,
       waterDao: WaterDao(database),
       heatingDao: HeatingDao(database),
+      householdDao: HouseholdDao(database),
       interpolationService: InterpolationService(),
       gasConversionService: GasConversionService(),
       settingsProvider: interpolationSettingsProvider,

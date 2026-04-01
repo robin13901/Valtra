@@ -4,6 +4,7 @@ import 'package:valtra/database/app_database.dart';
 import 'package:valtra/database/daos/electricity_dao.dart';
 import 'package:valtra/database/daos/gas_dao.dart';
 import 'package:valtra/database/daos/heating_dao.dart';
+import 'package:valtra/database/daos/household_dao.dart';
 import 'package:valtra/database/daos/water_dao.dart';
 import 'package:valtra/database/tables.dart';
 import 'package:valtra/providers/analytics_provider.dart';
@@ -23,6 +24,8 @@ class MockWaterDao extends Mock implements WaterDao {}
 
 class MockHeatingDao extends Mock implements HeatingDao {}
 
+class MockHouseholdDao extends Mock implements HouseholdDao {}
+
 class MockInterpolationService extends Mock implements InterpolationService {}
 
 class MockGasConversionService extends Mock implements GasConversionService {}
@@ -37,6 +40,7 @@ void main() {
   late MockGasDao mockGasDao;
   late MockWaterDao mockWaterDao;
   late MockHeatingDao mockHeatingDao;
+  late MockHouseholdDao mockHouseholdDao;
   late MockInterpolationService mockInterpolationService;
   late MockGasConversionService mockGasConversionService;
   late MockInterpolationSettingsProvider mockSettingsProvider;
@@ -56,6 +60,7 @@ void main() {
     mockGasDao = MockGasDao();
     mockWaterDao = MockWaterDao();
     mockHeatingDao = MockHeatingDao();
+    mockHouseholdDao = MockHouseholdDao();
     mockInterpolationService = MockInterpolationService();
     mockGasConversionService = MockGasConversionService();
     mockSettingsProvider = MockInterpolationSettingsProvider();
@@ -74,11 +79,16 @@ void main() {
     when(() => mockCostConfigProvider.getActiveConfig(any(), any()))
         .thenReturn(null);
 
+    // Default stub for household DAO: return empty list
+    when(() => mockHouseholdDao.getAllHouseholds())
+        .thenAnswer((_) async => <Household>[]);
+
     provider = AnalyticsProvider(
       electricityDao: mockElectricityDao,
       gasDao: mockGasDao,
       waterDao: mockWaterDao,
       heatingDao: mockHeatingDao,
+      householdDao: mockHouseholdDao,
       interpolationService: mockInterpolationService,
       gasConversionService: mockGasConversionService,
       settingsProvider: mockSettingsProvider,
