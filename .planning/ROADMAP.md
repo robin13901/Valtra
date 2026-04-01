@@ -113,7 +113,10 @@ Plans:
   1. Heating analytics displays month nav, summary, scrollable bar chart, year comparison, and household comparison using shared widgets
   2. Per-heater pie chart and list show percentage distribution of unitless counter readings across heaters
   3. Deprecated GlassBottomNav and buildGlassFAB are fully removed from liquid_glass_widgets.dart with no remaining references in the codebase
-**Plans**: TBD
+**Plans:** 2 plans
+Plans:
+- [ ] 32-01-PLAN.md -- Heating Analyse tab overhaul + per-heater pie chart (HEAT-01, HEAT-02)
+- [ ] 32-02-PLAN.md -- Deprecated widget removal + dead code cleanup (DEBT-01)
 
 ## Progress
 
@@ -124,4 +127,4 @@ Plans:
 | 29. Electricity Analytics | 2/2 | Complete | 2026-04-01 |
 | 30. Water & Gas Analytics | 2/2 | Complete | 2026-04-01 |
 | 31. Smart Plug Overhaul | 2/2 | Complete | 2026-04-01 |
-| 32. Heating Analytics & Cleanup | 0/TBD | Not started | - |
+| 32. Heating Analytics & Cleanup | 0/2 | Not started | - |
