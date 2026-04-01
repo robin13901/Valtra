@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-04-01)
 ## Current Position
 
 Phase: 28 of 32 (Home & Nav Polish)
-Plan: 2 of TBD in current phase
+Plan: 3 of TBD in current phase
 Status: In progress
-Last activity: 2026-04-01 -- Completed 28-02-PLAN.md (inline FAB + no dot indicator)
+Last activity: 2026-04-01 -- Completed 28-03-PLAN.md (frosted glass household carousel)
 
-Progress: ██░░░░░░░░░░░░░░░░░░░░░░░ 7% (v0.6.0) [~5/~25 plans]
+Progress: ██░░░░░░░░░░░░░░░░░░░░░░░ 9% (v0.6.0) [~6/~25 plans]
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: ~5 (v0.6.0)
-- Average duration: ~12 min
-- Total execution time: ~60 min
+- Total plans completed: ~6 (v0.6.0)
+- Average duration: ~18 min
+- Total execution time: ~96 min
 
 *Updated after each plan completion*
 
@@ -34,8 +34,9 @@ Progress: ██░░░░░░░░░░░░░░░░░░░░░�
 
 ## Completed Phases (v0.6.0)
 - **Phase 27**: Shared Chart Infrastructure -- 4 plans, 1154 tests, verified 5/5
-- **Phase 28 Plan 01**: (see 28-01-SUMMARY if exists)
+- **Phase 28 Plan 01**: personCount field on Household (schema v4) -- 1165 tests
 - **Phase 28 Plan 02**: LiquidGlassBottomNav inline FAB + left FAB removed -- 1165 tests
+- **Phase 28 Plan 03**: Frosted glass household carousel (PageView + BackdropFilter) -- 1213 tests
 
 ## Accumulated Context
 
@@ -55,6 +56,9 @@ Progress: ██░░░░░░░░░░░░░░░░░░░░░�
 - LiquidGlassBottomNav left FAB removed (unused by all screens): API simplified to rightIcon/onRightTap/rightVisibleForIndices only
 - Inline FAB in nav pill: right FAB rendered as fixed-width Container inside pill Row, not external LiquidGlassLayer circle
 - Inline FAB uses primary.withValues(alpha: 0.15/0.20 dark) tinted circle for visual blend with glass pill
+- Frosted glass household card: BackdropFilter(sigmaX/Y=16) + ClipRRect, no LinearGradient (HOME-01)
+- Carousel reverse-sync uses addPostFrameCallback to avoid animating during active build cycle
+- Inline constants (BorderRadius.circular(20), padding 20) used; Radii/Spacing/Shadows design tokens not yet defined
 
 ### Pending Todos
 None yet.
@@ -71,6 +75,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-04-01T10:38:04Z
-Stopped at: Completed 28-02-PLAN.md
+Last session: 2026-04-01T11:52:29Z
+Stopped at: Completed 28-03-PLAN.md
 Resume file: None
