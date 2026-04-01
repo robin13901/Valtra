@@ -25,7 +25,7 @@
 
 - [x] **Phase 27: Shared Chart Infrastructure** - Reusable chart widgets and month navigation that all analytics screens depend on
 - [x] **Phase 28: Home & Nav Polish** - Household card redesign, FAB integration, person count, nav cleanup
-- [ ] **Phase 29: Electricity Analytics** - First screen on new shared widgets, establishing the full pattern
+- [x] **Phase 29: Electricity Analytics** - First screen on new shared widgets, establishing the full pattern
 - [ ] **Phase 30: Water & Gas Analytics** - Apply unified design to water and gas (same behavior, different colors)
 - [ ] **Phase 31: Smart Plug Overhaul** - Analytics redesign + pie chart + expandable cards + unified colors
 - [ ] **Phase 32: Heating Analytics & Cleanup** - Heating analytics + distribution pie chart + deprecated widget removal
@@ -74,8 +74,8 @@ Plans:
   3. Smart plug coverage line appears in electricity summary when smart plug data exists for the selected month, showing kWh and percentage of total electricity
 **Plans:** 2 plans
 Plans:
-- [ ] 29-01-PLAN.md -- Provider + widget data layer (AnalyticsProvider household comparison, MonthlySummaryCard smart plug coverage, l10n)
-- [ ] 29-02-PLAN.md -- Electricity screen Analyse tab redesign + test updates
+- [x] 29-01-PLAN.md -- Provider + widget data layer (AnalyticsProvider household comparison, MonthlySummaryCard smart plug coverage, l10n)
+- [x] 29-02-PLAN.md -- Electricity screen Analyse tab redesign + test updates
 
 ### Phase 30: Water & Gas Analytics
 **Goal**: Water and gas analytics screens use the new unified design with their respective color schemes
@@ -115,7 +115,7 @@ Plans:
 |-------|----------------|--------|-----------|
 | 27. Shared Chart Infrastructure | 4/4 | Complete | 2026-04-01 |
 | 28. Home & Nav Polish | 3/3 | Complete | 2026-04-01 |
-| 29. Electricity Analytics | 0/2 | Not started | - |
+| 29. Electricity Analytics | 2/2 | Complete | 2026-04-01 |
 | 30. Water & Gas Analytics | 0/TBD | Not started | - |
 | 31. Smart Plug Overhaul | 0/TBD | Not started | - |
 | 32. Heating Analytics & Cleanup | 0/TBD | Not started | - |

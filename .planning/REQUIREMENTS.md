@@ -20,7 +20,7 @@ Requirements for Analytics Redesign milestone. Each maps to roadmap phases.
 ### Summary Card
 
 - [x] **SUMM-01**: Monthly summary card shows total consumption for selected month with % change vs previous month
-- [ ] **SUMM-02**: Smart plug coverage line in electricity summary card (kWh + %) shown when smart plug data exists for the month
+- [x] **SUMM-02**: Smart plug coverage line in electricity summary card (kWh + %) shown when smart plug data exists for the month
 
 ### Bar Chart
 
@@ -46,7 +46,7 @@ Requirements for Analytics Redesign milestone. Each maps to roadmap phases.
 
 ### Electricity Analytics
 
-- [ ] **ELEC-01**: Electricity analytics screen uses full new unified design (month nav, summary, bar, year comparison, household comparison)
+- [x] **ELEC-01**: Electricity analytics screen uses full new unified design (month nav, summary, bar, year comparison, household comparison)
 
 ### Water Analytics
 
@@ -110,7 +110,7 @@ Deferred to later milestones. Tracked but not in current roadmap.
 | NAV-03 | Phase 28 | Complete |
 | HOME-01 | Phase 28 | Complete |
 | SUMM-01 | Phase 27 | Complete |
-| SUMM-02 | Phase 29 | Pending |
+| SUMM-02 | Phase 29 | Complete |
 | BAR-01 | Phase 27 | Complete |
 | BAR-02 | Phase 27 | Complete |
 | BAR-03 | Phase 27 | Complete |
@@ -121,7 +121,7 @@ Deferred to later milestones. Tracked but not in current roadmap.
 | AXIS-01 | Phase 27 | Complete |
 | AXIS-02 | Phase 27 | Complete |
 | AXIS-03 | Phase 27 | Complete |
-| ELEC-01 | Phase 29 | Pending |
+| ELEC-01 | Phase 29 | Complete |
 | WATR-01 | Phase 30 | Pending |
 | GAS-01 | Phase 30 | Pending |
 | SPLG-01 | Phase 31 | Pending |
@@ -150,4 +150,4 @@ Deferred to later milestones. Tracked but not in current roadmap.
 
 ---
 *Requirements defined: 2026-04-01*
-*Last updated: 2026-04-01 after Phase 28 completion*
+*Last updated: 2026-04-01 after Phase 29 completion*

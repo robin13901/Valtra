@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-04-01)
 
 **Core value:** Users can track and analyze utility consumption across multiple households with an intuitive, polished interface
-**Current focus:** v0.6.0 Analytics Redesign -- Phase 29 (Electricity Analytics)
+**Current focus:** v0.6.0 Analytics Redesign -- Phase 30 (Water & Gas Analytics)
 
 ## Current Position
 
-Phase: 29 of 32 (Electricity Analytics)
-Plan: 2 of TBD in current phase
-Status: In progress
-Last activity: 2026-04-01 -- Completed 29-02-PLAN.md (electricity Analyse tab redesign)
+Phase: 30 of 32 (Water & Gas Analytics)
+Plan: 0 of TBD in current phase
+Status: Not started
+Last activity: 2026-04-01 -- Phase 29 complete (2 plans, 2 waves, verified 3/3)
 
-Progress: ████░░░░░░░░░░░░░░░░░░░░░ 14% (v0.6.0) [9/~25 plans]
+Progress: ████░░░░░░░░░░░░░░░░░░░░░ 15% (v0.6.0) [9/~25 plans]
 
 ## Performance Metrics
 
@@ -35,8 +35,7 @@ Progress: ████░░░░░░░░░░░░░░░░░░░�
 ## Completed Phases (v0.6.0)
 - **Phase 27**: Shared Chart Infrastructure -- 4 plans, 1154 tests, verified 5/5
 - **Phase 28**: Home & Nav Polish -- 3 plans, 1213 tests, verified 4/4
-- **Phase 29 Plan 01**: AnalyticsProvider household comparison + MonthlySummaryCard coverage -- 1218 tests
-- **Phase 29 Plan 02**: Electricity Analyse tab redesigned with MonthSelector/MonthlySummaryCard/HouseholdComparisonChart -- 1221 tests
+- **Phase 29**: Electricity Analytics -- 2 plans, 1221 tests, verified 3/3
 
 ## Accumulated Context
 
@@ -82,5 +81,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-04-01
-Stopped at: Completed 29-02-PLAN.md
+Stopped at: Phase 29 complete, verified, ready for Phase 30
 Resume file: None
