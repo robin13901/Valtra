@@ -198,5 +198,29 @@ void main() {
       expect(provider.selectedHouseholdId, isNull);
       expect(provider.selectedHousehold, isNull);
     });
+
+    test('createHousehold stores personCount and it is retrievable', () async {
+      await provider.init();
+
+      final id = await provider.createHousehold('Family Home', personCount: 4);
+      await Future.delayed(const Duration(milliseconds: 100));
+
+      expect(provider.selectedHousehold?.personCount, 4);
+      expect(provider.selectedHouseholdId, id);
+    });
+
+    test('updateHousehold with personCount changes person count', () async {
+      await provider.init();
+
+      final id = await provider.createHousehold('Home', personCount: 2);
+      await Future.delayed(const Duration(milliseconds: 100));
+
+      expect(provider.selectedHousehold?.personCount, 2);
+
+      await provider.updateHousehold(id, 'Home', personCount: 5);
+      await Future.delayed(const Duration(milliseconds: 100));
+
+      expect(provider.selectedHousehold?.personCount, 5);
+    });
   });
 }

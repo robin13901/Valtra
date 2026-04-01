@@ -17,7 +17,7 @@ void main() {
     // Create a fake valtra.sqlite in the DB directory
     _createValidValtraDb(
       File('${tempDbDir.path}/valtra.sqlite').path,
-      schemaVersion: 3,
+      schemaVersion: 4,
     );
 
     service = BackupRestoreService(
@@ -66,9 +66,9 @@ void main() {
 
   group('validateBackupFile', () {
     test('returns true for valid Valtra SQLite DB with households table and '
-        'schema version 3', () async {
+        'schema version 4', () async {
       final validDb = File('${tempExportDir.path}/valid.sqlite');
-      _createValidValtraDb(validDb.path, schemaVersion: 3);
+      _createValidValtraDb(validDb.path, schemaVersion: 4);
 
       final result = await service.validateBackupFile(validDb);
 
@@ -107,7 +107,7 @@ void main() {
       final noHouseholds = File('${tempExportDir.path}/no_households.sqlite');
       final db = sql.sqlite3.open(noHouseholds.path);
       db.execute('CREATE TABLE other_table (id INTEGER PRIMARY KEY)');
-      db.execute('PRAGMA user_version = 3');
+      db.execute('PRAGMA user_version = 4');
       db.dispose();
 
       final result = await service.validateBackupFile(noHouseholds);
@@ -115,7 +115,7 @@ void main() {
       expect(result, isFalse);
     });
 
-    test('returns false for Valtra SQLite with schema version != 3', () async {
+    test('returns false for Valtra SQLite with schema version != 4', () async {
       final wrongVersion =
           File('${tempExportDir.path}/wrong_version.sqlite');
       _createValidValtraDb(wrongVersion.path, schemaVersion: 1);
@@ -182,7 +182,7 @@ void main() {
 
     test('creates safety backup before replacing', () async {
       final validSource = File('${tempExportDir.path}/source.sqlite');
-      _createValidValtraDb(validSource.path, schemaVersion: 3);
+      _createValidValtraDb(validSource.path, schemaVersion: 4);
 
       await service.importDatabase(validSource);
 
@@ -198,7 +198,7 @@ void main() {
     test('replaces DB file with source file content', () async {
       // Create a valid source with distinct content
       final validSource = File('${tempExportDir.path}/source.sqlite');
-      _createValidValtraDb(validSource.path, schemaVersion: 3);
+      _createValidValtraDb(validSource.path, schemaVersion: 4);
       final sourceDb = sql.sqlite3.open(validSource.path);
       sourceDb.execute(
           'INSERT INTO households (name) VALUES (?)', ['Test Household']);

@@ -454,5 +454,8 @@
       "value": {"type": "String"},
       "percent": {"type": "String"}
     }
-  }
+  },
+  "personCount": "Number of persons",
+  "personCountHint": "e.g. 2",
+  "personCountRequired": "Number of persons is required (min. 1)"
 }

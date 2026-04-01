@@ -942,4 +942,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String consumptionWithPercent(String value, String percent) {
     return '$value kWh ($percent%)';
   }
+
+  @override
+  String get personCount => 'Number of persons';
+
+  @override
+  String get personCountHint => 'e.g. 2';
+
+  @override
+  String get personCountRequired => 'Number of persons is required (min. 1)';
 }

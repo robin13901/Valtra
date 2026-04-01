@@ -19,7 +19,7 @@ class BackupRestoreService {
   static const dbFileName = 'valtra.sqlite';
 
   /// Expected schema version for valid Valtra databases.
-  static const expectedSchemaVersion = 3;
+  static const expectedSchemaVersion = 4;
 
   final Future<Directory> Function() _getDbDirectory;
   final Future<Directory> Function() _getTempDirectory;
