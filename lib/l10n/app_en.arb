@@ -286,6 +286,18 @@
       "change": {"type": "String"}
     }
   },
+  "totalForMonth": "Total for {month}",
+  "@totalForMonth": {
+    "placeholders": {
+      "month": {"type": "String"}
+    }
+  },
+  "changeFromLastMonth": "{change}% vs last month",
+  "@changeFromLastMonth": {
+    "placeholders": {
+      "change": {"type": "String"}
+    }
+  },
   "noYearlyData": "No data for {year}",
   "@noYearlyData": {
     "placeholders": {

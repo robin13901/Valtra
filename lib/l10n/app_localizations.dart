@@ -1094,6 +1094,18 @@ abstract class AppLocalizations {
   /// **'{change}% vs last year'**
   String changeFromLastYear(String change);
 
+  /// No description provided for @totalForMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'Total for {month}'**
+  String totalForMonth(String month);
+
+  /// No description provided for @changeFromLastMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'{change}% vs last month'**
+  String changeFromLastMonth(String change);
+
   /// No description provided for @noYearlyData.
   ///
   /// In en, this message translates to:

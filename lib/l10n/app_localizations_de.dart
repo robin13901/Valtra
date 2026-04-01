@@ -582,6 +582,16 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
+  String totalForMonth(String month) {
+    return 'Gesamt für $month';
+  }
+
+  @override
+  String changeFromLastMonth(String change) {
+    return '$change% ggü. Vormonat';
+  }
+
+  @override
   String noYearlyData(String year) {
     return 'Keine Daten für $year';
   }

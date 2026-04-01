@@ -220,6 +220,18 @@
       "change": {"type": "String"}
     }
   },
+  "totalForMonth": "Gesamt für {month}",
+  "@totalForMonth": {
+    "placeholders": {
+      "month": {"type": "String"}
+    }
+  },
+  "changeFromLastMonth": "{change}% ggü. Vormonat",
+  "@changeFromLastMonth": {
+    "placeholders": {
+      "change": {"type": "String"}
+    }
+  },
   "noYearlyData": "Keine Daten für {year}",
   "@noYearlyData": {
     "placeholders": {
