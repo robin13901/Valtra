@@ -44,7 +44,7 @@
   5. All charts render without vertical Y-axis line, show translucent value labels inside the chart area on grid lines, and scroll content under fixed labels with equal padding
 **Plans:** 4 plans
 Plans:
-- [ ] 27-01-PLAN.md -- Chart axis style + month selector + monthly summary card
+- [x] 27-01-PLAN.md -- Chart axis style + month selector + monthly summary card
 - [ ] 27-02-PLAN.md -- Refactor MonthlyBarChart (scrolling, glow, opacity)
 - [ ] 27-03-PLAN.md -- Refactor YearComparisonChart + ConsumptionLineChart axis style
 - [ ] 27-04-PLAN.md -- New HouseholdComparisonChart widget
