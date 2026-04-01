@@ -103,45 +103,51 @@ Deferred to later milestones. Tracked but not in current roadmap.
 
 ## Traceability
 
-Updated during roadmap creation.
-
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| NAV-01 | TBD | Pending |
-| NAV-02 | TBD | Pending |
-| NAV-03 | TBD | Pending |
-| HOME-01 | TBD | Pending |
-| SUMM-01 | TBD | Pending |
-| SUMM-02 | TBD | Pending |
-| BAR-01 | TBD | Pending |
-| BAR-02 | TBD | Pending |
-| BAR-03 | TBD | Pending |
-| YCMP-01 | TBD | Pending |
-| YCMP-02 | TBD | Pending |
-| HCMP-01 | TBD | Pending |
-| HCMP-02 | TBD | Pending |
-| AXIS-01 | TBD | Pending |
-| AXIS-02 | TBD | Pending |
-| AXIS-03 | TBD | Pending |
-| ELEC-01 | TBD | Pending |
-| WATR-01 | TBD | Pending |
-| GAS-01 | TBD | Pending |
-| SPLG-01 | TBD | Pending |
-| SPLG-02 | TBD | Pending |
-| SPLG-03 | TBD | Pending |
-| SPLG-04 | TBD | Pending |
-| SPLG-05 | TBD | Pending |
-| HEAT-01 | TBD | Pending |
-| HEAT-02 | TBD | Pending |
-| HH-01 | TBD | Pending |
-| DEBT-01 | TBD | Pending |
-| DEBT-02 | TBD | Pending |
+| NAV-01 | Phase 27 | Pending |
+| NAV-02 | Phase 28 | Pending |
+| NAV-03 | Phase 28 | Pending |
+| HOME-01 | Phase 28 | Pending |
+| SUMM-01 | Phase 27 | Pending |
+| SUMM-02 | Phase 29 | Pending |
+| BAR-01 | Phase 27 | Pending |
+| BAR-02 | Phase 27 | Pending |
+| BAR-03 | Phase 27 | Pending |
+| YCMP-01 | Phase 27 | Pending |
+| YCMP-02 | Phase 27 | Pending |
+| HCMP-01 | Phase 27 | Pending |
+| HCMP-02 | Phase 27 | Pending |
+| AXIS-01 | Phase 27 | Pending |
+| AXIS-02 | Phase 27 | Pending |
+| AXIS-03 | Phase 27 | Pending |
+| ELEC-01 | Phase 29 | Pending |
+| WATR-01 | Phase 30 | Pending |
+| GAS-01 | Phase 30 | Pending |
+| SPLG-01 | Phase 31 | Pending |
+| SPLG-02 | Phase 31 | Pending |
+| SPLG-03 | Phase 31 | Pending |
+| SPLG-04 | Phase 31 | Pending |
+| SPLG-05 | Phase 31 | Pending |
+| HEAT-01 | Phase 32 | Pending |
+| HEAT-02 | Phase 32 | Pending |
+| HH-01 | Phase 28 | Pending |
+| DEBT-01 | Phase 32 | Pending |
+| DEBT-02 | Phase 27 | Pending |
 
 **Coverage:**
 - v0.6.0 requirements: 29 total
-- Mapped to phases: 0
-- Unmapped: 29 ⚠️
+- Mapped to phases: 29
+- Unmapped: 0
+
+**Phase distribution:**
+- Phase 27: 13 requirements (NAV-01, SUMM-01, BAR-01/02/03, YCMP-01/02, HCMP-01/02, AXIS-01/02/03, DEBT-02)
+- Phase 28: 4 requirements (HOME-01, NAV-02, NAV-03, HH-01)
+- Phase 29: 2 requirements (ELEC-01, SUMM-02)
+- Phase 30: 2 requirements (WATR-01, GAS-01)
+- Phase 31: 5 requirements (SPLG-01/02/03/04/05)
+- Phase 32: 3 requirements (HEAT-01, HEAT-02, DEBT-01)
 
 ---
 *Requirements defined: 2026-04-01*
-*Last updated: 2026-04-01 after initial definition*
+*Last updated: 2026-04-01 after roadmap creation*
