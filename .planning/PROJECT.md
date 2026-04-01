@@ -126,7 +126,21 @@ Managing utility consumption across multiple households requires manual tracking
 - ✓ Heating has no cost profiles (unitless counters, percentage distribution only) — v0.5.0
 
 ### Active
-(None — next milestone not yet planned)
+
+#### Current Milestone: v0.6.0 — Analytics Redesign
+
+**Goal:** Redesign all 5 analytics screens with unified month-based navigation, horizontally scrollable charts, floating Y-axis labels, household comparison, and improved line chart styling.
+
+- [ ] Month selector navigation replacing year selector on all analytics screens
+- [ ] Monthly summary card with % change vs previous month (+ smart plug coverage for electricity)
+- [ ] Horizontally scrollable bar chart with current month glow highlight
+- [ ] Year comparison: dashed line for previous year, solid + gradient for current year
+- [ ] Household comparison chart (new) with actual vs interpolated visual distinction
+- [ ] Floating translucent Y-axis labels inside chart area (no vertical axis line)
+- [ ] Remove active dot indicator from bottom navigation
+- [ ] Smart plug analytics: unified single-hue color scheme, per-plug pie chart, remove room grouping
+- [ ] Heating analytics: per-heater pie chart + list for percentage distribution
+- [ ] Remove deprecated GlassBottomNav/buildGlassFAB, deduplicate year navigation widgets
 
 ### Out of Scope
 - Mobile app stores — development/personal use only (App Store requires alpha channel fix)
@@ -172,4 +186,4 @@ All v0.5.0 requirements met (16/16), audit passed.
 - XFin (C:\SAPDevelop\Privat\XFin) - for architecture patterns, LiquidGlass widgets, and CI/CD pipeline
 
 ---
-*Last updated: 2026-03-13 after v0.5.0 milestone*
+*Last updated: 2026-04-01 after v0.6.0 milestone start*

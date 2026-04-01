@@ -2,19 +2,20 @@
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-03-13)
+See: .planning/PROJECT.md (updated 2026-04-01)
 
 **Core value:** Users can track and analyze utility consumption across multiple households with an intuitive, polished interface
-**Current focus:** Planning next milestone
+**Current focus:** v0.6.0 Analytics Redesign
 
 ## Current Status
 - **Last Shipped**: v0.5.0 — Visual & UX Polish (2026-03-13)
-- **Current Phase**: None — between milestones
+- **Current Milestone**: v0.6.0 — Analytics Redesign
+- **Current Phase**: None — defining requirements
 - **Current Plan**: None
-- **Last Updated**: 2026-03-13
+- **Last Updated**: 2026-04-01
 - **Tests**: 1103
 
-Progress: ████████████████████████░ (5 milestones shipped, next TBD)
+Progress: ░░░░░░░░░░░░░░░░░░░░░░░░░ (v0.6.0 starting)
 
 ## Completed Milestones
 - **Milestone 1**: Core Foundation (v0.1.0) — 7 phases, 313 tests
@@ -22,16 +23,6 @@ Progress: ███████████████████████�
 - **Milestone 3**: Polish & Enhancement (v0.3.0) — 5 phases, 1017 tests
 - **Milestone 4**: UX Overhaul (v0.4.0) — 6 phases, 1077 tests
 - **Milestone 5**: Visual & UX Polish (v0.5.0) — 4 phases, 1103 tests
-
-## Completed (previous milestone - v0.5.0)
-- **23-01**: Custom glassmorphism app icon + "Valtra" capitalization
-- **23-02**: Native splash screen persists until household data loaded
-- **24-01**: LiquidGlassBottomNav widget using liquid_glass_renderer
-- **24-02**: SmartPlugs + Gas screens migrated to new nav
-- **24-03**: Electricity + Water + Heating screens migrated, old widgets deprecated
-- **25-01**: Chart X-axis localized (DE/EN month abbreviations), Y-axis unit labels
-- **26-01**: Empty app bar title, no Aktiv badge, German currency, dd.MM.yyyy dates
-- **26-02**: CostMeterType.heating removed, heating screen consumption-only
 
 ## Blocked
 _None_
@@ -46,10 +37,13 @@ _None_
 7. **Heating consumption-only** - Unitless proportional counters, percentage distribution, no cost profiles
 
 ## Technical Debt
-1. Deprecated GlassBottomNav/buildGlassFAB (remove in v0.6.0)
+1. Deprecated GlassBottomNav/buildGlassFAB (remove in v0.6.0) — SCHEDULED
 2. App icon alpha channel (fix for App Store submission)
-3. Duplicate _YearNavigationHeader/_YearlySummaryCard in 4 meter screens
+3. Duplicate _YearNavigationHeader/_YearlySummaryCard in 4 meter screens — SCHEDULED
 4. 8 info-level deprecation warnings in flutter analyze
 
+## Roadmap Evolution
+- v0.6.0 milestone started: Analytics Redesign (2026-04-01)
+
 ## Next Actions
-_Use `/gsd:new-milestone` to plan next milestone._
+_Defining requirements for v0.6.0_
