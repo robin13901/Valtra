@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-04-01)
 ## Current Position
 
 Phase: 30 of 32 (Water & Gas Analytics)
-Plan: 0 of TBD in current phase
-Status: Not started
-Last activity: 2026-04-01 -- Phase 29 complete (2 plans, 2 waves, verified 3/3)
+Plan: 2 of 2 in current phase
+Status: Phase complete
+Last activity: 2026-04-01 -- Completed 30-02-PLAN.md (gas screen month-based Analyse tab)
 
-Progress: ████░░░░░░░░░░░░░░░░░░░░░ 15% (v0.6.0) [9/~25 plans]
+Progress: █████░░░░░░░░░░░░░░░░░░░░ 18% (v0.6.0) [11/~25 plans]
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 9 (v0.6.0)
+- Total plans completed: 11 (v0.6.0)
 - Average duration: ~15 min
-- Total execution time: ~139 min
+- Total execution time: ~169 min
 
 *Updated after each plan completion*
 
@@ -36,6 +36,7 @@ Progress: ████░░░░░░░░░░░░░░░░░░░�
 - **Phase 27**: Shared Chart Infrastructure -- 4 plans, 1154 tests, verified 5/5
 - **Phase 28**: Home & Nav Polish -- 3 plans, 1213 tests, verified 4/4
 - **Phase 29**: Electricity Analytics -- 2 plans, 1221 tests, verified 3/3
+- **Phase 30**: Water & Gas Analytics -- 2 plans, 1224 tests
 
 ## Accumulated Context
 
@@ -64,6 +65,9 @@ Progress: ████░░░░░░░░░░░░░░░░░░░�
 - previousMonthTotal extracted from monthlyData.recentMonths inline; no new AnalyticsProvider API needed (29-02)
 - SmartPlugAnalyticsProvider must be in provider tree for ElectricityScreen; affects all test files using ElectricityScreen (29-02)
 - Reference composition pattern: MonthSelector → MonthlySummaryCard → MonthlyBarChart → YearComparisonChart → HouseholdComparisonChart (29-02)
+- Gas Analyse tab: MonthlySummaryCard without smartPlugKwh/smartPlugPercent (gas-only, no smart plug coverage) (30-02)
+- initState must call setSelectedMeterType + setSelectedMonth + setSelectedYear (all three required for monthlyData + yearlyData to populate) (30-02)
+- 300ms tearDown delay for gas tests: 2 async initState loads (setSelectedMonth + setSelectedYear) can race with disposal (30-02)
 
 ### Pending Todos
 None yet.
@@ -73,7 +77,7 @@ None.
 
 ## Technical Debt
 1. Deprecated GlassBottomNav/buildGlassFAB -- SCHEDULED (Phase 32, DEBT-01)
-2. Duplicate _YearNavigationHeader/_YearlySummaryCard -- REPLACEMENTS BUILT (27-01), ELECTRICITY DONE (29-02), remaining in gas/water/heating (30-32)
+2. Duplicate _YearNavigationHeader/_YearlySummaryCard -- REPLACEMENTS BUILT (27-01), ELECTRICITY DONE (29-02), GAS DONE (30-02), remaining in water/heating (30-01 done, heating 31-32)
 3. App icon alpha channel (fix for App Store submission) -- unscheduled
 4. 12 info-level deprecation warnings in flutter analyze (was 8, +4 from test files referencing deprecated widgets) -- unscheduled
 5. Pre-existing migration_test.dart failure (v2→v3 smart plug interval conversion) -- unscheduled
@@ -81,5 +85,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-04-01
-Stopped at: Phase 29 complete, verified, ready for Phase 30
+Stopped at: Completed 30-02-PLAN.md (gas screen month-based Analyse tab, Phase 30 complete)
 Resume file: None
