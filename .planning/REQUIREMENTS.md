@@ -9,7 +9,7 @@ Requirements for Analytics Redesign milestone. Each maps to roadmap phases.
 
 ### Navigation
 
-- [ ] **NAV-01**: Month selector replaces year selector on all analytics screens (start at current month, scroll left/right through months)
+- [x] **NAV-01**: Month selector replaces year selector on all analytics screens (start at current month, scroll left/right through months)
 - [ ] **NAV-02**: Remove active dot indicator from bottom navigation bar
 - [ ] **NAV-03**: FAB integrated into bottom navigation bar (not floating above the pill)
 
@@ -19,30 +19,30 @@ Requirements for Analytics Redesign milestone. Each maps to roadmap phases.
 
 ### Summary Card
 
-- [ ] **SUMM-01**: Monthly summary card shows total consumption for selected month with % change vs previous month
+- [x] **SUMM-01**: Monthly summary card shows total consumption for selected month with % change vs previous month
 - [ ] **SUMM-02**: Smart plug coverage line in electricity summary card (kWh + %) shown when smart plug data exists for the month
 
 ### Bar Chart
 
-- [ ] **BAR-01**: Monthly breakdown bar chart is horizontally scrollable (12 bars visible at a time, scroll for more months)
-- [ ] **BAR-02**: Current month bar highlighted with glowing edge effect
-- [ ] **BAR-03**: Past months in opaque meter color, future/extrapolated months in transparent meter color
+- [x] **BAR-01**: Monthly breakdown bar chart is horizontally scrollable (12 bars visible at a time, scroll for more months)
+- [x] **BAR-02**: Current month bar highlighted with glowing edge effect
+- [x] **BAR-03**: Past months in opaque meter color, future/extrapolated months in transparent meter color
 
 ### Year Comparison
 
-- [ ] **YCMP-01**: Previous year shown as dashed line with open points
-- [ ] **YCMP-02**: Current year shown as solid line with gradient fill underneath (reference: TAKTVERGLEICH style)
+- [x] **YCMP-01**: Previous year shown as dashed line with open points
+- [x] **YCMP-02**: Current year shown as solid line with gradient fill underneath (reference: TAKTVERGLEICH style)
 
 ### Household Comparison
 
-- [ ] **HCMP-01**: New chart comparing consumption across all households as line chart
-- [ ] **HCMP-02**: Actual values as filled points + solid lines, interpolated/extrapolated as open points + dashed lines
+- [x] **HCMP-01**: New chart comparing consumption across all households as line chart
+- [x] **HCMP-02**: Actual values as filled points + solid lines, interpolated/extrapolated as open points + dashed lines
 
 ### Axis Redesign
 
-- [ ] **AXIS-01**: Remove vertical Y-axis line from all charts
-- [ ] **AXIS-02**: Small translucent value labels with unit float inside chart area on dashed horizontal grid lines
-- [ ] **AXIS-03**: Chart content scrolls under fixed axis labels, equal padding on both chart sides
+- [x] **AXIS-01**: Remove vertical Y-axis line from all charts
+- [x] **AXIS-02**: Small translucent value labels with unit float inside chart area on dashed horizontal grid lines
+- [x] **AXIS-03**: Chart content scrolls under fixed axis labels, equal padding on both chart sides
 
 ### Electricity Analytics
 
@@ -76,7 +76,7 @@ Requirements for Analytics Redesign milestone. Each maps to roadmap phases.
 ### Tech Debt
 
 - [ ] **DEBT-01**: Remove deprecated GlassBottomNav and buildGlassFAB from liquid_glass_widgets.dart
-- [ ] **DEBT-02**: Deduplicate _YearNavigationHeader and _YearlySummaryCard across meter screens
+- [x] **DEBT-02**: Deduplicate _YearNavigationHeader and _YearlySummaryCard across meter screens
 
 ## Future Requirements
 
@@ -105,22 +105,22 @@ Deferred to later milestones. Tracked but not in current roadmap.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| NAV-01 | Phase 27 | Pending |
+| NAV-01 | Phase 27 | Complete |
 | NAV-02 | Phase 28 | Pending |
 | NAV-03 | Phase 28 | Pending |
 | HOME-01 | Phase 28 | Pending |
-| SUMM-01 | Phase 27 | Pending |
+| SUMM-01 | Phase 27 | Complete |
 | SUMM-02 | Phase 29 | Pending |
-| BAR-01 | Phase 27 | Pending |
-| BAR-02 | Phase 27 | Pending |
-| BAR-03 | Phase 27 | Pending |
-| YCMP-01 | Phase 27 | Pending |
-| YCMP-02 | Phase 27 | Pending |
-| HCMP-01 | Phase 27 | Pending |
-| HCMP-02 | Phase 27 | Pending |
-| AXIS-01 | Phase 27 | Pending |
-| AXIS-02 | Phase 27 | Pending |
-| AXIS-03 | Phase 27 | Pending |
+| BAR-01 | Phase 27 | Complete |
+| BAR-02 | Phase 27 | Complete |
+| BAR-03 | Phase 27 | Complete |
+| YCMP-01 | Phase 27 | Complete |
+| YCMP-02 | Phase 27 | Complete |
+| HCMP-01 | Phase 27 | Complete |
+| HCMP-02 | Phase 27 | Complete |
+| AXIS-01 | Phase 27 | Complete |
+| AXIS-02 | Phase 27 | Complete |
+| AXIS-03 | Phase 27 | Complete |
 | ELEC-01 | Phase 29 | Pending |
 | WATR-01 | Phase 30 | Pending |
 | GAS-01 | Phase 30 | Pending |
@@ -133,7 +133,7 @@ Deferred to later milestones. Tracked but not in current roadmap.
 | HEAT-02 | Phase 32 | Pending |
 | HH-01 | Phase 28 | Pending |
 | DEBT-01 | Phase 32 | Pending |
-| DEBT-02 | Phase 27 | Pending |
+| DEBT-02 | Phase 27 | Complete |
 
 **Coverage:**
 - v0.6.0 requirements: 29 total
@@ -150,4 +150,4 @@ Deferred to later milestones. Tracked but not in current roadmap.
 
 ---
 *Requirements defined: 2026-04-01*
-*Last updated: 2026-04-01 after roadmap creation*
+*Last updated: 2026-04-01 after Phase 27 completion*

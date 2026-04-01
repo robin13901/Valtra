@@ -23,7 +23,7 @@
 
 ### Phases
 
-- [ ] **Phase 27: Shared Chart Infrastructure** - Reusable chart widgets and month navigation that all analytics screens depend on
+- [x] **Phase 27: Shared Chart Infrastructure** - Reusable chart widgets and month navigation that all analytics screens depend on
 - [ ] **Phase 28: Home & Nav Polish** - Household card redesign, FAB integration, person count, nav cleanup
 - [ ] **Phase 29: Electricity Analytics** - First screen on new shared widgets, establishing the full pattern
 - [ ] **Phase 30: Water & Gas Analytics** - Apply unified design to water and gas (same behavior, different colors)
@@ -45,9 +45,9 @@
 **Plans:** 4 plans
 Plans:
 - [x] 27-01-PLAN.md -- Chart axis style + month selector + monthly summary card
-- [ ] 27-02-PLAN.md -- Refactor MonthlyBarChart (scrolling, glow, opacity)
-- [ ] 27-03-PLAN.md -- Refactor YearComparisonChart + ConsumptionLineChart axis style
-- [ ] 27-04-PLAN.md -- New HouseholdComparisonChart widget
+- [x] 27-02-PLAN.md -- Refactor MonthlyBarChart (scrolling, glow, opacity)
+- [x] 27-03-PLAN.md -- Refactor YearComparisonChart + ConsumptionLineChart axis style
+- [x] 27-04-PLAN.md -- New HouseholdComparisonChart widget
 
 ### Phase 28: Home & Nav Polish
 **Goal**: Home screen and navigation bar match the refreshed visual identity, and household person count is stored and editable
@@ -106,7 +106,7 @@ Plans:
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 27. Shared Chart Infrastructure | 0/4 | Planned | - |
+| 27. Shared Chart Infrastructure | 4/4 | Complete | 2026-04-01 |
 | 28. Home & Nav Polish | 0/TBD | Not started | - |
 | 29. Electricity Analytics | 0/TBD | Not started | - |
 | 30. Water & Gas Analytics | 0/TBD | Not started | - |

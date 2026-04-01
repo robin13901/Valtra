@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-04-01)
 
 **Core value:** Users can track and analyze utility consumption across multiple households with an intuitive, polished interface
-**Current focus:** v0.6.0 Analytics Redesign -- Phase 27 (Shared Chart Infrastructure)
+**Current focus:** v0.6.0 Analytics Redesign -- Phase 28 (Home & Nav Polish)
 
 ## Current Position
 
-Phase: 27 of 32 (Shared Chart Infrastructure)
-Plan: 4 of 4 in current phase
-Status: In progress
-Last activity: 2026-04-01 -- Completed 27-04-PLAN.md (HouseholdComparisonChart widget + tests)
+Phase: 28 of 32 (Home & Nav Polish)
+Plan: 0 of TBD in current phase
+Status: Not started
+Last activity: 2026-04-01 -- Phase 27 complete (4 plans, 2 waves, verified 5/5)
 
-Progress: █░░░░░░░░░░░░░░░░░░░░░░░░ 4% (v0.6.0) [4/25 plans (3 parallel)]
+Progress: ██░░░░░░░░░░░░░░░░░░░░░░░ 7% (v0.6.0) [4/~25 plans]
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 4 (v0.6.0, parallel wave)
+- Total plans completed: 4 (v0.6.0)
 - Average duration: 13 min
-- Total execution time: 52 min (parallel)
+- Total execution time: ~52 min (2 waves, 3 parallel in wave 2)
 
 *Updated after each plan completion*
 
@@ -31,6 +31,9 @@ Progress: █░░░░░░░░░░░░░░░░░░░░░░�
 - **v0.3.0**: Polish & Enhancement -- 5 phases, 1017 tests
 - **v0.4.0**: UX Overhaul -- 6 phases, 1077 tests
 - **v0.5.0**: Visual & UX Polish -- 4 phases, 1103 tests
+
+## Completed Phases (v0.6.0)
+- **Phase 27**: Shared Chart Infrastructure -- 4 plans, 1154 tests, verified 5/5
 
 ## Accumulated Context
 
@@ -56,12 +59,13 @@ None.
 
 ## Technical Debt
 1. Deprecated GlassBottomNav/buildGlassFAB -- SCHEDULED (Phase 32, DEBT-01)
-2. Duplicate _YearNavigationHeader/_YearlySummaryCard -- IN PROGRESS (replacements built in 27-01, integration in 29-32)
+2. Duplicate _YearNavigationHeader/_YearlySummaryCard -- REPLACEMENTS BUILT (27-01), integration in 29-32
 3. App icon alpha channel (fix for App Store submission) -- unscheduled
 4. 8 info-level deprecation warnings in flutter analyze -- unscheduled
+5. Pre-existing migration_test.dart failure (v2→v3 smart plug interval conversion) -- unscheduled
 
 ## Session Continuity
 
-Last session: 2026-04-01T09:35:00Z
-Stopped at: Completed 27-02-PLAN.md (MonthlyBarChart scrolling/glow/opacity/axis style)
+Last session: 2026-04-01
+Stopped at: Phase 27 complete, verified, ready for Phase 28
 Resume file: None
