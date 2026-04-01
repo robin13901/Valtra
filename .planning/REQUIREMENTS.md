@@ -50,11 +50,11 @@ Requirements for Analytics Redesign milestone. Each maps to roadmap phases.
 
 ### Water Analytics
 
-- [ ] **WATR-01**: Water analytics screen uses new unified design with existing blue color scheme
+- [x] **WATR-01**: Water analytics screen uses new unified design with existing blue color scheme
 
 ### Gas Analytics
 
-- [ ] **GAS-01**: Gas analytics screen uses new unified design with existing color scheme
+- [x] **GAS-01**: Gas analytics screen uses new unified design with existing color scheme
 
 ### Smart Plug Analytics
 
@@ -122,8 +122,8 @@ Deferred to later milestones. Tracked but not in current roadmap.
 | AXIS-02 | Phase 27 | Complete |
 | AXIS-03 | Phase 27 | Complete |
 | ELEC-01 | Phase 29 | Complete |
-| WATR-01 | Phase 30 | Pending |
-| GAS-01 | Phase 30 | Pending |
+| WATR-01 | Phase 30 | Complete |
+| GAS-01 | Phase 30 | Complete |
 | SPLG-01 | Phase 31 | Pending |
 | SPLG-02 | Phase 31 | Pending |
 | SPLG-03 | Phase 31 | Pending |
@@ -150,4 +150,4 @@ Deferred to later milestones. Tracked but not in current roadmap.
 
 ---
 *Requirements defined: 2026-04-01*
-*Last updated: 2026-04-01 after Phase 29 completion*
+*Last updated: 2026-04-01 after Phase 30 completion*

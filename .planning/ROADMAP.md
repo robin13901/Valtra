@@ -87,8 +87,8 @@ Plans:
   3. Both screens show monthly summary with total consumption and % change vs previous month
 **Plans:** 2 plans
 Plans:
-- [ ] 30-01-PLAN.md -- Water analytics screen redesign (month-based Analyse tab + tests)
-- [ ] 30-02-PLAN.md -- Gas analytics screen redesign (month-based Analyse tab + tests)
+- [x] 30-01-PLAN.md -- Water analytics screen redesign (month-based Analyse tab + tests)
+- [x] 30-02-PLAN.md -- Gas analytics screen redesign (month-based Analyse tab + tests)
 
 ### Phase 31: Smart Plug Overhaul
 **Goal**: Smart plug screen uses new analytics design plus unique features: per-plug pie chart, expandable editing cards, and unified color scheme
@@ -119,6 +119,6 @@ Plans:
 | 27. Shared Chart Infrastructure | 4/4 | Complete | 2026-04-01 |
 | 28. Home & Nav Polish | 3/3 | Complete | 2026-04-01 |
 | 29. Electricity Analytics | 2/2 | Complete | 2026-04-01 |
-| 30. Water & Gas Analytics | 0/2 | Not started | - |
+| 30. Water & Gas Analytics | 2/2 | Complete | 2026-04-01 |
 | 31. Smart Plug Overhaul | 0/TBD | Not started | - |
 | 32. Heating Analytics & Cleanup | 0/TBD | Not started | - |
