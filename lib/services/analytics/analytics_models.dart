@@ -223,3 +223,19 @@ const List<Color> pieChartColors = [
   Color(0xFFAA96DA), // lavender
   Color(0xFFFCBFB7), // blush
 ];
+
+/// Single-hue (electricity yellow shades) colors for smart plug pie charts.
+/// Satisfies SPLG-02: unified single-hue color scheme.
+/// Colors alternate dark/light to ensure adjacent pie slices are visually distinct.
+const List<Color> smartPlugPieColors = [
+  Color(0xFFFFD93D), // electricity yellow -- brand
+  Color(0xFFEFC000), // darker gold
+  Color(0xFFFFE57A), // lighter yellow
+  Color(0xFFD4A800), // deep amber
+  Color(0xFFFFF0B0), // pale yellow
+  Color(0xFFB88F00), // dark gold
+  Color(0xFFFFEC99), // light amber
+  Color(0xFFCC9900), // medium dark
+  Color(0xFFFFF5CC), // very light
+  Color(0xFFE6B800), // mid amber
+];

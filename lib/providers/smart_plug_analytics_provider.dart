@@ -103,7 +103,7 @@ class SmartPlugAnalyticsProvider extends ChangeNotifier {
           plugName: plug.name,
           roomName: room?.name ?? 'Unknown',
           consumption: consumption,
-          color: pieChartColors[i % pieChartColors.length],
+          color: smartPlugPieColors[i % smartPlugPieColors.length],
         ));
       }
 
