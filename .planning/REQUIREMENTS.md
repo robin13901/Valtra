@@ -58,11 +58,11 @@ Requirements for Analytics Redesign milestone. Each maps to roadmap phases.
 
 ### Smart Plug Analytics
 
-- [ ] **SPLG-01**: Smart plug analytics uses new unified design (month nav, summary, bar, year comparison, household comparison)
-- [ ] **SPLG-02**: Unified single-hue color scheme (shades of one color) for pie chart and list items
-- [ ] **SPLG-03**: Per-plug pie chart + list consumption breakdown
-- [ ] **SPLG-04**: Remove room-based consumption grouping (deferred to rooms feature)
-- [ ] **SPLG-05**: Smart plug entries displayed in expandable cards with inline editing (same pattern as heating meters), not separate screen
+- [x] **SPLG-01**: Smart plug analytics uses new unified design (month nav, summary, bar, year comparison, household comparison)
+- [x] **SPLG-02**: Unified single-hue color scheme (shades of one color) for pie chart and list items
+- [x] **SPLG-03**: Per-plug pie chart + list consumption breakdown
+- [x] **SPLG-04**: Remove room-based consumption grouping (deferred to rooms feature)
+- [x] **SPLG-05**: Smart plug entries displayed in expandable cards with inline editing (same pattern as heating meters), not separate screen
 
 ### Heating Analytics
 
@@ -124,11 +124,11 @@ Deferred to later milestones. Tracked but not in current roadmap.
 | ELEC-01 | Phase 29 | Complete |
 | WATR-01 | Phase 30 | Complete |
 | GAS-01 | Phase 30 | Complete |
-| SPLG-01 | Phase 31 | Pending |
-| SPLG-02 | Phase 31 | Pending |
-| SPLG-03 | Phase 31 | Pending |
-| SPLG-04 | Phase 31 | Pending |
-| SPLG-05 | Phase 31 | Pending |
+| SPLG-01 | Phase 31 | Complete |
+| SPLG-02 | Phase 31 | Complete |
+| SPLG-03 | Phase 31 | Complete |
+| SPLG-04 | Phase 31 | Complete |
+| SPLG-05 | Phase 31 | Complete |
 | HEAT-01 | Phase 32 | Pending |
 | HEAT-02 | Phase 32 | Pending |
 | HH-01 | Phase 28 | Complete |
