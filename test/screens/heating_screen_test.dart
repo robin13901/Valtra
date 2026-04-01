@@ -23,10 +23,6 @@ import 'package:valtra/screens/heating_screen.dart';
 import 'package:valtra/services/cost_calculation_service.dart';
 import 'package:valtra/services/gas_conversion_service.dart';
 import 'package:valtra/services/interpolation/interpolation_service.dart';
-import 'package:valtra/widgets/charts/consumption_pie_chart.dart';
-import 'package:valtra/widgets/charts/month_selector.dart';
-import 'package:valtra/widgets/charts/monthly_bar_chart.dart';
-import 'package:valtra/widgets/charts/monthly_summary_card.dart';
 import 'package:valtra/widgets/liquid_glass_widgets.dart';
 
 import '../helpers/test_database.dart';
@@ -114,11 +110,6 @@ void main() {
   });
 
   tearDown(() async {
-    // Allow any outstanding async provider loads to complete before disposal.
-    // The new initState fires 3 async operations (setSelectedMeterType +
-    // setSelectedMonth + setSelectedYear); this delay prevents
-    // "used after being disposed" errors from post-test callbacks.
-    await Future.delayed(const Duration(milliseconds: 300));
     provider.dispose();
     analyticsProvider.dispose();
     costConfigProvider.dispose();
@@ -585,99 +576,19 @@ void main() {
 
               // Switch to Analyse tab
               await tester.tap(find.text('Analysis'));
-              // Allow postFrameCallback and async loading to complete
               await Future.delayed(const Duration(milliseconds: 200));
               await tester.pumpAndSettle();
 
-              // With no readings, monthlyData is null -> shows noData
-              // OR monthlyData loads empty -> shows MonthSelector with no content
-              final hasNoData = tester.any(find.text('No data available'));
-              final hasMonthSelector = tester.any(find.byType(MonthSelector));
-              expect(hasNoData || hasMonthSelector, isTrue);
-
-              await tester.pumpWidget(Container());
-            }));
-
-    testWidgets('Analyse tab shows MonthSelector when data exists',
-        (tester) => tester.runAsync(() async {
-              // Add a meter and readings across months
-              final meterId =
-                  await dao.insertMeter(HeatingMetersCompanion.insert(
-                householdId: householdId,
-                roomId: roomId,
-                name: 'Test Meter',
-              ));
-              final year = DateTime.now().year;
-              final month = DateTime.now().month;
-              await dao.insertReading(HeatingReadingsCompanion.insert(
-                heatingMeterId: meterId,
-                timestamp: DateTime(year, month > 1 ? month - 1 : 1, 1),
-                value: 1000.0,
-              ));
-              await dao.insertReading(HeatingReadingsCompanion.insert(
-                heatingMeterId: meterId,
-                timestamp: DateTime(year, month, 15),
-                value: 1300.0,
-              ));
-              await Future.delayed(const Duration(milliseconds: 200));
-
-              await tester
-                  .pumpWidget(wrapWithProviders(const HeatingScreen()));
-              await tester.pumpAndSettle();
-
-              // Switch to Analyse tab
-              await tester.tap(find.text('Analysis'));
-              await Future.delayed(const Duration(milliseconds: 300));
-              await tester.pumpAndSettle();
-
-              // Should show MonthSelector widget
-              expect(find.byType(MonthSelector), findsOneWidget);
-              // Should show MonthlySummaryCard
-              expect(find.byType(MonthlySummaryCard), findsOneWidget);
-
-              await tester.pumpWidget(Container());
-            }));
-
-    testWidgets('Analyse tab shows MonthlyBarChart when data exists',
-        (tester) => tester.runAsync(() async {
-              final meterId =
-                  await dao.insertMeter(HeatingMetersCompanion.insert(
-                householdId: householdId,
-                roomId: roomId,
-                name: 'Test Meter',
-              ));
-              final year = DateTime.now().year;
-              final month = DateTime.now().month;
-              await dao.insertReading(HeatingReadingsCompanion.insert(
-                heatingMeterId: meterId,
-                timestamp: DateTime(year, month > 1 ? month - 1 : 1, 1),
-                value: 1000.0,
-              ));
-              await dao.insertReading(HeatingReadingsCompanion.insert(
-                heatingMeterId: meterId,
-                timestamp: DateTime(year, month, 15),
-                value: 1300.0,
-              ));
-              await Future.delayed(const Duration(milliseconds: 200));
-
-              await tester
-                  .pumpWidget(wrapWithProviders(const HeatingScreen()));
-              await tester.pumpAndSettle();
-
-              // Switch to Analyse tab
-              await tester.tap(find.text('Analysis'));
-              await Future.delayed(const Duration(milliseconds: 300));
-              await tester.pumpAndSettle();
-
-              // Should show Monthly Breakdown heading and chart
-              expect(find.text('Monthly Breakdown'), findsOneWidget);
-              expect(find.byType(MonthlyBarChart), findsOneWidget);
+              // With no readings, analytics loads empty monthlyBreakdown
+              // which shows noYearlyData message with the year
+              final year = DateTime.now().year.toString();
+              expect(find.textContaining(year), findsAtLeast(1));
 
               await tester.pumpWidget(Container());
             }));
 
     testWidgets(
-        'shows month navigation and analytics content with readings',
+        'shows year navigation and analytics content with readings',
         (tester) => tester.runAsync(() async {
               // Add a meter and readings across months
               final meterId =
@@ -709,251 +620,18 @@ void main() {
 
               // Switch to Analyse tab
               await tester.tap(find.text('Analysis'));
-              await Future.delayed(const Duration(milliseconds: 300));
               await tester.pumpAndSettle();
 
-              // Should show monthly breakdown heading
-              expect(find.text('Monthly Breakdown'), findsOneWidget);
+              // Should show current year in navigation
+              expect(
+                  find.text(DateTime.now().year.toString()), findsOneWidget);
 
-              // Should show chevron navigation icons (from MonthSelector)
+              // Should show chevron navigation icons
               expect(find.byIcon(Icons.chevron_left), findsOneWidget);
               expect(find.byIcon(Icons.chevron_right), findsOneWidget);
 
-              await tester.pumpWidget(Container());
-            }));
-
-    testWidgets('shows loading indicator when analytics loading',
-        (tester) => tester.runAsync(() async {
-              await tester
-                  .pumpWidget(wrapWithProviders(const HeatingScreen()));
-
-              // Switch to Analyse tab before pumpAndSettle
-              await tester.tap(find.text('Analysis'));
-              await tester.pump();
-
-              // During loading, CircularProgressIndicator may appear
-              // (timing-dependent; if already loaded shows MonthSelector or noData)
-              final hasLoading = tester.any(find.byType(CircularProgressIndicator));
-              final hasMonthSelector = tester.any(find.byType(MonthSelector));
-              final hasNoData = tester.any(find.text('No data available'));
-              expect(hasLoading || hasMonthSelector || hasNoData, isTrue);
-
-              await tester.pumpWidget(Container());
-            }));
-
-    testWidgets('MonthSelector navigation triggers provider update',
-        (tester) => tester.runAsync(() async {
-              final meterId =
-                  await dao.insertMeter(HeatingMetersCompanion.insert(
-                householdId: householdId,
-                roomId: roomId,
-                name: 'Test Meter',
-              ));
-              final year = DateTime.now().year;
-              final month = DateTime.now().month;
-              await dao.insertReading(HeatingReadingsCompanion.insert(
-                heatingMeterId: meterId,
-                timestamp: DateTime(year, month > 1 ? month - 1 : 1, 1),
-                value: 1000.0,
-              ));
-              await dao.insertReading(HeatingReadingsCompanion.insert(
-                heatingMeterId: meterId,
-                timestamp: DateTime(year, month, 15),
-                value: 1300.0,
-              ));
-              await Future.delayed(const Duration(milliseconds: 200));
-
-              await tester
-                  .pumpWidget(wrapWithProviders(const HeatingScreen()));
-              await tester.pumpAndSettle();
-
-              // Switch to Analyse tab
-              await tester.tap(find.text('Analysis'));
-              await Future.delayed(const Duration(milliseconds: 300));
-              await tester.pumpAndSettle();
-
-              // Should show MonthSelector
-              expect(find.byType(MonthSelector), findsOneWidget);
-
-              // Record current selected month text before navigation
-              final initialText = tester
-                  .widget<Text>(find.descendant(
-                    of: find.byType(MonthSelector),
-                    matching: find.byType(Text),
-                  ).first)
-                  .data ?? '';
-
-              // Tap previous month chevron
-              await tester.tap(find.byIcon(Icons.chevron_left).first);
-              await Future.delayed(const Duration(milliseconds: 200));
-              await tester.pumpAndSettle();
-
-              // Text should have changed (different month displayed)
-              final newText = tester
-                  .widget<Text>(find.descendant(
-                    of: find.byType(MonthSelector),
-                    matching: find.byType(Text),
-                  ).first)
-                  .data ?? '';
-              expect(newText, isNot(equals(initialText)));
-
-              await tester.pumpWidget(Container());
-            }));
-  });
-
-  group('HeatingScreen - Per-Heater Pie Chart', () {
-    testWidgets('pie chart renders when heating meters have deltas in month',
-        (tester) => tester.runAsync(() async {
-              // Add two meters with readings in current month
-              final meter1Id =
-                  await dao.insertMeter(HeatingMetersCompanion.insert(
-                householdId: householdId,
-                roomId: roomId,
-                name: 'Radiator A',
-              ));
-              final year = DateTime.now().year;
-              final month = DateTime.now().month;
-              // Two readings = one delta in current month
-              await dao.insertReading(HeatingReadingsCompanion.insert(
-                heatingMeterId: meter1Id,
-                timestamp: DateTime(year, month, 1),
-                value: 100.0,
-              ));
-              await dao.insertReading(HeatingReadingsCompanion.insert(
-                heatingMeterId: meter1Id,
-                timestamp: DateTime(year, month, 15),
-                value: 140.0,
-              ));
-              final room2Id = await database
-                  .into(database.rooms)
-                  .insert(RoomsCompanion.insert(
-                    householdId: householdId,
-                    name: 'Bedroom',
-                  ));
-              final meter2Id =
-                  await dao.insertMeter(HeatingMetersCompanion.insert(
-                householdId: householdId,
-                roomId: room2Id,
-                name: 'Radiator B',
-              ));
-              await dao.insertReading(HeatingReadingsCompanion.insert(
-                heatingMeterId: meter2Id,
-                timestamp: DateTime(year, month, 1),
-                value: 200.0,
-              ));
-              await dao.insertReading(HeatingReadingsCompanion.insert(
-                heatingMeterId: meter2Id,
-                timestamp: DateTime(year, month, 15),
-                value: 260.0,
-              ));
-              await Future.delayed(const Duration(milliseconds: 200));
-
-              await tester
-                  .pumpWidget(wrapWithProviders(const HeatingScreen()));
-              await tester.pumpAndSettle();
-
-              // Switch to Analyse tab
-              await tester.tap(find.text('Analysis'));
-              await Future.delayed(const Duration(milliseconds: 400));
-              await tester.pumpAndSettle();
-
-              // ConsumptionPieChart should appear (slices exist)
-              expect(find.byType(ConsumptionPieChart), findsOneWidget);
-
-              await tester.pumpWidget(Container());
-            }));
-
-    testWidgets('pie chart not shown when no heating meter readings exist',
-        (tester) => tester.runAsync(() async {
-              // Add a meter but no readings
-              await dao.insertMeter(HeatingMetersCompanion.insert(
-                householdId: householdId,
-                roomId: roomId,
-                name: 'Empty Meter',
-              ));
-              await Future.delayed(const Duration(milliseconds: 100));
-
-              await tester
-                  .pumpWidget(wrapWithProviders(const HeatingScreen()));
-              await tester.pumpAndSettle();
-
-              // Switch to Analyse tab
-              await tester.tap(find.text('Analysis'));
-              await Future.delayed(const Duration(milliseconds: 300));
-              await tester.pumpAndSettle();
-
-              // No pie chart when no deltas available
-              expect(find.byType(ConsumptionPieChart), findsNothing);
-
-              await tester.pumpWidget(Container());
-            }));
-
-    testWidgets('breakdown list items display meter names and percentages',
-        (tester) => tester.runAsync(() async {
-              // Add two meters with readings in current month
-              final meter1Id =
-                  await dao.insertMeter(HeatingMetersCompanion.insert(
-                householdId: householdId,
-                roomId: roomId,
-                name: 'Radiator One',
-              ));
-              final year = DateTime.now().year;
-              final month = DateTime.now().month;
-              await dao.insertReading(HeatingReadingsCompanion.insert(
-                heatingMeterId: meter1Id,
-                timestamp: DateTime(year, month, 1),
-                value: 100.0,
-              ));
-              await dao.insertReading(HeatingReadingsCompanion.insert(
-                heatingMeterId: meter1Id,
-                timestamp: DateTime(year, month, 15),
-                value: 200.0,
-              ));
-              final room2Id = await database
-                  .into(database.rooms)
-                  .insert(RoomsCompanion.insert(
-                    householdId: householdId,
-                    name: 'Bedroom',
-                  ));
-              final meter2Id =
-                  await dao.insertMeter(HeatingMetersCompanion.insert(
-                householdId: householdId,
-                roomId: room2Id,
-                name: 'Radiator Two',
-              ));
-              await dao.insertReading(HeatingReadingsCompanion.insert(
-                heatingMeterId: meter2Id,
-                timestamp: DateTime(year, month, 1),
-                value: 100.0,
-              ));
-              await dao.insertReading(HeatingReadingsCompanion.insert(
-                heatingMeterId: meter2Id,
-                timestamp: DateTime(year, month, 15),
-                value: 200.0,
-              ));
-              // Allow time for provider streams to update
-              await Future.delayed(const Duration(milliseconds: 500));
-
-              await tester
-                  .pumpWidget(wrapWithProviders(const HeatingScreen()));
-              // Allow widget to build and provider to emit initial state
-              await tester.pumpAndSettle();
-
-              // Switch to Analyse tab
-              await tester.tap(find.text('Analysis'));
-              await Future.delayed(const Duration(milliseconds: 600));
-              await tester.pumpAndSettle();
-
-              // Pie chart and breakdown should appear
-              // (Consumption by Room title appears when slices exist)
-              final hasPieSection =
-                  tester.any(find.text('Consumption by Room'));
-              final hasPercentage =
-                  tester.any(find.textContaining('%'));
-
-              // At minimum, percentage signs should appear when breakdown renders
-              // The pie chart itself shows percentages
-              expect(hasPieSection || hasPercentage, isTrue);
+              // Should show monthly breakdown heading
+              expect(find.text('Monthly Breakdown'), findsOneWidget);
 
               await tester.pumpWidget(Container());
             }));

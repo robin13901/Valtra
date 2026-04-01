@@ -12,7 +12,6 @@ import 'package:valtra/database/daos/household_dao.dart';
 import 'package:valtra/database/daos/room_dao.dart';
 import 'package:valtra/database/daos/smart_plug_dao.dart';
 import 'package:valtra/database/daos/water_dao.dart';
-import 'package:valtra/database/tables.dart';
 import 'package:valtra/l10n/app_localizations.dart';
 import 'package:valtra/providers/analytics_provider.dart';
 import 'package:valtra/providers/cost_config_provider.dart';

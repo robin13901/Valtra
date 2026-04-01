@@ -5,41 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-04-01)
 
 **Core value:** Users can track and analyze utility consumption across multiple households with an intuitive, polished interface
-<<<<<<< HEAD
 **Current focus:** v0.6.0 Analytics Redesign -- Phase 32 complete (DEBT-01 resolved), milestone ready for verification
-=======
-**Current focus:** v0.6.0 Analytics Redesign -- Phase 32 (Heating Analytics Cleanup)
->>>>>>> worktree-agent-a0d7726c
 
 ## Current Position
 
 Phase: 32 of 32 (Heating Analytics Cleanup)
-<<<<<<< HEAD
 Plan: 2 of 2 in current phase
 Status: Phase complete -- ALL v0.6.0 phases complete
 Last activity: 2026-04-01 -- Completed 32-02-PLAN.md (deprecated widget removal + dead code deletion)
 
 Progress: ███████████████░░░░░░░░░░ 100% (v0.6.0) [15/15 plans]
-=======
-Plan: 1 of 2 in current phase
-Status: In progress
-Last activity: 2026-04-01 -- Completed 32-01-PLAN.md (Heating Analyse tab overhaul + per-heater pie chart)
-
-Progress: ████████░░░░░░░░░░░░░░░░░ 56% (v0.6.0) [14/~15 plans]
->>>>>>> worktree-agent-a0d7726c
 
 ## Performance Metrics
 
 **Velocity:**
-<<<<<<< HEAD
 - Total plans completed: 15 (v0.6.0)
 - Average duration: ~14 min
 - Total execution time: ~196 min
-=======
-- Total plans completed: 14 (v0.6.0)
-- Average duration: ~15 min
-- Total execution time: ~209 min
->>>>>>> worktree-agent-a0d7726c
 
 *Updated after each plan completion*
 
@@ -56,11 +38,7 @@ Progress: ████████░░░░░░░░░░░░░░░�
 - **Phase 29**: Electricity Analytics -- 2 plans, 1221 tests, verified 3/3
 - **Phase 30**: Water & Gas Analytics -- 2 plans, 1226 tests, verified 10/10
 - **Phase 31**: Smart Plug Overhaul -- 2 plans, 1229 tests, verified 5/5
-<<<<<<< HEAD
 - **Phase 32**: Heating Analytics Cleanup -- 2 plans, 1213 tests (16 deleted dead-code tests)
-=======
-- **Phase 32 (in progress)**: Heating Analytics Cleanup -- 1 plan, 1220 tests passing (1 pre-existing failure)
->>>>>>> worktree-agent-a0d7726c
 
 ## Accumulated Context
 
@@ -101,9 +79,6 @@ Progress: ████████░░░░░░░░░░░░░░░�
 - smartPlugPieColors used for byPlug; pieChartColors retained for byRoom (31-01)
 - SmartPlugsScreen Liste tab uses flat plug list with _SmartPlugExpandableCard; room grouping removed (31-02)
 - registerFallbackValue(MeterType.electricity) required in setUpAll when using any() on MeterType enum parameters in mocktail stubs (31-02)
-- Per-heater pie chart (HEAT-02): uses raw reading deltas (not ratio-adjusted) from HeatingProvider.getReadingsWithDeltas; uses pieChartColors (multi-hue), not smartPlugPieColors
-- Heater distribution section title uses consumptionByRoomTitle to avoid duplicate "Monthly Breakdown" heading in heating Analyse tab
-- SmartPlugConsumptionScreen deleted in 32-01 (confirmed unused, buildGlassFAB already removed; deletion unblocks test suite compilation)
 - SmartPlugConsumptionScreen still exists but is no longer navigated to from smart_plugs_screen.dart; remove in Phase 32 if confirmed unused (31-02)
 - Standard FloatingActionButton replaces buildGlassFAB in HouseholdsScreen and RoomsScreen (32-02)
 - SmartPlugConsumptionScreen deleted; zero navigation references confirmed before deletion (32-02)
@@ -115,13 +90,8 @@ None yet.
 None.
 
 ## Technical Debt
-<<<<<<< HEAD
 1. ~~Deprecated GlassBottomNav/buildGlassFAB~~ -- RESOLVED (32-02, DEBT-01)
 2. Duplicate _YearNavigationHeader/_YearlySummaryCard -- REPLACEMENTS BUILT (27-01), ELECTRICITY DONE (29-02), WATER DONE (30-01), GAS DONE (30-02), remaining in heating (31-32)
-=======
-1. Deprecated GlassBottomNav/buildGlassFAB -- PARTIALLY DONE (buildGlassFAB removed from liquid_glass_widgets.dart in 32-02, households_screen/rooms_screen still use it; DEBT-01 complete in 32-02)
-2. Duplicate _YearNavigationHeader/_YearlySummaryCard -- COMPLETED (all screens done: electricity 29-02, water 30-01, gas 30-02, heating 32-01)
->>>>>>> worktree-agent-a0d7726c
 3. App icon alpha channel (fix for App Store submission) -- unscheduled
 4. ~~12 info-level deprecation warnings from test files referencing deprecated widgets~~ -- RESOLVED (32-02, deprecated symbols removed)
 5. Pre-existing migration_test.dart failure (v2→v3 smart plug interval conversion) -- unscheduled
@@ -129,9 +99,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-04-01
-<<<<<<< HEAD
 Stopped at: Phase 32 complete (DEBT-01 resolved -- deprecated widgets removed, dead SmartPlugConsumptionScreen deleted)
-=======
-Stopped at: Phase 32 plan 01 complete (heating analyse tab overhaul + per-heater pie chart)
->>>>>>> worktree-agent-a0d7726c
 Resume file: None

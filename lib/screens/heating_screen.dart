@@ -13,11 +13,7 @@ import '../services/analytics/analytics_models.dart';
 import '../services/interpolation/models.dart';
 import '../services/number_format_service.dart';
 import '../widgets/charts/chart_legend.dart';
-import '../widgets/charts/consumption_pie_chart.dart';
-import '../widgets/charts/household_comparison_chart.dart';
-import '../widgets/charts/month_selector.dart';
 import '../widgets/charts/monthly_bar_chart.dart';
-import '../widgets/charts/monthly_summary_card.dart';
 import '../widgets/charts/year_comparison_chart.dart';
 import '../widgets/dialogs/confirm_delete_dialog.dart';
 import '../widgets/dialogs/heating_meter_form_dialog.dart';
@@ -40,10 +36,10 @@ class _HeatingScreenState extends State<HeatingScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final provider = context.read<AnalyticsProvider>();
-      provider.setSelectedMeterType(MeterType.heating);
-      provider.setSelectedMonth(DateTime.now());
-      provider.setSelectedYear(DateTime.now().year);
+      context
+          .read<AnalyticsProvider>()
+          .setSelectedMeterType(MeterType.heating);
+      context.read<AnalyticsProvider>().setSelectedYear(DateTime.now().year);
     });
   }
 
@@ -129,59 +125,71 @@ class _HeatingScreenState extends State<HeatingScreen> {
   Widget _buildAnalyseTab(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final analyticsProvider = context.watch<AnalyticsProvider>();
-    final heatingProvider = context.watch<HeatingProvider>();
-    final locale = context.watch<LocaleProvider>().localeString;
+    final data = analyticsProvider.yearlyData;
     final color = colorForMeterType(MeterType.heating);
-    final monthlyData = analyticsProvider.monthlyData;
-    final yearlyData = analyticsProvider.yearlyData;
 
     if (analyticsProvider.isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
 
-    if (monthlyData == null) {
+    if (data == null) {
       return Center(child: Text(l10n.noData));
     }
 
-    // Compute previous month total from recentMonths
-    double? previousMonthTotal;
-    final selectedMonth = analyticsProvider.selectedMonth;
-    for (final period in monthlyData.recentMonths) {
-      final pm = DateTime(selectedMonth.year, selectedMonth.month - 1, 1);
-      if (period.periodStart.year == pm.year &&
-          period.periodStart.month == pm.month) {
-        previousMonthTotal = period.consumption;
-        break;
-      }
-    }
+    return _buildAnalyseContent(context, data, color, l10n, analyticsProvider);
+  }
 
-    // Build per-heater pie slices for selected month
-    final heaterSlices = _buildHeaterSlices(heatingProvider, selectedMonth);
+  Widget _buildAnalyseContent(
+    BuildContext context,
+    YearlyAnalyticsData data,
+    Color color,
+    AppLocalizations l10n,
+    AnalyticsProvider provider,
+  ) {
+    final locale = context.watch<LocaleProvider>().localeString;
+
+    if (data.monthlyBreakdown.isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            _YearNavigationHeader(
+              year: provider.selectedYear,
+              onPrevious: () => provider.navigateYear(-1),
+              onNext: () => provider.navigateYear(1),
+            ),
+            const SizedBox(height: 32),
+            Text(l10n.noYearlyData(provider.selectedYear.toString())),
+          ],
+        ),
+      );
+    }
 
     return ListView(
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
       children: [
-        // Month selector
-        MonthSelector(
-          selectedMonth: analyticsProvider.selectedMonth,
-          onMonthChanged: (month) {
-            analyticsProvider.setSelectedMonth(month);
-            if (month.year != analyticsProvider.selectedYear) {
-              analyticsProvider.setSelectedYear(month.year);
-            }
-          },
-          locale: locale,
+        // Year navigation header
+        _YearNavigationHeader(
+          year: provider.selectedYear,
+          onPrevious: () => provider.navigateYear(-1),
+          onNext: () => provider.navigateYear(1),
         ),
         const SizedBox(height: 16),
 
-        // Monthly summary card
-        MonthlySummaryCard(
-          totalConsumption: monthlyData.totalConsumption,
-          previousMonthTotal: previousMonthTotal,
-          unit: monthlyData.unit,
-          month: analyticsProvider.selectedMonth,
+        // Summary card
+        _YearlySummaryCard(
+          totalConsumption: data.totalConsumption,
+          previousYearTotal: data.previousYearTotal,
+          unit: data.unit,
+          year: data.year,
           color: color,
+          totalCost: data.totalCost,
+          previousYearTotalCost: data.previousYearTotalCost,
+          currencySymbol: data.currencySymbol,
           locale: locale,
+          extrapolatedTotal: data.extrapolatedTotal,
+          extrapolationBasisMonths: data.extrapolationBasisMonths,
+          showCosts: false,
         ),
         const SizedBox(height: 24),
 
@@ -192,10 +200,9 @@ class _HeatingScreenState extends State<HeatingScreen> {
         SizedBox(
           height: 200,
           child: MonthlyBarChart(
-            periods: monthlyData.recentMonths,
+            periods: data.monthlyBreakdown,
             primaryColor: color,
-            unit: monthlyData.unit,
-            highlightMonth: analyticsProvider.selectedMonth,
+            unit: data.unit,
             locale: locale,
             showCosts: false,
             periodCosts: null,
@@ -205,19 +212,18 @@ class _HeatingScreenState extends State<HeatingScreen> {
         const SizedBox(height: 24),
 
         // Year-over-year comparison (only if previous year data exists)
-        if (yearlyData != null &&
-            yearlyData.previousYearBreakdown != null &&
-            yearlyData.previousYearBreakdown!.isNotEmpty) ...[
+        if (data.previousYearBreakdown != null &&
+            data.previousYearBreakdown!.isNotEmpty) ...[
           Text(l10n.yearOverYear,
               style: Theme.of(context).textTheme.titleMedium),
           const SizedBox(height: 8),
           SizedBox(
             height: 250,
             child: YearComparisonChart(
-              currentYear: yearlyData.monthlyBreakdown,
-              previousYear: yearlyData.previousYearBreakdown,
+              currentYear: data.monthlyBreakdown,
+              previousYear: data.previousYearBreakdown,
               primaryColor: color,
-              unit: yearlyData.unit,
+              unit: data.unit,
               locale: locale,
               showCosts: false,
               currentYearCosts: null,
@@ -237,101 +243,9 @@ class _HeatingScreenState extends State<HeatingScreen> {
               isDashed: true,
             ),
           ]),
-          const SizedBox(height: 24),
-        ],
-
-        // Household comparison (only if >1 household data available)
-        if (analyticsProvider.householdComparisonData.length > 1) ...[
-          SizedBox(
-            height: 250,
-            child: HouseholdComparisonChart(
-              households: analyticsProvider.householdComparisonData,
-              unit: monthlyData.unit,
-              locale: locale,
-            ),
-          ),
-          const SizedBox(height: 24),
-        ],
-
-        // Per-heater distribution section
-        if (heaterSlices.isNotEmpty) ...[
-          Text(l10n.consumptionByRoomTitle,
-              style: Theme.of(context).textTheme.titleMedium),
-          const SizedBox(height: 8),
-          SizedBox(
-            height: 250,
-            child: ConsumptionPieChart(
-              slices: heaterSlices,
-              unit: 'units',
-              locale: locale,
-            ),
-          ),
-          const SizedBox(height: 8),
-          ...heatingProvider.metersWithRooms.map((mwr) {
-            // Find the slice for this meter
-            final slice = heaterSlices.firstWhere(
-              (s) => s.label == mwr.meter.name,
-              orElse: () => const PieSliceData(
-                label: '',
-                value: 0,
-                percentage: 0,
-                color: Colors.transparent,
-              ),
-            );
-            if (slice.value == 0) return const SizedBox.shrink();
-            return _HeaterBreakdownItem(
-              meterName: mwr.meter.name,
-              roomName: mwr.roomName,
-              percentage: slice.percentage,
-              color: slice.color,
-            );
-          }),
         ],
       ],
     );
-  }
-
-  /// Computes per-heater pie slices from raw reading deltas for the selected month.
-  List<PieSliceData> _buildHeaterSlices(
-    HeatingProvider heatingProvider,
-    DateTime selectedMonth,
-  ) {
-    final meters = heatingProvider.metersWithRooms;
-    if (meters.isEmpty) return [];
-
-    final monthStart = DateTime(selectedMonth.year, selectedMonth.month, 1);
-    final monthEnd = DateTime(selectedMonth.year, selectedMonth.month + 1, 1);
-
-    double totalDelta = 0;
-    final meterDeltas = <String, double>{};
-
-    for (final mwr in meters) {
-      final readings = heatingProvider.getReadingsWithDeltas(mwr.meter.id);
-      double sum = 0;
-      for (final r in readings) {
-        if (r.delta != null &&
-            !r.reading.timestamp.isBefore(monthStart) &&
-            r.reading.timestamp.isBefore(monthEnd)) {
-          sum += r.delta!;
-        }
-      }
-      if (sum > 0) {
-        meterDeltas[mwr.meter.name] = sum;
-        totalDelta += sum;
-      }
-    }
-
-    if (totalDelta == 0) return [];
-
-    int i = 0;
-    return meterDeltas.entries
-        .map((e) => PieSliceData(
-              label: e.key,
-              value: e.value,
-              percentage: (e.value / totalDelta) * 100,
-              color: pieChartColors[i++ % pieChartColors.length],
-            ))
-        .toList();
   }
 
   Widget _buildEmptyState(BuildContext context, AppLocalizations l10n) {
@@ -401,40 +315,164 @@ class _HeatingScreenState extends State<HeatingScreen> {
   }
 }
 
-/// Per-heater breakdown list item for the Analyse tab pie chart section.
-class _HeaterBreakdownItem extends StatelessWidget {
-  final String meterName;
-  final String roomName;
-  final double percentage;
-  final Color color;
+/// Year navigation header for the Analyse tab.
+class _YearNavigationHeader extends StatelessWidget {
+  final int year;
+  final VoidCallback onPrevious;
+  final VoidCallback onNext;
 
-  const _HeaterBreakdownItem({
-    required this.meterName,
-    required this.roomName,
-    required this.percentage,
-    required this.color,
+  const _YearNavigationHeader({
+    required this.year,
+    required this.onPrevious,
+    required this.onNext,
   });
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      dense: true,
-      visualDensity: VisualDensity.compact,
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16),
-      leading: Container(
-        width: 12,
-        height: 12,
-        decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+    final now = DateTime.now();
+    final isCurrentYear = year == now.year;
+    final l10n = AppLocalizations.of(context)!;
+
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        IconButton(
+          icon: const Icon(Icons.chevron_left),
+          onPressed: onPrevious,
+          tooltip: l10n.previousYear,
+        ),
+        Expanded(
+          child: Text(
+            year.toString(),
+            textAlign: TextAlign.center,
+            style: Theme.of(context)
+                .textTheme
+                .titleMedium
+                ?.copyWith(fontWeight: FontWeight.bold),
+          ),
+        ),
+        IconButton(
+          icon: const Icon(Icons.chevron_right),
+          onPressed: isCurrentYear ? null : onNext,
+          tooltip: l10n.nextYear,
+        ),
+      ],
+    );
+  }
+}
+
+/// Summary card for yearly analytics on the Analyse tab.
+class _YearlySummaryCard extends StatelessWidget {
+  final double? totalConsumption;
+  final double? previousYearTotal;
+  final String unit;
+  final int year;
+  final Color color;
+  final double? totalCost;
+  final double? previousYearTotalCost;
+  final String? currencySymbol;
+  final String locale;
+  final double? extrapolatedTotal;
+  final int? extrapolationBasisMonths;
+  final bool showCosts;
+
+  const _YearlySummaryCard({
+    required this.totalConsumption,
+    required this.previousYearTotal,
+    required this.unit,
+    required this.year,
+    required this.color,
+    this.totalCost,
+    this.previousYearTotalCost,
+    this.currencySymbol,
+    required this.locale,
+    this.extrapolatedTotal,
+    this.extrapolationBasisMonths,
+    this.showCosts = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final symbol = currencySymbol ?? '\u20AC';
+
+    // Determine primary display value and unit based on cost toggle
+    final double? displayValue = showCosts ? totalCost : totalConsumption;
+    final String displayUnit = showCosts ? symbol : unit;
+    final double? previousValue =
+        showCosts ? previousYearTotalCost : previousYearTotal;
+
+    return GlassCard(
+      child: Column(
+        children: [
+          Text(l10n.totalForYear(year.toString()),
+              style: Theme.of(context).textTheme.bodyMedium),
+          const SizedBox(height: 8),
+          Text(
+            displayValue != null
+                ? showCosts
+                    ? '${ValtraNumberFormat.currency(displayValue, locale)} $displayUnit'
+                    : '${ValtraNumberFormat.consumption(displayValue, locale)} $displayUnit'
+                : '\u2014',
+            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                  color: color,
+                  fontWeight: FontWeight.bold,
+                ),
+          ),
+          if (!showCosts && extrapolatedTotal != null) ...[
+            const SizedBox(height: 4),
+            Text(
+              l10n.projectedTotal(
+                '~${ValtraNumberFormat.consumption(extrapolatedTotal!, locale)} $unit',
+              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    fontStyle: FontStyle.italic,
+                  ),
+            ),
+            if (extrapolationBasisMonths != null)
+              Text(
+                l10n.basedOnMonths(extrapolationBasisMonths!),
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
+              ),
+          ],
+          if (displayValue != null &&
+              previousValue != null &&
+              previousValue > 0) ...[
+            const SizedBox(height: 8),
+            _buildChangeText(context, l10n, displayValue, previousValue),
+          ],
+          // Show cost as secondary info only when NOT in cost mode
+          if (!showCosts && totalCost != null) ...[
+            const SizedBox(height: 8),
+            Text(
+              '~$symbol${ValtraNumberFormat.currency(totalCost!, locale)}',
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
+            ),
+          ],
+        ],
       ),
-      title: Text(meterName),
-      subtitle: Text(roomName),
-      trailing: Text(
-        '${percentage.toStringAsFixed(1)}%',
-        style: Theme.of(context)
-            .textTheme
-            .bodyMedium
-            ?.copyWith(fontWeight: FontWeight.w600),
-      ),
+    );
+  }
+
+  Widget _buildChangeText(BuildContext context, AppLocalizations l10n,
+      double currentValue, double previousValue) {
+    final change = ((currentValue - previousValue) / previousValue) * 100;
+    final prefix = change >= 0 ? '+' : '';
+    final changeText =
+        '$prefix${ValtraNumberFormat.consumption(change, locale)}';
+
+    return Text(
+      l10n.changeFromLastYear(changeText),
+      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+            color: change > 0
+                ? Theme.of(context).colorScheme.error
+                : AppColors.successColor,
+          ),
     );
   }
 }
