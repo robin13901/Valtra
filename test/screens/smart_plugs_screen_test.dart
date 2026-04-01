@@ -18,6 +18,8 @@ import 'package:valtra/providers/theme_provider.dart';
 import 'package:valtra/screens/smart_plugs_screen.dart';
 import 'package:valtra/widgets/liquid_glass_widgets.dart';
 
+import 'package:valtra/services/analytics/analytics_models.dart';
+
 import '../helpers/test_database.dart';
 import '../helpers/test_locale_provider.dart';
 
@@ -44,6 +46,7 @@ void main() {
 
   setUpAll(() async {
     await initializeDateFormatting('en');
+    registerFallbackValue(MeterType.electricity);
   });
 
   Widget wrapWithProviders(Widget child) {
@@ -83,7 +86,7 @@ void main() {
     mockAnalyticsProvider = MockSmartPlugAnalyticsProvider();
     mockMainAnalyticsProvider = MockAnalyticsProvider();
 
-    // Set up analytics provider stubs
+    // Set up smart plug analytics provider stubs
     when(() => mockAnalyticsProvider.isLoading).thenReturn(false);
     when(() => mockAnalyticsProvider.data).thenReturn(null);
     when(() => mockAnalyticsProvider.selectedMonth)
@@ -91,8 +94,10 @@ void main() {
     when(() => mockAnalyticsProvider.householdId).thenReturn(1);
     when(() => mockAnalyticsProvider.loadData())
         .thenAnswer((_) async {});
+    when(() => mockAnalyticsProvider.setSelectedMonth(any()))
+        .thenReturn(null);
 
-    // Set up main analytics provider stubs (for SmartPlugAnalyseTab)
+    // Set up main analytics provider stubs (for SmartPlugAnalyseTab + initState)
     when(() => mockMainAnalyticsProvider.isLoading).thenReturn(false);
     when(() => mockMainAnalyticsProvider.monthlyData).thenReturn(null);
     when(() => mockMainAnalyticsProvider.yearlyData).thenReturn(null);
@@ -101,6 +106,12 @@ void main() {
     when(() => mockMainAnalyticsProvider.selectedYear).thenReturn(2026);
     when(() => mockMainAnalyticsProvider.householdComparisonData)
         .thenReturn(const []);
+    when(() => mockMainAnalyticsProvider.setSelectedMeterType(any()))
+        .thenReturn(null);
+    when(() => mockMainAnalyticsProvider.setSelectedMonth(any()))
+        .thenReturn(null);
+    when(() => mockMainAnalyticsProvider.setSelectedYear(any()))
+        .thenReturn(null);
 
     householdId = await database
         .into(database.households)
@@ -115,6 +126,7 @@ void main() {
   });
 
   tearDown(() async {
+    await Future.delayed(const Duration(milliseconds: 300));
     smartPlugProvider.dispose();
     roomProvider.dispose();
     await database.close();
@@ -136,7 +148,7 @@ void main() {
               await tester.pumpWidget(Container());
             }));
 
-    testWidgets('displays plugs grouped by room',
+    testWidgets('displays plugs in flat list with room name as subtitle',
         (tester) => tester.runAsync(() async {
               await smartPlugDao.insertSmartPlug(SmartPlugsCompanion.insert(
                 roomId: roomId,
@@ -148,13 +160,15 @@ void main() {
                   .pumpWidget(wrapWithProviders(const SmartPlugsScreen()));
               await tester.pumpAndSettle();
 
-              expect(find.text('Living Room'), findsAtLeastNWidgets(1));
+              // Plug name visible
               expect(find.text('TV Plug'), findsOneWidget);
+              // Room name visible as subtitle (not as section header)
+              expect(find.text('Living Room'), findsOneWidget);
 
               await tester.pumpWidget(Container());
             }));
 
-    testWidgets('shows room section icon',
+    testWidgets('no room section icon (flat list, no room grouping)',
         (tester) => tester.runAsync(() async {
               await smartPlugDao.insertSmartPlug(SmartPlugsCompanion.insert(
                 roomId: roomId,
@@ -166,7 +180,9 @@ void main() {
                   .pumpWidget(wrapWithProviders(const SmartPlugsScreen()));
               await tester.pumpAndSettle();
 
-              expect(find.byIcon(Icons.meeting_room), findsAtLeastNWidgets(1));
+              // meeting_room icon only in app bar button, not in list sections
+              // (the app bar still has the rooms button)
+              expect(find.byIcon(Icons.meeting_room), findsOneWidget);
 
               await tester.pumpWidget(Container());
             }));
@@ -209,7 +225,7 @@ void main() {
                   .pumpWidget(wrapWithProviders(const SmartPlugsScreen()));
               await tester.pumpAndSettle();
 
-              await tester.tap(find.byType(PopupMenuButton<String>));
+              await tester.tap(find.byType(PopupMenuButton<String>).first);
               await tester.pumpAndSettle();
 
               expect(find.text('Edit'), findsOneWidget);
@@ -259,7 +275,7 @@ void main() {
                   .pumpWidget(wrapWithProviders(const SmartPlugsScreen()));
               await tester.pumpAndSettle();
 
-              await tester.tap(find.byType(PopupMenuButton<String>));
+              await tester.tap(find.byType(PopupMenuButton<String>).first);
               await tester.pumpAndSettle();
 
               await tester.tap(find.text('Delete'));
@@ -272,6 +288,95 @@ void main() {
 
               await tester.pumpWidget(Container());
             }));
+
+    group('Expandable card', () {
+      testWidgets('card shows expand_more icon when collapsed',
+          (tester) => tester.runAsync(() async {
+                await smartPlugDao.insertSmartPlug(SmartPlugsCompanion.insert(
+                  roomId: roomId,
+                  name: 'Expand Plug',
+                ));
+                await Future.delayed(const Duration(milliseconds: 100));
+
+                await tester
+                    .pumpWidget(wrapWithProviders(const SmartPlugsScreen()));
+                await tester.pumpAndSettle();
+
+                expect(find.byIcon(Icons.expand_more), findsOneWidget);
+                expect(find.byIcon(Icons.expand_less), findsNothing);
+
+                await tester.pumpWidget(Container());
+              }));
+
+      testWidgets('tapping card header toggles expand state',
+          (tester) => tester.runAsync(() async {
+                await smartPlugDao.insertSmartPlug(SmartPlugsCompanion.insert(
+                  roomId: roomId,
+                  name: 'Toggle Plug',
+                ));
+                await Future.delayed(const Duration(milliseconds: 100));
+
+                await tester
+                    .pumpWidget(wrapWithProviders(const SmartPlugsScreen()));
+                await tester.pumpAndSettle();
+
+                // Initially collapsed
+                expect(find.byIcon(Icons.expand_more), findsOneWidget);
+
+                // Tap on the InkWell area (plug name text triggers expand)
+                await tester.tap(find.text('Toggle Plug'));
+                await tester.pumpAndSettle();
+
+                // Now expanded
+                expect(find.byIcon(Icons.expand_less), findsOneWidget);
+
+                await tester.pumpWidget(Container());
+              }));
+
+      testWidgets('expanded card shows Add Consumption button',
+          (tester) => tester.runAsync(() async {
+                await smartPlugDao.insertSmartPlug(SmartPlugsCompanion.insert(
+                  roomId: roomId,
+                  name: 'Consumption Plug',
+                ));
+                await Future.delayed(const Duration(milliseconds: 100));
+
+                await tester
+                    .pumpWidget(wrapWithProviders(const SmartPlugsScreen()));
+                await tester.pumpAndSettle();
+
+                // Collapsed: Add Consumption not visible
+                expect(find.text('Add Consumption'), findsNothing);
+
+                // Expand the card
+                await tester.tap(find.text('Consumption Plug'));
+                await tester.pumpAndSettle();
+
+                // Expanded: Add Consumption button visible
+                expect(find.text('Add Consumption'), findsOneWidget);
+
+                await tester.pumpWidget(Container());
+              }));
+
+      testWidgets('collapsed card does not show consumption section',
+          (tester) => tester.runAsync(() async {
+                await smartPlugDao.insertSmartPlug(SmartPlugsCompanion.insert(
+                  roomId: roomId,
+                  name: 'Collapsed Plug',
+                ));
+                await Future.delayed(const Duration(milliseconds: 100));
+
+                await tester
+                    .pumpWidget(wrapWithProviders(const SmartPlugsScreen()));
+                await tester.pumpAndSettle();
+
+                // Consumption section headers not visible when collapsed
+                expect(find.text('Add Consumption'), findsNothing);
+                expect(find.byIcon(Icons.electric_bolt), findsNothing);
+
+                await tester.pumpWidget(Container());
+              }));
+    });
   });
 
   group('Bottom Navigation', () {
