@@ -218,10 +218,14 @@ Widget buildLiquidCircleButton({
   );
 }
 
-/// Bottom navigation bar with LiquidGlass pill shape and optional circular FAB buttons.
+/// Bottom navigation bar with LiquidGlass pill shape and inline FAB as the
+/// rightmost element inside the pill.
 ///
 /// Replaces the old [GlassBottomNav] with real liquid_glass_renderer effects.
-/// Layout: [optional left circle] [expanded center pill] [right circle / placeholder]
+/// Layout: [expanded nav items pill with optional right FAB at end]
+///
+/// The active tab is indicated by color/tint change (brighter color on icon
+/// and label) — no dot indicator is rendered.
 class LiquidGlassBottomNav extends StatelessWidget {
   final List<IconData> icons;
   final List<String> labels;
@@ -229,16 +233,11 @@ class LiquidGlassBottomNav extends StatelessWidget {
   final int currentIndex;
   final ValueChanged<int> onTap;
 
-  // LEFT circular button (optional)
-  final VoidCallback? onLeftTap;
-  final Set<int> leftVisibleForIndices;
-
-  // RIGHT circular button (FAB equivalent)
+  // RIGHT button (inline FAB inside pill)
   final IconData rightIcon;
   final VoidCallback? onRightTap;
   final Set<int>? rightVisibleForIndices; // null = always visible
 
-  final bool keepLeftPlaceholder;
   final double height;
   final double horizontalPadding;
 
@@ -249,12 +248,9 @@ class LiquidGlassBottomNav extends StatelessWidget {
     required this.keys,
     required this.currentIndex,
     required this.onTap,
-    this.onLeftTap,
-    this.leftVisibleForIndices = const {},
     this.rightIcon = Icons.more_horiz,
     this.onRightTap,
     this.rightVisibleForIndices,
-    this.keepLeftPlaceholder = false,
     this.height = 56.0,
     this.horizontalPadding = 16.0,
   }) : assert(
@@ -264,11 +260,9 @@ class LiquidGlassBottomNav extends StatelessWidget {
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
     final settings = liquidGlassSettings(context);
-    const double circleSize = 64.0;
-    final double navHeight = height < circleSize ? circleSize : height;
+    final bool isDark = theme.brightness == Brightness.dark;
+    const double pillHeight = 56.0;
 
-    final bool showLeft =
-        leftVisibleForIndices.contains(currentIndex) && onLeftTap != null;
     final bool showRight = rightVisibleForIndices == null ||
         rightVisibleForIndices!.contains(currentIndex);
     const double itemHorizontalPadding = 12.0;
@@ -280,128 +274,115 @@ class LiquidGlassBottomNav extends StatelessWidget {
             EdgeInsets.fromLTRB(horizontalPadding, 8, horizontalPadding, 8),
         child: SizedBox(
           width: double.infinity,
-          height: navHeight,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // Left circular button (may be hidden)
-              if (showLeft)
-                Padding(
-                  padding: const EdgeInsets.only(right: 12),
-                  child: buildLiquidCircleButton(
-                    child: Icon(Icons.add, size: 26, color: theme.iconTheme.color),
-                    size: circleSize,
-                    onTap: onLeftTap!,
-                    key: const Key('left_fab'),
-                    settings: settings,
-                  ),
-                )
-              else if (keepLeftPlaceholder)
-                const Padding(
-                  padding: EdgeInsets.only(right: 12),
-                  child: SizedBox(width: circleSize, height: circleSize),
+          height: pillHeight,
+          child: LiquidGlassLayer(
+            settings: settings,
+            child: LiquidGlass.grouped(
+              shape: LiquidRoundedSuperellipse(
+                borderRadius: pillHeight / 2,
+              ),
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: itemHorizontalPadding,
                 ),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(pillHeight / 2),
+                ),
+                child: Row(
+                  children: [
+                    // Nav items (evenly distributed)
+                    Expanded(
+                      child: LayoutBuilder(
+                        builder: (context, constraints) {
+                          final int itemCount = icons.length;
+                          final double totalAvailable =
+                              constraints.maxWidth.isFinite
+                                  ? constraints.maxWidth
+                                  : MediaQuery.of(context).size.width;
 
-              // Center pill
-              Expanded(
-                child: SizedBox(
-                  height: navHeight,
-                  child: LiquidGlassLayer(
-                    settings: settings,
-                    child: LiquidGlass.grouped(
-                      shape: const LiquidRoundedSuperellipse(
-                        borderRadius: circleSize / 2,
-                      ),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: itemHorizontalPadding,
-                        ),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(circleSize / 2),
-                        ),
-                        child: LayoutBuilder(
-                          builder: (context, constraints) {
-                            final int itemCount = icons.length;
-                            final double totalAvailable =
-                                constraints.maxWidth.isFinite
-                                    ? constraints.maxWidth
-                                    : MediaQuery.of(context).size.width;
+                          const double minItemWidth = 56.0;
+                          const double maxItemWidth = 140.0;
 
-                            const double minItemWidth = 56.0;
-                            const double maxItemWidth = 140.0;
+                          double perItemWidth = totalAvailable / itemCount;
+                          perItemWidth =
+                              perItemWidth.clamp(minItemWidth, maxItemWidth);
 
-                            double perItemWidth = totalAvailable / itemCount;
-                            perItemWidth =
-                                perItemWidth.clamp(minItemWidth, maxItemWidth);
+                          final bool fits =
+                              perItemWidth * itemCount <= totalAvailable + 0.5;
 
-                            final bool fits =
-                                perItemWidth * itemCount <= totalAvailable + 0.5;
-
-                            if (fits) {
-                              return Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                children: List.generate(itemCount, (index) {
-                                  final bool isSelected = index == currentIndex;
-                                  return GestureDetector(
+                          if (fits) {
+                            return Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: List.generate(itemCount, (index) {
+                                final bool isSelected = index == currentIndex;
+                                return GestureDetector(
+                                  behavior: HitTestBehavior.opaque,
+                                  onTap: () => onTap(index),
+                                  key: keys[index],
+                                  child: SizedBox(
+                                    width: perItemWidth,
+                                    height: pillHeight,
+                                    child: _buildNavColumn(
+                                      icon: icons[index],
+                                      label: labels[index],
+                                      isSelected: isSelected,
+                                      theme: theme,
+                                    ),
+                                  ),
+                                );
+                              }),
+                            );
+                          } else {
+                            return Row(
+                              children: List.generate(itemCount, (index) {
+                                final bool isSelected = index == currentIndex;
+                                return Expanded(
+                                  child: GestureDetector(
                                     behavior: HitTestBehavior.opaque,
                                     onTap: () => onTap(index),
                                     key: keys[index],
-                                    child: SizedBox(
-                                      width: perItemWidth,
-                                      height: navHeight,
-                                      child: _buildNavColumn(
-                                        icon: icons[index],
-                                        label: labels[index],
-                                        isSelected: isSelected,
-                                        theme: theme,
-                                      ),
+                                    child: _buildNavColumn(
+                                      icon: icons[index],
+                                      label: labels[index],
+                                      isSelected: isSelected,
+                                      theme: theme,
                                     ),
-                                  );
-                                }),
-                              );
-                            } else {
-                              return Row(
-                                children: List.generate(itemCount, (index) {
-                                  final bool isSelected = index == currentIndex;
-                                  return Expanded(
-                                    child: GestureDetector(
-                                      behavior: HitTestBehavior.opaque,
-                                      onTap: () => onTap(index),
-                                      key: keys[index],
-                                      child: _buildNavColumn(
-                                        icon: icons[index],
-                                        label: labels[index],
-                                        isSelected: isSelected,
-                                        theme: theme,
-                                      ),
-                                    ),
-                                  );
-                                }),
-                              );
-                            }
-                          },
-                        ),
+                                  ),
+                                );
+                              }),
+                            );
+                          }
+                        },
                       ),
                     ),
-                  ),
+
+                    // Inline right FAB (fixed width, rightmost element in pill)
+                    if (showRight)
+                      GestureDetector(
+                        behavior: HitTestBehavior.opaque,
+                        onTap: onRightTap,
+                        key: const Key('right_fab'),
+                        child: Container(
+                          width: 48,
+                          height: 48,
+                          margin: const EdgeInsets.symmetric(horizontal: 4),
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: theme.colorScheme.primary.withValues(
+                              alpha: isDark ? 0.2 : 0.15,
+                            ),
+                          ),
+                          child: Icon(
+                            rightIcon,
+                            color: theme.colorScheme.primary,
+                            size: 22,
+                          ),
+                        ),
+                      ),
+                  ],
                 ),
               ),
-
-              // Right circular button (FAB)
-              Padding(
-                padding: const EdgeInsets.only(left: 12),
-                child: showRight
-                    ? buildLiquidCircleButton(
-                        child: Icon(rightIcon,
-                            size: 26, color: theme.iconTheme.color),
-                        size: circleSize,
-                        onTap: onRightTap,
-                        settings: settings,
-                        key: const Key('right_fab'),
-                      )
-                    : const SizedBox(width: circleSize, height: circleSize),
-              ),
-            ],
+            ),
           ),
         ),
       ),
