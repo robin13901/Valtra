@@ -1795,6 +1795,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Number of persons is required (min. 1)'**
   String get personCountRequired;
+
+  /// No description provided for @person.
+  ///
+  /// In en, this message translates to:
+  /// **'Person'**
+  String get person;
+
+  /// No description provided for @persons.
+  ///
+  /// In en, this message translates to:
+  /// **'Persons'**
+  String get persons;
 }
 
 class _AppLocalizationsDelegate

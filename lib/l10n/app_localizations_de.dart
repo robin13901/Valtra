@@ -964,4 +964,10 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get personCountRequired => 'Anzahl Personen ist erforderlich (min. 1)';
+
+  @override
+  String get person => 'Person';
+
+  @override
+  String get persons => 'Personen';
 }

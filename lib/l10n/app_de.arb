@@ -403,5 +403,7 @@
   },
   "personCount": "Anzahl Personen",
   "personCountHint": "z.B. 2",
-  "personCountRequired": "Anzahl Personen ist erforderlich (min. 1)"
+  "personCountRequired": "Anzahl Personen ist erforderlich (min. 1)",
+  "person": "Person",
+  "persons": "Personen"
 }

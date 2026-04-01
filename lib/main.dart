@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:provider/provider.dart';
@@ -314,12 +316,56 @@ class _ValtraAppState extends State<ValtraApp> {
   }
 }
 
-/// Home screen with GlassCard navigation tiles.
+/// Home screen with frosted glass household carousel and GlassCard navigation tiles.
 ///
-/// Displays a hub with category tiles for navigating to individual screens.
-/// Bottom navigation bar has been removed in favour of tile-only navigation.
-class HomeScreen extends StatelessWidget {
+/// Displays a horizontal PageView carousel of household cards at the top,
+/// followed by category tiles for navigating to individual screens.
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  late PageController _pageController;
+  int? _lastSelectedHouseholdId;
+
+  @override
+  void initState() {
+    super.initState();
+    // PageController is initialized without initial page here; we set it
+    // in didChangeDependencies once we have access to the provider.
+    _pageController = PageController(viewportFraction: 0.92);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final provider = context.read<HouseholdProvider>();
+    final households = provider.households;
+    final selectedId = provider.selectedHouseholdId;
+
+    // First time: initialize the page controller to the correct page
+    if (_lastSelectedHouseholdId == null && selectedId != null) {
+      final index = households.indexWhere((h) => h.id == selectedId);
+      if (index >= 0 && index != _pageController.initialPage) {
+        // Dispose and re-create with correct initial page
+        _pageController.dispose();
+        _pageController = PageController(
+          viewportFraction: 0.92,
+          initialPage: index,
+        );
+      }
+    }
+    _lastSelectedHouseholdId = selectedId;
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
 
   void _navigateToSettings(BuildContext context) {
     Navigator.of(context).push(
@@ -384,9 +430,10 @@ class HomeScreen extends StatelessWidget {
                 ),
           ),
           const SizedBox(height: 8),
-          _buildCurrentHousehold(context, l10n),
+          // Frosted glass household carousel
+          _buildHouseholdCarousel(context, l10n),
           const SizedBox(height: 24),
-          // 4 category GlassCards in a 2-column grid
+          // 4 category GlassCards in a 2-column grid (Bento Grid)
           GridView.count(
             crossAxisCount: 2,
             shrinkWrap: true,
@@ -452,35 +499,90 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildCurrentHousehold(BuildContext context, AppLocalizations l10n) {
-    final householdProvider = context.watch<HouseholdProvider>();
-    final selectedHousehold = householdProvider.selectedHousehold;
+  Widget _buildHouseholdCarousel(BuildContext context, AppLocalizations l10n) {
+    return Consumer<HouseholdProvider>(
+      builder: (context, provider, child) {
+        final households = provider.households;
 
-    if (selectedHousehold == null) {
-      return Text(
-        l10n.noHouseholds,
-        style: Theme.of(context).textTheme.bodyLarge,
-      );
-    }
+        if (households.isEmpty) {
+          return _buildEmptyHouseholdCard(context, l10n);
+        }
 
-    return Column(
-      children: [
-        Text(
-          selectedHousehold.name,
-          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                fontWeight: FontWeight.w500,
-              ),
-        ),
-        if (selectedHousehold.description != null) ...[
-          const SizedBox(height: 4),
-          Text(
-            selectedHousehold.description!,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                ),
+        // Reverse-sync: when selectedHouseholdId changes externally,
+        // animate the carousel to the correct page.
+        final selectedId = provider.selectedHouseholdId;
+        if (selectedId != null && selectedId != _lastSelectedHouseholdId) {
+          final newIndex = households.indexWhere((h) => h.id == selectedId);
+          if (newIndex >= 0 && _pageController.hasClients) {
+            final currentPage = _pageController.page?.round() ?? -1;
+            if (currentPage != newIndex) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (_pageController.hasClients) {
+                  _pageController.animateToPage(
+                    newIndex,
+                    duration: const Duration(milliseconds: 300),
+                    curve: Curves.easeInOut,
+                  );
+                }
+              });
+            }
+          }
+          _lastSelectedHouseholdId = selectedId;
+        }
+
+        return SizedBox(
+          height: 140,
+          child: PageView.builder(
+            controller: _pageController,
+            itemCount: households.length,
+            onPageChanged: (index) {
+              provider.selectHousehold(households[index].id);
+              _lastSelectedHouseholdId = households[index].id;
+            },
+            itemBuilder: (context, index) {
+              final household = households[index];
+              final isSelected = household.id == provider.selectedHouseholdId;
+              return _HouseholdCard(
+                household: household,
+                isSelected: isSelected,
+              );
+            },
           ),
-        ],
-      ],
+        );
+      },
+    );
+  }
+
+  Widget _buildEmptyHouseholdCard(
+      BuildContext context, AppLocalizations l10n) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(20),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+          child: Container(
+            height: 80,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20),
+              color: (isDark ? AppColors.darkSurface : AppColors.lightSurface)
+                  .withValues(alpha: 0.8),
+              border: Border.all(
+                color: AppColors.ultraViolet.withValues(alpha: 0.2),
+              ),
+            ),
+            alignment: Alignment.center,
+            child: Text(
+              l10n.noHouseholds,
+              style: theme.textTheme.bodyLarge,
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ),
+      ),
     );
   }
 
@@ -514,6 +616,106 @@ class HomeScreen extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
               ),
             ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// A frosted glass card for displaying a single household in the carousel.
+class _HouseholdCard extends StatelessWidget {
+  final Household household;
+  final bool isSelected;
+
+  const _HouseholdCard({
+    required this.household,
+    required this.isSelected,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final l10n = AppLocalizations.of(context)!;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(20),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20),
+              color: (isDark ? AppColors.darkSurface : AppColors.lightSurface)
+                  .withValues(alpha: 0.8),
+              border: Border.all(
+                color: isSelected
+                    ? theme.colorScheme.primary.withValues(alpha: 0.5)
+                    : AppColors.ultraViolet.withValues(alpha: 0.2),
+              ),
+              boxShadow: isDark
+                  ? null
+                  : [
+                      BoxShadow(
+                        color: AppColors.ultraViolet.withValues(alpha: 0.08),
+                        blurRadius: 12,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+            ),
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  household.name,
+                  style: theme.textTheme.headlineMedium?.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                if (household.description != null) ...[
+                  const SizedBox(height: 4),
+                  Text(
+                    household.description!,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+                const Spacer(),
+                Row(
+                  children: [
+                    Icon(
+                      Icons.people_outline,
+                      size: 16,
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      '${household.personCount} ${household.personCount == 1 ? l10n.person : l10n.persons}',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                    if (isSelected) ...[
+                      const Spacer(),
+                      Icon(
+                        Icons.check_circle,
+                        size: 16,
+                        color: theme.colorScheme.primary,
+                      ),
+                    ],
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),

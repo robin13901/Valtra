@@ -469,5 +469,7 @@
   },
   "personCount": "Number of persons",
   "personCountHint": "e.g. 2",
-  "personCountRequired": "Number of persons is required (min. 1)"
+  "personCountRequired": "Number of persons is required (min. 1)",
+  "person": "Person",
+  "persons": "Persons"
 }
