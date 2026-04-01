@@ -91,11 +91,13 @@ class HouseholdProvider extends ChangeNotifier {
   Future<int> createHousehold(
     String name, {
     String? description,
+    required int personCount,
     bool selectAfterCreate = true,
   }) async {
     final id = await _dao.insert(HouseholdsCompanion.insert(
       name: name,
       description: description != null ? Value(description) : const Value.absent(),
+      personCount: personCount,
     ));
 
     if (selectAfterCreate) {
@@ -110,11 +112,13 @@ class HouseholdProvider extends ChangeNotifier {
     int id,
     String name, {
     String? description,
+    int? personCount,
   }) async {
     await _dao.updateHousehold(HouseholdsCompanion(
       id: Value(id),
       name: Value(name),
       description: Value(description),
+      personCount: personCount != null ? Value(personCount) : const Value.absent(),
     ));
   }
 

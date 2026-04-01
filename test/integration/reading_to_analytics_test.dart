@@ -65,7 +65,7 @@ void main() {
         () async {
       // 1. Create a household
       final householdId = await householdDao.insert(
-        HouseholdsCompanion.insert(name: 'Test House'),
+        HouseholdsCompanion.insert(name: 'Test House', personCount: 1),
       );
       expect(householdId, greaterThan(0));
 
@@ -128,7 +128,7 @@ void main() {
     test('analytics handles empty readings gracefully', () async {
       // Create household with no readings
       final householdId = await householdDao.insert(
-        HouseholdsCompanion.insert(name: 'Empty House'),
+        HouseholdsCompanion.insert(name: 'Empty House', personCount: 1),
       );
 
       // Query readings -- should be empty
@@ -149,10 +149,10 @@ void main() {
     test('multi-household isolation', () async {
       // Create two households
       final houseAId = await householdDao.insert(
-        HouseholdsCompanion.insert(name: 'House A'),
+        HouseholdsCompanion.insert(name: 'House A', personCount: 1),
       );
       final houseBId = await householdDao.insert(
-        HouseholdsCompanion.insert(name: 'House B'),
+        HouseholdsCompanion.insert(name: 'House B', personCount: 1),
       );
 
       // Add readings to House A
@@ -220,7 +220,7 @@ void main() {
     test('gas readings with interpolation produce correct monthly values',
         () async {
       final householdId = await householdDao.insert(
-        HouseholdsCompanion.insert(name: 'Gas House'),
+        HouseholdsCompanion.insert(name: 'Gas House', personCount: 1),
       );
 
       // Add gas readings: not exactly on month boundaries to test interpolation

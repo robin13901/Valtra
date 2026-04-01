@@ -56,7 +56,7 @@ void main() {
     testWidgets(
         'text color uses onSurface in light theme',
         (tester) => tester.runAsync(() async {
-              await provider.createHousehold('Light Home');
+              await provider.createHousehold('Light Home', personCount: 1);
               await Future.delayed(const Duration(milliseconds: 50));
 
               final household = provider.households.first;
@@ -89,7 +89,7 @@ void main() {
     testWidgets(
         'text color uses onSurface in dark theme',
         (tester) => tester.runAsync(() async {
-              await provider.createHousehold('Dark Home');
+              await provider.createHousehold('Dark Home', personCount: 1);
               await Future.delayed(const Duration(milliseconds: 50));
 
               final household = provider.households.first;
@@ -121,7 +121,7 @@ void main() {
     testWidgets(
         'home icon color uses onSurface in light theme',
         (tester) => tester.runAsync(() async {
-              await provider.createHousehold('Icon Home');
+              await provider.createHousehold('Icon Home', personCount: 1);
               await Future.delayed(const Duration(milliseconds: 50));
 
               final household = provider.households.first;
@@ -164,7 +164,7 @@ void main() {
     testWidgets(
         'home icon color uses onSurface in dark theme',
         (tester) => tester.runAsync(() async {
-              await provider.createHousehold('Dark Icon Home');
+              await provider.createHousehold('Dark Icon Home', personCount: 1);
               await Future.delayed(const Duration(milliseconds: 50));
 
               final household = provider.households.first;

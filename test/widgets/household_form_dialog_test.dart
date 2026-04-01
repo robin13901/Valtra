@@ -128,6 +128,7 @@ void main() {
         id: 1,
         name: 'Existing Home',
         description: 'My existing home',
+        personCount: 2,
         createdAt: DateTime.now(),
       );
 

@@ -20,7 +20,7 @@ void main() {
     // Create a household for testing
     householdId = await database
         .into(database.households)
-        .insert(HouseholdsCompanion.insert(name: 'Test Household'));
+        .insert(HouseholdsCompanion.insert(name: 'Test Household', personCount: 1));
   });
 
   tearDown(() async {

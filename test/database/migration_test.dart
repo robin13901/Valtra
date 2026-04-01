@@ -615,7 +615,7 @@ void main() {
 
         // Verify we can insert and query data with the v3 schema
         final householdId = await db.into(db.households).insert(
-              HouseholdsCompanion.insert(name: 'Fresh Home'),
+              HouseholdsCompanion.insert(name: 'Fresh Home', personCount: 1),
             );
         final roomId = await db.into(db.rooms).insert(
               RoomsCompanion.insert(

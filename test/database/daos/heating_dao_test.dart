@@ -18,7 +18,7 @@ void main() {
 
     householdId = await database
         .into(database.households)
-        .insert(HouseholdsCompanion.insert(name: 'Test Household'));
+        .insert(HouseholdsCompanion.insert(name: 'Test Household', personCount: 1));
 
     roomId = await database
         .into(database.rooms)
@@ -681,7 +681,7 @@ void main() {
     test('meters are filtered by household', () async {
       final household2Id = await database
           .into(database.households)
-          .insert(HouseholdsCompanion.insert(name: 'Household 2'));
+          .insert(HouseholdsCompanion.insert(name: 'Household 2', personCount: 1));
       final room2Id = await database
           .into(database.rooms)
           .insert(RoomsCompanion.insert(

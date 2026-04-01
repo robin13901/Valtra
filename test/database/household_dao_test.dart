@@ -24,6 +24,7 @@ void main() {
       final id = await dao.insert(HouseholdsCompanion.insert(
         name: 'Test Household',
         description: const Value('A test description'),
+        personCount: 1,
       ));
 
       expect(id, isPositive);
@@ -41,14 +42,17 @@ void main() {
       await dao.insert(HouseholdsCompanion.insert(
         name: 'First',
         createdAt: Value(now.subtract(const Duration(minutes: 2))),
+        personCount: 1,
       ));
       await dao.insert(HouseholdsCompanion.insert(
         name: 'Second',
         createdAt: Value(now.subtract(const Duration(minutes: 1))),
+        personCount: 1,
       ));
       await dao.insert(HouseholdsCompanion.insert(
         name: 'Third',
         createdAt: Value(now),
+        personCount: 1,
       ));
 
       final households = await dao.getAllHouseholds();
@@ -74,13 +78,13 @@ void main() {
       await Future.delayed(const Duration(milliseconds: 50));
 
       // Insert household
-      await dao.insert(HouseholdsCompanion.insert(name: 'Watched'));
+      await dao.insert(HouseholdsCompanion.insert(name: 'Watched', personCount: 1));
 
       await expectation;
     });
 
     test('updateHousehold modifies existing record', () async {
-      final id = await dao.insert(HouseholdsCompanion.insert(name: 'Original'));
+      final id = await dao.insert(HouseholdsCompanion.insert(name: 'Original', personCount: 1));
 
       final updated = await dao.updateHousehold(HouseholdsCompanion(
         id: Value(id),
@@ -105,7 +109,7 @@ void main() {
     });
 
     test('deleteHousehold removes record', () async {
-      final id = await dao.insert(HouseholdsCompanion.insert(name: 'ToDelete'));
+      final id = await dao.insert(HouseholdsCompanion.insert(name: 'ToDelete', personCount: 1));
 
       await dao.deleteHousehold(id);
 
@@ -116,7 +120,7 @@ void main() {
     group('hasRelatedData', () {
       test('returns false when no related data', () async {
         final id =
-            await dao.insert(HouseholdsCompanion.insert(name: 'Empty Household'));
+            await dao.insert(HouseholdsCompanion.insert(name: 'Empty Household', personCount: 1));
 
         final hasData = await dao.hasRelatedData(id);
         expect(hasData, isFalse);
@@ -124,7 +128,7 @@ void main() {
 
       test('returns true when electricity readings exist', () async {
         final id = await dao
-            .insert(HouseholdsCompanion.insert(name: 'With Electricity'));
+            .insert(HouseholdsCompanion.insert(name: 'With Electricity', personCount: 1));
 
         await database.into(database.electricityReadings).insert(
             ElectricityReadingsCompanion.insert(
@@ -136,7 +140,7 @@ void main() {
 
       test('returns true when gas readings exist', () async {
         final id =
-            await dao.insert(HouseholdsCompanion.insert(name: 'With Gas'));
+            await dao.insert(HouseholdsCompanion.insert(name: 'With Gas', personCount: 1));
 
         await database.into(database.gasReadings).insert(
             GasReadingsCompanion.insert(
@@ -150,7 +154,7 @@ void main() {
 
       test('returns true when water meters exist', () async {
         final id =
-            await dao.insert(HouseholdsCompanion.insert(name: 'With Water'));
+            await dao.insert(HouseholdsCompanion.insert(name: 'With Water', personCount: 1));
 
         await database.into(database.waterMeters).insert(
             WaterMetersCompanion.insert(
@@ -162,7 +166,7 @@ void main() {
 
       test('returns true when heating meters exist', () async {
         final id =
-            await dao.insert(HouseholdsCompanion.insert(name: 'With Heating'));
+            await dao.insert(HouseholdsCompanion.insert(name: 'With Heating', personCount: 1));
 
         final roomId = await database.into(database.rooms).insert(
             RoomsCompanion.insert(householdId: id, name: 'Room 1'));
@@ -176,7 +180,7 @@ void main() {
 
       test('returns true when rooms exist', () async {
         final id =
-            await dao.insert(HouseholdsCompanion.insert(name: 'With Rooms'));
+            await dao.insert(HouseholdsCompanion.insert(name: 'With Rooms', personCount: 1));
 
         await database.into(database.rooms).insert(
             RoomsCompanion.insert(householdId: id, name: 'Living Room'));
@@ -187,7 +191,7 @@ void main() {
 
       test('returns true when cost configs exist', () async {
         final id = await dao
-            .insert(HouseholdsCompanion.insert(name: 'With Cost Configs'));
+            .insert(HouseholdsCompanion.insert(name: 'With Cost Configs', personCount: 1));
 
         await database.into(database.costConfigs).insert(
             CostConfigsCompanion.insert(

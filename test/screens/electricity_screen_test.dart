@@ -93,7 +93,7 @@ void main() {
     // Create a test household
     householdId = await database
         .into(database.households)
-        .insert(HouseholdsCompanion.insert(name: 'Test Household'));
+        .insert(HouseholdsCompanion.insert(name: 'Test Household', personCount: 1));
 
     electricityProvider.setHouseholdId(householdId);
     analyticsProvider.setHouseholdId(householdId);

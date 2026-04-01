@@ -69,8 +69,8 @@ void main() {
     testWidgets('displays household list when households exist',
         (tester) => tester.runAsync(() async {
               await provider.createHousehold('My Home',
-                  description: 'Main house');
-              await provider.createHousehold('Vacation House');
+                  description: 'Main house', personCount: 2);
+              await provider.createHousehold('Vacation House', personCount: 1);
               await Future.delayed(const Duration(milliseconds: 50));
 
               await tester
@@ -86,7 +86,7 @@ void main() {
 
     testWidgets('shows selected household with check icon',
         (tester) => tester.runAsync(() async {
-              await provider.createHousehold('Selected Home');
+              await provider.createHousehold('Selected Home', personCount: 1);
               await Future.delayed(const Duration(milliseconds: 50));
 
               // Select the household
@@ -119,7 +119,7 @@ void main() {
 
     testWidgets('popup menu shows edit and delete options',
         (tester) => tester.runAsync(() async {
-              await provider.createHousehold('Test Home');
+              await provider.createHousehold('Test Home', personCount: 1);
               await Future.delayed(const Duration(milliseconds: 50));
 
               await tester
@@ -140,7 +140,7 @@ void main() {
 
     testWidgets('tapping card opens edit dialog',
         (tester) => tester.runAsync(() async {
-              await provider.createHousehold('Editable Home');
+              await provider.createHousehold('Editable Home', personCount: 1);
               await Future.delayed(const Duration(milliseconds: 50));
 
               await tester
@@ -158,7 +158,7 @@ void main() {
 
     testWidgets('delete confirmation dialog shows when no related data',
         (tester) => tester.runAsync(() async {
-              await provider.createHousehold('Deletable Home');
+              await provider.createHousehold('Deletable Home', personCount: 1);
               await Future.delayed(const Duration(milliseconds: 50));
 
               await tester
@@ -189,7 +189,7 @@ void main() {
     testWidgets('description is shown when present',
         (tester) => tester.runAsync(() async {
               await provider.createHousehold('My Place',
-                  description: 'A nice house');
+                  description: 'A nice house', personCount: 1);
               await Future.delayed(const Duration(milliseconds: 50));
 
               await tester

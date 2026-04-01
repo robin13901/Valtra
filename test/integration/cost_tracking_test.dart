@@ -32,7 +32,7 @@ void main() {
         () async {
       // 1. Create household
       final householdId = await householdDao.insert(
-        HouseholdsCompanion.insert(name: 'Cost Test House'),
+        HouseholdsCompanion.insert(name: 'Cost Test House', personCount: 1),
       );
 
       // 2. Add electricity cost config: 0.30 EUR/kWh, 12.50 EUR/month standing
@@ -87,7 +87,7 @@ void main() {
     test('tiered pricing calculates correctly', () async {
       // 1. Create household
       final householdId = await householdDao.insert(
-        HouseholdsCompanion.insert(name: 'Tiered House'),
+        HouseholdsCompanion.insert(name: 'Tiered House', personCount: 1),
       );
 
       // 2. Configure tiered pricing via the service directly
@@ -137,7 +137,7 @@ void main() {
     test('cost config with standing charge only', () async {
       // 1. Create household
       final householdId = await householdDao.insert(
-        HouseholdsCompanion.insert(name: 'Standing Only House'),
+        HouseholdsCompanion.insert(name: 'Standing Only House', personCount: 1),
       );
 
       // 2. Configure 0 unit price, 15.00 standing charge
@@ -176,7 +176,7 @@ void main() {
     test('no cost config returns null cost', () async {
       // 1. Create household with readings but no cost config
       final householdId = await householdDao.insert(
-        HouseholdsCompanion.insert(name: 'No Config House'),
+        HouseholdsCompanion.insert(name: 'No Config House', personCount: 1),
       );
 
       await electricityDao.insertReading(ElectricityReadingsCompanion.insert(
@@ -197,7 +197,7 @@ void main() {
     test('cost config temporal validity', () async {
       // Create household
       final householdId = await householdDao.insert(
-        HouseholdsCompanion.insert(name: 'Temporal House'),
+        HouseholdsCompanion.insert(name: 'Temporal House', personCount: 1),
       );
 
       // Add config valid from Jan 2025
@@ -241,7 +241,7 @@ void main() {
 
     test('multi-meter-type cost configs are isolated', () async {
       final householdId = await householdDao.insert(
-        HouseholdsCompanion.insert(name: 'Multi-meter House'),
+        HouseholdsCompanion.insert(name: 'Multi-meter House', personCount: 1),
       );
 
       // Electricity config

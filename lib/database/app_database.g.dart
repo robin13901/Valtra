@@ -46,6 +46,17 @@ class $HouseholdsTable extends Households
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _personCountMeta = const VerificationMeta(
+    'personCount',
+  );
+  @override
+  late final GeneratedColumn<int> personCount = GeneratedColumn<int>(
+    'person_count',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
   static const VerificationMeta _createdAtMeta = const VerificationMeta(
     'createdAt',
   );
@@ -59,7 +70,13 @@ class $HouseholdsTable extends Households
     defaultValue: currentDateAndTime,
   );
   @override
-  List<GeneratedColumn> get $columns => [id, name, description, createdAt];
+  List<GeneratedColumn> get $columns => [
+    id,
+    name,
+    description,
+    personCount,
+    createdAt,
+  ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -92,6 +109,17 @@ class $HouseholdsTable extends Households
         ),
       );
     }
+    if (data.containsKey('person_count')) {
+      context.handle(
+        _personCountMeta,
+        personCount.isAcceptableOrUnknown(
+          data['person_count']!,
+          _personCountMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_personCountMeta);
+    }
     if (data.containsKey('created_at')) {
       context.handle(
         _createdAtMeta,
@@ -119,6 +147,10 @@ class $HouseholdsTable extends Households
         DriftSqlType.string,
         data['${effectivePrefix}description'],
       ),
+      personCount: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}person_count'],
+      )!,
       createdAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}created_at'],
@@ -136,11 +168,13 @@ class Household extends DataClass implements Insertable<Household> {
   final int id;
   final String name;
   final String? description;
+  final int personCount;
   final DateTime createdAt;
   const Household({
     required this.id,
     required this.name,
     this.description,
+    required this.personCount,
     required this.createdAt,
   });
   @override
@@ -151,6 +185,7 @@ class Household extends DataClass implements Insertable<Household> {
     if (!nullToAbsent || description != null) {
       map['description'] = Variable<String>(description);
     }
+    map['person_count'] = Variable<int>(personCount);
     map['created_at'] = Variable<DateTime>(createdAt);
     return map;
   }
@@ -162,6 +197,7 @@ class Household extends DataClass implements Insertable<Household> {
       description: description == null && nullToAbsent
           ? const Value.absent()
           : Value(description),
+      personCount: Value(personCount),
       createdAt: Value(createdAt),
     );
   }
@@ -175,6 +211,7 @@ class Household extends DataClass implements Insertable<Household> {
       id: serializer.fromJson<int>(json['id']),
       name: serializer.fromJson<String>(json['name']),
       description: serializer.fromJson<String?>(json['description']),
+      personCount: serializer.fromJson<int>(json['personCount']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
     );
   }
@@ -185,6 +222,7 @@ class Household extends DataClass implements Insertable<Household> {
       'id': serializer.toJson<int>(id),
       'name': serializer.toJson<String>(name),
       'description': serializer.toJson<String?>(description),
+      'personCount': serializer.toJson<int>(personCount),
       'createdAt': serializer.toJson<DateTime>(createdAt),
     };
   }
@@ -193,11 +231,13 @@ class Household extends DataClass implements Insertable<Household> {
     int? id,
     String? name,
     Value<String?> description = const Value.absent(),
+    int? personCount,
     DateTime? createdAt,
   }) => Household(
     id: id ?? this.id,
     name: name ?? this.name,
     description: description.present ? description.value : this.description,
+    personCount: personCount ?? this.personCount,
     createdAt: createdAt ?? this.createdAt,
   );
   Household copyWithCompanion(HouseholdsCompanion data) {
@@ -207,6 +247,9 @@ class Household extends DataClass implements Insertable<Household> {
       description: data.description.present
           ? data.description.value
           : this.description,
+      personCount: data.personCount.present
+          ? data.personCount.value
+          : this.personCount,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
     );
   }
@@ -217,13 +260,15 @@ class Household extends DataClass implements Insertable<Household> {
           ..write('id: $id, ')
           ..write('name: $name, ')
           ..write('description: $description, ')
+          ..write('personCount: $personCount, ')
           ..write('createdAt: $createdAt')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, name, description, createdAt);
+  int get hashCode =>
+      Object.hash(id, name, description, personCount, createdAt);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -231,6 +276,7 @@ class Household extends DataClass implements Insertable<Household> {
           other.id == this.id &&
           other.name == this.name &&
           other.description == this.description &&
+          other.personCount == this.personCount &&
           other.createdAt == this.createdAt);
 }
 
@@ -238,29 +284,35 @@ class HouseholdsCompanion extends UpdateCompanion<Household> {
   final Value<int> id;
   final Value<String> name;
   final Value<String?> description;
+  final Value<int> personCount;
   final Value<DateTime> createdAt;
   const HouseholdsCompanion({
     this.id = const Value.absent(),
     this.name = const Value.absent(),
     this.description = const Value.absent(),
+    this.personCount = const Value.absent(),
     this.createdAt = const Value.absent(),
   });
   HouseholdsCompanion.insert({
     this.id = const Value.absent(),
     required String name,
     this.description = const Value.absent(),
+    required int personCount,
     this.createdAt = const Value.absent(),
-  }) : name = Value(name);
+  }) : name = Value(name),
+       personCount = Value(personCount);
   static Insertable<Household> custom({
     Expression<int>? id,
     Expression<String>? name,
     Expression<String>? description,
+    Expression<int>? personCount,
     Expression<DateTime>? createdAt,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (name != null) 'name': name,
       if (description != null) 'description': description,
+      if (personCount != null) 'person_count': personCount,
       if (createdAt != null) 'created_at': createdAt,
     });
   }
@@ -269,12 +321,14 @@ class HouseholdsCompanion extends UpdateCompanion<Household> {
     Value<int>? id,
     Value<String>? name,
     Value<String?>? description,
+    Value<int>? personCount,
     Value<DateTime>? createdAt,
   }) {
     return HouseholdsCompanion(
       id: id ?? this.id,
       name: name ?? this.name,
       description: description ?? this.description,
+      personCount: personCount ?? this.personCount,
       createdAt: createdAt ?? this.createdAt,
     );
   }
@@ -291,6 +345,9 @@ class HouseholdsCompanion extends UpdateCompanion<Household> {
     if (description.present) {
       map['description'] = Variable<String>(description.value);
     }
+    if (personCount.present) {
+      map['person_count'] = Variable<int>(personCount.value);
+    }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
@@ -303,6 +360,7 @@ class HouseholdsCompanion extends UpdateCompanion<Household> {
           ..write('id: $id, ')
           ..write('name: $name, ')
           ..write('description: $description, ')
+          ..write('personCount: $personCount, ')
           ..write('createdAt: $createdAt')
           ..write(')'))
         .toString();
@@ -3732,6 +3790,7 @@ typedef $$HouseholdsTableCreateCompanionBuilder =
       Value<int> id,
       required String name,
       Value<String?> description,
+      required int personCount,
       Value<DateTime> createdAt,
     });
 typedef $$HouseholdsTableUpdateCompanionBuilder =
@@ -3739,6 +3798,7 @@ typedef $$HouseholdsTableUpdateCompanionBuilder =
       Value<int> id,
       Value<String> name,
       Value<String?> description,
+      Value<int> personCount,
       Value<DateTime> createdAt,
     });
 
@@ -3898,6 +3958,11 @@ class $$HouseholdsTableFilterComposer
 
   ColumnFilters<String> get description => $composableBuilder(
     column: $table.description,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get personCount => $composableBuilder(
+    column: $table.personCount,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -4081,6 +4146,11 @@ class $$HouseholdsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<int> get personCount => $composableBuilder(
+    column: $table.personCount,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get createdAt => $composableBuilder(
     column: $table.createdAt,
     builder: (column) => ColumnOrderings(column),
@@ -4104,6 +4174,11 @@ class $$HouseholdsTableAnnotationComposer
 
   GeneratedColumn<String> get description => $composableBuilder(
     column: $table.description,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get personCount => $composableBuilder(
+    column: $table.personCount,
     builder: (column) => column,
   );
 
@@ -4300,11 +4375,13 @@ class $$HouseholdsTableTableManager
                 Value<int> id = const Value.absent(),
                 Value<String> name = const Value.absent(),
                 Value<String?> description = const Value.absent(),
+                Value<int> personCount = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
               }) => HouseholdsCompanion(
                 id: id,
                 name: name,
                 description: description,
+                personCount: personCount,
                 createdAt: createdAt,
               ),
           createCompanionCallback:
@@ -4312,11 +4389,13 @@ class $$HouseholdsTableTableManager
                 Value<int> id = const Value.absent(),
                 required String name,
                 Value<String?> description = const Value.absent(),
+                required int personCount,
                 Value<DateTime> createdAt = const Value.absent(),
               }) => HouseholdsCompanion.insert(
                 id: id,
                 name: name,
                 description: description,
+                personCount: personCount,
                 createdAt: createdAt,
               ),
           withReferenceMapper: (p0) => p0

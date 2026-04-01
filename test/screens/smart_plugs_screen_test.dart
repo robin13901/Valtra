@@ -85,7 +85,7 @@ void main() {
 
     householdId = await database
         .into(database.households)
-        .insert(HouseholdsCompanion.insert(name: 'Test Household'));
+        .insert(HouseholdsCompanion.insert(name: 'Test Household', personCount: 1));
 
     roomId = await database.into(database.rooms).insert(
         RoomsCompanion.insert(householdId: householdId, name: 'Living Room'));
@@ -161,7 +161,7 @@ void main() {
               // Create a new household with no rooms
               final emptyHousehold = await database
                   .into(database.households)
-                  .insert(HouseholdsCompanion.insert(name: 'Empty'));
+                  .insert(HouseholdsCompanion.insert(name: 'Empty', personCount: 1));
               roomProvider.setHouseholdId(emptyHousehold);
               await Future.delayed(const Duration(milliseconds: 50));
 

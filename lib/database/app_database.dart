@@ -38,7 +38,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase(super.e);
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 4;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -124,6 +124,11 @@ class AppDatabase extends _$AppDatabase {
             await customStatement('DROP TABLE smart_plug_consumptions');
             await customStatement(
                 'ALTER TABLE smart_plug_consumptions_new RENAME TO smart_plug_consumptions');
+          }
+          if (from < 4) {
+            await customStatement(
+              "ALTER TABLE households ADD COLUMN person_count INTEGER NOT NULL DEFAULT 1",
+            );
           }
         },
       );

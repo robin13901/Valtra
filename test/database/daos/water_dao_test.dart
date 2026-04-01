@@ -18,7 +18,7 @@ void main() {
     // Create a household for testing
     householdId = await database
         .into(database.households)
-        .insert(HouseholdsCompanion.insert(name: 'Test Household'));
+        .insert(HouseholdsCompanion.insert(name: 'Test Household', personCount: 1));
   });
 
   tearDown(() async {
@@ -564,7 +564,7 @@ void main() {
     test('meters are filtered by household', () async {
       final household2Id = await database
           .into(database.households)
-          .insert(HouseholdsCompanion.insert(name: 'Household 2'));
+          .insert(HouseholdsCompanion.insert(name: 'Household 2', personCount: 1));
 
       await dao.insertMeter(WaterMetersCompanion.insert(
         householdId: householdId,

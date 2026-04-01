@@ -24,6 +24,7 @@ void main() {
       final id = await db.into(db.households).insert(
             HouseholdsCompanion.insert(
               name: 'Test Household',
+              personCount: 1,
             ),
           );
       expect(id, greaterThan(0));
@@ -37,7 +38,7 @@ void main() {
     test('can insert electricity reading', () async {
       // First create a household
       final householdId = await db.into(db.households).insert(
-            HouseholdsCompanion.insert(name: 'Test Home'),
+            HouseholdsCompanion.insert(name: 'Test Home', personCount: 1),
           );
 
       // Then create a reading
@@ -53,7 +54,7 @@ void main() {
 
     test('can insert water meter with type', () async {
       final householdId = await db.into(db.households).insert(
-            HouseholdsCompanion.insert(name: 'Test Home'),
+            HouseholdsCompanion.insert(name: 'Test Home', personCount: 1),
           );
 
       final meterId = await db.into(db.waterMeters).insert(
@@ -74,7 +75,7 @@ void main() {
     test('can insert smart plug consumption', () async {
       // Create hierarchy: Household -> Room -> SmartPlug
       final householdId = await db.into(db.households).insert(
-            HouseholdsCompanion.insert(name: 'Test Home'),
+            HouseholdsCompanion.insert(name: 'Test Home', personCount: 1),
           );
 
       final roomId = await db.into(db.rooms).insert(

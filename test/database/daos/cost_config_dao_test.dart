@@ -22,7 +22,7 @@ void main() {
   Future<int> createHousehold(String name) async {
     return database
         .into(database.households)
-        .insert(HouseholdsCompanion.insert(name: name));
+        .insert(HouseholdsCompanion.insert(name: name, personCount: 1));
   }
 
   group('CostConfigDao', () {

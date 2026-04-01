@@ -59,7 +59,7 @@ void main() {
 
     householdId = await database
         .into(database.households)
-        .insert(HouseholdsCompanion.insert(name: 'Test Household'));
+        .insert(HouseholdsCompanion.insert(name: 'Test Household', personCount: 1));
 
     roomId = await database.into(database.rooms).insert(
         RoomsCompanion.insert(householdId: householdId, name: 'Living Room'));
