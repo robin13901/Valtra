@@ -1,0 +1,147 @@
+# Requirements: Valtra v0.6.0 — Analytics Redesign
+
+**Defined:** 2026-04-01
+**Core Value:** Users can track and analyze utility consumption across multiple households with an intuitive, polished interface
+
+## v0.6.0 Requirements
+
+Requirements for Analytics Redesign milestone. Each maps to roadmap phases.
+
+### Navigation
+
+- [ ] **NAV-01**: Month selector replaces year selector on all analytics screens (start at current month, scroll left/right through months)
+- [ ] **NAV-02**: Remove active dot indicator from bottom navigation bar
+- [ ] **NAV-03**: FAB integrated into bottom navigation bar (not floating above the pill)
+
+### Home Screen
+
+- [ ] **HOME-01**: Redesign household name card replacing blue-purple gradient with frosted glass / liquid glass matching app theme
+
+### Summary Card
+
+- [ ] **SUMM-01**: Monthly summary card shows total consumption for selected month with % change vs previous month
+- [ ] **SUMM-02**: Smart plug coverage line in electricity summary card (kWh + %) shown when smart plug data exists for the month
+
+### Bar Chart
+
+- [ ] **BAR-01**: Monthly breakdown bar chart is horizontally scrollable (12 bars visible at a time, scroll for more months)
+- [ ] **BAR-02**: Current month bar highlighted with glowing edge effect
+- [ ] **BAR-03**: Past months in opaque meter color, future/extrapolated months in transparent meter color
+
+### Year Comparison
+
+- [ ] **YCMP-01**: Previous year shown as dashed line with open points
+- [ ] **YCMP-02**: Current year shown as solid line with gradient fill underneath (reference: TAKTVERGLEICH style)
+
+### Household Comparison
+
+- [ ] **HCMP-01**: New chart comparing consumption across all households as line chart
+- [ ] **HCMP-02**: Actual values as filled points + solid lines, interpolated/extrapolated as open points + dashed lines
+
+### Axis Redesign
+
+- [ ] **AXIS-01**: Remove vertical Y-axis line from all charts
+- [ ] **AXIS-02**: Small translucent value labels with unit float inside chart area on dashed horizontal grid lines
+- [ ] **AXIS-03**: Chart content scrolls under fixed axis labels, equal padding on both chart sides
+
+### Electricity Analytics
+
+- [ ] **ELEC-01**: Electricity analytics screen uses full new unified design (month nav, summary, bar, year comparison, household comparison)
+
+### Water Analytics
+
+- [ ] **WATR-01**: Water analytics screen uses new unified design with existing blue color scheme
+
+### Gas Analytics
+
+- [ ] **GAS-01**: Gas analytics screen uses new unified design with existing color scheme
+
+### Smart Plug Analytics
+
+- [ ] **SPLG-01**: Smart plug analytics uses new unified design (month nav, summary, bar, year comparison, household comparison)
+- [ ] **SPLG-02**: Unified single-hue color scheme (shades of one color) for pie chart and list items
+- [ ] **SPLG-03**: Per-plug pie chart + list consumption breakdown
+- [ ] **SPLG-04**: Remove room-based consumption grouping (deferred to rooms feature)
+- [ ] **SPLG-05**: Smart plug entries displayed in expandable cards with inline editing (same pattern as heating meters), not separate screen
+
+### Heating Analytics
+
+- [ ] **HEAT-01**: Heating analytics uses new unified design (month nav, summary, bar, year comparison, household comparison)
+- [ ] **HEAT-02**: Per-heater pie chart + list for percentage distribution
+
+### Household
+
+- [ ] **HH-01**: Define number of persons per household (stored in DB, editable in household settings)
+
+### Tech Debt
+
+- [ ] **DEBT-01**: Remove deprecated GlassBottomNav and buildGlassFAB from liquid_glass_widgets.dart
+- [ ] **DEBT-02**: Deduplicate _YearNavigationHeader and _YearlySummaryCard across meter screens
+
+## Future Requirements
+
+Deferred to later milestones. Tracked but not in current roadmap.
+
+### Rooms Feature
+- **ROOM-01**: Room-based smart plug grouping and per-room consumption analysis
+- **ROOM-02**: Room assignment for smart plugs
+
+### Per-Capita Analysis
+- **PCAP-01**: Per-capita consumption normalization using household person count (requires HH-01 first)
+- **PCAP-02**: Per-capita comparison across households
+
+## Out of Scope
+
+| Feature | Reason |
+|---------|--------|
+| Cloud sync | Local-first architecture, deferred |
+| CSV export | Removed in v0.4.0, not bringing back |
+| Heating cost calculation | No access to building gas consumption; unitless counters |
+| App Store submission | Requires alpha channel fix, personal use only |
+| Room-based smart plug grouping | Deferred to rooms feature milestone |
+| Per-capita analysis views | Requires HH-01 first, will build on top in future milestone |
+
+## Traceability
+
+Updated during roadmap creation.
+
+| Requirement | Phase | Status |
+|-------------|-------|--------|
+| NAV-01 | TBD | Pending |
+| NAV-02 | TBD | Pending |
+| NAV-03 | TBD | Pending |
+| HOME-01 | TBD | Pending |
+| SUMM-01 | TBD | Pending |
+| SUMM-02 | TBD | Pending |
+| BAR-01 | TBD | Pending |
+| BAR-02 | TBD | Pending |
+| BAR-03 | TBD | Pending |
+| YCMP-01 | TBD | Pending |
+| YCMP-02 | TBD | Pending |
+| HCMP-01 | TBD | Pending |
+| HCMP-02 | TBD | Pending |
+| AXIS-01 | TBD | Pending |
+| AXIS-02 | TBD | Pending |
+| AXIS-03 | TBD | Pending |
+| ELEC-01 | TBD | Pending |
+| WATR-01 | TBD | Pending |
+| GAS-01 | TBD | Pending |
+| SPLG-01 | TBD | Pending |
+| SPLG-02 | TBD | Pending |
+| SPLG-03 | TBD | Pending |
+| SPLG-04 | TBD | Pending |
+| SPLG-05 | TBD | Pending |
+| HEAT-01 | TBD | Pending |
+| HEAT-02 | TBD | Pending |
+| HH-01 | TBD | Pending |
+| DEBT-01 | TBD | Pending |
+| DEBT-02 | TBD | Pending |
+
+**Coverage:**
+- v0.6.0 requirements: 29 total
+- Mapped to phases: 0
+- Unmapped: 29 ⚠️
+
+---
+*Requirements defined: 2026-04-01*
+*Last updated: 2026-04-01 after initial definition*
