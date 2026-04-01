@@ -11,57 +11,6 @@ import '../providers/theme_provider.dart';
 bool _isDarkFromTheme(BuildContext context) =>
     Theme.of(context).brightness == Brightness.dark;
 
-/// Styled bottom navigation bar with glassmorphism effect.
-@Deprecated('Use LiquidGlassBottomNav instead. Will be removed in v0.6.0.')
-class GlassBottomNav extends StatelessWidget {
-  final int currentIndex;
-  final ValueChanged<int> onTap;
-  final List<BottomNavigationBarItem> items;
-
-  const GlassBottomNav({
-    super.key,
-    required this.currentIndex,
-    required this.onTap,
-    required this.items,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final isDark = context.watch<ThemeProvider>().isDark(context);
-
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-        color: isDark
-            ? AppColors.darkSurface.withValues(alpha: 0.9)
-            : AppColors.lightSurface.withValues(alpha: 0.9),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.ultraViolet.withValues(alpha: 0.1),
-            blurRadius: 20,
-            offset: const Offset(0, -5),
-          ),
-        ],
-      ),
-      child: ClipRRect(
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-        child: BottomNavigationBar(
-          currentIndex: currentIndex,
-          onTap: onTap,
-          items: items,
-          type: BottomNavigationBarType.fixed,
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          selectedItemColor:
-              isDark ? AppColors.lemonChiffon : AppColors.ultraViolet,
-          unselectedItemColor:
-              Theme.of(context).colorScheme.onSurfaceVariant,
-        ),
-      ),
-    );
-  }
-}
-
 /// Builds a circular button with glass effect.
 Widget buildCircleButton({
   required BuildContext context,
@@ -93,43 +42,6 @@ Widget buildCircleButton({
         color: isDark ? AppColors.lemonChiffon : AppColors.ultraViolet,
       ),
       onPressed: onPressed,
-    ),
-  );
-}
-
-/// Builds a floating action button with glass effect.
-@Deprecated('FAB is now part of LiquidGlassBottomNav. Will be removed in v0.6.0.')
-Widget buildGlassFAB({
-  required BuildContext context,
-  required IconData icon,
-  required VoidCallback onPressed,
-  String? tooltip,
-}) {
-  final isDark = _isDarkFromTheme(context);
-
-  return Container(
-    decoration: BoxDecoration(
-      shape: BoxShape.circle,
-      color: isDark
-          ? AppColors.darkSurface.withValues(alpha: 0.9)
-          : AppColors.lightSurface.withValues(alpha: 0.9),
-      boxShadow: [
-        BoxShadow(
-          color: AppColors.ultraViolet.withValues(alpha: 0.3),
-          blurRadius: 15,
-          offset: const Offset(0, 5),
-        ),
-      ],
-    ),
-    child: FloatingActionButton(
-      onPressed: onPressed,
-      tooltip: tooltip,
-      backgroundColor: Colors.transparent,
-      elevation: 0,
-      child: Icon(
-        icon,
-        color: isDark ? AppColors.lemonChiffon : AppColors.ultraViolet,
-      ),
     ),
   );
 }

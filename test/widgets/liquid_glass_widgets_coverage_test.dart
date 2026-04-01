@@ -97,46 +97,6 @@ void main() {
     });
   });
 
-  group('GlassBottomNav', () {
-    testWidgets('renders with items', (tester) async {
-      await tester.pumpWidget(buildApp(
-        child: GlassBottomNav(
-          currentIndex: 0,
-          onTap: (_) {},
-          items: const [
-            BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-            BottomNavigationBarItem(
-                icon: Icon(Icons.electric_bolt), label: 'Electricity'),
-          ],
-        ),
-      ));
-      await tester.pumpAndSettle();
-
-      expect(find.text('Home'), findsOneWidget);
-      expect(find.text('Electricity'), findsOneWidget);
-    });
-
-    testWidgets('onTap callback fires', (tester) async {
-      int tappedIndex = -1;
-
-      await tester.pumpWidget(buildApp(
-        child: GlassBottomNav(
-          currentIndex: 0,
-          onTap: (index) => tappedIndex = index,
-          items: const [
-            BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-            BottomNavigationBarItem(
-                icon: Icon(Icons.electric_bolt), label: 'Electricity'),
-          ],
-        ),
-      ));
-      await tester.pumpAndSettle();
-
-      await tester.tap(find.text('Electricity'));
-      expect(tappedIndex, 1);
-    });
-  });
-
   group('buildGlassAppBar', () {
     testWidgets('renders title', (tester) async {
       await tester.pumpWidget(buildApp(
@@ -191,47 +151,6 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byIcon(Icons.menu), findsOneWidget);
-    });
-  });
-
-  group('buildGlassFAB', () {
-    testWidgets('renders FAB with icon', (tester) async {
-      await tester.pumpWidget(buildApp(
-        child: Builder(
-          builder: (context) => Scaffold(
-            floatingActionButton: buildGlassFAB(
-              context: context,
-              icon: Icons.add,
-              onPressed: () {},
-              tooltip: 'Add item',
-            ),
-          ),
-        ),
-      ));
-      await tester.pumpAndSettle();
-
-      expect(find.byIcon(Icons.add), findsOneWidget);
-      expect(find.byType(FloatingActionButton), findsOneWidget);
-    });
-
-    testWidgets('onPressed callback fires', (tester) async {
-      bool pressed = false;
-
-      await tester.pumpWidget(buildApp(
-        child: Builder(
-          builder: (context) => Scaffold(
-            floatingActionButton: buildGlassFAB(
-              context: context,
-              icon: Icons.add,
-              onPressed: () => pressed = true,
-            ),
-          ),
-        ),
-      ));
-      await tester.pumpAndSettle();
-
-      await tester.tap(find.byType(FloatingActionButton));
-      expect(pressed, true);
     });
   });
 

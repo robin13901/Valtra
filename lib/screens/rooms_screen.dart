@@ -26,10 +26,9 @@ class RoomsScreen extends StatelessWidget {
       body: rooms.isEmpty
           ? _buildEmptyState(context, l10n)
           : _RoomsList(rooms: rooms),
-      floatingActionButton: buildGlassFAB(
-        context: context,
-        icon: Icons.add,
+      floatingActionButton: FloatingActionButton(
         onPressed: () => _addRoom(context),
+        child: const Icon(Icons.add),
       ),
     );
   }

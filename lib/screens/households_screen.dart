@@ -46,11 +46,10 @@ class HouseholdsScreen extends StatelessWidget {
           );
         },
       ),
-      floatingActionButton: buildGlassFAB(
-        context: context,
-        icon: Icons.add,
+      floatingActionButton: FloatingActionButton(
         onPressed: () => _showCreateDialog(context),
         tooltip: l10n.createHousehold,
+        child: const Icon(Icons.add),
       ),
     );
   }
