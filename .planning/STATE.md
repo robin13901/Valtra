@@ -2,54 +2,75 @@
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-03-13)
+See: .planning/PROJECT.md (updated 2026-04-01)
 
 **Core value:** Users can track and analyze utility consumption across multiple households with an intuitive, polished interface
-**Current focus:** Planning next milestone
+**Current focus:** v0.6.0 Analytics Redesign -- Phase 28 (Home & Nav Polish)
 
-## Current Status
-- **Last Shipped**: v0.5.0 — Visual & UX Polish (2026-03-13)
-- **Current Phase**: None — between milestones
-- **Current Plan**: None
-- **Last Updated**: 2026-03-13
-- **Tests**: 1103
+## Current Position
 
-Progress: ████████████████████████░ (5 milestones shipped, next TBD)
+Phase: 28 of 32 (Home & Nav Polish)
+Plan: 1 of TBD in current phase
+Status: In progress
+Last activity: 2026-04-01 -- Completed 28-01-PLAN.md (Person Count Storage)
+
+Progress: ██░░░░░░░░░░░░░░░░░░░░░░░ 8% (v0.6.0) [5/~25 plans]
+
+## Performance Metrics
+
+**Velocity:**
+- Total plans completed: 5 (v0.6.0)
+- Average duration: ~14 min
+- Total execution time: ~70 min
+
+*Updated after each plan completion*
 
 ## Completed Milestones
-- **Milestone 1**: Core Foundation (v0.1.0) — 7 phases, 313 tests
-- **Milestone 2**: Analytics & Visualization (v0.2.0) — 4 phases, 625 tests
-- **Milestone 3**: Polish & Enhancement (v0.3.0) — 5 phases, 1017 tests
-- **Milestone 4**: UX Overhaul (v0.4.0) — 6 phases, 1077 tests
-- **Milestone 5**: Visual & UX Polish (v0.5.0) — 4 phases, 1103 tests
+- **v0.1.0**: Core Foundation -- 7 phases, 313 tests
+- **v0.2.0**: Analytics & Visualization -- 4 phases, 625 tests
+- **v0.3.0**: Polish & Enhancement -- 5 phases, 1017 tests
+- **v0.4.0**: UX Overhaul -- 6 phases, 1077 tests
+- **v0.5.0**: Visual & UX Polish -- 4 phases, 1103 tests
 
-## Completed (previous milestone - v0.5.0)
-- **23-01**: Custom glassmorphism app icon + "Valtra" capitalization
-- **23-02**: Native splash screen persists until household data loaded
-- **24-01**: LiquidGlassBottomNav widget using liquid_glass_renderer
-- **24-02**: SmartPlugs + Gas screens migrated to new nav
-- **24-03**: Electricity + Water + Heating screens migrated, old widgets deprecated
-- **25-01**: Chart X-axis localized (DE/EN month abbreviations), Y-axis unit labels
-- **26-01**: Empty app bar title, no Aktiv badge, German currency, dd.MM.yyyy dates
-- **26-02**: CostMeterType.heating removed, heating screen consumption-only
+## Completed Phases (v0.6.0)
+- **Phase 27**: Shared Chart Infrastructure -- 4 plans, 1154 tests, verified 5/5
+- **Phase 28**: Home & Nav Polish -- 1 plan complete (28-01)
 
-## Blocked
-_None_
+## Accumulated Context
 
-## Key Decisions (carried forward)
-1. **Local-first architecture** - Using Drift/SQLite for offline-capable data storage
-2. **LiquidGlass UI** - Adopting glassmorphism aesthetic from XFin reference (real liquid_glass_renderer)
-3. **Color scheme** - Ultra Violet (#5F4A8B) primary, Lemon Chiffon (#FEFACD) accent
-4. **Single main meter per type** - Electricity and Gas have one meter per household
-5. **Multiple sub-meters** - Water, Heating, and Smart Plugs support multiple per household
-6. **German currency format always** - Cost displays use German format regardless of app language
-7. **Heating consumption-only** - Unitless proportional counters, percentage distribution, no cost profiles
+### Decisions
+- Heating meters are unitless (proportional counters), no cost profiles, percentage distribution only
+- German currency format always, regardless of app language
+- LiquidGlass UI using real liquid_glass_renderer
+- ChartAxisStyle.hiddenTitles: const to avoid repeated instantiation in chart renders
+- MonthSelector.locale defaults 'de' matching existing chart widget convention
+- MonthlySummaryCard: increase=error color, decrease=green (utility consumption semantics: more=bad)
+- axisNameWidget tests replaced with sideTitles.showTitles when using ChartAxisStyle.leftTitles (unit is embedded per label)
+- Gradient fill pattern: LinearGradient 0.3→0.0 alpha for current year line belowBarData (YCMP-02)
+- HouseholdChartData.color is caller-assigned (provider assigns pieChartColors[index]); widget is color-agnostic
+- Unified interpolated/extrapolated flag: any period with startInterpolated|endInterpolated|isExtrapolated renders as dashed
+- MonthlyBarChart scroll: visibleBars=12 threshold; Row(fixed-Y-axis BarChart + Expanded ScrollView) for AXIS-03
+- MonthlyBarChart alpha scheme: past=0.85, future/extrapolated=0.3, highlighted=1.0 (BAR-03)
+- personCount has no .withDefault() in Drift table definition; form enforces value; DEFAULT 1 only in ALTER TABLE migration for existing rows
+- BackupRestoreService.expectedSchemaVersion must always match app_database.dart schemaVersion
+- FilteringTextInputFormatter.digitsOnly chosen for reliable digit-only enforcement in number fields
+- Schema bump pattern: bump schemaVersion, add if (from < N) migration block, bump expectedSchemaVersion in BackupRestoreService
+
+### Pending Todos
+None.
+
+### Blockers/Concerns
+None.
 
 ## Technical Debt
-1. Deprecated GlassBottomNav/buildGlassFAB (remove in v0.6.0)
-2. App icon alpha channel (fix for App Store submission)
-3. Duplicate _YearNavigationHeader/_YearlySummaryCard in 4 meter screens
-4. 8 info-level deprecation warnings in flutter analyze
+1. Deprecated GlassBottomNav/buildGlassFAB -- SCHEDULED (Phase 32, DEBT-01)
+2. Duplicate _YearNavigationHeader/_YearlySummaryCard -- REPLACEMENTS BUILT (27-01), integration in 29-32
+3. App icon alpha channel (fix for App Store submission) -- unscheduled
+4. 8 info-level deprecation warnings in flutter analyze -- unscheduled
+5. Pre-existing migration_test.dart failure (v2→v3 smart plug interval conversion) -- unscheduled
 
-## Next Actions
-_Use `/gsd:new-milestone` to plan next milestone._
+## Session Continuity
+
+Last session: 2026-04-01T10:54:00Z
+Stopped at: Completed 28-01-PLAN.md
+Resume file: None
