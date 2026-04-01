@@ -23,6 +23,9 @@ import 'package:valtra/screens/gas_screen.dart';
 import 'package:valtra/services/cost_calculation_service.dart';
 import 'package:valtra/services/gas_conversion_service.dart';
 import 'package:valtra/services/interpolation/interpolation_service.dart';
+import 'package:valtra/widgets/charts/month_selector.dart';
+import 'package:valtra/widgets/charts/monthly_bar_chart.dart';
+import 'package:valtra/widgets/charts/monthly_summary_card.dart';
 import 'package:valtra/widgets/liquid_glass_widgets.dart';
 
 import '../helpers/test_database.dart';
@@ -103,6 +106,10 @@ void main() {
   });
 
   tearDown(() async {
+    // Allow any outstanding async provider loads to complete before disposal.
+    // The new initState fires 2 async operations (setSelectedMonth + setSelectedYear);
+    // this delay prevents "used after being disposed" errors from post-test callbacks.
+    await Future.delayed(const Duration(milliseconds: 300));
     provider.dispose();
     analyticsProvider.dispose();
     costConfigProvider.dispose();
@@ -152,10 +159,11 @@ void main() {
               await Future.delayed(const Duration(milliseconds: 200));
               await tester.pumpAndSettle();
 
-              // With no readings, analytics loads empty data with
-              // noYearlyData message showing the year
-              final year = DateTime.now().year.toString();
-              expect(find.textContaining(year), findsAtLeast(1));
+              // With no readings, analytics loads null monthlyData -> shows noData
+              // OR monthlyData loads empty -> shows MonthSelector with no content
+              final hasNoData = tester.any(find.text('No data available'));
+              final hasMonthSelector = tester.any(find.byType(MonthSelector));
+              expect(hasNoData || hasMonthSelector, isTrue);
 
               await tester.pumpWidget(Container());
             }));
@@ -375,7 +383,7 @@ void main() {
             }));
   });
 
-  group('GasScreen - Analyse Tab', () {
+  group('GasScreen - Analyse Tab (month-based design)', () {
     testWidgets('shows no data message when no readings on Analyse tab',
         (tester) => tester.runAsync(() async {
               await tester
@@ -388,16 +396,83 @@ void main() {
               await Future.delayed(const Duration(milliseconds: 200));
               await tester.pumpAndSettle();
 
-              // With no readings, analytics loads empty monthlyBreakdown
-              // which shows noYearlyData message with the year
-              final year = DateTime.now().year.toString();
-              expect(find.textContaining(year), findsAtLeast(1));
+              // With no readings, monthlyData is null -> shows noData
+              // OR monthlyData loads empty -> shows MonthSelector with no content
+              final hasNoData = tester.any(find.text('No data available'));
+              final hasMonthSelector = tester.any(find.byType(MonthSelector));
+              expect(hasNoData || hasMonthSelector, isTrue);
+
+              await tester.pumpWidget(Container());
+            }));
+
+    testWidgets('Analyse tab shows MonthSelector when data exists',
+        (tester) => tester.runAsync(() async {
+              // Add readings in previous and current month
+              final year = DateTime.now().year;
+              final month = DateTime.now().month;
+              await dao.insertReading(GasReadingsCompanion.insert(
+                householdId: householdId,
+                timestamp: DateTime(year, month > 1 ? month - 1 : 1, 1),
+                valueCubicMeters: 1000.0,
+              ));
+              await dao.insertReading(GasReadingsCompanion.insert(
+                householdId: householdId,
+                timestamp: DateTime(year, month, 15),
+                valueCubicMeters: 1300.0,
+              ));
+              await Future.delayed(const Duration(milliseconds: 200));
+
+              await tester
+                  .pumpWidget(wrapWithProviders(const GasScreen()));
+              await tester.pumpAndSettle();
+
+              // Switch to Analyse tab
+              await tester.tap(find.text('Analysis'));
+              await Future.delayed(const Duration(milliseconds: 300));
+              await tester.pumpAndSettle();
+
+              // Should show MonthSelector widget
+              expect(find.byType(MonthSelector), findsOneWidget);
+              // Should show MonthlySummaryCard
+              expect(find.byType(MonthlySummaryCard), findsOneWidget);
+
+              await tester.pumpWidget(Container());
+            }));
+
+    testWidgets('Analyse tab shows MonthlyBarChart when data exists',
+        (tester) => tester.runAsync(() async {
+              final year = DateTime.now().year;
+              final month = DateTime.now().month;
+              await dao.insertReading(GasReadingsCompanion.insert(
+                householdId: householdId,
+                timestamp: DateTime(year, month > 1 ? month - 1 : 1, 1),
+                valueCubicMeters: 1000.0,
+              ));
+              await dao.insertReading(GasReadingsCompanion.insert(
+                householdId: householdId,
+                timestamp: DateTime(year, month, 15),
+                valueCubicMeters: 1300.0,
+              ));
+              await Future.delayed(const Duration(milliseconds: 200));
+
+              await tester
+                  .pumpWidget(wrapWithProviders(const GasScreen()));
+              await tester.pumpAndSettle();
+
+              // Switch to Analyse tab
+              await tester.tap(find.text('Analysis'));
+              await Future.delayed(const Duration(milliseconds: 300));
+              await tester.pumpAndSettle();
+
+              // Should show Monthly Breakdown heading and chart
+              expect(find.text('Monthly Breakdown'), findsOneWidget);
+              expect(find.byType(MonthlyBarChart), findsOneWidget);
 
               await tester.pumpWidget(Container());
             }));
 
     testWidgets(
-        'shows year navigation and analytics content with readings',
+        'shows month navigation and analytics content with readings',
         (tester) => tester.runAsync(() async {
               // Add readings across two months
               await dao.insertReading(GasReadingsCompanion.insert(
@@ -423,18 +498,15 @@ void main() {
 
               // Switch to Analyse tab
               await tester.tap(find.text('Analysis'));
+              await Future.delayed(const Duration(milliseconds: 300));
               await tester.pumpAndSettle();
-
-              // Should show current year in navigation
-              expect(
-                  find.text(DateTime.now().year.toString()), findsOneWidget);
-
-              // Should show chevron navigation icons
-              expect(find.byIcon(Icons.chevron_left), findsOneWidget);
-              expect(find.byIcon(Icons.chevron_right), findsOneWidget);
 
               // Should show monthly breakdown heading
               expect(find.text('Monthly Breakdown'), findsOneWidget);
+
+              // Should show chevron navigation icons (from MonthSelector)
+              expect(find.byIcon(Icons.chevron_left), findsOneWidget);
+              expect(find.byIcon(Icons.chevron_right), findsOneWidget);
 
               await tester.pumpWidget(Container());
             }));
