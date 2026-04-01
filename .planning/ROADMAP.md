@@ -72,7 +72,10 @@ Plans:
   1. Electricity analytics screen displays month navigation, monthly summary card, scrollable bar chart, year comparison, and household comparison using shared widgets
   2. Monthly summary card shows total kWh for selected month with % change vs previous month
   3. Smart plug coverage line appears in electricity summary when smart plug data exists for the selected month, showing kWh and percentage of total electricity
-**Plans**: TBD
+**Plans:** 2 plans
+Plans:
+- [ ] 29-01-PLAN.md -- Provider + widget data layer (AnalyticsProvider household comparison, MonthlySummaryCard smart plug coverage, l10n)
+- [ ] 29-02-PLAN.md -- Electricity screen Analyse tab redesign + test updates
 
 ### Phase 30: Water & Gas Analytics
 **Goal**: Water and gas analytics screens use the new unified design with their respective color schemes
@@ -112,7 +115,7 @@ Plans:
 |-------|----------------|--------|-----------|
 | 27. Shared Chart Infrastructure | 4/4 | Complete | 2026-04-01 |
 | 28. Home & Nav Polish | 3/3 | Complete | 2026-04-01 |
-| 29. Electricity Analytics | 0/TBD | Not started | - |
+| 29. Electricity Analytics | 0/2 | Not started | - |
 | 30. Water & Gas Analytics | 0/TBD | Not started | - |
 | 31. Smart Plug Overhaul | 0/TBD | Not started | - |
 | 32. Heating Analytics & Cleanup | 0/TBD | Not started | - |
