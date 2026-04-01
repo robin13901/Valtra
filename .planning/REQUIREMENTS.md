@@ -10,12 +10,12 @@ Requirements for Analytics Redesign milestone. Each maps to roadmap phases.
 ### Navigation
 
 - [x] **NAV-01**: Month selector replaces year selector on all analytics screens (start at current month, scroll left/right through months)
-- [ ] **NAV-02**: Remove active dot indicator from bottom navigation bar
-- [ ] **NAV-03**: FAB integrated into bottom navigation bar (not floating above the pill)
+- [x] **NAV-02**: Remove active dot indicator from bottom navigation bar
+- [x] **NAV-03**: FAB integrated into bottom navigation bar (not floating above the pill)
 
 ### Home Screen
 
-- [ ] **HOME-01**: Redesign household name card replacing blue-purple gradient with frosted glass / liquid glass matching app theme
+- [x] **HOME-01**: Redesign household name card replacing blue-purple gradient with frosted glass / liquid glass matching app theme
 
 ### Summary Card
 
@@ -71,7 +71,7 @@ Requirements for Analytics Redesign milestone. Each maps to roadmap phases.
 
 ### Household
 
-- [ ] **HH-01**: Define number of persons per household (stored in DB, editable in household settings)
+- [x] **HH-01**: Define number of persons per household (stored in DB, editable in household settings)
 
 ### Tech Debt
 
@@ -106,9 +106,9 @@ Deferred to later milestones. Tracked but not in current roadmap.
 | Requirement | Phase | Status |
 |-------------|-------|--------|
 | NAV-01 | Phase 27 | Complete |
-| NAV-02 | Phase 28 | Pending |
-| NAV-03 | Phase 28 | Pending |
-| HOME-01 | Phase 28 | Pending |
+| NAV-02 | Phase 28 | Complete |
+| NAV-03 | Phase 28 | Complete |
+| HOME-01 | Phase 28 | Complete |
 | SUMM-01 | Phase 27 | Complete |
 | SUMM-02 | Phase 29 | Pending |
 | BAR-01 | Phase 27 | Complete |
@@ -131,7 +131,7 @@ Deferred to later milestones. Tracked but not in current roadmap.
 | SPLG-05 | Phase 31 | Pending |
 | HEAT-01 | Phase 32 | Pending |
 | HEAT-02 | Phase 32 | Pending |
-| HH-01 | Phase 28 | Pending |
+| HH-01 | Phase 28 | Complete |
 | DEBT-01 | Phase 32 | Pending |
 | DEBT-02 | Phase 27 | Complete |
 
@@ -150,4 +150,4 @@ Deferred to later milestones. Tracked but not in current roadmap.
 
 ---
 *Requirements defined: 2026-04-01*
-*Last updated: 2026-04-01 after Phase 27 completion*
+*Last updated: 2026-04-01 after Phase 28 completion*

@@ -24,7 +24,7 @@
 ### Phases
 
 - [x] **Phase 27: Shared Chart Infrastructure** - Reusable chart widgets and month navigation that all analytics screens depend on
-- [ ] **Phase 28: Home & Nav Polish** - Household card redesign, FAB integration, person count, nav cleanup
+- [x] **Phase 28: Home & Nav Polish** - Household card redesign, FAB integration, person count, nav cleanup
 - [ ] **Phase 29: Electricity Analytics** - First screen on new shared widgets, establishing the full pattern
 - [ ] **Phase 30: Water & Gas Analytics** - Apply unified design to water and gas (same behavior, different colors)
 - [ ] **Phase 31: Smart Plug Overhaul** - Analytics redesign + pie chart + expandable cards + unified colors
@@ -60,9 +60,9 @@ Plans:
   4. User can set and edit number of persons per household in household settings, value persists in database
 **Plans:** 3 plans
 Plans:
-- [ ] 28-01-PLAN.md -- Person count data model (DB schema v4, migration, DAO, provider, form dialog)
-- [ ] 28-02-PLAN.md -- Nav bar polish (remove dot indicator, integrate FAB into pill)
-- [ ] 28-03-PLAN.md -- Home screen redesign (frosted glass household cards, horizontal carousel)
+- [x] 28-01-PLAN.md -- Person count data model (DB schema v4, migration, DAO, provider, form dialog)
+- [x] 28-02-PLAN.md -- Nav bar polish (remove dot indicator, integrate FAB into pill)
+- [x] 28-03-PLAN.md -- Home screen redesign (frosted glass household cards, horizontal carousel)
 
 ### Phase 29: Electricity Analytics
 **Goal**: Electricity analytics screen uses the complete new unified design, serving as the reference implementation for all other meter screens
@@ -111,7 +111,7 @@ Plans:
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 27. Shared Chart Infrastructure | 4/4 | Complete | 2026-04-01 |
-| 28. Home & Nav Polish | 0/3 | Not started | - |
+| 28. Home & Nav Polish | 3/3 | Complete | 2026-04-01 |
 | 29. Electricity Analytics | 0/TBD | Not started | - |
 | 30. Water & Gas Analytics | 0/TBD | Not started | - |
 | 31. Smart Plug Overhaul | 0/TBD | Not started | - |
