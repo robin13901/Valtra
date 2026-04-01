@@ -37,7 +37,7 @@ void main() {
       final db = AppDatabase(NativeDatabase(File(dbPath)));
 
       final householdId = await db.householdDao.insert(
-        HouseholdsCompanion.insert(name: householdName),
+        HouseholdsCompanion.insert(name: householdName, personCount: 1),
       );
       await db.electricityDao.insertReading(
         ElectricityReadingsCompanion.insert(

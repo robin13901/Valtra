@@ -36,7 +36,7 @@ void main() {
 
     test('loads persisted household ID on init', () async {
       // Create a household directly in DB
-      final id = await dao.insert(HouseholdsCompanion.insert(name: 'Test'));
+      final id = await dao.insert(HouseholdsCompanion.insert(name: 'Test', personCount: 1));
 
       // Set the persisted ID
       SharedPreferences.setMockInitialValues(
@@ -57,8 +57,8 @@ void main() {
       await provider.init();
 
       // Create households
-      await dao.insert(HouseholdsCompanion.insert(name: 'First'));
-      final id2 = await dao.insert(HouseholdsCompanion.insert(name: 'Second'));
+      await dao.insert(HouseholdsCompanion.insert(name: 'First', personCount: 1));
+      final id2 = await dao.insert(HouseholdsCompanion.insert(name: 'Second', personCount: 1));
 
       // Wait for stream to update
       await Future.delayed(const Duration(milliseconds: 100));
@@ -79,6 +79,7 @@ void main() {
       final id = await provider.createHousehold(
         'New Household',
         description: 'A description',
+        personCount: 2,
       );
 
       // Wait for stream to update
@@ -94,11 +95,11 @@ void main() {
       await provider.init();
 
       // Create first household
-      final firstId = await provider.createHousehold('First');
+      final firstId = await provider.createHousehold('First', personCount: 1);
       await Future.delayed(const Duration(milliseconds: 100));
 
       // Create second without selecting
-      await provider.createHousehold('Second', selectAfterCreate: false);
+      await provider.createHousehold('Second', personCount: 1, selectAfterCreate: false);
       await Future.delayed(const Duration(milliseconds: 100));
 
       // Should still have first selected
@@ -108,7 +109,7 @@ void main() {
     test('updateHousehold modifies existing household', () async {
       await provider.init();
 
-      final id = await provider.createHousehold('Original');
+      final id = await provider.createHousehold('Original', personCount: 1);
       await Future.delayed(const Duration(milliseconds: 100));
 
       await provider.updateHousehold(id, 'Updated', description: 'New desc');
@@ -121,7 +122,7 @@ void main() {
     test('deleteHousehold removes household', () async {
       await provider.init();
 
-      final id = await provider.createHousehold('ToDelete');
+      final id = await provider.createHousehold('ToDelete', personCount: 1);
       await Future.delayed(const Duration(milliseconds: 100));
 
       final result = await provider.deleteHousehold(id);
@@ -137,7 +138,7 @@ void main() {
         () async {
       await provider.init();
 
-      final id = await provider.createHousehold('WithData');
+      final id = await provider.createHousehold('WithData', personCount: 1);
       await Future.delayed(const Duration(milliseconds: 100));
 
       // Add related data
@@ -154,7 +155,7 @@ void main() {
     test('selectedHousehold updates when household list changes', () async {
       await provider.init();
 
-      final id = await provider.createHousehold('Selected');
+      final id = await provider.createHousehold('Selected', personCount: 1);
       await Future.delayed(const Duration(milliseconds: 100));
 
       expect(provider.selectedHousehold?.name, 'Selected');
@@ -173,7 +174,7 @@ void main() {
 
     test('auto-selects first household if none selected', () async {
       // Create household before init (no selection persisted)
-      final id = await dao.insert(HouseholdsCompanion.insert(name: 'Auto'));
+      final id = await dao.insert(HouseholdsCompanion.insert(name: 'Auto', personCount: 1));
 
       await provider.init();
       await Future.delayed(const Duration(milliseconds: 100));
@@ -185,7 +186,7 @@ void main() {
         () async {
       await provider.init();
 
-      final id = await provider.createHousehold('Will be deleted');
+      final id = await provider.createHousehold('Will be deleted', personCount: 1);
       await Future.delayed(const Duration(milliseconds: 100));
 
       expect(provider.selectedHouseholdId, id);
@@ -196,6 +197,30 @@ void main() {
 
       expect(provider.selectedHouseholdId, isNull);
       expect(provider.selectedHousehold, isNull);
+    });
+
+    test('createHousehold stores personCount and it is retrievable', () async {
+      await provider.init();
+
+      final id = await provider.createHousehold('Family Home', personCount: 4);
+      await Future.delayed(const Duration(milliseconds: 100));
+
+      expect(provider.selectedHousehold?.personCount, 4);
+      expect(provider.selectedHouseholdId, id);
+    });
+
+    test('updateHousehold with personCount changes person count', () async {
+      await provider.init();
+
+      final id = await provider.createHousehold('Home', personCount: 2);
+      await Future.delayed(const Duration(milliseconds: 100));
+
+      expect(provider.selectedHousehold?.personCount, 2);
+
+      await provider.updateHousehold(id, 'Home', personCount: 5);
+      await Future.delayed(const Duration(milliseconds: 100));
+
+      expect(provider.selectedHousehold?.personCount, 5);
     });
   });
 }

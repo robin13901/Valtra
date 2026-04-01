@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../../l10n/app_localizations.dart';
 import '../../database/app_database.dart';
 
@@ -31,6 +32,7 @@ class _HouseholdFormDialogState extends State<HouseholdFormDialog> {
   final _formKey = GlobalKey<FormState>();
   late final TextEditingController _nameController;
   late final TextEditingController _descriptionController;
+  late final TextEditingController _personCountController;
 
   bool get isEditing => widget.household != null;
 
@@ -40,12 +42,16 @@ class _HouseholdFormDialogState extends State<HouseholdFormDialog> {
     _nameController = TextEditingController(text: widget.household?.name ?? '');
     _descriptionController =
         TextEditingController(text: widget.household?.description ?? '');
+    _personCountController = TextEditingController(
+      text: widget.household?.personCount.toString() ?? '',
+    );
   }
 
   @override
   void dispose() {
     _nameController.dispose();
     _descriptionController.dispose();
+    _personCountController.dispose();
     super.dispose();
   }
 
@@ -87,6 +93,26 @@ class _HouseholdFormDialogState extends State<HouseholdFormDialog> {
               ),
               maxLines: 3,
             ),
+            const SizedBox(height: 16),
+            TextFormField(
+              controller: _personCountController,
+              keyboardType: TextInputType.number,
+              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+              decoration: InputDecoration(
+                labelText: l10n.personCount,
+                hintText: l10n.personCountHint,
+              ),
+              validator: (value) {
+                if (value == null || value.trim().isEmpty) {
+                  return l10n.personCountRequired;
+                }
+                final parsed = int.tryParse(value.trim());
+                if (parsed == null || parsed < 1) {
+                  return l10n.personCountRequired;
+                }
+                return null;
+              },
+            ),
           ],
         ),
       ),
@@ -107,10 +133,12 @@ class _HouseholdFormDialogState extends State<HouseholdFormDialog> {
     if (_formKey.currentState!.validate()) {
       final name = _nameController.text.trim();
       final description = _descriptionController.text.trim();
+      final personCount = int.parse(_personCountController.text.trim());
 
       Navigator.of(context).pop(HouseholdFormData(
         name: name,
         description: description.isEmpty ? null : description,
+        personCount: personCount,
       ));
     }
   }
@@ -120,6 +148,11 @@ class _HouseholdFormDialogState extends State<HouseholdFormDialog> {
 class HouseholdFormData {
   final String name;
   final String? description;
+  final int personCount;
 
-  const HouseholdFormData({required this.name, this.description});
+  const HouseholdFormData({
+    required this.name,
+    this.description,
+    required this.personCount,
+  });
 }

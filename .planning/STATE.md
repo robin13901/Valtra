@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-04-01)
 ## Current Position
 
 Phase: 28 of 32 (Home & Nav Polish)
-Plan: 0 of TBD in current phase
-Status: Not started
-Last activity: 2026-04-01 -- Phase 27 complete (4 plans, 2 waves, verified 5/5)
+Plan: 1 of TBD in current phase
+Status: In progress
+Last activity: 2026-04-01 -- Completed 28-01-PLAN.md (Person Count Storage)
 
-Progress: ██░░░░░░░░░░░░░░░░░░░░░░░ 7% (v0.6.0) [4/~25 plans]
+Progress: ██░░░░░░░░░░░░░░░░░░░░░░░ 8% (v0.6.0) [5/~25 plans]
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 4 (v0.6.0)
-- Average duration: 13 min
-- Total execution time: ~52 min (2 waves, 3 parallel in wave 2)
+- Total plans completed: 5 (v0.6.0)
+- Average duration: ~14 min
+- Total execution time: ~70 min
 
 *Updated after each plan completion*
 
@@ -34,6 +34,7 @@ Progress: ██░░░░░░░░░░░░░░░░░░░░░�
 
 ## Completed Phases (v0.6.0)
 - **Phase 27**: Shared Chart Infrastructure -- 4 plans, 1154 tests, verified 5/5
+- **Phase 28**: Home & Nav Polish -- 1 plan complete (28-01)
 
 ## Accumulated Context
 
@@ -50,9 +51,13 @@ Progress: ██░░░░░░░░░░░░░░░░░░░░░�
 - Unified interpolated/extrapolated flag: any period with startInterpolated|endInterpolated|isExtrapolated renders as dashed
 - MonthlyBarChart scroll: visibleBars=12 threshold; Row(fixed-Y-axis BarChart + Expanded ScrollView) for AXIS-03
 - MonthlyBarChart alpha scheme: past=0.85, future/extrapolated=0.3, highlighted=1.0 (BAR-03)
+- personCount has no .withDefault() in Drift table definition; form enforces value; DEFAULT 1 only in ALTER TABLE migration for existing rows
+- BackupRestoreService.expectedSchemaVersion must always match app_database.dart schemaVersion
+- FilteringTextInputFormatter.digitsOnly chosen for reliable digit-only enforcement in number fields
+- Schema bump pattern: bump schemaVersion, add if (from < N) migration block, bump expectedSchemaVersion in BackupRestoreService
 
 ### Pending Todos
-None yet.
+None.
 
 ### Blockers/Concerns
 None.
@@ -66,6 +71,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-04-01
-Stopped at: Phase 27 complete, verified, ready for Phase 28
+Last session: 2026-04-01T10:54:00Z
+Stopped at: Completed 28-01-PLAN.md
 Resume file: None

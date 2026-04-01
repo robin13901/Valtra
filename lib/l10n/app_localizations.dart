@@ -1777,6 +1777,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{value} kWh ({percent}%)'**
   String consumptionWithPercent(String value, String percent);
+
+  /// No description provided for @personCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Number of persons'**
+  String get personCount;
+
+  /// No description provided for @personCountHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. 2'**
+  String get personCountHint;
+
+  /// No description provided for @personCountRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Number of persons is required (min. 1)'**
+  String get personCountRequired;
 }
 
 class _AppLocalizationsDelegate

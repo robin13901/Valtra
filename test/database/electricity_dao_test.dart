@@ -17,7 +17,7 @@ void main() {
     // Create a test household
     householdId = await database
         .into(database.households)
-        .insert(HouseholdsCompanion.insert(name: 'Test Household'));
+        .insert(HouseholdsCompanion.insert(name: 'Test Household', personCount: 1));
   });
 
   tearDown(() async {
@@ -211,7 +211,7 @@ void main() {
       // Create another household
       final otherHouseholdId = await database
           .into(database.households)
-          .insert(HouseholdsCompanion.insert(name: 'Other Household'));
+          .insert(HouseholdsCompanion.insert(name: 'Other Household', personCount: 1));
 
       await dao.insertReading(ElectricityReadingsCompanion.insert(
         householdId: householdId,

@@ -92,6 +92,7 @@ class HouseholdsScreen extends StatelessWidget {
       await provider.createHousehold(
         result.name,
         description: result.description,
+        personCount: result.personCount,
       );
     }
   }
@@ -221,6 +222,7 @@ class _HouseholdCard extends StatelessWidget {
         household.id,
         result.name,
         description: result.description,
+        personCount: result.personCount,
       );
     }
   }

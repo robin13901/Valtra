@@ -153,7 +153,7 @@ void main() {
 
               final householdId = await database
                   .into(database.households)
-                  .insert(HouseholdsCompanion.insert(name: 'Haus'));
+                  .insert(HouseholdsCompanion.insert(name: 'Haus', personCount: 1));
 
               provider.setHouseholdId(householdId);
               await Future.delayed(const Duration(milliseconds: 50));
@@ -228,7 +228,7 @@ void main() {
 
               final householdId = await database
                   .into(database.households)
-                  .insert(HouseholdsCompanion.insert(name: 'Haus'));
+                  .insert(HouseholdsCompanion.insert(name: 'Haus', personCount: 1));
 
               provider.setHouseholdId(householdId);
               await Future.delayed(const Duration(milliseconds: 50));
@@ -300,7 +300,7 @@ void main() {
 
               final householdId = await database
                   .into(database.households)
-                  .insert(HouseholdsCompanion.insert(name: 'Haus'));
+                  .insert(HouseholdsCompanion.insert(name: 'Haus', personCount: 1));
 
               provider.setHouseholdId(householdId);
               await Future.delayed(const Duration(milliseconds: 50));
@@ -383,7 +383,7 @@ void main() {
 
               final householdId = await database
                   .into(database.households)
-                  .insert(HouseholdsCompanion.insert(name: 'Haus'));
+                  .insert(HouseholdsCompanion.insert(name: 'Haus', personCount: 1));
 
               provider.setHouseholdId(householdId);
               await Future.delayed(const Duration(milliseconds: 50));

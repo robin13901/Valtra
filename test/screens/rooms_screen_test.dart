@@ -48,7 +48,7 @@ void main() {
 
     householdId = await database
         .into(database.households)
-        .insert(HouseholdsCompanion.insert(name: 'Test Household'));
+        .insert(HouseholdsCompanion.insert(name: 'Test Household', personCount: 1));
 
     provider.setHouseholdId(householdId);
     await Future.delayed(const Duration(milliseconds: 50));
