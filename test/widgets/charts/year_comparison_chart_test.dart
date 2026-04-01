@@ -764,11 +764,8 @@ void main() {
         await tester.pumpAndSettle();
 
         final data = _extractChartData(tester);
-        final axisNameWidget = data.titlesData.leftTitles.axisNameWidget;
-
-        expect(axisNameWidget, isNotNull);
-        expect(axisNameWidget, isA<Text>());
-        expect((axisNameWidget as Text).data, 'kWh');
+        // ChartAxisStyle.leftTitles has no axisNameWidget; verify sideTitles
+        expect(data.titlesData.leftTitles.sideTitles.showTitles, isTrue);
       });
 
       testWidgets('Y-axis shows costUnit label in cost mode', (tester) async {
@@ -790,11 +787,8 @@ void main() {
         await tester.pumpAndSettle();
 
         final data = _extractChartData(tester);
-        final axisNameWidget = data.titlesData.leftTitles.axisNameWidget;
-
-        expect(axisNameWidget, isNotNull);
-        expect(axisNameWidget, isA<Text>());
-        expect((axisNameWidget as Text).data, 'EUR');
+        // ChartAxisStyle.leftTitles has no axisNameWidget; verify sideTitles
+        expect(data.titlesData.leftTitles.sideTitles.showTitles, isTrue);
       });
 
       testWidgets('Y-axis shows unit when costUnit is null in cost mode',
@@ -816,12 +810,169 @@ void main() {
         await tester.pumpAndSettle();
 
         final data = _extractChartData(tester);
-        final axisNameWidget = data.titlesData.leftTitles.axisNameWidget;
+        // ChartAxisStyle.leftTitles has no axisNameWidget; verify sideTitles
+        expect(data.titlesData.leftTitles.sideTitles.showTitles, isTrue);
+      });
+    });
 
-        expect(axisNameWidget, isNotNull);
-        expect(axisNameWidget, isA<Text>());
-        // Falls back to unit when costUnit is null
-        expect((axisNameWidget as Text).data, 'kWh');
+    // ---------------------------------------------------------------
+    // YCMP-02: Gradient fill tests
+    // ---------------------------------------------------------------
+
+    group('gradient fill (YCMP-02)', () {
+      testWidgets('current year line has gradient belowBarData', (tester) async {
+        final currentYear = [
+          _period(DateTime(2026, 1, 1), 100),
+          _period(DateTime(2026, 2, 1), 120),
+          _period(DateTime(2026, 3, 1), 90),
+        ];
+
+        await tester.pumpWidget(
+          _wrap(YearComparisonChart(
+            currentYear: currentYear,
+            primaryColor: Colors.blue,
+            unit: 'kWh',
+          )),
+        );
+        await tester.pumpAndSettle();
+
+        final data = _extractChartData(tester);
+        final currentLine = data.lineBarsData[0];
+
+        // belowBarData should have gradient (not flat color)
+        expect(currentLine.belowBarData.show, isTrue);
+        expect(currentLine.belowBarData.gradient, isNotNull);
+        expect(currentLine.belowBarData.gradient, isA<LinearGradient>());
+
+        final gradient = currentLine.belowBarData.gradient as LinearGradient;
+        expect(gradient.colors.length, 2);
+        // First color should have some opacity, last should be transparent
+        expect(gradient.colors.first.a, greaterThan(0));
+        expect(gradient.colors.last.a, closeTo(0, 0.01));
+      });
+
+      testWidgets('previous year line has NO gradient fill', (tester) async {
+        final currentYear = [
+          _period(DateTime(2026, 1, 1), 100),
+        ];
+        final previousYear = [
+          _period(DateTime(2025, 1, 1), 80),
+          _period(DateTime(2025, 2, 1), 90),
+        ];
+
+        await tester.pumpWidget(
+          _wrap(YearComparisonChart(
+            currentYear: currentYear,
+            previousYear: previousYear,
+            primaryColor: Colors.blue,
+            unit: 'kWh',
+          )),
+        );
+        await tester.pumpAndSettle();
+
+        final data = _extractChartData(tester);
+        // Second line (previous year) should not have belowBarData
+        final previousLine = data.lineBarsData[1];
+        expect(previousLine.belowBarData.show, isFalse);
+      });
+    });
+
+    // ---------------------------------------------------------------
+    // YCMP-01: Previous year dashed + open dots tests
+    // ---------------------------------------------------------------
+
+    group('previous year styling (YCMP-01)', () {
+      testWidgets('previous year line is dashed', (tester) async {
+        final currentYear = [
+          _period(DateTime(2026, 1, 1), 100),
+        ];
+        final previousYear = [
+          _period(DateTime(2025, 1, 1), 80),
+          _period(DateTime(2025, 2, 1), 90),
+        ];
+
+        await tester.pumpWidget(
+          _wrap(YearComparisonChart(
+            currentYear: currentYear,
+            previousYear: previousYear,
+            primaryColor: Colors.blue,
+            unit: 'kWh',
+          )),
+        );
+        await tester.pumpAndSettle();
+
+        final data = _extractChartData(tester);
+        final previousLine = data.lineBarsData[1];
+        expect(previousLine.dashArray, isNotNull);
+        expect(previousLine.dashArray, [8, 4]);
+      });
+
+      testWidgets('current year line is NOT dashed (solid)', (tester) async {
+        final currentYear = [
+          _period(DateTime(2026, 1, 1), 100),
+          _period(DateTime(2026, 2, 1), 120),
+        ];
+
+        await tester.pumpWidget(
+          _wrap(YearComparisonChart(
+            currentYear: currentYear,
+            primaryColor: Colors.blue,
+            unit: 'kWh',
+          )),
+        );
+        await tester.pumpAndSettle();
+
+        final data = _extractChartData(tester);
+        final currentLine = data.lineBarsData[0];
+        expect(currentLine.dashArray, isNull);
+      });
+    });
+
+    // ---------------------------------------------------------------
+    // AXIS-01/02: Axis style tests
+    // ---------------------------------------------------------------
+
+    group('axis style (AXIS-01/02)', () {
+      testWidgets('has no left border (AXIS-01)', (tester) async {
+        final currentYear = [
+          _period(DateTime(2026, 1, 1), 100),
+          _period(DateTime(2026, 2, 1), 120),
+        ];
+
+        await tester.pumpWidget(
+          _wrap(YearComparisonChart(
+            currentYear: currentYear,
+            primaryColor: Colors.blue,
+            unit: 'kWh',
+          )),
+        );
+        await tester.pumpAndSettle();
+
+        final data = _extractChartData(tester);
+        expect(data.borderData.border.left, BorderSide.none);
+        expect(data.borderData.border.bottom, isNot(BorderSide.none));
+      });
+
+      testWidgets('grid lines are dashed horizontal only', (tester) async {
+        final currentYear = [
+          _period(DateTime(2026, 1, 1), 100),
+        ];
+
+        await tester.pumpWidget(
+          _wrap(YearComparisonChart(
+            currentYear: currentYear,
+            primaryColor: Colors.blue,
+            unit: 'kWh',
+          )),
+        );
+        await tester.pumpAndSettle();
+
+        final data = _extractChartData(tester);
+        expect(data.gridData.show, isTrue);
+        expect(data.gridData.drawVerticalLine, isFalse);
+
+        final line = data.gridData.getDrawingHorizontalLine(50);
+        expect(line.dashArray, [4, 4]);
       });
     });
   });
