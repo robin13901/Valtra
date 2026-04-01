@@ -26,7 +26,7 @@
 - [x] **Phase 27: Shared Chart Infrastructure** - Reusable chart widgets and month navigation that all analytics screens depend on
 - [x] **Phase 28: Home & Nav Polish** - Household card redesign, FAB integration, person count, nav cleanup
 - [x] **Phase 29: Electricity Analytics** - First screen on new shared widgets, establishing the full pattern
-- [ ] **Phase 30: Water & Gas Analytics** - Apply unified design to water and gas (same behavior, different colors)
+- [x] **Phase 30: Water & Gas Analytics** - Apply unified design to water and gas (same behavior, different colors)
 - [ ] **Phase 31: Smart Plug Overhaul** - Analytics redesign + pie chart + expandable cards + unified colors
 - [ ] **Phase 32: Heating Analytics & Cleanup** - Heating analytics + distribution pie chart + deprecated widget removal
 
@@ -100,7 +100,10 @@ Plans:
   3. Per-plug list breakdown shows each plug's consumption for the selected month
   4. Smart plug entries are displayed in expandable cards with inline editing (same pattern as heating meters), not navigating to a separate screen
   5. Room-based consumption grouping is removed from the UI
-**Plans**: TBD
+**Plans:** 2 plans
+Plans:
+- [ ] 31-01-PLAN.md -- Analyse tab redesign with shared widgets + single-hue pie chart colors
+- [ ] 31-02-PLAN.md -- Liste tab expandable cards + flat list + initState provider wiring
 
 ### Phase 32: Heating Analytics & Cleanup
 **Goal**: Heating analytics uses new design with percentage distribution, and deprecated widgets are removed from the codebase
@@ -120,5 +123,5 @@ Plans:
 | 28. Home & Nav Polish | 3/3 | Complete | 2026-04-01 |
 | 29. Electricity Analytics | 2/2 | Complete | 2026-04-01 |
 | 30. Water & Gas Analytics | 2/2 | Complete | 2026-04-01 |
-| 31. Smart Plug Overhaul | 0/TBD | Not started | - |
+| 31. Smart Plug Overhaul | 0/2 | Not started | - |
 | 32. Heating Analytics & Cleanup | 0/TBD | Not started | - |
