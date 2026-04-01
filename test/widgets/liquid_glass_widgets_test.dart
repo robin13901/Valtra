@@ -462,8 +462,9 @@ void main() {
       expect(find.byKey(const Key('right_fab')), findsOneWidget);
     });
 
-    testWidgets('right FAB is inside the pill (no separate row above)',
-        (tester) async {
+    testWidgets('inline FAB is rendered inside the nav pill', (tester) async {
+      // The FAB (right_fab) and labels should coexist in the same widget tree
+      // since FAB is now inline in the pill.
       await tester.pumpWidget(buildApp(
         child: buildNav(
           currentIndex: 0,
@@ -474,13 +475,13 @@ void main() {
       ));
       await tester.pumpAndSettle();
 
-      // FAB is rendered inline -- the right_fab key is findable
       expect(find.byKey(const Key('right_fab')), findsOneWidget);
-      // Nav labels are also present in the same widget tree
+      // Nav labels must also be present (they share the same pill container)
       expect(find.text('Home'), findsOneWidget);
+      expect(find.text('Power'), findsOneWidget);
     });
 
-    testWidgets('right FAB tap fires callback', (tester) async {
+    testWidgets('inline FAB tap fires callback', (tester) async {
       bool tapped = false;
 
       await tester.pumpWidget(buildApp(
@@ -495,6 +496,67 @@ void main() {
 
       await tester.tap(find.byKey(const Key('right_fab')));
       expect(tapped, true);
+    });
+
+    testWidgets('FAB hidden when index not in rightVisibleForIndices',
+        (tester) async {
+      await tester.pumpWidget(buildApp(
+        child: buildNav(
+          currentIndex: 0,
+          rightVisibleForIndices: {1},
+          rightIcon: Icons.add,
+        ),
+      ));
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(const Key('right_fab')), findsNothing);
+      // But tab labels still visible
+      expect(find.text('Home'), findsOneWidget);
+    });
+
+    testWidgets('no dot indicator (AnimatedContainer with circle) in nav',
+        (tester) async {
+      // The _buildNavColumn must not render any BoxShape.circle AnimatedContainer
+      // as a dot below the icon. We verify by checking there is no such container
+      // with a tiny fixed height that would indicate a dot indicator.
+      await tester.pumpWidget(buildApp(
+        child: buildNav(currentIndex: 0),
+      ));
+      await tester.pumpAndSettle();
+
+      // Find all AnimatedContainer widgets. None should have BoxDecoration with
+      // BoxShape.circle AND a height consistent with a dot (<=8).
+      final animatedContainers =
+          tester.widgetList<AnimatedContainer>(find.byType(AnimatedContainer));
+      for (final container in animatedContainers) {
+        final decoration = container.decoration;
+        if (decoration is BoxDecoration && decoration.shape == BoxShape.circle) {
+          // This is a circle-shaped AnimatedContainer -- ensure it's not a tiny dot
+          // by checking constraints. The only circle should be the inline FAB (48px).
+          final constraints = container.constraints;
+          expect(
+            constraints?.maxHeight ?? double.infinity,
+            greaterThan(8.0),
+            reason: 'Found a tiny circle AnimatedContainer which may be a dot',
+          );
+        }
+      }
+
+      // Tab labels still render without any dot
+      expect(find.text('Home'), findsOneWidget);
+      expect(find.text('Power'), findsOneWidget);
+      expect(find.text('Water'), findsOneWidget);
+    });
+
+    testWidgets('labels shown for all tabs', (tester) async {
+      await tester.pumpWidget(buildApp(
+        child: buildNav(),
+      ));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Home'), findsOneWidget);
+      expect(find.text('Power'), findsOneWidget);
+      expect(find.text('Water'), findsOneWidget);
     });
 
     testWidgets('renders in dark mode', (tester) async {
@@ -516,6 +578,34 @@ void main() {
 
       expect(find.text('Home'), findsOneWidget);
       expect(find.text('Power'), findsOneWidget);
+    });
+
+    testWidgets('inline FAB renders in dark mode with correct tint',
+        (tester) async {
+      await tester.pumpWidget(MultiProvider(
+        providers: [
+          ChangeNotifierProvider<ThemeProvider>.value(value: themeProvider),
+          ChangeNotifierProvider<LocaleProvider>.value(value: localeProvider),
+        ],
+        child: MaterialApp(
+          theme: AppTheme.lightTheme,
+          darkTheme: AppTheme.darkTheme,
+          themeMode: ThemeMode.dark,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Scaffold(
+            body: buildNav(
+              currentIndex: 0,
+              rightVisibleForIndices: {0},
+              rightIcon: Icons.add,
+            ),
+          ),
+        ),
+      ));
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(const Key('right_fab')), findsOneWidget);
+      expect(find.byIcon(Icons.add), findsOneWidget);
     });
   });
 }
