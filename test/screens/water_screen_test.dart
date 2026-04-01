@@ -23,6 +23,9 @@ import 'package:valtra/screens/water_screen.dart';
 import 'package:valtra/services/cost_calculation_service.dart';
 import 'package:valtra/services/gas_conversion_service.dart';
 import 'package:valtra/services/interpolation/interpolation_service.dart';
+import 'package:valtra/widgets/charts/month_selector.dart';
+import 'package:valtra/widgets/charts/monthly_bar_chart.dart';
+import 'package:valtra/widgets/charts/monthly_summary_card.dart';
 import 'package:valtra/widgets/liquid_glass_widgets.dart';
 
 import '../helpers/test_database.dart';
@@ -103,6 +106,9 @@ void main() {
   });
 
   tearDown(() async {
+    // Allow async operations from initState (setSelectedMonth + setSelectedYear)
+    // to complete before disposing providers to prevent "used after disposed" errors.
+    await Future.delayed(const Duration(milliseconds: 300));
     provider.dispose();
     analyticsProvider.dispose();
     costConfigProvider.dispose();
@@ -462,15 +468,110 @@ void main() {
               await Future.delayed(const Duration(milliseconds: 200));
               await tester.pumpAndSettle();
 
-              // With no readings, analytics loads empty monthlyBreakdown
+              // With no readings, analytics shows no data or month with year
               final year = DateTime.now().year.toString();
               expect(find.textContaining(year), findsAtLeast(1));
 
               await tester.pumpWidget(Container());
             }));
+  });
+
+  group('WaterScreen - Analyse Tab (month-based)', () {
+    testWidgets('Analyse tab shows MonthSelector when data exists',
+        (tester) => tester.runAsync(() async {
+              final meterId = await dao.insertMeter(WaterMetersCompanion.insert(
+                householdId: householdId,
+                name: 'Cold Water',
+                type: WaterMeterType.cold,
+              ));
+
+              final year = DateTime.now().year;
+              // Previous month reading
+              final prevMonth = DateTime.now().month == 1 ? 12 : DateTime.now().month - 1;
+              final prevYear = DateTime.now().month == 1 ? year - 1 : year;
+              await dao.insertReading(WaterReadingsCompanion.insert(
+                waterMeterId: meterId,
+                timestamp: DateTime(prevYear, prevMonth, 1),
+                valueCubicMeters: 100.0,
+              ));
+              // Current month reading
+              await dao.insertReading(WaterReadingsCompanion.insert(
+                waterMeterId: meterId,
+                timestamp: DateTime(year, DateTime.now().month, 1),
+                valueCubicMeters: 130.0,
+              ));
+              await Future.delayed(const Duration(milliseconds: 200));
+
+              await tester.pumpWidget(wrapWithProviders(const WaterScreen()));
+              await tester.pumpAndSettle();
+
+              // Switch to Analyse tab
+              await tester.tap(find.text('Analysis'));
+              await Future.delayed(const Duration(milliseconds: 300));
+              await tester.pumpAndSettle();
+
+              // Should show MonthSelector
+              expect(find.byType(MonthSelector), findsOneWidget);
+
+              // Should show MonthlySummaryCard
+              expect(find.byType(MonthlySummaryCard), findsOneWidget);
+
+              await tester.pumpWidget(Container());
+            }));
+
+    testWidgets('Analyse tab shows MonthlyBarChart',
+        (tester) => tester.runAsync(() async {
+              final meterId = await dao.insertMeter(WaterMetersCompanion.insert(
+                householdId: householdId,
+                name: 'Cold Water',
+                type: WaterMeterType.cold,
+              ));
+
+              final year = DateTime.now().year;
+              await dao.insertReading(WaterReadingsCompanion.insert(
+                waterMeterId: meterId,
+                timestamp: DateTime(year, 1, 1),
+                valueCubicMeters: 100.0,
+              ));
+              await dao.insertReading(WaterReadingsCompanion.insert(
+                waterMeterId: meterId,
+                timestamp: DateTime(year, 2, 1),
+                valueCubicMeters: 130.0,
+              ));
+              await Future.delayed(const Duration(milliseconds: 200));
+
+              await tester.pumpWidget(wrapWithProviders(const WaterScreen()));
+              await tester.pumpAndSettle();
+
+              // Switch to Analyse tab
+              await tester.tap(find.text('Analysis'));
+              await Future.delayed(const Duration(milliseconds: 300));
+              await tester.pumpAndSettle();
+
+              // Should show MonthlyBarChart
+              expect(find.byType(MonthlyBarChart), findsOneWidget);
+
+              await tester.pumpWidget(Container());
+            }));
+
+    testWidgets('Analyse tab shows no data when no readings',
+        (tester) => tester.runAsync(() async {
+              await tester.pumpWidget(wrapWithProviders(const WaterScreen()));
+              await tester.pumpAndSettle();
+
+              // Switch to Analyse tab
+              await tester.tap(find.text('Analysis'));
+              await Future.delayed(const Duration(milliseconds: 300));
+              await tester.pumpAndSettle();
+
+              // No readings → no monthly data → shows noData text
+              expect(find.text('No data available'), findsOneWidget);
+
+              await tester.pumpWidget(Container());
+            }));
 
     testWidgets(
-        'shows year navigation and analytics content with readings',
+        'shows MonthSelector and analytics content with readings',
         (tester) => tester.runAsync(() async {
               // Add a water meter first
               final meterId = await dao.insertMeter(WaterMetersCompanion.insert(
@@ -504,11 +605,11 @@ void main() {
 
               // Switch to Analyse tab
               await tester.tap(find.text('Analysis'));
+              await Future.delayed(const Duration(milliseconds: 300));
               await tester.pumpAndSettle();
 
-              // Should show current year in navigation
-              expect(
-                  find.text(DateTime.now().year.toString()), findsOneWidget);
+              // Should show MonthSelector (new month-based navigation)
+              expect(find.byType(MonthSelector), findsOneWidget);
 
               // Should show chevron navigation icons
               expect(find.byIcon(Icons.chevron_left), findsOneWidget);
@@ -516,6 +617,9 @@ void main() {
 
               // Should show monthly breakdown heading
               expect(find.text('Monthly Breakdown'), findsOneWidget);
+
+              // Should show MonthlySummaryCard
+              expect(find.byType(MonthlySummaryCard), findsOneWidget);
 
               await tester.pumpWidget(Container());
             }));
