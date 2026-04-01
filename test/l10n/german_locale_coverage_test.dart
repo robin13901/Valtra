@@ -300,7 +300,9 @@ void main() {
                   findsOneWidget);
 
               await tester.pumpWidget(Container());
-              await Future.delayed(const Duration(milliseconds: 200));
+              // Allow async provider loads (setSelectedMonth + setSelectedYear) to
+              // complete before disposal to prevent "used after disposed" errors.
+              await Future.delayed(const Duration(milliseconds: 300));
               provider.dispose();
               analyticsProvider.dispose();
               costConfigProvider.dispose();
@@ -384,7 +386,9 @@ void main() {
               expect(find.textContaining('+150,0'), findsOneWidget);
 
               await tester.pumpWidget(Container());
-              await Future.delayed(const Duration(milliseconds: 200));
+              // Allow async provider loads (setSelectedMonth + setSelectedYear) to
+              // complete before disposal to prevent "used after disposed" errors.
+              await Future.delayed(const Duration(milliseconds: 300));
               provider.dispose();
               analyticsProvider.dispose();
               costConfigProvider.dispose();
