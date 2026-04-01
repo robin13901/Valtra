@@ -9,6 +9,7 @@ import 'package:valtra/database/app_database.dart';
 import 'package:valtra/database/daos/room_dao.dart';
 import 'package:valtra/database/daos/smart_plug_dao.dart';
 import 'package:valtra/l10n/app_localizations.dart';
+import 'package:valtra/providers/analytics_provider.dart';
 import 'package:valtra/providers/locale_provider.dart';
 import 'package:valtra/providers/room_provider.dart';
 import 'package:valtra/providers/smart_plug_analytics_provider.dart';
@@ -24,6 +25,10 @@ class MockSmartPlugAnalyticsProvider extends ChangeNotifier
     with Mock
     implements SmartPlugAnalyticsProvider {}
 
+class MockAnalyticsProvider extends ChangeNotifier
+    with Mock
+    implements AnalyticsProvider {}
+
 void main() {
   late AppDatabase database;
   late SmartPlugDao smartPlugDao;
@@ -33,6 +38,7 @@ void main() {
   late ThemeProvider themeProvider;
   late MockLocaleProvider localeProvider;
   late MockSmartPlugAnalyticsProvider mockAnalyticsProvider;
+  late MockAnalyticsProvider mockMainAnalyticsProvider;
   late int householdId;
   late int roomId;
 
@@ -51,6 +57,8 @@ void main() {
         ChangeNotifierProvider<LocaleProvider>.value(value: localeProvider),
         ChangeNotifierProvider<SmartPlugAnalyticsProvider>.value(
             value: mockAnalyticsProvider),
+        ChangeNotifierProvider<AnalyticsProvider>.value(
+            value: mockMainAnalyticsProvider),
       ],
       child: MaterialApp(
         localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -73,6 +81,7 @@ void main() {
     await themeProvider.init();
     localeProvider = MockLocaleProvider();
     mockAnalyticsProvider = MockSmartPlugAnalyticsProvider();
+    mockMainAnalyticsProvider = MockAnalyticsProvider();
 
     // Set up analytics provider stubs
     when(() => mockAnalyticsProvider.isLoading).thenReturn(false);
@@ -82,6 +91,16 @@ void main() {
     when(() => mockAnalyticsProvider.householdId).thenReturn(1);
     when(() => mockAnalyticsProvider.loadData())
         .thenAnswer((_) async {});
+
+    // Set up main analytics provider stubs (for SmartPlugAnalyseTab)
+    when(() => mockMainAnalyticsProvider.isLoading).thenReturn(false);
+    when(() => mockMainAnalyticsProvider.monthlyData).thenReturn(null);
+    when(() => mockMainAnalyticsProvider.yearlyData).thenReturn(null);
+    when(() => mockMainAnalyticsProvider.selectedMonth)
+        .thenReturn(DateTime(2026, 3, 1));
+    when(() => mockMainAnalyticsProvider.selectedYear).thenReturn(2026);
+    when(() => mockMainAnalyticsProvider.householdComparisonData)
+        .thenReturn(const []);
 
     householdId = await database
         .into(database.households)

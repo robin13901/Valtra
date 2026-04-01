@@ -398,10 +398,10 @@ void main() {
       final data = provider.data;
       expect(data, isNotNull);
 
-      // byPlug colors should be first 3 colors from pieChartColors
-      expect(data!.byPlug[0].color, pieChartColors[0]);
-      expect(data.byPlug[1].color, pieChartColors[1]);
-      expect(data.byPlug[2].color, pieChartColors[2]);
+      // byPlug colors should be first 3 colors from smartPlugPieColors (SPLG-02)
+      expect(data!.byPlug[0].color, smartPlugPieColors[0]);
+      expect(data.byPlug[1].color, smartPlugPieColors[1]);
+      expect(data.byPlug[2].color, smartPlugPieColors[2]);
 
       // byRoom colors should be first 2 colors from pieChartColors
       expect(data.byRoom[0].color, pieChartColors[0]);

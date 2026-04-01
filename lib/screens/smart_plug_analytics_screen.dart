@@ -1,51 +1,185 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../l10n/app_localizations.dart';
+import '../providers/analytics_provider.dart';
 import '../providers/locale_provider.dart';
 import '../providers/smart_plug_analytics_provider.dart';
 import '../services/analytics/analytics_models.dart';
 import '../services/number_format_service.dart';
+import '../widgets/charts/chart_legend.dart';
 import '../widgets/charts/consumption_pie_chart.dart';
-import '../widgets/liquid_glass_widgets.dart';
+import '../widgets/charts/household_comparison_chart.dart';
+import '../widgets/charts/month_selector.dart';
+import '../widgets/charts/monthly_bar_chart.dart';
+import '../widgets/charts/monthly_summary_card.dart';
+import '../widgets/charts/year_comparison_chart.dart';
 
 /// Inline Analyse tab content for smart plug analytics.
 /// Used as a child of IndexedStack in SmartPlugsScreen.
+///
+/// Follows the reference composition pattern established in Phase 29:
+/// MonthSelector → MonthlySummaryCard → MonthlyBarChart →
+/// YearComparisonChart → HouseholdComparisonChart → per-plug pie + list.
+///
+/// Satisfies SPLG-01 (unified analytics design), SPLG-02 (single-hue colors),
+/// SPLG-03 (per-plug pie + list), SPLG-04 (room grouping removed from Analyse tab).
 class SmartPlugAnalyseTab extends StatelessWidget {
   const SmartPlugAnalyseTab({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    final provider = context.watch<SmartPlugAnalyticsProvider>();
+    final analyticsProvider = context.watch<AnalyticsProvider>();
+    final spProvider = context.watch<SmartPlugAnalyticsProvider>();
 
-    if (provider.isLoading) {
+    if (analyticsProvider.isLoading || spProvider.isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
 
-    return _buildBody(context, provider, l10n);
+    return _buildBody(context, analyticsProvider, spProvider);
   }
 
   Widget _buildBody(
     BuildContext context,
-    SmartPlugAnalyticsProvider provider,
-    AppLocalizations l10n,
+    AnalyticsProvider analyticsProvider,
+    SmartPlugAnalyticsProvider spProvider,
   ) {
-    final data = provider.data;
+    final l10n = AppLocalizations.of(context)!;
+    final locale = context.watch<LocaleProvider>().localeString;
+    final color = colorForMeterType(MeterType.electricity);
+    final monthlyData = analyticsProvider.monthlyData;
+    final yearlyData = analyticsProvider.yearlyData;
+
+    if (monthlyData == null && (spProvider.data == null || spProvider.data!.byPlug.isEmpty)) {
+      return _buildEmptyState(context, l10n);
+    }
+
+    // Compute previousMonthTotal from recentMonths
+    double? previousMonthTotal;
+    if (monthlyData != null) {
+      final selectedMonth = analyticsProvider.selectedMonth;
+      for (final period in monthlyData.recentMonths) {
+        final pm = DateTime(selectedMonth.year, selectedMonth.month - 1, 1);
+        if (period.periodStart.year == pm.year &&
+            period.periodStart.month == pm.month) {
+          previousMonthTotal = period.consumption;
+          break;
+        }
+      }
+    }
 
     return ListView(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
       children: [
-        // Month navigation
-        _MonthNavigation(provider: provider),
+        // Month navigation -- syncs both providers
+        MonthSelector(
+          selectedMonth: analyticsProvider.selectedMonth,
+          onMonthChanged: (month) {
+            analyticsProvider.setSelectedMonth(month);
+            spProvider.setSelectedMonth(month);
+            if (month.year != analyticsProvider.selectedYear) {
+              analyticsProvider.setSelectedYear(month.year);
+            }
+          },
+          locale: locale,
+        ),
         const SizedBox(height: 16),
 
-        // Content: empty state or data
-        if (data == null || data.byPlug.isEmpty)
-          _buildEmptyState(context, l10n)
-        else
-          ..._buildDataSections(context, data, l10n, provider),
+        // Monthly summary card (no smartPlugKwh/smartPlugPercent -- redundant here)
+        if (monthlyData != null) ...[
+          MonthlySummaryCard(
+            totalConsumption: monthlyData.totalConsumption,
+            previousMonthTotal: previousMonthTotal,
+            unit: monthlyData.unit,
+            month: analyticsProvider.selectedMonth,
+            color: color,
+            locale: locale,
+          ),
+          const SizedBox(height: 24),
+
+          // Monthly bar chart
+          Text(l10n.monthlyBreakdown,
+              style: Theme.of(context).textTheme.titleMedium),
+          const SizedBox(height: 8),
+          SizedBox(
+            height: 200,
+            child: MonthlyBarChart(
+              periods: monthlyData.recentMonths,
+              primaryColor: color,
+              unit: monthlyData.unit,
+              highlightMonth: analyticsProvider.selectedMonth,
+              locale: locale,
+              showCosts: false,
+            ),
+          ),
+          const SizedBox(height: 24),
+
+          // Year-over-year comparison
+          if (yearlyData != null &&
+              yearlyData.previousYearBreakdown != null &&
+              yearlyData.previousYearBreakdown!.isNotEmpty) ...[
+            Text(l10n.yearOverYear,
+                style: Theme.of(context).textTheme.titleMedium),
+            const SizedBox(height: 8),
+            SizedBox(
+              height: 250,
+              child: YearComparisonChart(
+                currentYear: yearlyData.monthlyBreakdown,
+                previousYear: yearlyData.previousYearBreakdown,
+                primaryColor: color,
+                unit: yearlyData.unit,
+                locale: locale,
+                showCosts: false,
+              ),
+            ),
+            const SizedBox(height: 8),
+            ChartLegend(items: [
+              ChartLegendItem(color: color, label: l10n.currentYear),
+              ChartLegendItem(
+                color: color.withValues(alpha: 0.5),
+                label: l10n.previousYear,
+                isDashed: true,
+              ),
+            ]),
+            const SizedBox(height: 24),
+          ],
+
+          // Household comparison (only if >1 household has data)
+          if (analyticsProvider.householdComparisonData.length > 1) ...[
+            Text(l10n.households,
+                style: Theme.of(context).textTheme.titleMedium),
+            const SizedBox(height: 8),
+            SizedBox(
+              height: 250,
+              child: HouseholdComparisonChart(
+                households: analyticsProvider.householdComparisonData,
+                unit: monthlyData.unit,
+                locale: locale,
+              ),
+            ),
+            const SizedBox(height: 24),
+          ],
+        ],
+
+        // Per-plug breakdown section
+        if (spProvider.data != null && spProvider.data!.byPlug.isNotEmpty) ...[
+          Text(l10n.consumptionByPlugTitle,
+              style: Theme.of(context).textTheme.titleMedium),
+          const SizedBox(height: 8),
+          SizedBox(
+            height: 250,
+            child: ConsumptionPieChart(
+              slices: _buildPlugSlices(spProvider.data!),
+              unit: spProvider.data!.unit,
+              locale: locale,
+            ),
+          ),
+          const SizedBox(height: 8),
+          ...spProvider.data!.byPlug
+              .map((plug) => _PlugBreakdownItem(plug: plug, locale: locale)),
+        ] else if (monthlyData == null) ...[
+          _buildEmptyState(context, l10n),
+        ],
       ],
     );
   }
@@ -75,60 +209,8 @@ class SmartPlugAnalyseTab extends StatelessWidget {
     );
   }
 
-  List<Widget> _buildDataSections(
-    BuildContext context,
-    SmartPlugAnalyticsData data,
-    AppLocalizations l10n,
-    SmartPlugAnalyticsProvider provider,
-  ) {
-    final locale = context.watch<LocaleProvider>().localeString;
-
-    return [
-      // Stats summary card
-      _SummaryCard(data: data, l10n: l10n, locale: locale),
-      const SizedBox(height: 24),
-
-      // Consumption by Room section
-      Text(l10n.consumptionByRoomTitle,
-          style: Theme.of(context).textTheme.titleMedium),
-      const SizedBox(height: 8),
-      SizedBox(
-        height: 250,
-        child: ConsumptionPieChart(
-          slices: _buildRoomSlices(data),
-          unit: data.unit,
-          locale: locale,
-        ),
-      ),
-      const SizedBox(height: 8),
-      ...data.byRoom.map((room) => _RoomBreakdownItem(
-            room: room,
-            locale: locale,
-            totalSmartPlug: data.totalSmartPlug,
-            l10n: l10n,
-          )),
-      const SizedBox(height: 24),
-
-      // Consumption by Plug section
-      Text(l10n.consumptionByPlugTitle,
-          style: Theme.of(context).textTheme.titleMedium),
-      const SizedBox(height: 8),
-      SizedBox(
-        height: 250,
-        child: ConsumptionPieChart(
-          slices: _buildPlugSlices(data),
-          unit: data.unit,
-          locale: locale,
-        ),
-      ),
-      const SizedBox(height: 8),
-      ...data.byPlug
-          .map((plug) => _PlugBreakdownItem(plug: plug, locale: locale)),
-    ];
-  }
-
   List<PieSliceData> _buildPlugSlices(SmartPlugAnalyticsData data) {
-    final total = data.totalSmartPlug + (data.otherConsumption ?? 0);
+    final total = data.totalSmartPlug;
     if (total == 0) return [];
     return data.byPlug
         .map((p) => PieSliceData(
@@ -138,126 +220,6 @@ class SmartPlugAnalyseTab extends StatelessWidget {
               color: p.color,
             ))
         .toList();
-  }
-
-  List<PieSliceData> _buildRoomSlices(SmartPlugAnalyticsData data) {
-    final total = data.totalSmartPlug + (data.otherConsumption ?? 0);
-    if (total == 0) return [];
-    return data.byRoom
-        .map((r) => PieSliceData(
-              label: r.roomName,
-              value: r.consumption,
-              percentage: (r.consumption / total) * 100,
-              color: r.color,
-            ))
-        .toList();
-  }
-}
-
-class _MonthNavigation extends StatelessWidget {
-  final SmartPlugAnalyticsProvider provider;
-
-  const _MonthNavigation({required this.provider});
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        IconButton(
-          icon: const Icon(Icons.chevron_left),
-          onPressed: () => provider.navigateMonth(-1),
-        ),
-        Expanded(
-          child: Text(
-            DateFormat('MMMM yyyy').format(provider.selectedMonth),
-            textAlign: TextAlign.center,
-            style: Theme.of(context)
-                .textTheme
-                .titleMedium
-                ?.copyWith(fontWeight: FontWeight.bold),
-          ),
-        ),
-        IconButton(
-          icon: const Icon(Icons.chevron_right),
-          onPressed: () => provider.navigateMonth(1),
-        ),
-      ],
-    );
-  }
-}
-
-class _SummaryCard extends StatelessWidget {
-  final SmartPlugAnalyticsData data;
-  final AppLocalizations l10n;
-  final String locale;
-
-  const _SummaryCard(
-      {required this.data, required this.l10n, required this.locale});
-
-  @override
-  Widget build(BuildContext context) {
-    return GlassCard(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Total Consumption = totalElectricity (from electricity meter)
-          _SummaryRow(
-            label: l10n.totalConsumptionLabel,
-            value: data.totalElectricity != null
-                ? '${ValtraNumberFormat.consumption(data.totalElectricity!, locale)} ${data.unit}'
-                : '\u2014',
-          ),
-          const SizedBox(height: 8),
-          // Tracked by Plugs = totalSmartPlug
-          _SummaryRow(
-            label: l10n.trackedByPlugs,
-            value:
-                '${ValtraNumberFormat.consumption(data.totalSmartPlug, locale)} ${data.unit}',
-          ),
-          const SizedBox(height: 8),
-          // Not Tracked = otherConsumption
-          if (data.otherConsumption != null) ...[
-            _SummaryRow(
-              label: l10n.notTracked,
-              value:
-                  '${ValtraNumberFormat.consumption(data.otherConsumption!, locale)} ${data.unit}',
-            ),
-          ] else ...[
-            Text(
-              l10n.noElectricityData,
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
-            ),
-          ],
-        ],
-      ),
-    );
-  }
-}
-
-class _SummaryRow extends StatelessWidget {
-  final String label;
-  final String value;
-
-  const _SummaryRow({required this.label, required this.value});
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(label, style: Theme.of(context).textTheme.bodyMedium),
-        Text(
-          value,
-          style: Theme.of(context)
-              .textTheme
-              .bodyMedium
-              ?.copyWith(fontWeight: FontWeight.bold),
-        ),
-      ],
-    );
   }
 }
 
@@ -285,51 +247,6 @@ class _PlugBreakdownItem extends StatelessWidget {
       subtitle: Text(plug.roomName),
       trailing: Text(
         '${ValtraNumberFormat.consumption(plug.consumption, locale)} kWh',
-        style: Theme.of(context)
-            .textTheme
-            .bodyMedium
-            ?.copyWith(fontWeight: FontWeight.w600),
-      ),
-    );
-  }
-}
-
-class _RoomBreakdownItem extends StatelessWidget {
-  final RoomConsumption room;
-  final String locale;
-  final double totalSmartPlug;
-  final AppLocalizations l10n;
-
-  const _RoomBreakdownItem({
-    required this.room,
-    required this.locale,
-    required this.totalSmartPlug,
-    required this.l10n,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final percentage =
-        totalSmartPlug > 0 ? (room.consumption / totalSmartPlug) * 100 : 0.0;
-    final formattedKwh =
-        ValtraNumberFormat.consumption(room.consumption, locale);
-    final formattedPercent = percentage.toStringAsFixed(0);
-
-    return ListTile(
-      dense: true,
-      visualDensity: VisualDensity.compact,
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
-      leading: Container(
-        width: 12,
-        height: 12,
-        decoration: BoxDecoration(
-          color: room.color,
-          shape: BoxShape.circle,
-        ),
-      ),
-      title: Text(room.roomName),
-      trailing: Text(
-        l10n.consumptionWithPercent(formattedKwh, formattedPercent),
         style: Theme.of(context)
             .textTheme
             .bodyMedium
