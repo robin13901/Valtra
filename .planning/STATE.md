@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-04-01)
 
 **Core value:** Users can track and analyze utility consumption across multiple households with an intuitive, polished interface
-**Current focus:** v0.6.0 Analytics Redesign -- Phase 31 complete, next Phase 32
+**Current focus:** v0.6.0 Analytics Redesign -- Phase 32 (Heating Analytics Cleanup)
 
 ## Current Position
 
-Phase: 31 of 32 (Smart Plug Screen Overhaul)
-Plan: 2 of 2 in current phase
-Status: Phase complete
-Last activity: 2026-04-01 -- Completed 31-02-PLAN.md (Liste tab expandable cards + initState wiring)
+Phase: 32 of 32 (Heating Analytics Cleanup)
+Plan: 1 of 2 in current phase
+Status: In progress
+Last activity: 2026-04-01 -- Completed 32-01-PLAN.md (Heating Analyse tab overhaul + per-heater pie chart)
 
-Progress: ███████░░░░░░░░░░░░░░░░░░ 28% (v0.6.0) [13/~15 plans]
+Progress: ████████░░░░░░░░░░░░░░░░░ 56% (v0.6.0) [14/~15 plans]
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 13 (v0.6.0)
+- Total plans completed: 14 (v0.6.0)
 - Average duration: ~15 min
-- Total execution time: ~191 min
+- Total execution time: ~209 min
 
 *Updated after each plan completion*
 
@@ -38,6 +38,7 @@ Progress: ███████░░░░░░░░░░░░░░░░�
 - **Phase 29**: Electricity Analytics -- 2 plans, 1221 tests, verified 3/3
 - **Phase 30**: Water & Gas Analytics -- 2 plans, 1226 tests, verified 10/10
 - **Phase 31**: Smart Plug Overhaul -- 2 plans, 1229 tests, verified 5/5
+- **Phase 32 (in progress)**: Heating Analytics Cleanup -- 1 plan, 1220 tests passing (1 pre-existing failure)
 
 ## Accumulated Context
 
@@ -78,6 +79,9 @@ Progress: ███████░░░░░░░░░░░░░░░░�
 - smartPlugPieColors used for byPlug; pieChartColors retained for byRoom (31-01)
 - SmartPlugsScreen Liste tab uses flat plug list with _SmartPlugExpandableCard; room grouping removed (31-02)
 - registerFallbackValue(MeterType.electricity) required in setUpAll when using any() on MeterType enum parameters in mocktail stubs (31-02)
+- Per-heater pie chart (HEAT-02): uses raw reading deltas (not ratio-adjusted) from HeatingProvider.getReadingsWithDeltas; uses pieChartColors (multi-hue), not smartPlugPieColors
+- Heater distribution section title uses consumptionByRoomTitle to avoid duplicate "Monthly Breakdown" heading in heating Analyse tab
+- SmartPlugConsumptionScreen deleted in 32-01 (confirmed unused, buildGlassFAB already removed; deletion unblocks test suite compilation)
 - SmartPlugConsumptionScreen still exists but is no longer navigated to from smart_plugs_screen.dart; remove in Phase 32 if confirmed unused (31-02)
 
 ### Pending Todos
@@ -87,8 +91,8 @@ None yet.
 None.
 
 ## Technical Debt
-1. Deprecated GlassBottomNav/buildGlassFAB -- SCHEDULED (Phase 32, DEBT-01)
-2. Duplicate _YearNavigationHeader/_YearlySummaryCard -- REPLACEMENTS BUILT (27-01), ELECTRICITY DONE (29-02), WATER DONE (30-01), GAS DONE (30-02), remaining in heating (31-32)
+1. Deprecated GlassBottomNav/buildGlassFAB -- PARTIALLY DONE (buildGlassFAB removed from liquid_glass_widgets.dart in 32-02, households_screen/rooms_screen still use it; DEBT-01 complete in 32-02)
+2. Duplicate _YearNavigationHeader/_YearlySummaryCard -- COMPLETED (all screens done: electricity 29-02, water 30-01, gas 30-02, heating 32-01)
 3. App icon alpha channel (fix for App Store submission) -- unscheduled
 4. 12 info-level deprecation warnings in flutter analyze (was 8, +4 from test files referencing deprecated widgets) -- unscheduled
 5. Pre-existing migration_test.dart failure (v2→v3 smart plug interval conversion) -- unscheduled
@@ -96,5 +100,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-04-01
-Stopped at: Phase 31 complete (smart plug overhaul -- analytics redesign + expandable cards)
+Stopped at: Phase 32 plan 01 complete (heating analyse tab overhaul + per-heater pie chart)
 Resume file: None
