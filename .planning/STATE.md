@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-04-01)
 
 **Core value:** Users can track and analyze utility consumption across multiple households with an intuitive, polished interface
-**Current focus:** v0.6.0 Analytics Redesign -- Phase 30 (Water & Gas Analytics)
+**Current focus:** v0.6.0 Analytics Redesign -- Phase 31 (Smart Plug Screen Overhaul)
 
 ## Current Position
 
-Phase: 30 of 32 (Water & Gas Analytics)
-Plan: 2 of 2 in current phase
-Status: Phase complete
-Last activity: 2026-04-01 -- Completed 30-02-PLAN.md (gas screen month-based Analyse tab)
+Phase: 31 of 32 (Smart Plug Screen Overhaul)
+Plan: 1 of 2 in current phase
+Status: In progress
+Last activity: 2026-04-01 -- Completed 31-01-PLAN.md (smart plug analytics screen redesign)
 
-Progress: █████░░░░░░░░░░░░░░░░░░░░ 18% (v0.6.0) [11/~25 plans]
+Progress: ██████░░░░░░░░░░░░░░░░░░░ 20% (v0.6.0) [12/~25 plans]
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 11 (v0.6.0)
+- Total plans completed: 12 (v0.6.0)
 - Average duration: ~15 min
-- Total execution time: ~169 min
+- Total execution time: ~191 min
 
 *Updated after each plan completion*
 
@@ -37,6 +37,7 @@ Progress: █████░░░░░░░░░░░░░░░░░░�
 - **Phase 28**: Home & Nav Polish -- 3 plans, 1213 tests, verified 4/4
 - **Phase 29**: Electricity Analytics -- 2 plans, 1221 tests, verified 3/3
 - **Phase 30**: Water & Gas Analytics -- 2 plans, 1226 tests, verified 10/10
+- **Phase 31**: Smart Plug Overhaul -- 1/2 plans complete
 
 ## Accumulated Context
 
@@ -70,6 +71,11 @@ Progress: █████░░░░░░░░░░░░░░░░░░�
 - Gas Analyse tab: MonthlySummaryCard without smartPlugKwh/smartPlugPercent (gas-only, no smart plug coverage) (30-02)
 - initState must call setSelectedMeterType + setSelectedMonth + setSelectedYear (all three required for monthlyData + yearlyData to populate) (30-01/30-02)
 - 300ms tearDown delay for water/gas tests: 2 async initState loads (setSelectedMonth + setSelectedYear) can race with disposal (30-01/30-02)
+- SmartPlugAnalyseTab watches both AnalyticsProvider and SmartPlugAnalyticsProvider; onMonthChanged syncs both with year boundary detection (31-01)
+- MonthlySummaryCard on SmartPlugAnalyseTab: no smartPlugKwh/smartPlugPercent -- redundant on a screen dedicated to smart plugs (31-01)
+- Per-plug pie chart uses totalSmartPlug as denominator (not totalSmartPlug + otherConsumption) for within-smart-plug proportions (31-01)
+- smart_plugs_screen_test.dart requires MockAnalyticsProvider because SmartPlugAnalyseTab is inside IndexedStack and watches AnalyticsProvider (31-01)
+- smartPlugPieColors used for byPlug; pieChartColors retained for byRoom (31-01)
 
 ### Pending Todos
 None yet.
@@ -87,5 +93,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-04-01
-Stopped at: Phase 30 complete (both water and gas analytics redesigned)
+Stopped at: Phase 31 plan 01 complete (SmartPlugAnalyseTab redesigned with shared widgets)
 Resume file: None
