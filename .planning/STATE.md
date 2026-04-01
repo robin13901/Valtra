@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-04-01)
 ## Current Position
 
 Phase: 29 of 32 (Electricity Analytics)
-Plan: 1 of TBD in current phase
+Plan: 2 of TBD in current phase
 Status: In progress
-Last activity: 2026-04-01 -- Completed 29-01-PLAN.md (household comparison data + smart plug coverage)
+Last activity: 2026-04-01 -- Completed 29-02-PLAN.md (electricity Analyse tab redesign)
 
-Progress: ████░░░░░░░░░░░░░░░░░░░░░ 13% (v0.6.0) [8/~25 plans]
+Progress: ████░░░░░░░░░░░░░░░░░░░░░ 14% (v0.6.0) [9/~25 plans]
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 8 (v0.6.0)
+- Total plans completed: 9 (v0.6.0)
 - Average duration: ~15 min
-- Total execution time: ~123 min
+- Total execution time: ~139 min
 
 *Updated after each plan completion*
 
@@ -36,6 +36,7 @@ Progress: ████░░░░░░░░░░░░░░░░░░░�
 - **Phase 27**: Shared Chart Infrastructure -- 4 plans, 1154 tests, verified 5/5
 - **Phase 28**: Home & Nav Polish -- 3 plans, 1213 tests, verified 4/4
 - **Phase 29 Plan 01**: AnalyticsProvider household comparison + MonthlySummaryCard coverage -- 1218 tests
+- **Phase 29 Plan 02**: Electricity Analyse tab redesigned with MonthSelector/MonthlySummaryCard/HouseholdComparisonChart -- 1221 tests
 
 ## Accumulated Context
 
@@ -60,6 +61,10 @@ Progress: ████░░░░░░░░░░░░░░░░░░░�
 - Inline constants (BorderRadius.circular(20), padding 20) used; Radii/Spacing/Shadows design tokens not yet defined
 - HouseholdDao injected into AnalyticsProvider constructor; householdComparisonData getter populated during _loadYearlyData (29-01)
 - MonthlySummaryCard smartPlugCoverage line requires BOTH smartPlugKwh AND smartPlugPercent non-null (29-01)
+- Electricity Analyse tab: MonthSelector syncs both AnalyticsProvider + SmartPlugAnalyticsProvider; setSelectedYear only on year boundary crossing (29-02)
+- previousMonthTotal extracted from monthlyData.recentMonths inline; no new AnalyticsProvider API needed (29-02)
+- SmartPlugAnalyticsProvider must be in provider tree for ElectricityScreen; affects all test files using ElectricityScreen (29-02)
+- Reference composition pattern: MonthSelector → MonthlySummaryCard → MonthlyBarChart → YearComparisonChart → HouseholdComparisonChart (29-02)
 
 ### Pending Todos
 None yet.
@@ -69,7 +74,7 @@ None.
 
 ## Technical Debt
 1. Deprecated GlassBottomNav/buildGlassFAB -- SCHEDULED (Phase 32, DEBT-01)
-2. Duplicate _YearNavigationHeader/_YearlySummaryCard -- REPLACEMENTS BUILT (27-01), integration in 29-32
+2. Duplicate _YearNavigationHeader/_YearlySummaryCard -- REPLACEMENTS BUILT (27-01), ELECTRICITY DONE (29-02), remaining in gas/water/heating (30-32)
 3. App icon alpha channel (fix for App Store submission) -- unscheduled
 4. 12 info-level deprecation warnings in flutter analyze (was 8, +4 from test files referencing deprecated widgets) -- unscheduled
 5. Pre-existing migration_test.dart failure (v2→v3 smart plug interval conversion) -- unscheduled
@@ -77,5 +82,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-04-01
-Stopped at: Completed 29-01-PLAN.md
+Stopped at: Completed 29-02-PLAN.md
 Resume file: None
