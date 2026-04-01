@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-04-01)
 ## Current Position
 
 Phase: 27 of 32 (Shared Chart Infrastructure)
-Plan: 3 of 4 in current phase
+Plan: 4 of 4 in current phase
 Status: In progress
-Last activity: 2026-04-01 -- Completed 27-03-PLAN.md (YearComparisonChart gradient + axis style, ConsumptionLineChart axis style)
+Last activity: 2026-04-01 -- Completed 27-04-PLAN.md (HouseholdComparisonChart widget + tests)
 
-Progress: █░░░░░░░░░░░░░░░░░░░░░░░░ 4% (v0.6.0) [3/25 plans (2 parallel)]
+Progress: █░░░░░░░░░░░░░░░░░░░░░░░░ 4% (v0.6.0) [4/25 plans (3 parallel)]
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 1 (v0.6.0)
-- Average duration: 14 min
-- Total execution time: 14 min
+- Total plans completed: 4 (v0.6.0, parallel wave)
+- Average duration: 13 min
+- Total execution time: 52 min (parallel)
 
 *Updated after each plan completion*
 
@@ -43,6 +43,8 @@ Progress: █░░░░░░░░░░░░░░░░░░░░░░�
 - MonthlySummaryCard: increase=error color, decrease=green (utility consumption semantics: more=bad)
 - axisNameWidget tests replaced with sideTitles.showTitles when using ChartAxisStyle.leftTitles (unit is embedded per label)
 - Gradient fill pattern: LinearGradient 0.3→0.0 alpha for current year line belowBarData (YCMP-02)
+- HouseholdChartData.color is caller-assigned (provider assigns pieChartColors[index]); widget is color-agnostic
+- Unified interpolated/extrapolated flag: any period with startInterpolated|endInterpolated|isExtrapolated renders as dashed
 
 ### Pending Todos
 None yet.
@@ -58,6 +60,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-04-01T09:18:00Z
-Stopped at: Completed 27-03-PLAN.md
+Last session: 2026-04-01T09:19:37Z
+Stopped at: Completed 27-04-PLAN.md
 Resume file: None
