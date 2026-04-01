@@ -10,6 +10,8 @@ import 'package:valtra/database/daos/electricity_dao.dart';
 import 'package:valtra/database/daos/gas_dao.dart';
 import 'package:valtra/database/daos/heating_dao.dart';
 import 'package:valtra/database/daos/household_dao.dart';
+import 'package:valtra/database/daos/room_dao.dart';
+import 'package:valtra/database/daos/smart_plug_dao.dart';
 import 'package:valtra/database/daos/water_dao.dart';
 import 'package:valtra/database/tables.dart';
 import 'package:valtra/l10n/app_localizations.dart';
@@ -18,11 +20,15 @@ import 'package:valtra/providers/cost_config_provider.dart';
 import 'package:valtra/providers/electricity_provider.dart';
 import 'package:valtra/providers/interpolation_settings_provider.dart';
 import 'package:valtra/providers/locale_provider.dart';
+import 'package:valtra/providers/smart_plug_analytics_provider.dart';
 import 'package:valtra/providers/theme_provider.dart';
 import 'package:valtra/screens/electricity_screen.dart';
 import 'package:valtra/services/cost_calculation_service.dart';
 import 'package:valtra/services/gas_conversion_service.dart';
 import 'package:valtra/services/interpolation/interpolation_service.dart';
+import 'package:valtra/widgets/charts/month_selector.dart';
+import 'package:valtra/widgets/charts/monthly_bar_chart.dart';
+import 'package:valtra/widgets/charts/monthly_summary_card.dart';
 import 'package:valtra/widgets/liquid_glass_widgets.dart';
 
 import '../helpers/test_database.dart';
@@ -33,6 +39,7 @@ void main() {
   late ElectricityDao electricityDao;
   late ElectricityProvider electricityProvider;
   late AnalyticsProvider analyticsProvider;
+  late SmartPlugAnalyticsProvider smartPlugAnalyticsProvider;
   late CostConfigProvider costConfigProvider;
   late ThemeProvider themeProvider;
   late MockLocaleProvider localeProvider;
@@ -47,6 +54,8 @@ void main() {
             value: electricityProvider),
         ChangeNotifierProvider<AnalyticsProvider>.value(
             value: analyticsProvider),
+        ChangeNotifierProvider<SmartPlugAnalyticsProvider>.value(
+            value: smartPlugAnalyticsProvider),
         ChangeNotifierProvider<CostConfigProvider>.value(
             value: costConfigProvider),
         ChangeNotifierProvider<ThemeProvider>.value(value: themeProvider),
@@ -92,20 +101,34 @@ void main() {
       costConfigProvider: costConfigProvider,
     );
 
+    smartPlugAnalyticsProvider = SmartPlugAnalyticsProvider(
+      smartPlugDao: SmartPlugDao(database),
+      electricityDao: electricityDao,
+      roomDao: RoomDao(database),
+      interpolationService: InterpolationService(),
+    );
+
     // Create a test household
     householdId = await database
         .into(database.households)
-        .insert(HouseholdsCompanion.insert(name: 'Test Household', personCount: 1));
+        .insert(HouseholdsCompanion.insert(
+            name: 'Test Household', personCount: 1));
 
     electricityProvider.setHouseholdId(householdId);
     analyticsProvider.setHouseholdId(householdId);
     costConfigProvider.setHouseholdId(householdId);
+    smartPlugAnalyticsProvider.setHouseholdId(householdId);
     await Future.delayed(const Duration(milliseconds: 50));
   });
 
   tearDown(() async {
+    // Allow any outstanding async provider loads to complete before disposal.
+    // The new initState fires 3 async operations; this delay prevents
+    // "used after being disposed" errors from post-test callbacks.
+    await Future.delayed(const Duration(milliseconds: 300));
     electricityProvider.dispose();
     analyticsProvider.dispose();
+    smartPlugAnalyticsProvider.dispose();
     costConfigProvider.dispose();
     await database.close();
   });
@@ -154,10 +177,14 @@ void main() {
               await Future.delayed(const Duration(milliseconds: 200));
               await tester.pumpAndSettle();
 
-              // With no readings, analytics loads empty data with
-              // noYearlyData message showing the year
-              final year = DateTime.now().year.toString();
-              expect(find.textContaining(year), findsAtLeast(1));
+              // With no readings, analytics shows either MonthSelector (data loaded)
+              // or "No data available" message — either way, year nav is gone
+              // and the new month-based design is in place
+              final hasMonthSelector =
+                  tester.any(find.byType(MonthSelector));
+              final hasNoData =
+                  tester.any(find.text('No data available'));
+              expect(hasMonthSelector || hasNoData, isTrue);
 
               await tester.pumpWidget(Container());
             }));
@@ -378,7 +405,7 @@ void main() {
             }));
   });
 
-  group('ElectricityScreen - Analyse Tab', () {
+  group('ElectricityScreen - Analyse Tab (month-based design)', () {
     testWidgets('shows no data message when no readings on Analyse tab',
         (tester) => tester.runAsync(() async {
               await tester
@@ -391,10 +418,112 @@ void main() {
               await Future.delayed(const Duration(milliseconds: 200));
               await tester.pumpAndSettle();
 
-              // With no readings, analytics loads empty monthlyBreakdown
-              // which shows noYearlyData message with the year
-              final year = DateTime.now().year.toString();
-              expect(find.textContaining(year), findsAtLeast(1));
+              // With no readings, monthlyData is null -> shows noData
+              // OR monthlyData loads empty -> shows MonthSelector with no content
+              final hasNoData = tester.any(find.text('No data available'));
+              final hasMonthSelector = tester.any(find.byType(MonthSelector));
+              expect(hasNoData || hasMonthSelector, isTrue);
+
+              await tester.pumpWidget(Container());
+            }));
+
+    testWidgets('Analyse tab shows MonthSelector when data exists',
+        (tester) => tester.runAsync(() async {
+              // Add readings across two months in the current year
+              final year = DateTime.now().year;
+              final month = DateTime.now().month;
+              await electricityDao
+                  .insertReading(ElectricityReadingsCompanion.insert(
+                householdId: householdId,
+                timestamp: DateTime(year, month > 1 ? month - 1 : 1, 1),
+                valueKwh: 1000.0,
+              ));
+              await electricityDao
+                  .insertReading(ElectricityReadingsCompanion.insert(
+                householdId: householdId,
+                timestamp: DateTime(year, month, 15),
+                valueKwh: 1300.0,
+              ));
+              await Future.delayed(const Duration(milliseconds: 200));
+
+              await tester
+                  .pumpWidget(wrapWithProviders(const ElectricityScreen()));
+              await tester.pumpAndSettle();
+
+              // Switch to Analyse tab
+              await tester.tap(find.text('Analysis'));
+              await Future.delayed(const Duration(milliseconds: 300));
+              await tester.pumpAndSettle();
+
+              // Should show MonthSelector widget
+              expect(find.byType(MonthSelector), findsOneWidget);
+
+              await tester.pumpWidget(Container());
+            }));
+
+    testWidgets('Analyse tab shows MonthlySummaryCard when data exists',
+        (tester) => tester.runAsync(() async {
+              final year = DateTime.now().year;
+              final month = DateTime.now().month;
+              await electricityDao
+                  .insertReading(ElectricityReadingsCompanion.insert(
+                householdId: householdId,
+                timestamp: DateTime(year, month > 1 ? month - 1 : 1, 1),
+                valueKwh: 1000.0,
+              ));
+              await electricityDao
+                  .insertReading(ElectricityReadingsCompanion.insert(
+                householdId: householdId,
+                timestamp: DateTime(year, month, 15),
+                valueKwh: 1300.0,
+              ));
+              await Future.delayed(const Duration(milliseconds: 200));
+
+              await tester
+                  .pumpWidget(wrapWithProviders(const ElectricityScreen()));
+              await tester.pumpAndSettle();
+
+              // Switch to Analyse tab
+              await tester.tap(find.text('Analysis'));
+              await Future.delayed(const Duration(milliseconds: 300));
+              await tester.pumpAndSettle();
+
+              // Should show MonthlySummaryCard
+              expect(find.byType(MonthlySummaryCard), findsOneWidget);
+
+              await tester.pumpWidget(Container());
+            }));
+
+    testWidgets('Analyse tab shows MonthlyBarChart when data exists',
+        (tester) => tester.runAsync(() async {
+              final year = DateTime.now().year;
+              final month = DateTime.now().month;
+              await electricityDao
+                  .insertReading(ElectricityReadingsCompanion.insert(
+                householdId: householdId,
+                timestamp: DateTime(year, month > 1 ? month - 1 : 1, 1),
+                valueKwh: 1000.0,
+              ));
+              await electricityDao
+                  .insertReading(ElectricityReadingsCompanion.insert(
+                householdId: householdId,
+                timestamp: DateTime(year, month, 15),
+                valueKwh: 1300.0,
+              ));
+              await Future.delayed(const Duration(milliseconds: 200));
+
+              await tester
+                  .pumpWidget(wrapWithProviders(const ElectricityScreen()));
+              await tester.pumpAndSettle();
+
+              // Switch to Analyse tab
+              await tester.tap(find.text('Analysis'));
+              await Future.delayed(const Duration(milliseconds: 300));
+              await tester.pumpAndSettle();
+
+              // Should show Monthly Breakdown heading and chart
+              expect(find.text('Monthly Breakdown'), findsOneWidget);
+              expect(find.byType(MonthlyBarChart), findsOneWidget);
 
               await tester.pumpWidget(Container());
             }));
@@ -429,17 +558,15 @@ void main() {
 
               // Switch to Analyse tab
               await tester.tap(find.text('Analysis'));
+              await Future.delayed(const Duration(milliseconds: 300));
               await tester.pumpAndSettle();
-
-              // Should show current year in navigation
-              expect(find.text(DateTime.now().year.toString()), findsOneWidget);
-
-              // Should show chevron navigation icons
-              expect(find.byIcon(Icons.chevron_left), findsOneWidget);
-              expect(find.byIcon(Icons.chevron_right), findsOneWidget);
 
               // Should show monthly breakdown heading
               expect(find.text('Monthly Breakdown'), findsOneWidget);
+
+              // Should show chevron navigation icons (from MonthSelector)
+              expect(find.byIcon(Icons.chevron_left), findsOneWidget);
+              expect(find.byIcon(Icons.chevron_right), findsOneWidget);
 
               await tester.pumpWidget(Container());
             }));
@@ -582,6 +709,8 @@ void main() {
                         value: electricityProvider),
                     ChangeNotifierProvider<AnalyticsProvider>.value(
                         value: analyticsProvider),
+                    ChangeNotifierProvider<SmartPlugAnalyticsProvider>.value(
+                        value: smartPlugAnalyticsProvider),
                     ChangeNotifierProvider<CostConfigProvider>.value(
                         value: costConfigProvider),
                     ChangeNotifierProvider<ThemeProvider>.value(

@@ -11,6 +11,8 @@ import 'package:valtra/database/daos/electricity_dao.dart';
 import 'package:valtra/database/daos/gas_dao.dart';
 import 'package:valtra/database/daos/heating_dao.dart';
 import 'package:valtra/database/daos/household_dao.dart';
+import 'package:valtra/database/daos/room_dao.dart';
+import 'package:valtra/database/daos/smart_plug_dao.dart';
 import 'package:valtra/database/daos/water_dao.dart';
 import 'package:valtra/database/tables.dart';
 import 'package:valtra/l10n/app_localizations.dart';
@@ -22,6 +24,7 @@ import 'package:valtra/providers/gas_provider.dart';
 import 'package:valtra/providers/household_provider.dart';
 import 'package:valtra/providers/interpolation_settings_provider.dart';
 import 'package:valtra/providers/locale_provider.dart';
+import 'package:valtra/providers/smart_plug_analytics_provider.dart';
 import 'package:valtra/providers/theme_provider.dart';
 import 'package:valtra/screens/electricity_screen.dart';
 import 'package:valtra/screens/gas_screen.dart';
@@ -178,6 +181,13 @@ void main() {
               );
               analyticsProvider.setHouseholdId(householdId);
               costConfigProvider.setHouseholdId(householdId);
+              final smartPlugAnalyticsProvider = SmartPlugAnalyticsProvider(
+                smartPlugDao: SmartPlugDao(database),
+                electricityDao: dao,
+                roomDao: RoomDao(database),
+                interpolationService: InterpolationService(),
+              );
+              smartPlugAnalyticsProvider.setHouseholdId(householdId);
               // Allow async _loadOverview to complete
               await Future.delayed(const Duration(milliseconds: 200));
 
@@ -188,6 +198,8 @@ void main() {
                       value: provider),
                   ChangeNotifierProvider<AnalyticsProvider>.value(
                       value: analyticsProvider),
+                  ChangeNotifierProvider<SmartPlugAnalyticsProvider>.value(
+                      value: smartPlugAnalyticsProvider),
                   ChangeNotifierProvider<CostConfigProvider>.value(
                       value: costConfigProvider),
                   ChangeNotifierProvider<ThemeProvider>.value(
@@ -214,9 +226,10 @@ void main() {
 
               await tester.pumpWidget(Container());
               // Allow any in-flight async to settle before disposing
-              await Future.delayed(const Duration(milliseconds: 200));
+              await Future.delayed(const Duration(milliseconds: 300));
               provider.dispose();
               analyticsProvider.dispose();
+              smartPlugAnalyticsProvider.dispose();
               costConfigProvider.dispose();
               await database.close();
             }));
@@ -423,6 +436,13 @@ void main() {
               );
               analyticsProvider.setHouseholdId(householdId);
               costConfigProvider.setHouseholdId(householdId);
+              final smartPlugAnalyticsProvider2 = SmartPlugAnalyticsProvider(
+                smartPlugDao: SmartPlugDao(database),
+                electricityDao: dao,
+                roomDao: RoomDao(database),
+                interpolationService: InterpolationService(),
+              );
+              smartPlugAnalyticsProvider2.setHouseholdId(householdId);
               // Allow async _loadOverview to complete
               await Future.delayed(const Duration(milliseconds: 200));
 
@@ -433,6 +453,8 @@ void main() {
                       value: provider),
                   ChangeNotifierProvider<AnalyticsProvider>.value(
                       value: analyticsProvider),
+                  ChangeNotifierProvider<SmartPlugAnalyticsProvider>.value(
+                      value: smartPlugAnalyticsProvider2),
                   ChangeNotifierProvider<CostConfigProvider>.value(
                       value: costConfigProvider),
                   ChangeNotifierProvider<ThemeProvider>.value(
@@ -458,9 +480,10 @@ void main() {
 
               await tester.pumpWidget(Container());
               // Allow any in-flight async to settle before disposing
-              await Future.delayed(const Duration(milliseconds: 200));
+              await Future.delayed(const Duration(milliseconds: 300));
               provider.dispose();
               analyticsProvider.dispose();
+              smartPlugAnalyticsProvider2.dispose();
               costConfigProvider.dispose();
               await database.close();
             }));

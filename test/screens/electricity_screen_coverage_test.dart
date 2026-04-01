@@ -9,13 +9,17 @@ import 'package:valtra/database/daos/electricity_dao.dart';
 import 'package:valtra/database/daos/gas_dao.dart';
 import 'package:valtra/database/daos/heating_dao.dart';
 import 'package:valtra/database/daos/household_dao.dart';
+import 'package:valtra/database/daos/room_dao.dart';
+import 'package:valtra/database/daos/smart_plug_dao.dart';
 import 'package:valtra/database/daos/water_dao.dart';
+import 'package:valtra/database/tables.dart';
 import 'package:valtra/l10n/app_localizations.dart';
 import 'package:valtra/providers/analytics_provider.dart';
 import 'package:valtra/providers/cost_config_provider.dart';
 import 'package:valtra/providers/electricity_provider.dart';
 import 'package:valtra/providers/interpolation_settings_provider.dart';
 import 'package:valtra/providers/locale_provider.dart';
+import 'package:valtra/providers/smart_plug_analytics_provider.dart';
 import 'package:valtra/providers/theme_provider.dart';
 import 'package:valtra/screens/electricity_screen.dart';
 import 'package:valtra/services/cost_calculation_service.dart';
@@ -31,6 +35,7 @@ void main() {
   late ElectricityDao dao;
   late ElectricityProvider provider;
   late AnalyticsProvider analyticsProvider;
+  late SmartPlugAnalyticsProvider smartPlugAnalyticsProvider;
   late CostConfigProvider costConfigProvider;
   late ThemeProvider themeProvider;
   late MockLocaleProvider localeProvider;
@@ -43,6 +48,8 @@ void main() {
         ChangeNotifierProvider<ElectricityProvider>.value(value: provider),
         ChangeNotifierProvider<AnalyticsProvider>.value(
             value: analyticsProvider),
+        ChangeNotifierProvider<SmartPlugAnalyticsProvider>.value(
+            value: smartPlugAnalyticsProvider),
         ChangeNotifierProvider<CostConfigProvider>.value(
             value: costConfigProvider),
         ChangeNotifierProvider<ThemeProvider>.value(value: themeProvider),
@@ -88,19 +95,31 @@ void main() {
       costConfigProvider: costConfigProvider,
     );
 
+    smartPlugAnalyticsProvider = SmartPlugAnalyticsProvider(
+      smartPlugDao: SmartPlugDao(database),
+      electricityDao: dao,
+      roomDao: RoomDao(database),
+      interpolationService: InterpolationService(),
+    );
+
     householdId = await database
         .into(database.households)
-        .insert(HouseholdsCompanion.insert(name: 'Test Household', personCount: 1));
+        .insert(HouseholdsCompanion.insert(
+            name: 'Test Household', personCount: 1));
 
     provider.setHouseholdId(householdId);
     analyticsProvider.setHouseholdId(householdId);
     costConfigProvider.setHouseholdId(householdId);
+    smartPlugAnalyticsProvider.setHouseholdId(householdId);
     await Future.delayed(const Duration(milliseconds: 50));
   });
 
   tearDown(() async {
+    // Allow any outstanding async provider loads to complete before disposal.
+    await Future.delayed(const Duration(milliseconds: 300));
     provider.dispose();
     analyticsProvider.dispose();
+    smartPlugAnalyticsProvider.dispose();
     costConfigProvider.dispose();
     await database.close();
   });
