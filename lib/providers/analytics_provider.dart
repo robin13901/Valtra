@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../database/daos/electricity_dao.dart';
 import '../database/daos/gas_dao.dart';
 import '../database/daos/heating_dao.dart';
+import '../database/daos/household_dao.dart';
 import '../database/daos/water_dao.dart';
 import '../providers/interpolation_settings_provider.dart';
 import '../providers/cost_config_provider.dart';
@@ -12,6 +13,7 @@ import '../services/gas_conversion_service.dart';
 import '../services/interpolation/interpolation_service.dart';
 import '../services/interpolation/models.dart';
 import '../services/interpolation/reading_converters.dart';
+import '../widgets/charts/household_comparison_chart.dart';
 
 /// Orchestrates analytics data across all meter types.
 ///
@@ -22,6 +24,7 @@ class AnalyticsProvider extends ChangeNotifier {
   final GasDao _gasDao;
   final WaterDao _waterDao;
   final HeatingDao _heatingDao;
+  final HouseholdDao _householdDao;
   final InterpolationService _interpolationService;
   final GasConversionService _gasConversionService;
   final InterpolationSettingsProvider _settingsProvider;
@@ -38,6 +41,7 @@ class AnalyticsProvider extends ChangeNotifier {
   YearlyAnalyticsData? _yearlyData;
   Map<MeterType, MeterTypeSummary> _overviewSummaries = {};
   bool _isLoading = false;
+  List<HouseholdChartData> _householdComparisonData = [];
 
   /// Per-meter heating ratios, parallel to the readings list from _getReadingsPerMeter.
   /// null = own_meter (use full consumption), 0.0-1.0 = central_meter ratio.
@@ -48,6 +52,7 @@ class AnalyticsProvider extends ChangeNotifier {
     required GasDao gasDao,
     required WaterDao waterDao,
     required HeatingDao heatingDao,
+    required HouseholdDao householdDao,
     required InterpolationService interpolationService,
     required GasConversionService gasConversionService,
     required InterpolationSettingsProvider settingsProvider,
@@ -56,6 +61,7 @@ class AnalyticsProvider extends ChangeNotifier {
         _gasDao = gasDao,
         _waterDao = waterDao,
         _heatingDao = heatingDao,
+        _householdDao = householdDao,
         _interpolationService = interpolationService,
         _gasConversionService = gasConversionService,
         _settingsProvider = settingsProvider,
@@ -70,6 +76,7 @@ class AnalyticsProvider extends ChangeNotifier {
   int get selectedYear => _selectedYear;
   Map<MeterType, MeterTypeSummary> get overviewSummaries => _overviewSummaries;
   bool get isLoading => _isLoading;
+  List<HouseholdChartData> get householdComparisonData => _householdComparisonData;
 
   void setHouseholdId(int? id) {
     if (_householdId == id) return;
@@ -514,6 +521,8 @@ class AnalyticsProvider extends ChangeNotifier {
         }
       }
 
+      await _loadHouseholdComparison(_selectedMeterType, yearStart, yearEnd);
+
       _yearlyData = YearlyAnalyticsData(
         meterType: _selectedMeterType,
         year: _selectedYear,
@@ -538,27 +547,37 @@ class AnalyticsProvider extends ChangeNotifier {
     }
   }
 
-  /// Get readings for a meter type, returning one list per physical meter.
+  /// Get readings for a meter type for the currently selected household.
   Future<List<List<ReadingPoint>>> _getReadingsPerMeter(
     MeterType type,
     DateTime rangeStart,
     DateTime rangeEnd,
   ) async {
     if (_householdId == null) return [];
+    return _getReadingsPerMeterForHousehold(_householdId!, type, rangeStart, rangeEnd);
+  }
 
+  /// Get readings for a meter type for a specific household.
+  /// Extracted so that _loadHouseholdComparison can load data for any household.
+  Future<List<List<ReadingPoint>>> _getReadingsPerMeterForHousehold(
+    int householdId,
+    MeterType type,
+    DateTime rangeStart,
+    DateTime rangeEnd,
+  ) async {
     final List<List<ReadingPoint>> raw;
     switch (type) {
       case MeterType.electricity:
         final readings = await _electricityDao.getReadingsForRange(
-            _householdId!, rangeStart, rangeEnd);
+            householdId, rangeStart, rangeEnd);
         raw = [fromElectricityReadings(readings)];
       case MeterType.gas:
         final readings = await _gasDao.getReadingsForRange(
-            _householdId!, rangeStart, rangeEnd);
+            householdId, rangeStart, rangeEnd);
         raw = [fromGasReadings(readings)];
       case MeterType.water:
         final meters =
-            await _waterDao.getMetersForHousehold(_householdId!);
+            await _waterDao.getMetersForHousehold(householdId);
         if (meters.isEmpty) return [];
         final result = <List<ReadingPoint>>[];
         for (final meter in meters) {
@@ -569,7 +588,7 @@ class AnalyticsProvider extends ChangeNotifier {
         raw = result;
       case MeterType.heating:
         final meters =
-            await _heatingDao.getMetersForHousehold(_householdId!);
+            await _heatingDao.getMetersForHousehold(householdId);
         if (meters.isEmpty) return [];
         final result = <List<ReadingPoint>>[];
         final ratios = <double?>[];
@@ -596,6 +615,39 @@ class AnalyticsProvider extends ChangeNotifier {
       return raw.where((readings) => readings.isNotEmpty).toList();
     }
     return raw;
+  }
+
+  /// Load household comparison data for [type] across all households.
+  /// Populates [_householdComparisonData]. Only populated when 2+ households exist.
+  Future<void> _loadHouseholdComparison(
+    MeterType type,
+    DateTime rangeStart,
+    DateTime rangeEnd,
+  ) async {
+    final allHouseholds = await _householdDao.getAllHouseholds();
+    if (allHouseholds.length <= 1) {
+      _householdComparisonData = [];
+      return;
+    }
+    final result = <HouseholdChartData>[];
+    for (int i = 0; i < allHouseholds.length; i++) {
+      final household = allHouseholds[i];
+      final readings = await _getReadingsPerMeterForHousehold(
+        household.id, type, rangeStart, rangeEnd,
+      );
+      if (readings.isEmpty) continue;
+      final consumption = _aggregateMonthlyConsumption(
+        readings, rangeStart, rangeEnd,
+        ratios: type == MeterType.heating ? _heatingRatios : null,
+      );
+      if (consumption.isEmpty) continue;
+      result.add(HouseholdChartData(
+        name: household.name,
+        periods: consumption,
+        color: pieChartColors[i % pieChartColors.length],
+      ));
+    }
+    _householdComparisonData = result;
   }
 
   /// Aggregate monthly consumption across multiple meters.

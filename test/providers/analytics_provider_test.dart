@@ -4,6 +4,7 @@ import 'package:valtra/database/app_database.dart';
 import 'package:valtra/database/daos/electricity_dao.dart';
 import 'package:valtra/database/daos/gas_dao.dart';
 import 'package:valtra/database/daos/heating_dao.dart';
+import 'package:valtra/database/daos/household_dao.dart';
 import 'package:valtra/database/daos/water_dao.dart';
 import 'package:valtra/database/tables.dart';
 import 'package:valtra/providers/analytics_provider.dart';
@@ -26,6 +27,8 @@ class MockWaterDao extends Mock implements WaterDao {}
 
 class MockHeatingDao extends Mock implements HeatingDao {}
 
+class MockHouseholdDao extends Mock implements HouseholdDao {}
+
 class MockInterpolationService extends Mock implements InterpolationService {}
 
 class MockGasConversionService extends Mock implements GasConversionService {}
@@ -40,6 +43,7 @@ void main() {
   late MockGasDao mockGasDao;
   late MockWaterDao mockWaterDao;
   late MockHeatingDao mockHeatingDao;
+  late MockHouseholdDao mockHouseholdDao;
   late MockInterpolationService mockInterpolationService;
   late MockGasConversionService mockGasConversionService;
   late MockInterpolationSettingsProvider mockSettingsProvider;
@@ -59,6 +63,7 @@ void main() {
     mockGasDao = MockGasDao();
     mockWaterDao = MockWaterDao();
     mockHeatingDao = MockHeatingDao();
+    mockHouseholdDao = MockHouseholdDao();
     mockInterpolationService = MockInterpolationService();
     mockGasConversionService = MockGasConversionService();
     mockSettingsProvider = MockInterpolationSettingsProvider();
@@ -77,11 +82,16 @@ void main() {
     when(() => mockCostConfigProvider.getActiveConfig(any(), any()))
         .thenReturn(null);
 
+    // Default stub for household DAO: return empty list (single/no household scenario)
+    when(() => mockHouseholdDao.getAllHouseholds())
+        .thenAnswer((_) async => <Household>[]);
+
     provider = AnalyticsProvider(
       electricityDao: mockElectricityDao,
       gasDao: mockGasDao,
       waterDao: mockWaterDao,
       heatingDao: mockHeatingDao,
+      householdDao: mockHouseholdDao,
       interpolationService: mockInterpolationService,
       gasConversionService: mockGasConversionService,
       settingsProvider: mockSettingsProvider,
@@ -1252,6 +1262,114 @@ void main() {
       expect(provider.yearlyData!.previousYearTotalCost, 29.0);
     });
   });
+  group('household comparison data', () {
+    test('householdComparisonData is empty when only one household exists',
+        () async {
+      _stubEmptyDaos(
+        mockElectricityDao,
+        mockGasDao,
+        mockWaterDao,
+        mockHeatingDao,
+      );
+
+      // Only one household -> comparison should be empty
+      final singleHousehold = _MockHousehold();
+      when(() => singleHousehold.id).thenReturn(1);
+      when(() => singleHousehold.name).thenReturn('My Home');
+      when(() => mockHouseholdDao.getAllHouseholds())
+          .thenAnswer((_) async => [singleHousehold]);
+
+      when(() => mockInterpolationService.extrapolateYearEnd(
+            actualMonths: any(named: 'actualMonths'),
+            year: any(named: 'year'),
+          )).thenReturn(null);
+
+      provider.setHouseholdId(1);
+      await Future.delayed(const Duration(milliseconds: 50));
+
+      provider.setSelectedMeterType(MeterType.electricity);
+      provider.setSelectedYear(2024);
+      await Future.delayed(const Duration(milliseconds: 200));
+
+      expect(provider.householdComparisonData, isEmpty);
+    });
+
+    test(
+        'householdComparisonData contains data for multiple households with readings',
+        () async {
+      // Two households with electricity readings
+      final household1 = _MockHousehold();
+      when(() => household1.id).thenReturn(1);
+      when(() => household1.name).thenReturn('Home A');
+
+      final household2 = _MockHousehold();
+      when(() => household2.id).thenReturn(2);
+      when(() => household2.name).thenReturn('Home B');
+
+      when(() => mockHouseholdDao.getAllHouseholds())
+          .thenAnswer((_) async => [household1, household2]);
+
+      // Stub readings for both households
+      final elReading1a = _createElectricityReading(
+        id: 1, householdId: 1,
+        timestamp: DateTime(2024, 1, 1), valueKwh: 100.0,
+      );
+      final elReading1b = _createElectricityReading(
+        id: 2, householdId: 1,
+        timestamp: DateTime(2024, 12, 31), valueKwh: 1300.0,
+      );
+      final elReading2a = _createElectricityReading(
+        id: 3, householdId: 2,
+        timestamp: DateTime(2024, 1, 1), valueKwh: 200.0,
+      );
+      final elReading2b = _createElectricityReading(
+        id: 4, householdId: 2,
+        timestamp: DateTime(2024, 12, 31), valueKwh: 2600.0,
+      );
+
+      when(() => mockElectricityDao.getReadingsForRange(1, any(), any()))
+          .thenAnswer((_) async => [elReading1a, elReading1b]);
+      when(() => mockElectricityDao.getReadingsForRange(2, any(), any()))
+          .thenAnswer((_) async => [elReading2a, elReading2b]);
+      when(() => mockGasDao.getReadingsForRange(any(), any(), any()))
+          .thenAnswer((_) async => <GasReading>[]);
+      when(() => mockWaterDao.getMetersForHousehold(any()))
+          .thenAnswer((_) async => <WaterMeter>[]);
+      when(() => mockHeatingDao.getMetersForHousehold(any()))
+          .thenAnswer((_) async => <HeatingMeter>[]);
+
+      // Stub interpolation to return monthly breakdown
+      when(() => mockInterpolationService.getMonthlyConsumption(
+            readings: any(named: 'readings'),
+            rangeStart: any(named: 'rangeStart'),
+            rangeEnd: any(named: 'rangeEnd'),
+          )).thenReturn([
+        PeriodConsumption(
+          periodStart: DateTime(2024, 1, 1),
+          periodEnd: DateTime(2024, 2, 1),
+          startValue: 100.0, endValue: 200.0,
+          consumption: 100.0,
+          startInterpolated: false, endInterpolated: false,
+        ),
+      ]);
+
+      when(() => mockInterpolationService.extrapolateYearEnd(
+            actualMonths: any(named: 'actualMonths'),
+            year: any(named: 'year'),
+          )).thenReturn(null);
+
+      provider.setHouseholdId(1);
+      await Future.delayed(const Duration(milliseconds: 50));
+
+      provider.setSelectedMeterType(MeterType.electricity);
+      provider.setSelectedYear(2024);
+      await Future.delayed(const Duration(milliseconds: 300));
+
+      expect(provider.householdComparisonData.length, 2);
+      expect(provider.householdComparisonData[0].name, 'Home A');
+      expect(provider.householdComparisonData[1].name, 'Home B');
+    });
+  });
 }
 
 // -- Test helpers --
@@ -1361,3 +1479,5 @@ class _MockHeatingReading extends Mock implements HeatingReading {}
 class _MockGasReading extends Mock implements GasReading {}
 
 class _MockElectricityReading extends Mock implements ElectricityReading {}
+
+class _MockHousehold extends Mock implements Household {}

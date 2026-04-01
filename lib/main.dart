@@ -96,6 +96,7 @@ void main() async {
     gasDao: GasDao(database),
     waterDao: WaterDao(database),
     heatingDao: HeatingDao(database),
+    householdDao: HouseholdDao(database),
     interpolationService: InterpolationService(),
     gasConversionService: GasConversionService(),
     settingsProvider: interpolationSettingsProvider,
