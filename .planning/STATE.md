@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-04-01)
 ## Current Position
 
 Phase: 27 of 32 (Shared Chart Infrastructure)
-Plan: 1 of 4 in current phase
+Plan: 3 of 4 in current phase
 Status: In progress
-Last activity: 2026-04-01 -- Completed 27-01-PLAN.md (ChartAxisStyle + MonthSelector + MonthlySummaryCard)
+Last activity: 2026-04-01 -- Completed 27-03-PLAN.md (YearComparisonChart gradient + axis style, ConsumptionLineChart axis style)
 
-Progress: █░░░░░░░░░░░░░░░░░░░░░░░░ 4% (v0.6.0) [1/25 plans]
+Progress: █░░░░░░░░░░░░░░░░░░░░░░░░ 4% (v0.6.0) [3/25 plans (2 parallel)]
 
 ## Performance Metrics
 
@@ -41,6 +41,8 @@ Progress: █░░░░░░░░░░░░░░░░░░░░░░�
 - ChartAxisStyle.hiddenTitles: const to avoid repeated instantiation in chart renders
 - MonthSelector.locale defaults 'de' matching existing chart widget convention
 - MonthlySummaryCard: increase=error color, decrease=green (utility consumption semantics: more=bad)
+- axisNameWidget tests replaced with sideTitles.showTitles when using ChartAxisStyle.leftTitles (unit is embedded per label)
+- Gradient fill pattern: LinearGradient 0.3→0.0 alpha for current year line belowBarData (YCMP-02)
 
 ### Pending Todos
 None yet.
@@ -56,6 +58,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-04-01T09:03:31Z
-Stopped at: Completed 27-01-PLAN.md
+Last session: 2026-04-01T09:18:00Z
+Stopped at: Completed 27-03-PLAN.md
 Resume file: None
