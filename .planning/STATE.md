@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-04-01)
 ## Current Position
 
 Phase: 29 of 32 (Electricity Analytics)
-Plan: 0 of TBD in current phase
-Status: Not started
-Last activity: 2026-04-01 -- Phase 28 complete (3 plans, 2 waves, verified 4/4)
+Plan: 1 of TBD in current phase
+Status: In progress
+Last activity: 2026-04-01 -- Completed 29-01-PLAN.md (household comparison data + smart plug coverage)
 
-Progress: ███░░░░░░░░░░░░░░░░░░░░░░ 11% (v0.6.0) [7/~25 plans]
+Progress: ████░░░░░░░░░░░░░░░░░░░░░ 13% (v0.6.0) [8/~25 plans]
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 7 (v0.6.0)
+- Total plans completed: 8 (v0.6.0)
 - Average duration: ~15 min
-- Total execution time: ~108 min
+- Total execution time: ~123 min
 
 *Updated after each plan completion*
 
@@ -35,6 +35,7 @@ Progress: ███░░░░░░░░░░░░░░░░░░░░�
 ## Completed Phases (v0.6.0)
 - **Phase 27**: Shared Chart Infrastructure -- 4 plans, 1154 tests, verified 5/5
 - **Phase 28**: Home & Nav Polish -- 3 plans, 1213 tests, verified 4/4
+- **Phase 29 Plan 01**: AnalyticsProvider household comparison + MonthlySummaryCard coverage -- 1218 tests
 
 ## Accumulated Context
 
@@ -57,6 +58,8 @@ Progress: ███░░░░░░░░░░░░░░░░░░░░�
 - Frosted glass household card: BackdropFilter(sigmaX/Y=16) + ClipRRect, no LinearGradient (HOME-01)
 - Carousel reverse-sync uses addPostFrameCallback to avoid animating during active build cycle
 - Inline constants (BorderRadius.circular(20), padding 20) used; Radii/Spacing/Shadows design tokens not yet defined
+- HouseholdDao injected into AnalyticsProvider constructor; householdComparisonData getter populated during _loadYearlyData (29-01)
+- MonthlySummaryCard smartPlugCoverage line requires BOTH smartPlugKwh AND smartPlugPercent non-null (29-01)
 
 ### Pending Todos
 None yet.
@@ -74,5 +77,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-04-01
-Stopped at: Phase 28 complete, verified, ready for Phase 29
+Stopped at: Completed 29-01-PLAN.md
 Resume file: None
