@@ -1,13 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:valtra/l10n/app_localizations.dart';
+import 'package:valtra/providers/theme_provider.dart';
 import 'package:valtra/widgets/charts/monthly_summary_card.dart';
 
 void main() {
+  late ThemeProvider themeProvider;
+
   setUpAll(() async {
     await initializeDateFormatting('de');
     await initializeDateFormatting('en');
+  });
+
+  setUp(() async {
+    SharedPreferences.setMockInitialValues({});
+    themeProvider = ThemeProvider();
+    await themeProvider.init();
   });
 
   Widget buildTestWidget({
@@ -18,18 +29,21 @@ void main() {
     Color color = Colors.amber,
     String locale = 'en',
   }) {
-    return MaterialApp(
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      locale: Locale(locale),
-      home: Scaffold(
-        body: MonthlySummaryCard(
-          totalConsumption: totalConsumption,
-          previousMonthTotal: previousMonthTotal,
-          unit: unit,
-          month: month ?? DateTime(2026, 4, 1),
-          color: color,
-          locale: locale,
+    return ChangeNotifierProvider<ThemeProvider>.value(
+      value: themeProvider,
+      child: MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: Locale(locale),
+        home: Scaffold(
+          body: MonthlySummaryCard(
+            totalConsumption: totalConsumption,
+            previousMonthTotal: previousMonthTotal,
+            unit: unit,
+            month: month ?? DateTime(2026, 4, 1),
+            color: color,
+            locale: locale,
+          ),
         ),
       ),
     );
