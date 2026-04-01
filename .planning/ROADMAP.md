@@ -42,7 +42,12 @@
   3. Year comparison chart renders previous year as dashed line with open points and current year as solid line with gradient fill
   4. Household comparison chart renders actual values as solid lines with filled points and interpolated values as dashed lines with open points
   5. All charts render without vertical Y-axis line, show translucent value labels inside the chart area on grid lines, and scroll content under fixed labels with equal padding
-**Plans**: TBD
+**Plans:** 4 plans
+Plans:
+- [ ] 27-01-PLAN.md -- Chart axis style + month selector + monthly summary card
+- [ ] 27-02-PLAN.md -- Refactor MonthlyBarChart (scrolling, glow, opacity)
+- [ ] 27-03-PLAN.md -- Refactor YearComparisonChart + ConsumptionLineChart axis style
+- [ ] 27-04-PLAN.md -- New HouseholdComparisonChart widget
 
 ### Phase 28: Home & Nav Polish
 **Goal**: Home screen and navigation bar match the refreshed visual identity, and household person count is stored and editable
@@ -101,7 +106,7 @@
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 27. Shared Chart Infrastructure | 0/TBD | Not started | - |
+| 27. Shared Chart Infrastructure | 0/4 | Planned | - |
 | 28. Home & Nav Polish | 0/TBD | Not started | - |
 | 29. Electricity Analytics | 0/TBD | Not started | - |
 | 30. Water & Gas Analytics | 0/TBD | Not started | - |
