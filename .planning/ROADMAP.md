@@ -28,7 +28,7 @@
 - [x] **Phase 29: Electricity Analytics** - First screen on new shared widgets, establishing the full pattern
 - [x] **Phase 30: Water & Gas Analytics** - Apply unified design to water and gas (same behavior, different colors)
 - [x] **Phase 31: Smart Plug Overhaul** - Analytics redesign + pie chart + expandable cards + unified colors
-- [ ] **Phase 32: Heating Analytics & Cleanup** - Heating analytics + distribution pie chart + deprecated widget removal
+- [x] **Phase 32: Heating Analytics & Cleanup** - Heating analytics + distribution pie chart + deprecated widget removal
 
 ## Phase Details
 
@@ -115,8 +115,8 @@ Plans:
   3. Deprecated GlassBottomNav and buildGlassFAB are fully removed from liquid_glass_widgets.dart with no remaining references in the codebase
 **Plans:** 2 plans
 Plans:
-- [ ] 32-01-PLAN.md -- Heating Analyse tab overhaul + per-heater pie chart (HEAT-01, HEAT-02)
-- [ ] 32-02-PLAN.md -- Deprecated widget removal + dead code cleanup (DEBT-01)
+- [x] 32-01-PLAN.md -- Heating Analyse tab overhaul + per-heater pie chart (HEAT-01, HEAT-02)
+- [x] 32-02-PLAN.md -- Deprecated widget removal + dead code cleanup (DEBT-01)
 
 ## Progress
 
@@ -127,4 +127,4 @@ Plans:
 | 29. Electricity Analytics | 2/2 | Complete | 2026-04-01 |
 | 30. Water & Gas Analytics | 2/2 | Complete | 2026-04-01 |
 | 31. Smart Plug Overhaul | 2/2 | Complete | 2026-04-01 |
-| 32. Heating Analytics & Cleanup | 0/2 | Not started | - |
+| 32. Heating Analytics & Cleanup | 2/2 | Complete | 2026-04-01 |

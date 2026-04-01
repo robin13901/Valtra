@@ -66,8 +66,8 @@ Requirements for Analytics Redesign milestone. Each maps to roadmap phases.
 
 ### Heating Analytics
 
-- [ ] **HEAT-01**: Heating analytics uses new unified design (month nav, summary, bar, year comparison, household comparison)
-- [ ] **HEAT-02**: Per-heater pie chart + list for percentage distribution
+- [x] **HEAT-01**: Heating analytics uses new unified design (month nav, summary, bar, year comparison, household comparison)
+- [x] **HEAT-02**: Per-heater pie chart + list for percentage distribution
 
 ### Household
 
@@ -75,7 +75,7 @@ Requirements for Analytics Redesign milestone. Each maps to roadmap phases.
 
 ### Tech Debt
 
-- [ ] **DEBT-01**: Remove deprecated GlassBottomNav and buildGlassFAB from liquid_glass_widgets.dart
+- [x] **DEBT-01**: Remove deprecated GlassBottomNav and buildGlassFAB from liquid_glass_widgets.dart
 - [x] **DEBT-02**: Deduplicate _YearNavigationHeader and _YearlySummaryCard across meter screens
 
 ## Future Requirements
@@ -129,10 +129,10 @@ Deferred to later milestones. Tracked but not in current roadmap.
 | SPLG-03 | Phase 31 | Complete |
 | SPLG-04 | Phase 31 | Complete |
 | SPLG-05 | Phase 31 | Complete |
-| HEAT-01 | Phase 32 | Pending |
-| HEAT-02 | Phase 32 | Pending |
+| HEAT-01 | Phase 32 | Complete |
+| HEAT-02 | Phase 32 | Complete |
 | HH-01 | Phase 28 | Complete |
-| DEBT-01 | Phase 32 | Pending |
+| DEBT-01 | Phase 32 | Complete |
 | DEBT-02 | Phase 27 | Complete |
 
 **Coverage:**
@@ -150,4 +150,4 @@ Deferred to later milestones. Tracked but not in current roadmap.
 
 ---
 *Requirements defined: 2026-04-01*
-*Last updated: 2026-04-01 after Phase 30 completion*
+*Last updated: 2026-04-01 after Phase 32 completion*
