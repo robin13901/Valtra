@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-04-01)
 ## Current Position
 
 Phase: 30 of 32 (Water & Gas Analytics)
-Plan: 0 of TBD in current phase
-Status: Not started
-Last activity: 2026-04-01 -- Phase 29 complete (2 plans, 2 waves, verified 3/3)
+Plan: 1 of 2 in current phase
+Status: In progress
+Last activity: 2026-04-01 -- Completed 30-01-PLAN.md (Water Analyse tab redesign)
 
-Progress: ████░░░░░░░░░░░░░░░░░░░░░ 15% (v0.6.0) [9/~25 plans]
+Progress: ████░░░░░░░░░░░░░░░░░░░░░ 16% (v0.6.0) [10/~25 plans]
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 9 (v0.6.0)
+- Total plans completed: 10 (v0.6.0)
 - Average duration: ~15 min
-- Total execution time: ~139 min
+- Total execution time: ~150 min
 
 *Updated after each plan completion*
 
@@ -64,6 +64,9 @@ Progress: ████░░░░░░░░░░░░░░░░░░░�
 - previousMonthTotal extracted from monthlyData.recentMonths inline; no new AnalyticsProvider API needed (29-02)
 - SmartPlugAnalyticsProvider must be in provider tree for ElectricityScreen; affects all test files using ElectricityScreen (29-02)
 - Reference composition pattern: MonthSelector → MonthlySummaryCard → MonthlyBarChart → YearComparisonChart → HouseholdComparisonChart (29-02)
+- Water/Gas/Heating Analyse tabs: NO SmartPlugAnalyticsProvider; only AnalyticsProvider synced in onMonthChanged (30-01)
+- analytics_models.dart must be imported explicitly for MeterType (not transitive from analytics_provider.dart) (30-01)
+- app_database.dart required in water_screen.dart for WaterMeter/WaterReading generated types used by Liste tab (30-01)
 
 ### Pending Todos
 None yet.
@@ -73,7 +76,7 @@ None.
 
 ## Technical Debt
 1. Deprecated GlassBottomNav/buildGlassFAB -- SCHEDULED (Phase 32, DEBT-01)
-2. Duplicate _YearNavigationHeader/_YearlySummaryCard -- REPLACEMENTS BUILT (27-01), ELECTRICITY DONE (29-02), remaining in gas/water/heating (30-32)
+2. Duplicate _YearNavigationHeader/_YearlySummaryCard -- REPLACEMENTS BUILT (27-01), ELECTRICITY DONE (29-02), WATER DONE (30-01), remaining in gas/heating (31-32)
 3. App icon alpha channel (fix for App Store submission) -- unscheduled
 4. 12 info-level deprecation warnings in flutter analyze (was 8, +4 from test files referencing deprecated widgets) -- unscheduled
 5. Pre-existing migration_test.dart failure (v2→v3 smart plug interval conversion) -- unscheduled
@@ -81,5 +84,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-04-01
-Stopped at: Phase 29 complete, verified, ready for Phase 30
+Stopped at: Phase 30 plan 1 complete, ready for 30-02 (Gas Analytics)
 Resume file: None
