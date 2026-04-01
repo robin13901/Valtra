@@ -58,7 +58,11 @@ Plans:
   2. Bottom navigation bar has no active dot indicator
   3. FAB is integrated into the bottom navigation bar (not floating above the pill)
   4. User can set and edit number of persons per household in household settings, value persists in database
-**Plans**: TBD
+**Plans:** 3 plans
+Plans:
+- [ ] 28-01-PLAN.md -- Person count data model (DB schema v4, migration, DAO, provider, form dialog)
+- [ ] 28-02-PLAN.md -- Nav bar polish (remove dot indicator, integrate FAB into pill)
+- [ ] 28-03-PLAN.md -- Home screen redesign (frosted glass household cards, horizontal carousel)
 
 ### Phase 29: Electricity Analytics
 **Goal**: Electricity analytics screen uses the complete new unified design, serving as the reference implementation for all other meter screens
@@ -107,7 +111,7 @@ Plans:
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 27. Shared Chart Infrastructure | 4/4 | Complete | 2026-04-01 |
-| 28. Home & Nav Polish | 0/TBD | Not started | - |
+| 28. Home & Nav Polish | 0/3 | Not started | - |
 | 29. Electricity Analytics | 0/TBD | Not started | - |
 | 30. Water & Gas Analytics | 0/TBD | Not started | - |
 | 31. Smart Plug Overhaul | 0/TBD | Not started | - |
