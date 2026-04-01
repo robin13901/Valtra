@@ -967,4 +967,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get persons => 'Persons';
+
+  @override
+  String smartPlugCoverage(String kwh, String percent) {
+    return 'Smart Plugs: $kwh kWh ($percent%)';
+  }
 }

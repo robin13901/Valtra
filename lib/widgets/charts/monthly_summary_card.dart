@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import '../../app_theme.dart';
 import '../../l10n/app_localizations.dart';
 import '../../services/number_format_service.dart';
 import '../liquid_glass_widgets.dart';
@@ -29,6 +30,14 @@ class MonthlySummaryCard extends StatelessWidget {
   /// Locale for number/date formatting.
   final String locale;
 
+  /// Optional smart plug kWh tracked (for electricity screens).
+  /// Renders a coverage line only when both [smartPlugKwh] and [smartPlugPercent] are non-null.
+  final double? smartPlugKwh;
+
+  /// Optional smart plug coverage percentage (0-100).
+  /// Renders a coverage line only when both [smartPlugKwh] and [smartPlugPercent] are non-null.
+  final double? smartPlugPercent;
+
   const MonthlySummaryCard({
     super.key,
     required this.totalConsumption,
@@ -37,6 +46,8 @@ class MonthlySummaryCard extends StatelessWidget {
     required this.month,
     required this.color,
     this.locale = 'de',
+    this.smartPlugKwh,
+    this.smartPlugPercent,
   });
 
   @override
@@ -66,6 +77,26 @@ class MonthlySummaryCard extends StatelessWidget {
               previousMonthTotal! > 0) ...[
             const SizedBox(height: 8),
             _buildChangeText(context, l10n),
+          ],
+          if (smartPlugKwh != null && smartPlugPercent != null) ...[
+            const SizedBox(height: 8),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.power, size: 14, color: AppColors.electricityColor),
+                const SizedBox(width: 4),
+                Text(
+                  l10n.smartPlugCoverage(
+                    ValtraNumberFormat.consumption(smartPlugKwh!, locale),
+                    smartPlugPercent!.toStringAsFixed(1),
+                  ),
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: AppColors.electricityColor,
+                      ),
+                ),
+              ],
+            ),
           ],
         ],
       ),

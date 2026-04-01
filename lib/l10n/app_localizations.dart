@@ -1807,6 +1807,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Persons'**
   String get persons;
+
+  /// No description provided for @smartPlugCoverage.
+  ///
+  /// In en, this message translates to:
+  /// **'Smart Plugs: {kwh} kWh ({percent}%)'**
+  String smartPlugCoverage(String kwh, String percent);
 }
 
 class _AppLocalizationsDelegate

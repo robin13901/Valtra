@@ -28,6 +28,8 @@ void main() {
     DateTime? month,
     Color color = Colors.amber,
     String locale = 'en',
+    double? smartPlugKwh,
+    double? smartPlugPercent,
   }) {
     return ChangeNotifierProvider<ThemeProvider>.value(
       value: themeProvider,
@@ -43,6 +45,8 @@ void main() {
             month: month ?? DateTime(2026, 4, 1),
             color: color,
             locale: locale,
+            smartPlugKwh: smartPlugKwh,
+            smartPlugPercent: smartPlugPercent,
           ),
         ),
       ),
@@ -169,6 +173,52 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.textContaining('m\u00B3'), findsWidgets);
+    });
+  });
+
+  group('smart plug coverage', () {
+    testWidgets('does not show coverage line when smartPlugKwh is null',
+        (tester) async {
+      await tester.pumpWidget(buildTestWidget(
+        totalConsumption: 250.0,
+        locale: 'en',
+        // smartPlugKwh is null, smartPlugPercent is null -> no coverage line
+      ));
+      await tester.pumpAndSettle();
+
+      expect(find.byIcon(Icons.power), findsNothing);
+    });
+
+    testWidgets(
+        'shows coverage line when smartPlugKwh and smartPlugPercent are provided',
+        (tester) async {
+      await tester.pumpWidget(buildTestWidget(
+        totalConsumption: 200.0,
+        locale: 'en',
+        smartPlugKwh: 50.0,
+        smartPlugPercent: 25.0,
+      ));
+      await tester.pumpAndSettle();
+
+      expect(find.byIcon(Icons.power), findsOneWidget);
+      // "50" should appear in the coverage text
+      expect(find.textContaining('50'), findsWidgets);
+      // "25.0%" should appear
+      expect(find.textContaining('25.0%'), findsOneWidget);
+    });
+
+    testWidgets(
+        'does not show coverage line when only smartPlugKwh is set (smartPlugPercent null)',
+        (tester) async {
+      await tester.pumpWidget(buildTestWidget(
+        totalConsumption: 200.0,
+        locale: 'en',
+        smartPlugKwh: 50.0,
+        // smartPlugPercent is null -> coverage line should NOT render
+      ));
+      await tester.pumpAndSettle();
+
+      expect(find.byIcon(Icons.power), findsNothing);
     });
   });
 }

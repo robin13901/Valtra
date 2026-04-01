@@ -405,5 +405,12 @@
   "personCountHint": "z.B. 2",
   "personCountRequired": "Anzahl Personen ist erforderlich (min. 1)",
   "person": "Person",
-  "persons": "Personen"
+  "persons": "Personen",
+  "smartPlugCoverage": "Smart Plugs: {kwh} kWh ({percent}%)",
+  "@smartPlugCoverage": {
+    "placeholders": {
+      "kwh": { "type": "String" },
+      "percent": { "type": "String" }
+    }
+  }
 }
