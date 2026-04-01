@@ -289,5 +289,75 @@ void main() {
 
       expect(find.byType(LineChart), findsOneWidget);
     });
+
+    // ---------------------------------------------------------------
+    // AXIS-01/02: Axis style tests
+    // ---------------------------------------------------------------
+
+    group('ConsumptionLineChart - axis style (AXIS-01/02)', () {
+      testWidgets('has no left border (AXIS-01)', (tester) async {
+        final dataPoints = [
+          ChartDataPoint(timestamp: DateTime(2026, 1, 15), value: 100, isInterpolated: false),
+          ChartDataPoint(timestamp: DateTime(2026, 2, 15), value: 150, isInterpolated: false),
+        ];
+
+        await tester.pumpWidget(buildTestWidget(ConsumptionLineChart(
+          dataPoints: dataPoints,
+          rangeStart: DateTime(2026, 1, 1),
+          rangeEnd: DateTime(2026, 3, 1),
+          primaryColor: Colors.blue,
+          unit: 'kWh',
+        )));
+        await tester.pumpAndSettle();
+
+        final lineChart = tester.widget<LineChart>(find.byType(LineChart));
+        final data = lineChart.data;
+        expect(data.borderData.border.left, BorderSide.none);
+        expect(data.borderData.border.bottom, isNot(BorderSide.none));
+      });
+
+      testWidgets('grid lines are dashed horizontal only', (tester) async {
+        final dataPoints = [
+          ChartDataPoint(timestamp: DateTime(2026, 1, 15), value: 100, isInterpolated: false),
+        ];
+
+        await tester.pumpWidget(buildTestWidget(ConsumptionLineChart(
+          dataPoints: dataPoints,
+          rangeStart: DateTime(2026, 1, 1),
+          rangeEnd: DateTime(2026, 2, 1),
+          primaryColor: Colors.blue,
+          unit: 'kWh',
+        )));
+        await tester.pumpAndSettle();
+
+        final lineChart = tester.widget<LineChart>(find.byType(LineChart));
+        final data = lineChart.data;
+        expect(data.gridData.show, isTrue);
+        expect(data.gridData.drawVerticalLine, isFalse);
+
+        final line = data.gridData.getDrawingHorizontalLine(50);
+        expect(line.dashArray, [4, 4]);
+      });
+
+      testWidgets('left titles use ChartAxisStyle with unit', (tester) async {
+        final dataPoints = [
+          ChartDataPoint(timestamp: DateTime(2026, 1, 15), value: 100, isInterpolated: false),
+        ];
+
+        await tester.pumpWidget(buildTestWidget(ConsumptionLineChart(
+          dataPoints: dataPoints,
+          rangeStart: DateTime(2026, 1, 1),
+          rangeEnd: DateTime(2026, 2, 1),
+          primaryColor: Colors.blue,
+          unit: 'kWh',
+        )));
+        await tester.pumpAndSettle();
+
+        final lineChart = tester.widget<LineChart>(find.byType(LineChart));
+        final data = lineChart.data;
+        expect(data.titlesData.leftTitles.sideTitles.showTitles, isTrue);
+        expect(data.titlesData.leftTitles.sideTitles.reservedSize, 48);
+      });
+    });
   });
 }

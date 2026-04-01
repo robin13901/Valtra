@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import '../../l10n/app_localizations.dart';
 import '../../services/analytics/analytics_models.dart';
 import '../../services/number_format_service.dart';
+import 'chart_axis_style.dart';
 
 /// A line chart displaying consumption data points over a date range.
 ///
@@ -93,22 +94,8 @@ class ConsumptionLineChart extends StatelessWidget {
           ),
       ],
       titlesData: _buildTitles(context),
-      gridData: FlGridData(
-        show: true,
-        drawVerticalLine: false,
-        getDrawingHorizontalLine: (value) => FlLine(
-          color: Theme.of(context).dividerColor.withValues(alpha: 0.3),
-          strokeWidth: 1,
-          dashArray: [4, 4],
-        ),
-      ),
-      borderData: FlBorderData(
-        show: true,
-        border: Border(
-          bottom: BorderSide(color: Theme.of(context).dividerColor),
-          left: BorderSide(color: Theme.of(context).dividerColor),
-        ),
-      ),
+      gridData: ChartAxisStyle.gridData(context),
+      borderData: ChartAxisStyle.borderData(context),
       lineTouchData: LineTouchData(
         touchTooltipData: LineTouchTooltipData(
           getTooltipItems: (touchedSpots) {
@@ -173,9 +160,8 @@ class ConsumptionLineChart extends StatelessWidget {
 
   FlTitlesData _buildTitles(BuildContext context) {
     return FlTitlesData(
-      topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-      rightTitles:
-          const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+      topTitles: ChartAxisStyle.hiddenTitles,
+      rightTitles: ChartAxisStyle.hiddenTitles,
       bottomTitles: AxisTitles(
         sideTitles: SideTitles(
           showTitles: true,
@@ -196,22 +182,7 @@ class ConsumptionLineChart extends StatelessWidget {
           },
         ),
       ),
-      leftTitles: AxisTitles(
-        sideTitles: SideTitles(
-          showTitles: true,
-          reservedSize: 50,
-          getTitlesWidget: (value, meta) {
-            if (value == meta.min) return const SizedBox.shrink();
-            return SideTitleWidget(
-              axisSide: meta.axisSide,
-              child: Text(
-                value.toStringAsFixed(0),
-                style: Theme.of(context).textTheme.bodySmall,
-              ),
-            );
-          },
-        ),
-      ),
+      leftTitles: ChartAxisStyle.leftTitles(context: context, unit: unit),
     );
   }
 
