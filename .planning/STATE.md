@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-04-01)
 ## Current Position
 
 Phase: 31 of 32 (Smart Plug Screen Overhaul)
-Plan: 1 of 2 in current phase
-Status: In progress
-Last activity: 2026-04-01 -- Completed 31-01-PLAN.md (smart plug analytics screen redesign)
+Plan: 2 of 2 in current phase
+Status: Phase complete
+Last activity: 2026-04-01 -- Completed 31-02-PLAN.md (Liste tab expandable cards + initState wiring)
 
-Progress: ██████░░░░░░░░░░░░░░░░░░░ 20% (v0.6.0) [12/~25 plans]
+Progress: ██████░░░░░░░░░░░░░░░░░░░ 24% (v0.6.0) [13/~25 plans]
 
 ## Performance Metrics
 
@@ -37,7 +37,7 @@ Progress: ██████░░░░░░░░░░░░░░░░░�
 - **Phase 28**: Home & Nav Polish -- 3 plans, 1213 tests, verified 4/4
 - **Phase 29**: Electricity Analytics -- 2 plans, 1221 tests, verified 3/3
 - **Phase 30**: Water & Gas Analytics -- 2 plans, 1226 tests, verified 10/10
-- **Phase 31**: Smart Plug Overhaul -- 1/2 plans complete
+- **Phase 31**: Smart Plug Overhaul -- 2/2 plans complete
 
 ## Accumulated Context
 
@@ -76,6 +76,9 @@ Progress: ██████░░░░░░░░░░░░░░░░░�
 - Per-plug pie chart uses totalSmartPlug as denominator (not totalSmartPlug + otherConsumption) for within-smart-plug proportions (31-01)
 - smart_plugs_screen_test.dart requires MockAnalyticsProvider because SmartPlugAnalyseTab is inside IndexedStack and watches AnalyticsProvider (31-01)
 - smartPlugPieColors used for byPlug; pieChartColors retained for byRoom (31-01)
+- SmartPlugsScreen Liste tab uses flat plug list with _SmartPlugExpandableCard; room grouping removed (31-02)
+- registerFallbackValue(MeterType.electricity) required in setUpAll when using any() on MeterType enum parameters in mocktail stubs (31-02)
+- SmartPlugConsumptionScreen still exists but is no longer navigated to from smart_plugs_screen.dart; remove in Phase 32 if confirmed unused (31-02)
 
 ### Pending Todos
 None yet.
@@ -93,5 +96,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-04-01
-Stopped at: Phase 31 plan 01 complete (SmartPlugAnalyseTab redesigned with shared widgets)
+Stopped at: Phase 31 plan 02 complete (Liste tab expandable cards + initState wiring)
 Resume file: None
