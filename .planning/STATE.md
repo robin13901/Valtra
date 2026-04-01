@@ -65,9 +65,11 @@ Progress: █████░░░░░░░░░░░░░░░░░░�
 - previousMonthTotal extracted from monthlyData.recentMonths inline; no new AnalyticsProvider API needed (29-02)
 - SmartPlugAnalyticsProvider must be in provider tree for ElectricityScreen; affects all test files using ElectricityScreen (29-02)
 - Reference composition pattern: MonthSelector → MonthlySummaryCard → MonthlyBarChart → YearComparisonChart → HouseholdComparisonChart (29-02)
+- Water/Gas/Heating Analyse tabs: NO SmartPlugAnalyticsProvider; only AnalyticsProvider synced in onMonthChanged (30-01)
+- analytics_models.dart must be imported explicitly for MeterType (not transitive from analytics_provider.dart) (30-01)
 - Gas Analyse tab: MonthlySummaryCard without smartPlugKwh/smartPlugPercent (gas-only, no smart plug coverage) (30-02)
-- initState must call setSelectedMeterType + setSelectedMonth + setSelectedYear (all three required for monthlyData + yearlyData to populate) (30-02)
-- 300ms tearDown delay for gas tests: 2 async initState loads (setSelectedMonth + setSelectedYear) can race with disposal (30-02)
+- initState must call setSelectedMeterType + setSelectedMonth + setSelectedYear (all three required for monthlyData + yearlyData to populate) (30-01/30-02)
+- 300ms tearDown delay for water/gas tests: 2 async initState loads (setSelectedMonth + setSelectedYear) can race with disposal (30-01/30-02)
 
 ### Pending Todos
 None yet.
@@ -77,7 +79,7 @@ None.
 
 ## Technical Debt
 1. Deprecated GlassBottomNav/buildGlassFAB -- SCHEDULED (Phase 32, DEBT-01)
-2. Duplicate _YearNavigationHeader/_YearlySummaryCard -- REPLACEMENTS BUILT (27-01), ELECTRICITY DONE (29-02), GAS DONE (30-02), remaining in water/heating (30-01 done, heating 31-32)
+2. Duplicate _YearNavigationHeader/_YearlySummaryCard -- REPLACEMENTS BUILT (27-01), ELECTRICITY DONE (29-02), WATER DONE (30-01), GAS DONE (30-02), remaining in heating (31-32)
 3. App icon alpha channel (fix for App Store submission) -- unscheduled
 4. 12 info-level deprecation warnings in flutter analyze (was 8, +4 from test files referencing deprecated widgets) -- unscheduled
 5. Pre-existing migration_test.dart failure (v2→v3 smart plug interval conversion) -- unscheduled
@@ -85,5 +87,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-04-01
-Stopped at: Completed 30-02-PLAN.md (gas screen month-based Analyse tab, Phase 30 complete)
+Stopped at: Phase 30 complete (both water and gas analytics redesigned)
 Resume file: None
