@@ -21,6 +21,7 @@ void main() {
     bool showCosts = false,
     String? costUnit,
     String locale = 'de',
+    int visibleBars = 12,
   }) {
     return MaterialApp(
       localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -39,6 +40,7 @@ void main() {
             showCosts: showCosts,
             costUnit: costUnit,
             locale: locale,
+            visibleBars: visibleBars,
           ),
         ),
       ),
@@ -348,7 +350,9 @@ void main() {
       expect(marText.data, 'Mar');
     });
 
-    testWidgets('Y-axis shows unit label in consumption mode', (tester) async {
+    // ChartAxisStyle uses inline labels in sideTitles.getTitlesWidget (not axisNameWidget).
+    // Unit is embedded in the label text as "{value} {unit}" format.
+    testWidgets('Y-axis left titles are shown in consumption mode', (tester) async {
       final periods = buildSamplePeriods();
 
       await tester.pumpWidget(
@@ -358,14 +362,11 @@ void main() {
 
       final barChart = tester.widget<BarChart>(find.byType(BarChart));
       final data = barChart.data;
-      final axisNameWidget = data.titlesData.leftTitles.axisNameWidget;
-
-      expect(axisNameWidget, isNotNull);
-      expect(axisNameWidget, isA<Text>());
-      expect((axisNameWidget as Text).data, 'kWh');
+      // ChartAxisStyle uses sideTitles with showTitles: true (no axisNameWidget)
+      expect(data.titlesData.leftTitles.sideTitles.showTitles, isTrue);
     });
 
-    testWidgets('Y-axis shows costUnit label in cost mode', (tester) async {
+    testWidgets('Y-axis left titles are shown in cost mode', (tester) async {
       final periods = buildSamplePeriods();
 
       await tester.pumpWidget(
@@ -380,14 +381,10 @@ void main() {
 
       final barChart = tester.widget<BarChart>(find.byType(BarChart));
       final data = barChart.data;
-      final axisNameWidget = data.titlesData.leftTitles.axisNameWidget;
-
-      expect(axisNameWidget, isNotNull);
-      expect(axisNameWidget, isA<Text>());
-      expect((axisNameWidget as Text).data, 'EUR');
+      expect(data.titlesData.leftTitles.sideTitles.showTitles, isTrue);
     });
 
-    testWidgets('Y-axis shows unit when showCosts=true but costUnit is null',
+    testWidgets('Y-axis left titles shown when showCosts=true but costUnit is null',
         (tester) async {
       final periods = buildSamplePeriods();
 
@@ -403,12 +400,276 @@ void main() {
 
       final barChart = tester.widget<BarChart>(find.byType(BarChart));
       final data = barChart.data;
-      final axisNameWidget = data.titlesData.leftTitles.axisNameWidget;
+      // Falls back to unit when costUnit is null; left titles still shown
+      expect(data.titlesData.leftTitles.sideTitles.showTitles, isTrue);
+    });
 
-      expect(axisNameWidget, isNotNull);
-      expect(axisNameWidget, isA<Text>());
-      // Falls back to unit when costUnit is null
-      expect((axisNameWidget as Text).data, 'kWh');
+    testWidgets('Y-axis label widget includes unit text for consumption mode',
+        (tester) async {
+      final periods = buildSamplePeriods();
+
+      await tester.pumpWidget(
+        buildTestWidget(periods: periods, unit: 'kWh', showCosts: false),
+      );
+      await tester.pumpAndSettle();
+
+      final barChart = tester.widget<BarChart>(find.byType(BarChart));
+      final getTitles =
+          barChart.data.titlesData.leftTitles.sideTitles.getTitlesWidget;
+      // Call with a mid-range value (not min or max) to get a real label
+      final meta = TitleMeta(
+        min: 0,
+        max: 100,
+        parentAxisSize: 300,
+        axisPosition: 0,
+        appliedInterval: 25,
+        sideTitles: SideTitles(),
+        formattedValue: '',
+        axisSide: AxisSide.left,
+      );
+      final labelWidget = getTitles(50.0, meta);
+      expect(labelWidget, isA<SideTitleWidget>());
+      final text = (labelWidget as SideTitleWidget).child as Text;
+      expect(text.data, contains('kWh'));
+    });
+
+    testWidgets('Y-axis label widget includes costUnit text in cost mode',
+        (tester) async {
+      final periods = buildSamplePeriods();
+
+      await tester.pumpWidget(
+        buildTestWidget(
+          periods: periods,
+          unit: 'kWh',
+          showCosts: true,
+          costUnit: 'EUR',
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final barChart = tester.widget<BarChart>(find.byType(BarChart));
+      final getTitles =
+          barChart.data.titlesData.leftTitles.sideTitles.getTitlesWidget;
+      final meta = TitleMeta(
+        min: 0,
+        max: 100,
+        parentAxisSize: 300,
+        axisPosition: 0,
+        appliedInterval: 25,
+        sideTitles: SideTitles(),
+        formattedValue: '',
+        axisSide: AxisSide.left,
+      );
+      final labelWidget = getTitles(50.0, meta);
+      expect(labelWidget, isA<SideTitleWidget>());
+      final text = (labelWidget as SideTitleWidget).child as Text;
+      expect(text.data, contains('EUR'));
+    });
+  });
+
+  // ---------------------------------------------------------------
+  // BAR-01: Horizontal scrolling tests
+  // ---------------------------------------------------------------
+
+  group('MonthlyBarChart - horizontal scrolling (BAR-01)', () {
+    List<PeriodConsumption> buildManyPeriods(int count) {
+      return List.generate(
+          count,
+          (i) => PeriodConsumption(
+                periodStart: DateTime(2025, 1 + (i % 12), 1),
+                periodEnd: DateTime(2025, 1 + ((i + 1) % 12), 1),
+                startValue: 100.0 * i,
+                endValue: 100.0 * (i + 1),
+                consumption: 50.0 + i * 5,
+                startInterpolated: false,
+                endInterpolated: false,
+              ));
+    }
+
+    testWidgets('does not use ScrollView when periods <= visibleBars',
+        (tester) async {
+      await tester.pumpWidget(buildTestWidget(
+        periods: buildSamplePeriods(), // 3 periods, visibleBars defaults to 12
+      ));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(SingleChildScrollView), findsNothing);
+      expect(find.byType(BarChart), findsOneWidget);
+    });
+
+    testWidgets('uses horizontal ScrollView when periods > visibleBars',
+        (tester) async {
+      await tester.pumpWidget(buildTestWidget(
+        periods: buildManyPeriods(15),
+        visibleBars: 12,
+      ));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(SingleChildScrollView), findsOneWidget);
+      // Two BarCharts: one for fixed Y-axis, one for scrollable content
+      expect(find.byType(BarChart), findsNWidgets(2));
+    });
+
+    testWidgets('renders all bar groups in scrollable mode', (tester) async {
+      await tester.pumpWidget(buildTestWidget(
+        periods: buildManyPeriods(18),
+        visibleBars: 12,
+      ));
+      await tester.pumpAndSettle();
+
+      // The scrollable BarChart should have all 18 bar groups
+      final barCharts =
+          tester.widgetList<BarChart>(find.byType(BarChart)).toList();
+      // Second BarChart is the scrollable one with actual data
+      final scrollableChart = barCharts.last;
+      expect(scrollableChart.data.barGroups.length, 18);
+    });
+  });
+
+  // ---------------------------------------------------------------
+  // BAR-02: Glow effect tests
+  // ---------------------------------------------------------------
+
+  group('MonthlyBarChart - glow effect (BAR-02)', () {
+    testWidgets('highlighted bar has backDrawRodData with translucent color',
+        (tester) async {
+      final periods = buildSamplePeriods(); // 3 periods: Jan, Feb, Mar 2025
+
+      await tester.pumpWidget(buildTestWidget(
+        periods: periods,
+        highlightMonth: DateTime(2025, 2, 1), // Highlight February
+        primaryColor: Colors.amber,
+      ));
+      await tester.pumpAndSettle();
+
+      final barChart = tester.widget<BarChart>(find.byType(BarChart));
+      final data = barChart.data;
+
+      // Bar at index 1 (February) should have backDrawRodData.show = true
+      final highlightedBar = data.barGroups[1].barRods[0];
+      expect(highlightedBar.backDrawRodData.show, isTrue);
+      expect(highlightedBar.backDrawRodData.toY, highlightedBar.toY);
+
+      // Non-highlighted bars should have backDrawRodData.show = false
+      final normalBar = data.barGroups[0].barRods[0];
+      expect(normalBar.backDrawRodData.show, isFalse);
+    });
+
+    testWidgets('highlighted bar has full opacity', (tester) async {
+      final periods = buildSamplePeriods();
+
+      await tester.pumpWidget(buildTestWidget(
+        periods: periods,
+        highlightMonth: DateTime(2025, 2, 1),
+        primaryColor: Colors.amber,
+      ));
+      await tester.pumpAndSettle();
+
+      final barChart = tester.widget<BarChart>(find.byType(BarChart));
+      final data = barChart.data;
+
+      // Highlighted bar should have full opacity (alpha = 1.0)
+      final highlightedColor = data.barGroups[1].barRods[0].color!;
+      expect(highlightedColor.a, closeTo(1.0, 0.01));
+    });
+  });
+
+  // ---------------------------------------------------------------
+  // BAR-03: Opacity tests (past opaque, future transparent)
+  // ---------------------------------------------------------------
+
+  group('MonthlyBarChart - opacity (BAR-03)', () {
+    testWidgets('extrapolated bars have low opacity', (tester) async {
+      final periods = [
+        PeriodConsumption(
+          periodStart: DateTime(2025, 1, 1),
+          periodEnd: DateTime(2025, 2, 1),
+          startValue: 100,
+          endValue: 150,
+          consumption: 50,
+          startInterpolated: false,
+          endInterpolated: false,
+        ),
+        PeriodConsumption(
+          periodStart: DateTime(2025, 2, 1),
+          periodEnd: DateTime(2025, 3, 1),
+          startValue: 150,
+          endValue: 200,
+          consumption: 50,
+          startInterpolated: false,
+          endInterpolated: false,
+          isExtrapolated: true,
+        ),
+      ];
+
+      await tester.pumpWidget(buildTestWidget(
+        periods: periods,
+        primaryColor: Colors.amber,
+      ));
+      await tester.pumpAndSettle();
+
+      final barChart = tester.widget<BarChart>(find.byType(BarChart));
+      final data = barChart.data;
+
+      // Normal bar should have higher opacity
+      final normalAlpha = data.barGroups[0].barRods[0].color!.a;
+      // Extrapolated bar should have lower opacity (0.3)
+      final extraAlpha = data.barGroups[1].barRods[0].color!.a;
+
+      expect(normalAlpha, greaterThan(extraAlpha));
+      expect(extraAlpha, closeTo(0.3, 0.05));
+    });
+
+    testWidgets('past bars have medium-high opacity', (tester) async {
+      final periods = buildSamplePeriods(); // All in past (2025)
+
+      await tester.pumpWidget(buildTestWidget(
+        periods: periods,
+        primaryColor: Colors.amber,
+      ));
+      await tester.pumpAndSettle();
+
+      final barChart = tester.widget<BarChart>(find.byType(BarChart));
+      final data = barChart.data;
+
+      // Past bars should have alpha around 0.85
+      for (final group in data.barGroups) {
+        final alpha = group.barRods[0].color!.a;
+        expect(alpha, closeTo(0.85, 0.05));
+      }
+    });
+  });
+
+  // ---------------------------------------------------------------
+  // AXIS-01/02/03: Axis style tests
+  // ---------------------------------------------------------------
+
+  group('MonthlyBarChart - axis style (AXIS-01/02/03)', () {
+    testWidgets('has no left border (AXIS-01)', (tester) async {
+      await tester.pumpWidget(buildTestWidget(
+        periods: buildSamplePeriods(),
+      ));
+      await tester.pumpAndSettle();
+
+      final barChart = tester.widget<BarChart>(find.byType(BarChart));
+      final border = barChart.data.borderData.border;
+      expect(border.left, BorderSide.none);
+      expect(border.bottom, isNot(BorderSide.none));
+    });
+
+    testWidgets('grid lines are dashed horizontal only', (tester) async {
+      await tester.pumpWidget(buildTestWidget(
+        periods: buildSamplePeriods(),
+      ));
+      await tester.pumpAndSettle();
+
+      final barChart = tester.widget<BarChart>(find.byType(BarChart));
+      final gridData = barChart.data.gridData;
+      expect(gridData.show, isTrue);
+      expect(gridData.drawVerticalLine, isFalse);
+
+      final line = gridData.getDrawingHorizontalLine(50);
+      expect(line.dashArray, [4, 4]);
     });
   });
 }
