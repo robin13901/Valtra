@@ -55,6 +55,7 @@ class _RoomFormDialogState extends State<RoomFormDialog> {
         key: _formKey,
         child: TextFormField(
           controller: _nameController,
+          textCapitalization: TextCapitalization.words,
           decoration: InputDecoration(
             labelText: l10n.roomName,
             hintText: l10n.roomNameHint,

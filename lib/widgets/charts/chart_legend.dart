@@ -3,11 +3,11 @@ import 'package:flutter/material.dart';
 class ChartLegendItem {
   final Color color;
   final String label;
-  final bool isDashed;
+  final List<double>? dashPattern;
   const ChartLegendItem({
     required this.color,
     required this.label,
-    this.isDashed = false,
+    this.dashPattern,
   });
 }
 
@@ -32,7 +32,7 @@ class ChartLegend extends StatelessWidget {
         CustomPaint(
           size: const Size(24, 3),
           painter:
-              _LegendLinePainter(color: item.color, isDashed: item.isDashed),
+              _LegendLinePainter(color: item.color, dashPattern: item.dashPattern),
         ),
         const SizedBox(width: 6),
         Text(item.label, style: Theme.of(context).textTheme.bodySmall),
@@ -43,9 +43,9 @@ class ChartLegend extends StatelessWidget {
 
 class _LegendLinePainter extends CustomPainter {
   final Color color;
-  final bool isDashed;
+  final List<double>? dashPattern;
 
-  _LegendLinePainter({required this.color, required this.isDashed});
+  _LegendLinePainter({required this.color, this.dashPattern});
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -54,9 +54,9 @@ class _LegendLinePainter extends CustomPainter {
       ..strokeWidth = 3
       ..strokeCap = StrokeCap.round;
 
-    if (isDashed) {
-      const dashWidth = 4.0;
-      const dashSpace = 3.0;
+    if (dashPattern != null && dashPattern!.length >= 2) {
+      final dashWidth = dashPattern![0];
+      final dashSpace = dashPattern![1];
       var startX = 0.0;
       while (startX < size.width) {
         canvas.drawLine(
@@ -77,5 +77,5 @@ class _LegendLinePainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant _LegendLinePainter oldDelegate) =>
-      color != oldDelegate.color || isDashed != oldDelegate.isDashed;
+      color != oldDelegate.color || dashPattern != oldDelegate.dashPattern;
 }

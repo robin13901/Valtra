@@ -85,6 +85,7 @@ class _HeatingMeterFormDialogState extends State<HeatingMeterFormDialog> {
             children: [
               TextFormField(
                 controller: _nameController,
+                textCapitalization: TextCapitalization.words,
                 decoration: InputDecoration(
                   labelText: l10n.heatingMeterName,
                   hintText: l10n.heatingMeterNameHint,

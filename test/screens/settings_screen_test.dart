@@ -69,7 +69,6 @@ void main() {
     when(() => backupRestoreProvider.isLoading).thenReturn(false);
     when(() => backupRestoreProvider.errorMessage).thenReturn(null);
     when(() => backupRestoreProvider.successMessage).thenReturn(null);
-    when(() => backupRestoreProvider.onDatabaseReplaced).thenReturn(null);
     localeProvider = MockLocaleProvider();
   });
 
@@ -346,7 +345,7 @@ void main() {
         await tester.pumpAndSettle();
 
         expect(find.text('Export Database'), findsOneWidget);
-        expect(find.byIcon(Icons.cloud_upload), findsOneWidget);
+        expect(find.byIcon(Icons.upload_file), findsOneWidget);
       });
 
       testWidgets('shows Import Database list tile', (tester) async {
@@ -361,7 +360,7 @@ void main() {
         await tester.pumpAndSettle();
 
         expect(find.text('Import Database'), findsOneWidget);
-        expect(find.byIcon(Icons.cloud_download), findsOneWidget);
+        expect(find.byIcon(Icons.download_rounded), findsOneWidget);
       });
 
       testWidgets('export button shows loading indicator when exporting',

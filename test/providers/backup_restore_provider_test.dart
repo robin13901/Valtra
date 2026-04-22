@@ -2,26 +2,38 @@ import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:valtra/database/app_database.dart';
 import 'package:valtra/providers/backup_restore_provider.dart';
+import 'package:valtra/providers/database_provider.dart';
 import 'package:valtra/services/backup_restore_service.dart';
 
 class MockBackupRestoreService extends Mock implements BackupRestoreService {}
 
+class MockAppDatabase extends Mock implements AppDatabase {}
+
 class FakeFile extends Fake implements File {}
+
+class FakeAppDatabase extends Fake implements AppDatabase {}
 
 void main() {
   late MockBackupRestoreService mockService;
   late BackupRestoreProvider provider;
   late File testFile;
+  late MockAppDatabase mockDb;
 
   setUpAll(() {
     registerFallbackValue(FakeFile());
+    registerFallbackValue(FakeAppDatabase());
+    // Reset DatabaseProvider to avoid leaking state between tests
+    DatabaseProvider.instance = DatabaseProvider.forTest();
+    DatabaseProvider.instance.initialize(MockAppDatabase());
   });
 
   setUp(() {
     mockService = MockBackupRestoreService();
     provider = BackupRestoreProvider(service: mockService);
     testFile = File('test_backup.sqlite');
+    mockDb = MockAppDatabase();
   });
 
   group('BackupRestoreProvider', () {
@@ -34,10 +46,7 @@ void main() {
 
     group('exportDatabase', () {
       test('sets state to exporting then success on success', () async {
-        final exportedFile = File('exported.sqlite');
-        when(() => mockService.exportDatabase())
-            .thenAnswer((_) async => exportedFile);
-        when(() => mockService.shareBackup(exportedFile))
+        when(() => mockService.exportAndSaveDatabase())
             .thenAnswer((_) async {});
 
         final states = <BackupRestoreState>[];
@@ -52,7 +61,7 @@ void main() {
       });
 
       test('sets state to error on service failure', () async {
-        when(() => mockService.exportDatabase())
+        when(() => mockService.exportAndSaveDatabase())
             .thenThrow(Exception('Export failed'));
 
         await provider.exportDatabase();
@@ -63,29 +72,13 @@ void main() {
       });
 
       test('isLoading is true during exporting', () async {
-        when(() => mockService.exportDatabase()).thenAnswer((_) async {
-          // Check isLoading while in exporting state
+        when(() => mockService.exportAndSaveDatabase()).thenAnswer((_) async {
           expect(provider.isLoading, isTrue);
-          return File('exported.sqlite');
         });
-        when(() => mockService.shareBackup(any())).thenAnswer((_) async {});
 
         await provider.exportDatabase();
 
-        // After completion, isLoading should be false
         expect(provider.isLoading, isFalse);
-      });
-
-      test('calls shareBackup with exported file', () async {
-        final exportedFile = File('exported.sqlite');
-        when(() => mockService.exportDatabase())
-            .thenAnswer((_) async => exportedFile);
-        when(() => mockService.shareBackup(exportedFile))
-            .thenAnswer((_) async {});
-
-        await provider.exportDatabase();
-
-        verify(() => mockService.shareBackup(exportedFile)).called(1);
       });
     });
 
@@ -94,7 +87,7 @@ void main() {
         when(() => mockService.validateBackupFile(testFile))
             .thenAnswer((_) async => false);
 
-        await provider.importDatabase(testFile);
+        await provider.importDatabase(testFile, mockDb);
 
         verify(() => mockService.validateBackupFile(testFile)).called(1);
       });
@@ -103,32 +96,35 @@ void main() {
         when(() => mockService.validateBackupFile(testFile))
             .thenAnswer((_) async => false);
 
-        final result = await provider.importDatabase(testFile);
+        final result = await provider.importDatabase(testFile, mockDb);
 
         expect(result, isFalse);
         expect(provider.state, BackupRestoreState.error);
         expect(provider.errorMessage, contains('Invalid'));
       });
 
-      test('does not call importDatabase for invalid files', () async {
+      test('does not call replaceDatabase for invalid files', () async {
         when(() => mockService.validateBackupFile(testFile))
             .thenAnswer((_) async => false);
 
-        await provider.importDatabase(testFile);
+        await provider.importDatabase(testFile, mockDb);
 
-        verifyNever(() => mockService.importDatabase(any()));
+        verifyNever(() => mockService.replaceDatabase(any(), any()));
       });
 
       test('sets state to importing then success for valid files', () async {
+        final newDb = MockAppDatabase();
         when(() => mockService.validateBackupFile(testFile))
             .thenAnswer((_) async => true);
-        when(() => mockService.importDatabase(testFile))
-            .thenAnswer((_) async {});
+        when(() => mockService.createSafetyBackup())
+            .thenAnswer((_) async => File('safety.sqlite'));
+        when(() => mockService.replaceDatabase(mockDb, testFile))
+            .thenAnswer((_) async => newDb);
 
         final states = <BackupRestoreState>[];
         provider.addListener(() => states.add(provider.state));
 
-        final result = await provider.importDatabase(testFile);
+        final result = await provider.importDatabase(testFile, mockDb);
 
         expect(result, isTrue);
         expect(states, contains(BackupRestoreState.validating));
@@ -140,10 +136,12 @@ void main() {
       test('returns false and sets error on service failure', () async {
         when(() => mockService.validateBackupFile(testFile))
             .thenAnswer((_) async => true);
-        when(() => mockService.importDatabase(testFile))
+        when(() => mockService.createSafetyBackup())
+            .thenAnswer((_) async => File('safety.sqlite'));
+        when(() => mockService.replaceDatabase(mockDb, testFile))
             .thenThrow(Exception('Import error'));
 
-        final result = await provider.importDatabase(testFile);
+        final result = await provider.importDatabase(testFile, mockDb);
 
         expect(result, isFalse);
         expect(provider.state, BackupRestoreState.error);
@@ -151,33 +149,40 @@ void main() {
       });
 
       test('isLoading is true during importing', () async {
+        final newDb = MockAppDatabase();
         when(() => mockService.validateBackupFile(testFile))
             .thenAnswer((_) async => true);
-        when(() => mockService.importDatabase(testFile)).thenAnswer((_) async {
+        when(() => mockService.createSafetyBackup())
+            .thenAnswer((_) async => File('safety.sqlite'));
+        when(() => mockService.replaceDatabase(mockDb, testFile))
+            .thenAnswer((_) async {
           expect(provider.isLoading, isTrue);
+          return newDb;
         });
 
-        await provider.importDatabase(testFile);
+        await provider.importDatabase(testFile, mockDb);
       });
 
       test('isLoading is false during validating', () async {
-        when(() => mockService.validateBackupFile(testFile)).thenAnswer((_) async {
-          // validating is not in the isLoading states
+        when(() => mockService.validateBackupFile(testFile))
+            .thenAnswer((_) async {
           expect(provider.state, BackupRestoreState.validating);
           expect(provider.isLoading, isFalse);
           return true;
         });
-        when(() => mockService.importDatabase(testFile))
-            .thenAnswer((_) async {});
+        final newDb = MockAppDatabase();
+        when(() => mockService.createSafetyBackup())
+            .thenAnswer((_) async => File('safety.sqlite'));
+        when(() => mockService.replaceDatabase(mockDb, testFile))
+            .thenAnswer((_) async => newDb);
 
-        await provider.importDatabase(testFile);
+        await provider.importDatabase(testFile, mockDb);
       });
     });
 
     group('resetState', () {
       test('returns to idle and clears messages', () async {
-        // First put provider in error state
-        when(() => mockService.exportDatabase())
+        when(() => mockService.exportAndSaveDatabase())
             .thenThrow(Exception('fail'));
         await provider.exportDatabase();
         expect(provider.state, BackupRestoreState.error);
@@ -191,10 +196,7 @@ void main() {
       });
 
       test('clears success message', () async {
-        final exportedFile = File('exported.sqlite');
-        when(() => mockService.exportDatabase())
-            .thenAnswer((_) async => exportedFile);
-        when(() => mockService.shareBackup(exportedFile))
+        when(() => mockService.exportAndSaveDatabase())
             .thenAnswer((_) async {});
 
         await provider.exportDatabase();
@@ -203,23 +205,6 @@ void main() {
         provider.resetState();
 
         expect(provider.successMessage, isNull);
-      });
-    });
-
-    group('onDatabaseReplaced callback', () {
-      test('callback is stored when provided', () {
-        var called = false;
-        final providerWithCallback = BackupRestoreProvider(
-          service: mockService,
-          onDatabaseReplaced: () => called = true,
-        );
-
-        providerWithCallback.onDatabaseReplaced!();
-        expect(called, isTrue);
-      });
-
-      test('callback is null when not provided', () {
-        expect(provider.onDatabaseReplaced, isNull);
       });
     });
   });

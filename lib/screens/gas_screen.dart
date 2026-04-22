@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../app_theme.dart';
@@ -11,12 +12,14 @@ import '../providers/locale_provider.dart';
 import '../services/analytics/analytics_models.dart';
 import '../services/interpolation/models.dart';
 import '../services/number_format_service.dart';
+import '../widgets/charts/all_time_household_chart.dart';
 import '../widgets/charts/chart_legend.dart';
 import '../widgets/charts/household_comparison_chart.dart';
 import '../widgets/charts/month_selector.dart';
 import '../widgets/charts/monthly_bar_chart.dart';
 import '../widgets/charts/monthly_summary_card.dart';
 import '../widgets/charts/year_comparison_chart.dart';
+import '../widgets/charts/yearly_summary_card.dart';
 import '../widgets/dialogs/confirm_delete_dialog.dart';
 import '../widgets/dialogs/gas_reading_form_dialog.dart';
 import '../widgets/liquid_glass_widgets.dart';
@@ -39,9 +42,11 @@ class _GasScreenState extends State<GasScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final provider = context.read<AnalyticsProvider>();
+      final now = DateTime.now();
+      final previousMonth = DateTime(now.year, now.month - 1, 1);
       provider.setSelectedMeterType(MeterType.gas);
-      provider.setSelectedMonth(DateTime.now()); // triggers _loadMonthlyData
-      provider.setSelectedYear(DateTime.now().year); // triggers _loadYearlyData + household comparison
+      provider.setSelectedMonth(previousMonth);
+      provider.setSelectedYear(previousMonth.year);
     });
   }
 
@@ -85,9 +90,9 @@ class _GasScreenState extends State<GasScreen> {
             ],
           ),
           Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
+            bottom: 16,
+            left: 8,
+            right: 8,
             child: LiquidGlassBottomNav(
               icons: const [Icons.analytics, Icons.list],
               labels: [l10n.analysis, l10n.list],
@@ -228,8 +233,9 @@ class _GasScreenState extends State<GasScreen> {
 
         // Year-over-year comparison (from yearlyData)
         if (yearlyData != null &&
-            yearlyData.previousYearBreakdown != null &&
-            yearlyData.previousYearBreakdown!.isNotEmpty) ...[
+            (yearlyData.monthlyBreakdown.isNotEmpty ||
+                (yearlyData.previousYearBreakdown != null &&
+                    yearlyData.previousYearBreakdown!.isNotEmpty))) ...[
           Text(l10n.yearOverYear,
               style: Theme.of(context).textTheme.titleMedium),
           const SizedBox(height: 8),
@@ -253,11 +259,29 @@ class _GasScreenState extends State<GasScreen> {
           ChartLegend(items: [
             ChartLegendItem(color: color, label: l10n.currentYear),
             ChartLegendItem(
-              color: color.withValues(alpha: 0.5),
+              color: color.withValues(alpha: 0.4),
               label: l10n.previousYear,
-              isDashed: true,
+              dashPattern: const [2, 4],
             ),
           ]),
+          const SizedBox(height: 24),
+        ],
+
+        // Yearly KPI card (independent of previous year data)
+        if (yearlyData != null && yearlyData.totalConsumption != null) ...[
+          YearlySummaryCard(
+            year: yearlyData.year,
+            totalConsumption: yearlyData.totalConsumption,
+            totalCost: yearlyData.totalCost,
+            extrapolatedTotal: yearlyData.extrapolatedTotal,
+            extrapolationBasisMonths: yearlyData.extrapolationBasisMonths,
+            previousYearTotal: yearlyData.previousYearTotal,
+            previousYearTotalCost: yearlyData.previousYearTotalCost,
+            unit: yearlyData.unit,
+            currencySymbol: yearlyData.currencySymbol,
+            color: color,
+            locale: locale,
+          ),
           const SizedBox(height: 24),
         ],
 
@@ -272,6 +296,16 @@ class _GasScreenState extends State<GasScreen> {
               unit: monthlyData.unit,
               locale: locale,
             ),
+          ),
+          const SizedBox(height: 24),
+        ],
+
+        // All-time household chart (only if >1 household)
+        if (analyticsProvider.allTimeHouseholdData.isNotEmpty) ...[
+          AllTimeHouseholdChart(
+            households: analyticsProvider.allTimeHouseholdData,
+            unit: monthlyData.unit,
+            locale: locale,
           ),
         ],
       ],
@@ -587,6 +621,21 @@ class _InterpolatedReadingCard extends StatelessWidget {
                 ),
               ],
             ),
+            if (item.delta != null) ...[
+              const SizedBox(height: 8),
+              Builder(builder: (context) {
+                final prevMonth = DateTime(
+                    item.timestamp.year, item.timestamp.month - 1, 1);
+                final monthName = DateFormat.yMMMM(locale).format(prevMonth);
+                return Text(
+                  '+${ValtraNumberFormat.consumption(item.delta!, locale)} $unit im $monthName',
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: AppColors.ultraViolet.withValues(alpha: 0.8),
+                    fontWeight: FontWeight.w500,
+                  ),
+                );
+              }),
+            ],
           ],
         ),
       ),

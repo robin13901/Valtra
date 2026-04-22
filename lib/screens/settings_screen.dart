@@ -9,6 +9,7 @@ import 'package:provider/provider.dart';
 import '../app_theme.dart';
 import '../l10n/app_localizations.dart';
 import '../providers/backup_restore_provider.dart';
+import '../providers/database_provider.dart';
 import '../providers/interpolation_settings_provider.dart';
 import '../providers/locale_provider.dart';
 import '../providers/theme_provider.dart';
@@ -219,7 +220,7 @@ class SettingsScreen extends StatelessWidget {
               children: [
                 ListTile(
                   contentPadding: EdgeInsets.zero,
-                  leading: const Icon(Icons.cloud_upload),
+                  leading: const Icon(Icons.upload_file),
                   title: Text(l10n.exportDatabase),
                   subtitle: provider.state == BackupRestoreState.exporting
                       ? Text(l10n.exportInProgress)
@@ -239,7 +240,7 @@ class SettingsScreen extends StatelessWidget {
                 const Divider(height: 1),
                 ListTile(
                   contentPadding: EdgeInsets.zero,
-                  leading: const Icon(Icons.cloud_download),
+                  leading: const Icon(Icons.download_rounded),
                   title: Text(l10n.importDatabase),
                   subtitle: provider.state == BackupRestoreState.importing
                       ? Text(l10n.importInProgress)
@@ -289,11 +290,7 @@ class SettingsScreen extends StatelessWidget {
     BackupRestoreProvider provider,
     AppLocalizations l10n,
   ) async {
-    final result = await FilePicker.platform.pickFiles(type: FileType.any);
-    if (result == null || result.files.single.path == null) return;
-
-    if (!context.mounted) return;
-
+    // Confirmation dialog first (like XFin)
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -304,7 +301,7 @@ class SettingsScreen extends StatelessWidget {
             onPressed: () => Navigator.of(ctx).pop(false),
             child: Text(l10n.cancel),
           ),
-          TextButton(
+          FilledButton(
             onPressed: () => Navigator.of(ctx).pop(true),
             child: Text(l10n.importDatabase),
           ),
@@ -312,18 +309,22 @@ class SettingsScreen extends StatelessWidget {
       ),
     );
 
-    if (confirmed != true) return;
+    if (confirmed != true || !context.mounted) return;
+
+    final result = await FilePicker.platform.pickFiles(type: FileType.any);
+    if (result == null || result.files.single.path == null) return;
+
     if (!context.mounted) return;
 
+    final currentDb = DatabaseProvider.instance.db;
     final success =
-        await provider.importDatabase(File(result.files.single.path!));
+        await provider.importDatabase(File(result.files.single.path!), currentDb);
 
     if (!context.mounted) return;
 
     if (success) {
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text(l10n.importSuccess)));
-      provider.onDatabaseReplaced?.call();
     } else {
       final msg = provider.errorMessage?.contains('Invalid') == true
           ? l10n.invalidBackupFile

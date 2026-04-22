@@ -45,37 +45,60 @@ class HouseholdProvider extends ChangeNotifier {
 
   /// Initializes the provider by loading persisted household selection
   /// and setting up the households stream.
+  ///
+  /// Waits for the first stream emission so that [households] and
+  /// [selectedHouseholdId] are fully resolved before the future completes.
+  /// This prevents cascading [notifyListeners] calls after the widget tree
+  /// is built (which caused `_dependents.isEmpty` assertion failures) and
+  /// eliminates household flicker on cold start.
   Future<void> init() async {
     if (_isInitialized) return;
 
     _prefs = await SharedPreferences.getInstance();
     _selectedHouseholdId = _prefs?.getInt(_selectedHouseholdKey);
 
+    // Completer that resolves after the first stream emission, so callers
+    // of init() (i.e. main()) can await a fully-populated provider.
+    final firstEmission = Completer<void>();
+
     // Subscribe to household changes
     _householdsSubscription = _dao.watchAllHouseholds().listen((households) {
       _households = households;
 
-      // If selected household was deleted, clear selection
-      if (_selectedHouseholdId != null) {
-        final stillExists =
-            households.any((h) => h.id == _selectedHouseholdId);
-        if (!stillExists) {
-          _selectedHouseholdId = null;
-          _prefs?.remove(_selectedHouseholdKey);
-        }
-      }
+      _reconcileSelection(households);
 
-      // Auto-select first household if none selected and households exist
-      if (_selectedHouseholdId == null && households.isNotEmpty) {
-        _selectedHouseholdId = households.first.id;
-        _prefs?.setInt(_selectedHouseholdKey, _selectedHouseholdId!);
+      // On the first emission, mark initialized and complete the future
+      // *before* notifying listeners.  Subsequent emissions notify normally.
+      if (!firstEmission.isCompleted) {
+        _isInitialized = true;
+        firstEmission.complete();
       }
 
       notifyListeners();
     });
 
-    _isInitialized = true;
-    notifyListeners();
+    // Wait for the stream to deliver its initial snapshot.
+    await firstEmission.future;
+  }
+
+  /// Reconciles [_selectedHouseholdId] against the current [households] list.
+  ///
+  /// - Clears the persisted selection if the household was deleted.
+  /// - Auto-selects the first household when nothing is selected.
+  void _reconcileSelection(List<Household> households) {
+    if (_selectedHouseholdId != null) {
+      final stillExists =
+          households.any((h) => h.id == _selectedHouseholdId);
+      if (!stillExists) {
+        _selectedHouseholdId = null;
+        _prefs?.remove(_selectedHouseholdKey);
+      }
+    }
+
+    if (_selectedHouseholdId == null && households.isNotEmpty) {
+      _selectedHouseholdId = households.first.id;
+      _prefs?.setInt(_selectedHouseholdKey, _selectedHouseholdId!);
+    }
   }
 
   /// Selects a household and persists the selection.

@@ -68,6 +68,7 @@ class _HouseholdFormDialogState extends State<HouseholdFormDialog> {
           children: [
             TextFormField(
               controller: _nameController,
+              textCapitalization: TextCapitalization.words,
               decoration: InputDecoration(
                 labelText: l10n.householdName,
                 hintText: l10n.householdName,
@@ -87,11 +88,12 @@ class _HouseholdFormDialogState extends State<HouseholdFormDialog> {
             const SizedBox(height: 16),
             TextFormField(
               controller: _descriptionController,
+              textCapitalization: TextCapitalization.sentences,
               decoration: InputDecoration(
                 labelText: l10n.householdDescription,
                 hintText: l10n.householdDescription,
               ),
-              maxLines: 3,
+              maxLines: 1,
             ),
             const SizedBox(height: 16),
             TextFormField(

@@ -38,7 +38,7 @@ void main() {
       final items = [
         const ChartLegendItem(color: Colors.orange, label: 'Actual'),
         const ChartLegendItem(
-            color: Colors.orange, label: 'Interpolated', isDashed: true),
+            color: Colors.orange, label: 'Interpolated', dashPattern: [4, 3]),
       ];
 
       await tester.pumpWidget(buildTestWidget(items: items));
@@ -52,7 +52,7 @@ void main() {
       final items = [
         const ChartLegendItem(color: Colors.blue, label: 'Solid'),
         const ChartLegendItem(
-            color: Colors.blue, label: 'Dashed', isDashed: true),
+            color: Colors.blue, label: 'Dashed', dashPattern: [4, 3]),
       ];
 
       await tester.pumpWidget(buildTestWidget(items: items));

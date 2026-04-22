@@ -1,22 +1,25 @@
 import 'dart:io';
 
+import 'package:flutter_file_saver/flutter_file_saver.dart';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
-import 'package:share_plus/share_plus.dart';
 import 'package:sqlite3/sqlite3.dart' as sql;
 
-/// Service for database backup, restore, validation, and sharing.
+import '../database/app_database.dart';
+import '../database/connection/shared.dart';
+
+/// Service for database backup, restore, validation, and file-save export.
 ///
 /// Handles all backup/restore business logic without UI dependencies.
 /// Uses constructor injection for directory providers, making it testable
 /// without platform channels.
-///
-/// This service does NOT manage database connection lifecycle (close/reconnect).
-/// That responsibility belongs to the provider layer.
 class BackupRestoreService {
   /// Name of the Valtra database file.
   static const dbFileName = 'valtra.sqlite';
+
+  /// Temp file name used during import.
+  static const _dbFileNameTemp = 'valtra-db-temp.sqlite';
 
   /// Expected schema version for valid Valtra databases.
   static const expectedSchemaVersion = 4;
@@ -41,25 +44,18 @@ class BackupRestoreService {
     return File(p.join(dir.path, dbFileName));
   }
 
-  /// Exports the current database to a timestamped file in the temp directory.
+  /// Exports the current database by saving it directly to the device.
   ///
-  /// Returns the exported [File] with name format:
-  /// `valtra_backup_YYYYMMDD_HHmmss.sqlite`
-  Future<File> exportDatabase() async {
+  /// Uses [FlutterFileSaver] to write the file (triggers system file-save
+  /// dialog on most platforms). File name format:
+  /// `{YYYYMMDD}-valtra-db-backup.sqlite`
+  Future<void> exportAndSaveDatabase() async {
     final db = await _dbFile;
-    final tempDir = await _getTempDirectory();
-    final timestamp = DateFormat('yyyyMMdd_HHmmss').format(DateTime.now());
-    final exportPath = p.join(tempDir.path, 'valtra_backup_$timestamp.sqlite');
-    return db.copy(exportPath);
-  }
-
-  /// Shares a backup file via the system share sheet.
-  ///
-  /// Uses [Share.shareXFiles] with SQLite MIME type.
-  Future<void> shareBackup(File file) async {
-    await Share.shareXFiles(
-      [XFile(file.path, mimeType: 'application/x-sqlite3')],
-    );
+    if (!db.existsSync()) return;
+    final bytes = await db.readAsBytes();
+    final stamp = DateFormat('yyyyMMdd').format(DateTime.now());
+    final name = '$stamp-valtra-db-backup.sqlite';
+    await FlutterFileSaver().writeFileAsBytes(fileName: name, bytes: bytes);
   }
 
   /// Validates that a file is a genuine Valtra SQLite database.
@@ -111,26 +107,34 @@ class BackupRestoreService {
     return db.copy(safetyPath);
   }
 
-  /// Imports a database file, replacing the current database.
+  /// Replaces the current database with [source], matching XFin's workflow:
   ///
-  /// Sequence:
-  /// 1. Validates the source file
-  /// 2. Creates a safety backup of the current database
-  /// 3. Copies the source file over the current database
+  /// 1. Closes [oldDb]
+  /// 2. Copies source to a temp file
+  /// 3. Deletes the current DB file and renames temp into place
+  ///    (falls back to copy + delete if rename fails)
+  /// 4. Opens a fresh [AppDatabase] and returns it
   ///
-  /// Throws [ArgumentError] if the source file is not a valid Valtra database.
-  ///
-  /// Does NOT handle database connection close/reconnect -- that is the
-  /// responsibility of the provider layer.
-  Future<void> importDatabase(File sourceFile) async {
-    final isValid = await validateBackupFile(sourceFile);
-    if (!isValid) {
-      throw ArgumentError('Invalid backup file: ${sourceFile.path}');
+  /// The caller is responsible for validation and safety-backup before
+  /// calling this method.
+  Future<AppDatabase> replaceDatabase(
+      AppDatabase oldDb, File source) async {
+    final appDbFile = await _dbFile;
+    await oldDb.close();
+
+    final tmpDir = await _getTempDirectory();
+    final tmp = File(p.join(tmpDir.path, _dbFileNameTemp));
+    if (await tmp.exists()) await tmp.delete();
+    await source.copy(tmp.path);
+
+    try {
+      if (await appDbFile.exists()) await appDbFile.delete();
+      await tmp.rename(appDbFile.path);
+    } catch (_) {
+      await tmp.copy(appDbFile.path);
+      if (await tmp.exists()) await tmp.delete();
     }
 
-    await createSafetyBackup();
-
-    final db = await _dbFile;
-    await sourceFile.copy(db.path);
+    return AppDatabase(openConnection());
   }
 }

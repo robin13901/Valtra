@@ -478,5 +478,7 @@
       "kwh": { "type": "String" },
       "percent": { "type": "String" }
     }
-  }
+  },
+  "total": "Total",
+  "perPerson": "Per person"
 }

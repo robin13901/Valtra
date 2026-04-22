@@ -18,10 +18,14 @@ class HouseholdChartData {
   /// Color for this household's line (from pieChartColors by default).
   final Color color;
 
+  /// Number of persons in this household (for per-person normalization).
+  final int personCount;
+
   const HouseholdChartData({
     required this.name,
     required this.periods,
     required this.color,
+    this.personCount = 1,
   });
 }
 

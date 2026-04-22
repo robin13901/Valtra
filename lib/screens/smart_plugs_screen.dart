@@ -36,10 +36,12 @@ class _SmartPlugsScreenState extends State<SmartPlugsScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final analyticsProvider = context.read<AnalyticsProvider>();
+      final now = DateTime.now();
+      final previousMonth = DateTime(now.year, now.month - 1, 1);
       analyticsProvider.setSelectedMeterType(MeterType.electricity);
-      analyticsProvider.setSelectedMonth(DateTime.now());
-      analyticsProvider.setSelectedYear(DateTime.now().year);
-      context.read<SmartPlugAnalyticsProvider>().setSelectedMonth(DateTime.now());
+      analyticsProvider.setSelectedMonth(previousMonth);
+      analyticsProvider.setSelectedYear(previousMonth.year);
+      context.read<SmartPlugAnalyticsProvider>().setSelectedMonth(previousMonth);
     });
   }
 
@@ -70,9 +72,9 @@ class _SmartPlugsScreenState extends State<SmartPlugsScreen> {
             ],
           ),
           Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
+            bottom: 16,
+            left: 8,
+            right: 8,
             child: LiquidGlassBottomNav(
               icons: const [Icons.analytics, Icons.list],
               labels: [l10n.analysis, l10n.list],

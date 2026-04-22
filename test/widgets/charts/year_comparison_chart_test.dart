@@ -904,7 +904,7 @@ void main() {
         final data = _extractChartData(tester);
         final previousLine = data.lineBarsData[1];
         expect(previousLine.dashArray, isNotNull);
-        expect(previousLine.dashArray, [8, 4]);
+        expect(previousLine.dashArray, [2, 4]);
       });
 
       testWidgets('current year line is NOT dashed (solid)', (tester) async {

@@ -289,6 +289,19 @@ class HeatingProvider extends ChangeNotifier {
 
     final merged = [...realItems, ...interpolatedItems];
     merged.sort((a, b) => b.timestamp.compareTo(a.timestamp));
+
+    for (int i = 0; i < merged.length; i++) {
+      if (merged[i].isInterpolated && i + 1 < merged.length) {
+        final diff = merged[i].value - merged[i + 1].value;
+        merged[i] = ReadingDisplayItem(
+          timestamp: merged[i].timestamp,
+          value: merged[i].value,
+          isInterpolated: true,
+          delta: diff > 0 ? diff : null,
+        );
+      }
+    }
+
     return merged;
   }
 

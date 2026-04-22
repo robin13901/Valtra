@@ -1,8 +1,10 @@
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sqlite3/sqlite3.dart' as sql;
+import 'package:valtra/database/app_database.dart';
 import 'package:valtra/services/backup_restore_service.dart';
 
 void main() {
@@ -29,39 +31,6 @@ void main() {
   tearDown(() {
     tempDbDir.deleteSync(recursive: true);
     tempExportDir.deleteSync(recursive: true);
-  });
-
-  group('exportDatabase', () {
-    test('returns file with timestamped name matching pattern', () async {
-      final exported = await service.exportDatabase();
-
-      expect(
-        exported.path.split(Platform.pathSeparator).last,
-        matches(RegExp(r'^valtra_backup_\d{8}_\d{6}\.sqlite$')),
-      );
-    });
-
-    test('returned file exists', () async {
-      final exported = await service.exportDatabase();
-
-      expect(exported.existsSync(), isTrue);
-    });
-
-    test('returned file has same bytes as source', () async {
-      final sourceFile = File('${tempDbDir.path}/valtra.sqlite');
-      final sourceBytes = sourceFile.readAsBytesSync();
-
-      final exported = await service.exportDatabase();
-      final exportedBytes = exported.readAsBytesSync();
-
-      expect(exportedBytes, equals(sourceBytes));
-    });
-
-    test('exported file is placed in temp directory', () async {
-      final exported = await service.exportDatabase();
-
-      expect(exported.parent.path, equals(tempExportDir.path));
-    });
   });
 
   group('validateBackupFile', () {
@@ -169,32 +138,7 @@ void main() {
     });
   });
 
-  group('importDatabase', () {
-    test('throws on invalid source file', () async {
-      final invalidFile = File('${tempExportDir.path}/invalid.sqlite');
-      invalidFile.writeAsBytesSync([1, 2, 3]);
-
-      expect(
-        () => service.importDatabase(invalidFile),
-        throwsA(isA<ArgumentError>()),
-      );
-    });
-
-    test('creates safety backup before replacing', () async {
-      final validSource = File('${tempExportDir.path}/source.sqlite');
-      _createValidValtraDb(validSource.path, schemaVersion: 4);
-
-      await service.importDatabase(validSource);
-
-      // Check that a safety backup was created in the temp dir
-      final tempFiles = tempExportDir.listSync();
-      final safetyFiles = tempFiles
-          .whereType<File>()
-          .where((f) => f.path.contains('safety_backup'))
-          .toList();
-      expect(safetyFiles, hasLength(1));
-    });
-
+  group('replaceDatabase', () {
     test('replaces DB file with source file content', () async {
       // Create a valid source with distinct content
       final validSource = File('${tempExportDir.path}/source.sqlite');
@@ -206,21 +150,29 @@ void main() {
 
       final sourceBytes = validSource.readAsBytesSync();
 
-      await service.importDatabase(validSource);
-
+      // Create an AppDatabase that replaceDatabase can close
       final dbFile = File('${tempDbDir.path}/valtra.sqlite');
+      final oldDb = AppDatabase(NativeDatabase(dbFile));
+
+      final newDb = await service.replaceDatabase(oldDb, validSource);
+      await newDb.close();
+
       final dbBytes = dbFile.readAsBytesSync();
       expect(dbBytes, equals(sourceBytes));
     });
 
-    test('throws on non-existent source file', () async {
-      final nonExistent =
-          File('${tempExportDir.path}/does_not_exist.sqlite');
+    test('returns a usable AppDatabase', () async {
+      final validSource = File('${tempExportDir.path}/source.sqlite');
+      _createValidValtraDb(validSource.path, schemaVersion: 4);
 
-      expect(
-        () => service.importDatabase(nonExistent),
-        throwsA(isA<ArgumentError>()),
-      );
+      final dbFile = File('${tempDbDir.path}/valtra.sqlite');
+      final oldDb = AppDatabase(NativeDatabase(dbFile));
+
+      final newDb = await service.replaceDatabase(oldDb, validSource);
+
+      // The returned DB should be usable (not closed)
+      expect(newDb, isA<AppDatabase>());
+      await newDb.close();
     });
   });
 }

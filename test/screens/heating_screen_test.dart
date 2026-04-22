@@ -804,16 +804,19 @@ void main() {
   group('HeatingScreen - Per-Heater Pie Chart', () {
     testWidgets('pie chart renders when heating meters have deltas in month',
         (tester) => tester.runAsync(() async {
-              // Add two meters with readings in current month
+              // Add two meters with readings in previous month
+              // (screen defaults to previous month)
               final meter1Id =
                   await dao.insertMeter(HeatingMetersCompanion.insert(
                 householdId: householdId,
                 roomId: roomId,
                 name: 'Radiator A',
               ));
-              final year = DateTime.now().year;
-              final month = DateTime.now().month;
-              // Two readings = one delta in current month
+              final now = DateTime.now();
+              final prevMonth = DateTime(now.year, now.month - 1, 1);
+              final year = prevMonth.year;
+              final month = prevMonth.month;
+              // Two readings = one delta in previous month
               await dao.insertReading(HeatingReadingsCompanion.insert(
                 heatingMeterId: meter1Id,
                 timestamp: DateTime(year, month, 1),
@@ -890,15 +893,17 @@ void main() {
 
     testWidgets('breakdown list items display meter names and percentages',
         (tester) => tester.runAsync(() async {
-              // Add two meters with readings in current month
+              // Add two meters with readings in previous month
               final meter1Id =
                   await dao.insertMeter(HeatingMetersCompanion.insert(
                 householdId: householdId,
                 roomId: roomId,
                 name: 'Radiator One',
               ));
-              final year = DateTime.now().year;
-              final month = DateTime.now().month;
+              final now2 = DateTime.now();
+              final prevMonth2 = DateTime(now2.year, now2.month - 1, 1);
+              final year = prevMonth2.year;
+              final month = prevMonth2.month;
               await dao.insertReading(HeatingReadingsCompanion.insert(
                 heatingMeterId: meter1Id,
                 timestamp: DateTime(year, month, 1),

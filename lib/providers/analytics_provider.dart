@@ -31,6 +31,7 @@ class AnalyticsProvider extends ChangeNotifier {
   final CostConfigProvider _costConfigProvider;
 
   int? _householdId;
+  bool _disposed = false;
   DateTime _selectedMonth =
       DateTime(DateTime.now().year, DateTime.now().month, 1);
   MeterType _selectedMeterType = MeterType.electricity;
@@ -42,6 +43,7 @@ class AnalyticsProvider extends ChangeNotifier {
   Map<MeterType, MeterTypeSummary> _overviewSummaries = {};
   bool _isLoading = false;
   List<HouseholdChartData> _householdComparisonData = [];
+  List<HouseholdChartData> _allTimeHouseholdData = [];
 
   /// Per-meter heating ratios, parallel to the readings list from _getReadingsPerMeter.
   /// null = own_meter (use full consumption), 0.0-1.0 = central_meter ratio.
@@ -67,6 +69,17 @@ class AnalyticsProvider extends ChangeNotifier {
         _settingsProvider = settingsProvider,
         _costConfigProvider = costConfigProvider;
 
+  @override
+  void dispose() {
+    _disposed = true;
+    super.dispose();
+  }
+
+  @override
+  void notifyListeners() {
+    if (!_disposed) super.notifyListeners();
+  }
+
   // Getters
   int? get householdId => _householdId;
   DateTime get selectedMonth => _selectedMonth;
@@ -77,6 +90,7 @@ class AnalyticsProvider extends ChangeNotifier {
   Map<MeterType, MeterTypeSummary> get overviewSummaries => _overviewSummaries;
   bool get isLoading => _isLoading;
   List<HouseholdChartData> get householdComparisonData => _householdComparisonData;
+  List<HouseholdChartData> get allTimeHouseholdData => _allTimeHouseholdData;
 
   void setHouseholdId(int? id) {
     if (_householdId == id) return;
@@ -230,11 +244,24 @@ class AnalyticsProvider extends ChangeNotifier {
       final DateTime lineEnd =
           DateTime(_selectedMonth.year, _selectedMonth.month + 1, 1);
 
-      // Bar chart range: 6 months back from selected month
+      // Bar chart range: center selected month in a 12-bar window
+      // Clamp future months to not exceed current month
+      final now = DateTime.now();
+      final currentMonthStart = DateTime(now.year, now.month, 1);
+      int monthsAfter = 5;
+      final desiredEnd = DateTime(
+          _selectedMonth.year, _selectedMonth.month + monthsAfter + 1, 1);
+      if (desiredEnd.isAfter(
+          DateTime(currentMonthStart.year, currentMonthStart.month + 1, 1))) {
+        monthsAfter = (currentMonthStart.year - _selectedMonth.year) * 12 +
+            (currentMonthStart.month - _selectedMonth.month);
+        if (monthsAfter < 0) monthsAfter = 0;
+      }
+      final monthsBefore = 11 - monthsAfter;
       final barStart =
-          DateTime(_selectedMonth.year, _selectedMonth.month - 5, 1);
+          DateTime(_selectedMonth.year, _selectedMonth.month - monthsBefore, 1);
       final barEnd =
-          DateTime(_selectedMonth.year, _selectedMonth.month + 1, 1);
+          DateTime(_selectedMonth.year, _selectedMonth.month + monthsAfter + 1, 1);
 
       // Combine range for data fetch (earliest to latest)
       final fetchStart = barStart.isBefore(lineStart) ? barStart : lineStart;
@@ -522,6 +549,11 @@ class AnalyticsProvider extends ChangeNotifier {
       }
 
       await _loadHouseholdComparison(_selectedMeterType, yearStart, yearEnd);
+      try {
+        await _loadAllTimeHouseholdData(_selectedMeterType);
+      } catch (_) {
+        _allTimeHouseholdData = [];
+      }
 
       _yearlyData = YearlyAnalyticsData(
         meterType: _selectedMeterType,
@@ -645,9 +677,45 @@ class AnalyticsProvider extends ChangeNotifier {
         name: household.name,
         periods: consumption,
         color: pieChartColors[i % pieChartColors.length],
+        personCount: household.personCount,
       ));
     }
     _householdComparisonData = result;
+  }
+
+  Future<void> _loadAllTimeHouseholdData(MeterType type) async {
+    final allHouseholds = await _householdDao.getAllHouseholds();
+    if (allHouseholds.isEmpty) {
+      _allTimeHouseholdData = [];
+      return;
+    }
+
+    final result = <HouseholdChartData>[];
+    for (int i = 0; i < allHouseholds.length; i++) {
+      final household = allHouseholds[i];
+      final rangeStart = DateTime(2020, 1, 1);
+      final now = DateTime.now();
+      final rangeEnd = DateTime(now.year, now.month + 1, 1);
+
+      final readings = await _getReadingsPerMeterForHousehold(
+        household.id, type, rangeStart, rangeEnd,
+      );
+      if (readings.isEmpty) continue;
+
+      final consumption = _aggregateMonthlyConsumption(
+        readings, rangeStart, rangeEnd,
+        ratios: type == MeterType.heating ? _heatingRatios : null,
+      );
+      if (consumption.isEmpty) continue;
+
+      result.add(HouseholdChartData(
+        name: household.name,
+        periods: consumption,
+        color: pieChartColors[i % pieChartColors.length],
+        personCount: household.personCount,
+      ));
+    }
+    _allTimeHouseholdData = result;
   }
 
   /// Aggregate monthly consumption across multiple meters.

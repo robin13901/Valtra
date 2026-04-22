@@ -23,6 +23,7 @@ import 'providers/household_provider.dart';
 import 'providers/analytics_provider.dart';
 import 'providers/backup_restore_provider.dart';
 import 'providers/cost_config_provider.dart';
+import 'providers/database_provider.dart';
 import 'providers/interpolation_settings_provider.dart';
 import 'providers/locale_provider.dart';
 import 'providers/smart_plug_analytics_provider.dart';
@@ -57,6 +58,7 @@ void main() async {
 
   // Initialize database
   final database = AppDatabase(openConnection());
+  DatabaseProvider.instance.initialize(database);
 
   // Initialize household provider
   final householdProvider = HouseholdProvider(HouseholdDao(database));

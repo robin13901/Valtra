@@ -1813,6 +1813,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Smart Plugs: {kwh} kWh ({percent}%)'**
   String smartPlugCoverage(String kwh, String percent);
+
+  /// No description provided for @total.
+  ///
+  /// In en, this message translates to:
+  /// **'Total'**
+  String get total;
+
+  /// No description provided for @perPerson.
+  ///
+  /// In en, this message translates to:
+  /// **'Per person'**
+  String get perPerson;
 }
 
 class _AppLocalizationsDelegate

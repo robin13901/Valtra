@@ -7,11 +7,6 @@ import '../../services/interpolation/models.dart';
 import '../../services/number_format_service.dart';
 import 'chart_axis_style.dart';
 
-/// A line chart overlaying current year vs previous year monthly consumption.
-///
-/// X-axis positions use calendar month indices (0=Jan, 11=Dec) so both
-/// current and previous year lines are aligned by calendar month regardless
-/// of which months have data.
 class YearComparisonChart extends StatelessWidget {
   final List<PeriodConsumption> currentYear;
   final List<PeriodConsumption>? previousYear;
@@ -19,14 +14,10 @@ class YearComparisonChart extends StatelessWidget {
   final String unit;
   final String locale;
 
-  /// Optional cost data for kWh/EUR toggle support (parallel to consumption periods).
   final List<double?>? currentYearCosts;
   final List<double?>? previousYearCosts;
 
-  /// When true, chart displays cost values instead of consumption.
   final bool showCosts;
-
-  /// Unit label for cost mode (e.g. 'EUR').
   final String? costUnit;
 
   const YearComparisonChart({
@@ -53,7 +44,6 @@ class YearComparisonChart extends StatelessWidget {
     );
   }
 
-  /// Compute the maximum calendar month index across both datasets.
   double _computeMaxX() {
     double maxMonth = 0;
     for (final p in currentYear) {
@@ -70,13 +60,12 @@ class YearComparisonChart extends StatelessWidget {
   }
 
   LineChartData _buildData(BuildContext context) {
+    // Build current year spots (actual data only, skip extrapolated)
     List<FlSpot> currentSpots;
-    List<FlSpot>? previousSpots;
-
     if (showCosts && currentYearCosts != null) {
-      // Cost mode: pair each period's calendar month with its cost value
       currentSpots = [];
       for (int i = 0; i < currentYear.length; i++) {
+        if (currentYear[i].isExtrapolated) continue;
         final cost =
             i < currentYearCosts!.length ? currentYearCosts![i] : null;
         if (cost != null) {
@@ -87,13 +76,15 @@ class YearComparisonChart extends StatelessWidget {
         }
       }
     } else {
-      // Consumption mode: use calendar month position
       currentSpots = currentYear
+          .where((p) => !p.isExtrapolated)
           .map((p) =>
               FlSpot((p.periodStart.month - 1).toDouble(), p.consumption))
           .toList();
     }
 
+    // Build previous year spots
+    List<FlSpot>? previousSpots;
     if (showCosts && previousYearCosts != null && previousYear != null) {
       previousSpots = [];
       for (int i = 0; i < previousYear!.length; i++) {
@@ -130,52 +121,53 @@ class YearComparisonChart extends StatelessWidget {
       minY: 0,
       maxY: maxY,
       lineBarsData: [
-        // Current year: solid line
-        LineChartBarData(
-          spots: currentSpots,
-          color: primaryColor,
-          barWidth: 2.5,
-          isCurved: true,
-          curveSmoothness: 0.25,
-          preventCurveOverShooting: true,
-          dotData: FlDotData(
-            show: true,
-            getDotPainter: (spot, pct, bar, idx) => FlDotCirclePainter(
-              radius: 4,
-              color: primaryColor,
-              strokeColor: Theme.of(context).colorScheme.surface,
-              strokeWidth: 1.5,
-            ),
-          ),
-          belowBarData: BarAreaData(
-            show: true,
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [
-                primaryColor.withValues(alpha: 0.3),
-                primaryColor.withValues(alpha: 0.0),
-              ],
-            ),
-          ),
-        ),
-        // Previous year: dashed line
-        if (previousSpots != null && previousSpots.isNotEmpty)
+        // Current year: solid line, full color
+        if (currentSpots.isNotEmpty)
           LineChartBarData(
-            spots: previousSpots,
-            color: primaryColor.withValues(alpha: 0.5),
-            barWidth: 2.0,
+            spots: currentSpots,
+            color: primaryColor,
+            barWidth: 2.5,
             isCurved: true,
             curveSmoothness: 0.25,
             preventCurveOverShooting: true,
-            dashArray: [8, 4],
             dotData: FlDotData(
               show: true,
               getDotPainter: (spot, pct, bar, idx) => FlDotCirclePainter(
-                radius: 3,
+                radius: 4,
+                color: primaryColor,
+                strokeColor: Theme.of(context).colorScheme.surface,
+                strokeWidth: 1.5,
+              ),
+            ),
+            belowBarData: BarAreaData(
+              show: true,
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  primaryColor.withValues(alpha: 0.3),
+                  primaryColor.withValues(alpha: 0.0),
+                ],
+              ),
+            ),
+          ),
+        // Previous year: dotted line, faded
+        if (previousSpots != null && previousSpots.isNotEmpty)
+          LineChartBarData(
+            spots: previousSpots,
+            color: primaryColor.withValues(alpha: 0.4),
+            barWidth: 1.5,
+            isCurved: true,
+            curveSmoothness: 0.25,
+            preventCurveOverShooting: true,
+            dashArray: [2, 4],
+            dotData: FlDotData(
+              show: true,
+              getDotPainter: (spot, pct, bar, idx) => FlDotCirclePainter(
+                radius: 2.5,
                 color: Theme.of(context).colorScheme.surface,
-                strokeColor: primaryColor.withValues(alpha: 0.5),
-                strokeWidth: 2,
+                strokeColor: primaryColor.withValues(alpha: 0.4),
+                strokeWidth: 1.5,
               ),
             ),
           ),
@@ -220,7 +212,6 @@ class YearComparisonChart extends StatelessWidget {
             if (index < 0 || index > 11) {
               return const SizedBox.shrink();
             }
-            // Show every other month label if range > 6 months
             final monthRange = _computeMaxX().toInt() + 1;
             if (monthRange > 6 && index % 2 != 0) {
               return const SizedBox.shrink();

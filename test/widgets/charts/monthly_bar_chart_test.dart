@@ -632,10 +632,10 @@ void main() {
       final barChart = tester.widget<BarChart>(find.byType(BarChart));
       final data = barChart.data;
 
-      // Past bars should have alpha around 0.85
+      // Past bars should have alpha around 0.5 (dimmed for contrast with highlighted)
       for (final group in data.barGroups) {
         final alpha = group.barRods[0].color!.a;
-        expect(alpha, closeTo(0.85, 0.05));
+        expect(alpha, closeTo(0.5, 0.05));
       }
     });
   });

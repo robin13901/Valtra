@@ -63,6 +63,7 @@ class _WaterMeterFormDialogState extends State<WaterMeterFormDialog> {
             // Name input
             TextFormField(
               controller: _nameController,
+              textCapitalization: TextCapitalization.words,
               decoration: InputDecoration(
                 labelText: l10n.waterMeterName,
                 hintText: l10n.waterMeterNameHint,

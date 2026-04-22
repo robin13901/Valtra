@@ -7,7 +7,20 @@
       "mcp__filesystem__list_allowed_directories",
       "mcp__filesystem__list_directory",
       "Bash(grep -n \"Future.*init\\\\|async init\" /c/SAPDevelop/Privat/Valtra/lib/providers/*.dart)",
-      "Bash(flutter test:*)"
+      "Bash(flutter test:*)",
+      "Bash(git log *)",
+      "Bash(dart run *)",
+      "Bash(dart -e \"print\\(DateTime.now\\(\\).timeZoneOffset\\); print\\(DateTime.now\\(\\).timeZoneName\\); print\\(DateTime\\(2024,1,1\\).timeZoneOffset\\);\")",
+      "Read(//c/SAPDevelop/Privat/XFin/lib/**)",
+      "Read(//c/SAPDevelop/Privat/XFin/lib/widgets/filter/**)",
+      "Read(//c/SAPDevelop/Privat/XFin/lib/widgets/**)",
+      "Read(//c/SAPDevelop/Privat/XFin/**)",
+      "Bash(xargs grep *)",
+      "Bash(flutter pub *)",
+      "Bash(flutter gen-l10n *)"
+    ],
+    "additionalDirectories": [
+      "\\tmp"
     ]
   }
 }

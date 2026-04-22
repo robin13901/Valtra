@@ -39,7 +39,7 @@ Widget buildCircleButton({
     child: IconButton(
       icon: Icon(
         icon,
-        color: isDark ? AppColors.lemonChiffon : AppColors.ultraViolet,
+        color: isDark ? Colors.white : AppColors.ultraViolet,
       ),
       onPressed: onPressed,
     ),
@@ -55,7 +55,7 @@ PreferredSizeWidget buildGlassAppBar({
   bool centerTitle = true,
 }) {
   final isDark = _isDarkFromTheme(context);
-  final textColor = isDark ? AppColors.lemonChiffon : AppColors.ultraViolet;
+  final textColor = isDark ? Colors.white : AppColors.ultraViolet;
 
   return PreferredSize(
     preferredSize: const Size.fromHeight(kToolbarHeight),
@@ -130,11 +130,10 @@ Widget buildLiquidCircleButton({
   );
 }
 
-/// Bottom navigation bar with LiquidGlass pill shape and inline FAB as the
-/// rightmost element inside the pill.
+/// Bottom navigation bar with LiquidGlass pill shape and separate circular
+/// FAB button outside the pill — matching the XFin reference design.
 ///
-/// Replaces the old [GlassBottomNav] with real liquid_glass_renderer effects.
-/// Layout: [expanded nav items pill with optional right FAB at end]
+/// Layout: [center nav pill (expanded)] + [right circle button (64px)]
 ///
 /// The active tab is indicated by color/tint change (brighter color on icon
 /// and label) — no dot indicator is rendered.
@@ -145,7 +144,7 @@ class LiquidGlassBottomNav extends StatelessWidget {
   final int currentIndex;
   final ValueChanged<int> onTap;
 
-  // RIGHT button (inline FAB inside pill)
+  // RIGHT circular button (separate element outside pill)
   final IconData rightIcon;
   final VoidCallback? onRightTap;
   final Set<int>? rightVisibleForIndices; // null = always visible
@@ -172,8 +171,8 @@ class LiquidGlassBottomNav extends StatelessWidget {
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
     final settings = liquidGlassSettings(context);
-    final bool isDark = theme.brightness == Brightness.dark;
-    const double pillHeight = 56.0;
+    const double circleSize = 64.0;
+    final double navHeight = height < circleSize ? circleSize : height;
 
     final bool showRight = rightVisibleForIndices == null ||
         rightVisibleForIndices!.contains(currentIndex);
@@ -186,115 +185,122 @@ class LiquidGlassBottomNav extends StatelessWidget {
             EdgeInsets.fromLTRB(horizontalPadding, 8, horizontalPadding, 8),
         child: SizedBox(
           width: double.infinity,
-          height: pillHeight,
-          child: LiquidGlassLayer(
-            settings: settings,
-            child: LiquidGlass.grouped(
-              shape: LiquidRoundedSuperellipse(
-                borderRadius: pillHeight / 2,
-              ),
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: itemHorizontalPadding,
-                ),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(pillHeight / 2),
-                ),
-                child: Row(
-                  children: [
-                    // Nav items (evenly distributed)
-                    Expanded(
-                      child: LayoutBuilder(
-                        builder: (context, constraints) {
-                          final int itemCount = icons.length;
-                          final double totalAvailable =
-                              constraints.maxWidth.isFinite
-                                  ? constraints.maxWidth
-                                  : MediaQuery.of(context).size.width;
+          height: navHeight,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // Left spacer (mirrors right FAB area for symmetry)
+              const SizedBox(width: 76),
 
-                          const double minItemWidth = 56.0;
-                          const double maxItemWidth = 140.0;
+              // Center pill (LiquidGlass superellipse)
+              Expanded(
+                child: SizedBox(
+                  height: navHeight,
+                  child: LiquidGlassLayer(
+                    settings: settings,
+                    child: LiquidGlass.grouped(
+                      shape: LiquidRoundedSuperellipse(
+                        borderRadius: circleSize / 2,
+                      ),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: itemHorizontalPadding,
+                        ),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(circleSize / 2),
+                        ),
+                        child: LayoutBuilder(
+                          builder: (context, constraints) {
+                            final int itemCount = icons.length;
+                            final double totalAvailable =
+                                constraints.maxWidth.isFinite
+                                    ? constraints.maxWidth
+                                    : MediaQuery.of(context).size.width;
 
-                          double perItemWidth = totalAvailable / itemCount;
-                          perItemWidth =
-                              perItemWidth.clamp(minItemWidth, maxItemWidth);
+                            const double minItemWidth = 56.0;
+                            const double maxItemWidth = 140.0;
 
-                          final bool fits =
-                              perItemWidth * itemCount <= totalAvailable + 0.5;
+                            double perItemWidth = totalAvailable / itemCount;
+                            perItemWidth =
+                                perItemWidth.clamp(minItemWidth, maxItemWidth);
 
-                          if (fits) {
-                            return Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: List.generate(itemCount, (index) {
-                                final bool isSelected = index == currentIndex;
-                                return GestureDetector(
-                                  behavior: HitTestBehavior.opaque,
-                                  onTap: () => onTap(index),
-                                  key: keys[index],
-                                  child: SizedBox(
-                                    width: perItemWidth,
-                                    height: pillHeight,
-                                    child: _buildNavColumn(
-                                      icon: icons[index],
-                                      label: labels[index],
-                                      isSelected: isSelected,
-                                      theme: theme,
-                                    ),
-                                  ),
-                                );
-                              }),
-                            );
-                          } else {
-                            return Row(
-                              children: List.generate(itemCount, (index) {
-                                final bool isSelected = index == currentIndex;
-                                return Expanded(
-                                  child: GestureDetector(
+                            final bool fits =
+                                perItemWidth * itemCount <=
+                                    totalAvailable + 0.5;
+
+                            if (fits) {
+                              return Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                children:
+                                    List.generate(itemCount, (index) {
+                                  final bool isSelected =
+                                      index == currentIndex;
+                                  return GestureDetector(
                                     behavior: HitTestBehavior.opaque,
                                     onTap: () => onTap(index),
                                     key: keys[index],
-                                    child: _buildNavColumn(
-                                      icon: icons[index],
-                                      label: labels[index],
-                                      isSelected: isSelected,
-                                      theme: theme,
+                                    child: SizedBox(
+                                      width: perItemWidth,
+                                      height: navHeight,
+                                      child: _buildNavColumn(
+                                        icon: icons[index],
+                                        label: labels[index],
+                                        isSelected: isSelected,
+                                        theme: theme,
+                                      ),
                                     ),
-                                  ),
-                                );
-                              }),
-                            );
-                          }
-                        },
-                      ),
-                    ),
-
-                    // Inline right FAB (fixed width, rightmost element in pill)
-                    if (showRight)
-                      GestureDetector(
-                        behavior: HitTestBehavior.opaque,
-                        onTap: onRightTap,
-                        key: const Key('right_fab'),
-                        child: Container(
-                          width: 48,
-                          height: 48,
-                          margin: const EdgeInsets.symmetric(horizontal: 4),
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: theme.colorScheme.primary.withValues(
-                              alpha: isDark ? 0.2 : 0.15,
-                            ),
-                          ),
-                          child: Icon(
-                            rightIcon,
-                            color: theme.colorScheme.primary,
-                            size: 22,
-                          ),
+                                  );
+                                }),
+                              );
+                            } else {
+                              return Row(
+                                children:
+                                    List.generate(itemCount, (index) {
+                                  final bool isSelected =
+                                      index == currentIndex;
+                                  return Expanded(
+                                    child: GestureDetector(
+                                      behavior: HitTestBehavior.opaque,
+                                      onTap: () => onTap(index),
+                                      key: keys[index],
+                                      child: _buildNavColumn(
+                                        icon: icons[index],
+                                        label: labels[index],
+                                        isSelected: isSelected,
+                                        theme: theme,
+                                      ),
+                                    ),
+                                  );
+                                }),
+                              );
+                            }
+                          },
                         ),
                       ),
-                  ],
+                    ),
+                  ),
                 ),
               ),
-            ),
+
+              // Right circular button (separate LiquidGlass circle)
+              Padding(
+                padding: const EdgeInsets.only(left: 12),
+                child: showRight
+                    ? buildLiquidCircleButton(
+                        child: Icon(
+                          rightIcon,
+                          size: 26,
+                          color: theme.iconTheme.color,
+                        ),
+                        size: circleSize,
+                        onTap: onRightTap,
+                        settings: settings,
+                        key: const Key('right_fab'),
+                      )
+                    : const SizedBox(width: circleSize, height: circleSize),
+              ),
+            ],
           ),
         ),
       ),

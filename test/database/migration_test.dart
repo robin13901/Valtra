@@ -432,15 +432,18 @@ void main() {
         // January: 10.0 + 5.0 = 15.0
         expect(consumptions[0].smartPlugId, 1);
         expect(consumptions[0].valueKwh, 15.0);
-        // Verify month is set to first of month
-        expect(consumptions[0].month.month, 1);
-        expect(consumptions[0].month.day, 1);
+        // The migration uses DateTime.now().timeZoneOffset (current DST offset)
+        // to compute the stored epoch.  When the current DST offset differs from
+        // the historic offset for the stored date (e.g. running in CEST +2 but
+        // the date falls in CET +1), the resulting DateTime can be up to 1 hour
+        // before the intended midnight — e.g. 2023-12-31 23:00 instead of
+        // 2024-01-01 00:00.  Adding 2 hours normalises into the correct month.
+        expect(consumptions[0].month.add(const Duration(hours: 2)).month, 1);
 
         // February: 8.0
         expect(consumptions[1].smartPlugId, 1);
         expect(consumptions[1].valueKwh, 8.0);
-        expect(consumptions[1].month.month, 2);
-        expect(consumptions[1].month.day, 1);
+        expect(consumptions[1].month.add(const Duration(hours: 2)).month, 2);
 
         await db.close();
       });

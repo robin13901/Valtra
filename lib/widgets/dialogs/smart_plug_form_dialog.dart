@@ -74,6 +74,7 @@ class _SmartPlugFormDialogState extends State<SmartPlugFormDialog> {
           children: [
             TextFormField(
               controller: _nameController,
+              textCapitalization: TextCapitalization.words,
               decoration: InputDecoration(
                 labelText: l10n.smartPlugName,
               ),

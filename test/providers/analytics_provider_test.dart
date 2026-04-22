@@ -1301,10 +1301,12 @@ void main() {
       final household1 = _MockHousehold();
       when(() => household1.id).thenReturn(1);
       when(() => household1.name).thenReturn('Home A');
+      when(() => household1.personCount).thenReturn(1);
 
       final household2 = _MockHousehold();
       when(() => household2.id).thenReturn(2);
       when(() => household2.name).thenReturn('Home B');
+      when(() => household2.personCount).thenReturn(2);
 
       when(() => mockHouseholdDao.getAllHouseholds())
           .thenAnswer((_) async => [household1, household2]);

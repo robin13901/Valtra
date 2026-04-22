@@ -76,7 +76,6 @@ void main() {
       when(() => backupRestoreProvider.isLoading).thenReturn(false);
       when(() => backupRestoreProvider.errorMessage).thenReturn(null);
       when(() => backupRestoreProvider.successMessage).thenReturn(null);
-      when(() => backupRestoreProvider.onDatabaseReplaced).thenReturn(null);
 
       await tester.pumpWidget(MultiProvider(
         providers: [

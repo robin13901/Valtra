@@ -2,7 +2,9 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 
+import '../database/app_database.dart';
 import '../services/backup_restore_service.dart';
+import 'database_provider.dart';
 
 /// State of the backup/restore operation.
 enum BackupRestoreState { idle, exporting, importing, validating, success, error }
@@ -10,14 +12,10 @@ enum BackupRestoreState { idle, exporting, importing, validating, success, error
 /// Manages backup and restore operations, bridging [BackupRestoreService]
 /// to the UI layer via [ChangeNotifier].
 ///
-/// Provides loading indicators, success/error messages, and an optional
-/// [onDatabaseReplaced] callback that the app can use to reinitialize
-/// the database connection after a successful import.
+/// Provides loading indicators, success/error messages, and integrates
+/// with [DatabaseProvider] to reinitialize the database after import.
 class BackupRestoreProvider extends ChangeNotifier {
   final BackupRestoreService _service;
-
-  /// Called after a successful database import so the app can reinitialize.
-  final VoidCallback? onDatabaseReplaced;
 
   BackupRestoreState _state = BackupRestoreState.idle;
   String? _errorMessage;
@@ -37,15 +35,10 @@ class BackupRestoreProvider extends ChangeNotifier {
       _state == BackupRestoreState.exporting ||
       _state == BackupRestoreState.importing;
 
-  BackupRestoreProvider({
-    required BackupRestoreService service,
-    this.onDatabaseReplaced,
-  }) : _service = service;
+  BackupRestoreProvider({required BackupRestoreService service})
+      : _service = service;
 
-  /// Exports the database and opens the system share sheet.
-  ///
-  /// Sets state to [BackupRestoreState.exporting] during the operation,
-  /// then to [BackupRestoreState.success] or [BackupRestoreState.error].
+  /// Exports the database and saves it directly to the device.
   Future<void> exportDatabase() async {
     _state = BackupRestoreState.exporting;
     _errorMessage = null;
@@ -53,8 +46,7 @@ class BackupRestoreProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final file = await _service.exportDatabase();
-      await _service.shareBackup(file);
+      await _service.exportAndSaveDatabase();
       _state = BackupRestoreState.success;
       _successMessage = 'Database exported successfully';
       notifyListeners();
@@ -68,10 +60,9 @@ class BackupRestoreProvider extends ChangeNotifier {
   /// Imports a database file after validation.
   ///
   /// Returns `true` if the import succeeded, `false` otherwise.
-  /// Sets state through [BackupRestoreState.validating] ->
-  /// [BackupRestoreState.importing] -> [BackupRestoreState.success]
-  /// (or [BackupRestoreState.error] on failure).
-  Future<bool> importDatabase(File sourceFile) async {
+  /// Closes the old database, replaces the file, and reinitializes
+  /// via [DatabaseProvider].
+  Future<bool> importDatabase(File sourceFile, AppDatabase currentDb) async {
     _state = BackupRestoreState.validating;
     _errorMessage = null;
     _successMessage = null;
@@ -89,7 +80,10 @@ class BackupRestoreProvider extends ChangeNotifier {
       _state = BackupRestoreState.importing;
       notifyListeners();
 
-      await _service.importDatabase(sourceFile);
+      await _service.createSafetyBackup();
+      final newDb = await _service.replaceDatabase(currentDb, sourceFile);
+      await DatabaseProvider.instance.replaceDatabase(newDb);
+
       _state = BackupRestoreState.success;
       _successMessage = 'Database imported successfully';
       notifyListeners();

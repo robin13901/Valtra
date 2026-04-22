@@ -136,9 +136,9 @@ class SmartPlugAnalyseTab extends StatelessWidget {
             ChartLegend(items: [
               ChartLegendItem(color: color, label: l10n.currentYear),
               ChartLegendItem(
-                color: color.withValues(alpha: 0.5),
+                color: color.withValues(alpha: 0.4),
                 label: l10n.previousYear,
-                isDashed: true,
+                dashPattern: const [2, 4],
               ),
             ]),
             const SizedBox(height: 24),

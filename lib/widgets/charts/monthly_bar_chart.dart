@@ -148,31 +148,30 @@ class _MonthlyBarChartState extends State<MonthlyBarChart> {
       barValue = period.consumption;
     }
 
-    // BAR-03: Past = opaque (0.85), future/extrapolated = transparent (0.3)
-    // Highlighted = full opacity (1.0)
+    // Dimmer non-selected bars, strong highlight for selected
     final double alpha;
     if (isHighlighted) {
       alpha = 1.0;
     } else if (isExtrapolated || isFuture) {
-      alpha = 0.3;
+      alpha = 0.25;
     } else {
-      alpha = 0.85;
+      alpha = 0.5;
     }
 
     return BarChartGroupData(
       x: index,
+      showingTooltipIndicators: isHighlighted ? [0] : [],
       barRods: [
         BarChartRodData(
           toY: barValue,
           color: widget.primaryColor.withValues(alpha: alpha),
           width: _barWidth,
           borderRadius: const BorderRadius.vertical(top: Radius.circular(6)),
-          // BAR-02: Glow effect using backDrawRodData -- wider translucent bar behind
           backDrawRodData: isHighlighted
               ? BackgroundBarChartRodData(
                   show: true,
                   toY: barValue,
-                  color: widget.primaryColor.withValues(alpha: 0.3),
+                  color: widget.primaryColor.withValues(alpha: 0.4),
                 )
               : BackgroundBarChartRodData(show: false),
         ),
@@ -256,8 +255,22 @@ class _MonthlyBarChartState extends State<MonthlyBarChart> {
         widget.showCosts && widget.costUnit != null ? widget.costUnit! : widget.unit;
     return BarTouchData(
       touchTooltipData: BarTouchTooltipData(
+        tooltipPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        tooltipMargin: 6,
         getTooltipItem: (group, groupIndex, rod, rodIndex) {
           final period = widget.periods[group.x.toInt()];
+          final isHighlighted = widget.highlightMonth != null &&
+              period.periodStart.year == widget.highlightMonth!.year &&
+              period.periodStart.month == widget.highlightMonth!.month;
+          if (isHighlighted) {
+            final monthName =
+                DateFormat.MMM(widget.locale).format(period.periodStart);
+            return BarTooltipItem(
+              '$monthName\n${ValtraNumberFormat.consumption(rod.toY, widget.locale)} $displayUnit',
+              TextStyle(
+                  color: widget.primaryColor, fontWeight: FontWeight.bold, fontSize: 11),
+            );
+          }
           final monthName =
               DateFormat.yMMM(widget.locale).format(period.periodStart);
           return BarTooltipItem(

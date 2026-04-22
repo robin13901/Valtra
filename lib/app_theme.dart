@@ -42,8 +42,8 @@ class AppTheme {
       colorScheme: ColorScheme.light(
         primary: AppColors.ultraViolet,
         onPrimary: Colors.white,
-        secondary: AppColors.lemonChiffon,
-        onSecondary: AppColors.lightOnSurface,
+        secondary: Colors.black,
+        onSecondary: Colors.white,
         surface: AppColors.lightSurface,
         onSurface: AppColors.lightOnSurface,
         error: AppColors.lightError,
@@ -93,7 +93,7 @@ class AppTheme {
       colorScheme: ColorScheme.dark(
         primary: AppColors.ultraViolet,
         onPrimary: Colors.white,
-        secondary: AppColors.lemonChiffon,
+        secondary: Colors.white,
         onSecondary: Colors.black,
         surface: AppColors.darkSurface,
         onSurface: AppColors.darkOnSurface,
@@ -120,18 +120,25 @@ class AppTheme {
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: AppColors.darkSurface,
+        floatingLabelStyle: const TextStyle(color: Colors.white70),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide(color: AppColors.ultraViolet.withValues(alpha: 0.3)),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.lemonChiffon, width: 2),
+          borderSide: const BorderSide(color: Colors.white, width: 2),
+        ),
+      ),
+      dialogTheme: DialogThemeData(
+        backgroundColor: AppColors.darkBackground,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
         ),
       ),
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(
         backgroundColor: AppColors.darkSurface,
-        selectedItemColor: AppColors.lemonChiffon,
+        selectedItemColor: Colors.white,
         unselectedItemColor: Colors.grey,
       ),
     );

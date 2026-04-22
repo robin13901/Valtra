@@ -412,5 +412,7 @@
       "kwh": { "type": "String" },
       "percent": { "type": "String" }
     }
-  }
+  },
+  "total": "Gesamt",
+  "perPerson": "Pro Person"
 }
