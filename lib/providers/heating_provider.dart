@@ -5,7 +5,6 @@ import 'package:flutter/foundation.dart';
 
 import '../database/app_database.dart';
 import '../database/daos/heating_dao.dart';
-import '../database/tables.dart';
 import '../services/interpolation/interpolation_service.dart';
 import '../services/interpolation/models.dart';
 
@@ -135,12 +134,7 @@ class HeatingProvider extends ChangeNotifier {
   // ============== Meter Operations ==============
 
   /// Adds a new heating meter assigned to a room.
-  Future<int> addMeter(
-    String name,
-    int roomId, {
-    HeatingType heatingType = HeatingType.ownMeter,
-    double? heatingRatio,
-  }) async {
+  Future<int> addMeter(int roomId) async {
     if (_householdId == null) {
       throw StateError('No household selected');
     }
@@ -148,27 +142,14 @@ class HeatingProvider extends ChangeNotifier {
     return _dao.insertMeter(HeatingMetersCompanion.insert(
       householdId: _householdId!,
       roomId: roomId,
-      name: name,
-      heatingType: Value(heatingType),
-      heatingRatio: Value(heatingRatio),
     ));
   }
 
-  /// Updates an existing heating meter.
-  Future<bool> updateMeter(
-    int id,
-    String name,
-    int roomId, {
-    HeatingType? heatingType,
-    double? heatingRatio,
-  }) {
+  /// Updates an existing heating meter's room assignment.
+  Future<bool> updateMeter(int id, int roomId) {
     final companion = HeatingMetersCompanion(
       id: Value(id),
-      name: Value(name),
       roomId: Value(roomId),
-      heatingType:
-          heatingType != null ? Value(heatingType) : const Value.absent(),
-      heatingRatio: Value(heatingRatio),
     );
     return _dao.updateMeter(companion);
   }

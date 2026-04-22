@@ -45,10 +45,6 @@ class AnalyticsProvider extends ChangeNotifier {
   List<HouseholdChartData> _householdComparisonData = [];
   List<HouseholdChartData> _allTimeHouseholdData = [];
 
-  /// Per-meter heating ratios, parallel to the readings list from _getReadingsPerMeter.
-  /// null = own_meter (use full consumption), 0.0-1.0 = central_meter ratio.
-  List<double?> _heatingRatios = [];
-
   AnalyticsProvider({
     required ElectricityDao electricityDao,
     required GasDao gasDao,
@@ -171,7 +167,6 @@ class AnalyticsProvider extends ChangeNotifier {
           readingsPerMeter,
           rangeStart,
           rangeEnd,
-          ratios: type == MeterType.heating ? _heatingRatios : null,
         );
 
         // Find current month consumption
@@ -299,9 +294,6 @@ class AnalyticsProvider extends ChangeNotifier {
         readingsPerMeter,
         barStart,
         barEnd,
-        ratios: _selectedMeterType == MeterType.heating
-            ? _heatingRatios
-            : null,
       );
 
       // Calculate total consumption for the selected month
@@ -443,14 +435,10 @@ class AnalyticsProvider extends ChangeNotifier {
         return;
       }
 
-      // Monthly consumption for current year (12 bars)
       var monthlyBreakdown = _aggregateMonthlyConsumption(
         readingsPerMeter,
         yearStart,
         yearEnd,
-        ratios: _selectedMeterType == MeterType.heating
-            ? _heatingRatios
-            : null,
       );
 
       final totalConsumption = monthlyBreakdown.isEmpty
@@ -461,9 +449,6 @@ class AnalyticsProvider extends ChangeNotifier {
       // Previous year data for comparison
       final prevYearStart = DateTime(_selectedYear - 1, 1, 1);
       final prevYearEnd = DateTime(_selectedYear, 1, 1);
-
-      // Save heating ratios before fetching previous year (same meters, same ratios)
-      // The _getReadingsPerMeter call below will repopulate _heatingRatios from the same meters.
 
       final prevReadingsPerMeter = await _getReadingsPerMeter(
         _selectedMeterType,
@@ -479,9 +464,6 @@ class AnalyticsProvider extends ChangeNotifier {
           prevReadingsPerMeter,
           prevYearStart,
           prevYearEnd,
-          ratios: _selectedMeterType == MeterType.heating
-              ? _heatingRatios
-              : null,
         );
         if (prevBreakdown.isNotEmpty) {
           prevTotal = prevBreakdown.fold<double>(
@@ -623,30 +605,17 @@ class AnalyticsProvider extends ChangeNotifier {
             await _heatingDao.getMetersForHousehold(householdId);
         if (meters.isEmpty) return [];
         final result = <List<ReadingPoint>>[];
-        final ratios = <double?>[];
         for (final meter in meters) {
           final readings = await _heatingDao.getReadingsForRange(
               meter.id, rangeStart, rangeEnd);
           final points = fromHeatingReadings(readings);
           if (points.isNotEmpty) {
             result.add(points);
-            // For central meters, use the heating ratio; for own meters, null (full consumption)
-            ratios.add(
-              meter.heatingType == HeatingType.centralMeter
-                  ? meter.heatingRatio
-                  : null,
-            );
           }
         }
-        _heatingRatios = ratios;
         raw = result;
     }
-    // Filter out empty reading lists — they produce no interpolation data
-    // For heating, ratios are already filtered in the case above.
-    if (type != MeterType.heating) {
-      return raw.where((readings) => readings.isNotEmpty).toList();
-    }
-    return raw;
+    return raw.where((readings) => readings.isNotEmpty).toList();
   }
 
   /// Load household comparison data for [type] across all households.
@@ -670,7 +639,6 @@ class AnalyticsProvider extends ChangeNotifier {
       if (readings.isEmpty) continue;
       final consumption = _aggregateMonthlyConsumption(
         readings, rangeStart, rangeEnd,
-        ratios: type == MeterType.heating ? _heatingRatios : null,
       );
       if (consumption.isEmpty) continue;
       result.add(HouseholdChartData(
@@ -704,7 +672,6 @@ class AnalyticsProvider extends ChangeNotifier {
 
       final consumption = _aggregateMonthlyConsumption(
         readings, rangeStart, rangeEnd,
-        ratios: type == MeterType.heating ? _heatingRatios : null,
       );
       if (consumption.isEmpty) continue;
 
@@ -719,14 +686,11 @@ class AnalyticsProvider extends ChangeNotifier {
   }
 
   /// Aggregate monthly consumption across multiple meters.
-  /// If [ratios] is provided, each meter's consumption is scaled by its ratio.
-  /// A null ratio means full consumption (own_meter / non-heating).
   List<PeriodConsumption> _aggregateMonthlyConsumption(
     List<List<ReadingPoint>> readingsPerMeter,
     DateTime rangeStart,
-    DateTime rangeEnd, {
-    List<double?>? ratios,
-  }) {
+    DateTime rangeEnd,
+  ) {
     if (readingsPerMeter.isEmpty) return [];
 
     final perMeterConsumptions = readingsPerMeter
@@ -736,26 +700,6 @@ class AnalyticsProvider extends ChangeNotifier {
               rangeEnd: rangeEnd,
             ))
         .toList();
-
-    // Apply heating ratios AFTER interpolation
-    if (ratios != null) {
-      for (int m = 0; m < perMeterConsumptions.length; m++) {
-        final ratio = m < ratios.length ? ratios[m] : null;
-        if (ratio != null) {
-          perMeterConsumptions[m] = perMeterConsumptions[m]
-              .map((p) => PeriodConsumption(
-                    periodStart: p.periodStart,
-                    periodEnd: p.periodEnd,
-                    startValue: p.startValue,
-                    endValue: p.endValue,
-                    consumption: p.consumption * ratio,
-                    startInterpolated: p.startInterpolated,
-                    endInterpolated: p.endInterpolated,
-                  ))
-              .toList();
-        }
-      }
-    }
 
     if (perMeterConsumptions.length == 1) return perMeterConsumptions.first;
 

@@ -1926,49 +1926,8 @@ class $HeatingMetersTable extends HeatingMeters
       'REFERENCES rooms (id)',
     ),
   );
-  static const VerificationMeta _nameMeta = const VerificationMeta('name');
   @override
-  late final GeneratedColumn<String> name = GeneratedColumn<String>(
-    'name',
-    aliasedName,
-    false,
-    additionalChecks: GeneratedColumn.checkTextLength(
-      minTextLength: 1,
-      maxTextLength: 100,
-    ),
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
-  @override
-  late final GeneratedColumnWithTypeConverter<HeatingType, int> heatingType =
-      GeneratedColumn<int>(
-        'heating_type',
-        aliasedName,
-        false,
-        type: DriftSqlType.int,
-        requiredDuringInsert: false,
-        defaultValue: const Constant(0),
-      ).withConverter<HeatingType>($HeatingMetersTable.$converterheatingType);
-  static const VerificationMeta _heatingRatioMeta = const VerificationMeta(
-    'heatingRatio',
-  );
-  @override
-  late final GeneratedColumn<double> heatingRatio = GeneratedColumn<double>(
-    'heating_ratio',
-    aliasedName,
-    true,
-    type: DriftSqlType.double,
-    requiredDuringInsert: false,
-  );
-  @override
-  List<GeneratedColumn> get $columns => [
-    id,
-    householdId,
-    roomId,
-    name,
-    heatingType,
-    heatingRatio,
-  ];
+  List<GeneratedColumn> get $columns => [id, householdId, roomId];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -2003,23 +1962,6 @@ class $HeatingMetersTable extends HeatingMeters
     } else if (isInserting) {
       context.missing(_roomIdMeta);
     }
-    if (data.containsKey('name')) {
-      context.handle(
-        _nameMeta,
-        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_nameMeta);
-    }
-    if (data.containsKey('heating_ratio')) {
-      context.handle(
-        _heatingRatioMeta,
-        heatingRatio.isAcceptableOrUnknown(
-          data['heating_ratio']!,
-          _heatingRatioMeta,
-        ),
-      );
-    }
     return context;
   }
 
@@ -2041,20 +1983,6 @@ class $HeatingMetersTable extends HeatingMeters
         DriftSqlType.int,
         data['${effectivePrefix}room_id'],
       )!,
-      name: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}name'],
-      )!,
-      heatingType: $HeatingMetersTable.$converterheatingType.fromSql(
-        attachedDatabase.typeMapping.read(
-          DriftSqlType.int,
-          data['${effectivePrefix}heating_type'],
-        )!,
-      ),
-      heatingRatio: attachedDatabase.typeMapping.read(
-        DriftSqlType.double,
-        data['${effectivePrefix}heating_ratio'],
-      ),
     );
   }
 
@@ -2062,25 +1990,16 @@ class $HeatingMetersTable extends HeatingMeters
   $HeatingMetersTable createAlias(String alias) {
     return $HeatingMetersTable(attachedDatabase, alias);
   }
-
-  static JsonTypeConverter2<HeatingType, int, int> $converterheatingType =
-      const EnumIndexConverter<HeatingType>(HeatingType.values);
 }
 
 class HeatingMeter extends DataClass implements Insertable<HeatingMeter> {
   final int id;
   final int householdId;
   final int roomId;
-  final String name;
-  final HeatingType heatingType;
-  final double? heatingRatio;
   const HeatingMeter({
     required this.id,
     required this.householdId,
     required this.roomId,
-    required this.name,
-    required this.heatingType,
-    this.heatingRatio,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -2088,15 +2007,6 @@ class HeatingMeter extends DataClass implements Insertable<HeatingMeter> {
     map['id'] = Variable<int>(id);
     map['household_id'] = Variable<int>(householdId);
     map['room_id'] = Variable<int>(roomId);
-    map['name'] = Variable<String>(name);
-    {
-      map['heating_type'] = Variable<int>(
-        $HeatingMetersTable.$converterheatingType.toSql(heatingType),
-      );
-    }
-    if (!nullToAbsent || heatingRatio != null) {
-      map['heating_ratio'] = Variable<double>(heatingRatio);
-    }
     return map;
   }
 
@@ -2105,11 +2015,6 @@ class HeatingMeter extends DataClass implements Insertable<HeatingMeter> {
       id: Value(id),
       householdId: Value(householdId),
       roomId: Value(roomId),
-      name: Value(name),
-      heatingType: Value(heatingType),
-      heatingRatio: heatingRatio == null && nullToAbsent
-          ? const Value.absent()
-          : Value(heatingRatio),
     );
   }
 
@@ -2122,11 +2027,6 @@ class HeatingMeter extends DataClass implements Insertable<HeatingMeter> {
       id: serializer.fromJson<int>(json['id']),
       householdId: serializer.fromJson<int>(json['householdId']),
       roomId: serializer.fromJson<int>(json['roomId']),
-      name: serializer.fromJson<String>(json['name']),
-      heatingType: $HeatingMetersTable.$converterheatingType.fromJson(
-        serializer.fromJson<int>(json['heatingType']),
-      ),
-      heatingRatio: serializer.fromJson<double?>(json['heatingRatio']),
     );
   }
   @override
@@ -2136,29 +2036,15 @@ class HeatingMeter extends DataClass implements Insertable<HeatingMeter> {
       'id': serializer.toJson<int>(id),
       'householdId': serializer.toJson<int>(householdId),
       'roomId': serializer.toJson<int>(roomId),
-      'name': serializer.toJson<String>(name),
-      'heatingType': serializer.toJson<int>(
-        $HeatingMetersTable.$converterheatingType.toJson(heatingType),
-      ),
-      'heatingRatio': serializer.toJson<double?>(heatingRatio),
     };
   }
 
-  HeatingMeter copyWith({
-    int? id,
-    int? householdId,
-    int? roomId,
-    String? name,
-    HeatingType? heatingType,
-    Value<double?> heatingRatio = const Value.absent(),
-  }) => HeatingMeter(
-    id: id ?? this.id,
-    householdId: householdId ?? this.householdId,
-    roomId: roomId ?? this.roomId,
-    name: name ?? this.name,
-    heatingType: heatingType ?? this.heatingType,
-    heatingRatio: heatingRatio.present ? heatingRatio.value : this.heatingRatio,
-  );
+  HeatingMeter copyWith({int? id, int? householdId, int? roomId}) =>
+      HeatingMeter(
+        id: id ?? this.id,
+        householdId: householdId ?? this.householdId,
+        roomId: roomId ?? this.roomId,
+      );
   HeatingMeter copyWithCompanion(HeatingMetersCompanion data) {
     return HeatingMeter(
       id: data.id.present ? data.id.value : this.id,
@@ -2166,13 +2052,6 @@ class HeatingMeter extends DataClass implements Insertable<HeatingMeter> {
           ? data.householdId.value
           : this.householdId,
       roomId: data.roomId.present ? data.roomId.value : this.roomId,
-      name: data.name.present ? data.name.value : this.name,
-      heatingType: data.heatingType.present
-          ? data.heatingType.value
-          : this.heatingType,
-      heatingRatio: data.heatingRatio.present
-          ? data.heatingRatio.value
-          : this.heatingRatio,
     );
   }
 
@@ -2181,69 +2060,46 @@ class HeatingMeter extends DataClass implements Insertable<HeatingMeter> {
     return (StringBuffer('HeatingMeter(')
           ..write('id: $id, ')
           ..write('householdId: $householdId, ')
-          ..write('roomId: $roomId, ')
-          ..write('name: $name, ')
-          ..write('heatingType: $heatingType, ')
-          ..write('heatingRatio: $heatingRatio')
+          ..write('roomId: $roomId')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode =>
-      Object.hash(id, householdId, roomId, name, heatingType, heatingRatio);
+  int get hashCode => Object.hash(id, householdId, roomId);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is HeatingMeter &&
           other.id == this.id &&
           other.householdId == this.householdId &&
-          other.roomId == this.roomId &&
-          other.name == this.name &&
-          other.heatingType == this.heatingType &&
-          other.heatingRatio == this.heatingRatio);
+          other.roomId == this.roomId);
 }
 
 class HeatingMetersCompanion extends UpdateCompanion<HeatingMeter> {
   final Value<int> id;
   final Value<int> householdId;
   final Value<int> roomId;
-  final Value<String> name;
-  final Value<HeatingType> heatingType;
-  final Value<double?> heatingRatio;
   const HeatingMetersCompanion({
     this.id = const Value.absent(),
     this.householdId = const Value.absent(),
     this.roomId = const Value.absent(),
-    this.name = const Value.absent(),
-    this.heatingType = const Value.absent(),
-    this.heatingRatio = const Value.absent(),
   });
   HeatingMetersCompanion.insert({
     this.id = const Value.absent(),
     required int householdId,
     required int roomId,
-    required String name,
-    this.heatingType = const Value.absent(),
-    this.heatingRatio = const Value.absent(),
   }) : householdId = Value(householdId),
-       roomId = Value(roomId),
-       name = Value(name);
+       roomId = Value(roomId);
   static Insertable<HeatingMeter> custom({
     Expression<int>? id,
     Expression<int>? householdId,
     Expression<int>? roomId,
-    Expression<String>? name,
-    Expression<int>? heatingType,
-    Expression<double>? heatingRatio,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (householdId != null) 'household_id': householdId,
       if (roomId != null) 'room_id': roomId,
-      if (name != null) 'name': name,
-      if (heatingType != null) 'heating_type': heatingType,
-      if (heatingRatio != null) 'heating_ratio': heatingRatio,
     });
   }
 
@@ -2251,17 +2107,11 @@ class HeatingMetersCompanion extends UpdateCompanion<HeatingMeter> {
     Value<int>? id,
     Value<int>? householdId,
     Value<int>? roomId,
-    Value<String>? name,
-    Value<HeatingType>? heatingType,
-    Value<double?>? heatingRatio,
   }) {
     return HeatingMetersCompanion(
       id: id ?? this.id,
       householdId: householdId ?? this.householdId,
       roomId: roomId ?? this.roomId,
-      name: name ?? this.name,
-      heatingType: heatingType ?? this.heatingType,
-      heatingRatio: heatingRatio ?? this.heatingRatio,
     );
   }
 
@@ -2277,17 +2127,6 @@ class HeatingMetersCompanion extends UpdateCompanion<HeatingMeter> {
     if (roomId.present) {
       map['room_id'] = Variable<int>(roomId.value);
     }
-    if (name.present) {
-      map['name'] = Variable<String>(name.value);
-    }
-    if (heatingType.present) {
-      map['heating_type'] = Variable<int>(
-        $HeatingMetersTable.$converterheatingType.toSql(heatingType.value),
-      );
-    }
-    if (heatingRatio.present) {
-      map['heating_ratio'] = Variable<double>(heatingRatio.value);
-    }
     return map;
   }
 
@@ -2296,10 +2135,7 @@ class HeatingMetersCompanion extends UpdateCompanion<HeatingMeter> {
     return (StringBuffer('HeatingMetersCompanion(')
           ..write('id: $id, ')
           ..write('householdId: $householdId, ')
-          ..write('roomId: $roomId, ')
-          ..write('name: $name, ')
-          ..write('heatingType: $heatingType, ')
-          ..write('heatingRatio: $heatingRatio')
+          ..write('roomId: $roomId')
           ..write(')'))
         .toString();
   }
@@ -6353,18 +6189,12 @@ typedef $$HeatingMetersTableCreateCompanionBuilder =
       Value<int> id,
       required int householdId,
       required int roomId,
-      required String name,
-      Value<HeatingType> heatingType,
-      Value<double?> heatingRatio,
     });
 typedef $$HeatingMetersTableUpdateCompanionBuilder =
     HeatingMetersCompanion Function({
       Value<int> id,
       Value<int> householdId,
       Value<int> roomId,
-      Value<String> name,
-      Value<HeatingType> heatingType,
-      Value<double?> heatingRatio,
     });
 
 final class $$HeatingMetersTableReferences
@@ -6447,22 +6277,6 @@ class $$HeatingMetersTableFilterComposer
   });
   ColumnFilters<int> get id => $composableBuilder(
     column: $table.id,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get name => $composableBuilder(
-    column: $table.name,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnWithTypeConverterFilters<HeatingType, HeatingType, int>
-  get heatingType => $composableBuilder(
-    column: $table.heatingType,
-    builder: (column) => ColumnWithTypeConverterFilters(column),
-  );
-
-  ColumnFilters<double> get heatingRatio => $composableBuilder(
-    column: $table.heatingRatio,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -6552,21 +6366,6 @@ class $$HeatingMetersTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get name => $composableBuilder(
-    column: $table.name,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<int> get heatingType => $composableBuilder(
-    column: $table.heatingType,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<double> get heatingRatio => $composableBuilder(
-    column: $table.heatingRatio,
-    builder: (column) => ColumnOrderings(column),
-  );
-
   $$HouseholdsTableOrderingComposer get householdId {
     final $$HouseholdsTableOrderingComposer composer = $composerBuilder(
       composer: this,
@@ -6625,20 +6424,6 @@ class $$HeatingMetersTableAnnotationComposer
   });
   GeneratedColumn<int> get id =>
       $composableBuilder(column: $table.id, builder: (column) => column);
-
-  GeneratedColumn<String> get name =>
-      $composableBuilder(column: $table.name, builder: (column) => column);
-
-  GeneratedColumnWithTypeConverter<HeatingType, int> get heatingType =>
-      $composableBuilder(
-        column: $table.heatingType,
-        builder: (column) => column,
-      );
-
-  GeneratedColumn<double> get heatingRatio => $composableBuilder(
-    column: $table.heatingRatio,
-    builder: (column) => column,
-  );
 
   $$HouseholdsTableAnnotationComposer get householdId {
     final $$HouseholdsTableAnnotationComposer composer = $composerBuilder(
@@ -6747,32 +6532,20 @@ class $$HeatingMetersTableTableManager
                 Value<int> id = const Value.absent(),
                 Value<int> householdId = const Value.absent(),
                 Value<int> roomId = const Value.absent(),
-                Value<String> name = const Value.absent(),
-                Value<HeatingType> heatingType = const Value.absent(),
-                Value<double?> heatingRatio = const Value.absent(),
               }) => HeatingMetersCompanion(
                 id: id,
                 householdId: householdId,
                 roomId: roomId,
-                name: name,
-                heatingType: heatingType,
-                heatingRatio: heatingRatio,
               ),
           createCompanionCallback:
               ({
                 Value<int> id = const Value.absent(),
                 required int householdId,
                 required int roomId,
-                required String name,
-                Value<HeatingType> heatingType = const Value.absent(),
-                Value<double?> heatingRatio = const Value.absent(),
               }) => HeatingMetersCompanion.insert(
                 id: id,
                 householdId: householdId,
                 roomId: roomId,
-                name: name,
-                heatingType: heatingType,
-                heatingRatio: heatingRatio,
               ),
           withReferenceMapper: (p0) => p0
               .map(

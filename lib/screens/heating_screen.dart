@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 
 import '../app_theme.dart';
 import '../database/app_database.dart';
-import '../database/tables.dart';
 import '../l10n/app_localizations.dart';
 import '../providers/analytics_provider.dart';
 import '../providers/heating_provider.dart';
@@ -298,21 +297,10 @@ class _HeatingScreenState extends State<HeatingScreen> {
             ),
           ),
           const SizedBox(height: 8),
-          ...heatingProvider.metersWithRooms.map((mwr) {
-            // Find the slice for this meter
-            final slice = heaterSlices.firstWhere(
-              (s) => s.label == mwr.meter.name,
-              orElse: () => const PieSliceData(
-                label: '',
-                value: 0,
-                percentage: 0,
-                color: Colors.transparent,
-              ),
-            );
+          ...heaterSlices.map((slice) {
             if (slice.value == 0) return const SizedBox.shrink();
             return _HeaterBreakdownItem(
-              meterName: mwr.meter.name,
-              roomName: mwr.roomName,
+              roomName: slice.label,
               percentage: slice.percentage,
               color: slice.color,
             );
@@ -347,15 +335,19 @@ class _HeatingScreenState extends State<HeatingScreen> {
         }
       }
       if (sum > 0) {
-        meterDeltas[mwr.meter.name] = sum;
+        meterDeltas[mwr.roomName] = (meterDeltas[mwr.roomName] ?? 0) + sum;
         totalDelta += sum;
       }
     }
 
     if (totalDelta == 0) return [];
 
+    // Sort descending by consumption
+    final sortedEntries = meterDeltas.entries.toList()
+      ..sort((a, b) => b.value.compareTo(a.value));
+
     int i = 0;
-    return meterDeltas.entries
+    return sortedEntries
         .map((e) => PieSliceData(
               label: e.key,
               value: e.value,
@@ -423,24 +415,17 @@ class _HeatingScreenState extends State<HeatingScreen> {
     );
     if (result == null || !context.mounted) return;
 
-    await provider.addMeter(
-      result.name,
-      result.roomId,
-      heatingType: result.heatingType,
-      heatingRatio: result.heatingRatio,
-    );
+    await provider.addMeter(result.roomId);
   }
 }
 
 /// Per-heater breakdown list item for the Analyse tab pie chart section.
 class _HeaterBreakdownItem extends StatelessWidget {
-  final String meterName;
   final String roomName;
   final double percentage;
   final Color color;
 
   const _HeaterBreakdownItem({
-    required this.meterName,
     required this.roomName,
     required this.percentage,
     required this.color,
@@ -457,8 +442,7 @@ class _HeaterBreakdownItem extends StatelessWidget {
         height: 12,
         decoration: BoxDecoration(color: color, shape: BoxShape.circle),
       ),
-      title: Text(meterName),
-      subtitle: Text(roomName),
+      title: Text(roomName),
       trailing: Text(
         '${percentage.toStringAsFixed(1)}%',
         style: Theme.of(context)
@@ -579,44 +563,10 @@ class _HeatingMeterCardState extends State<_HeatingMeterCard> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                meter.name,
-                                style: theme.textTheme.titleMedium?.copyWith(
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ),
-                            if (meter.heatingType == HeatingType.centralMeter &&
-                                meter.heatingRatio != null)
-                              Container(
-                                margin: const EdgeInsets.only(left: 8),
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 8, vertical: 2),
-                                decoration: BoxDecoration(
-                                  color: AppColors.heatingColor
-                                      .withValues(alpha: 0.15),
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                child: Text(
-                                  '${(meter.heatingRatio! * 100).toStringAsFixed(0)}%',
-                                  style: theme.textTheme.bodySmall?.copyWith(
-                                    color: AppColors.heatingColor,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                          ],
-                        ),
-                        const SizedBox(height: 4),
                         Text(
-                          meter.heatingType == HeatingType.centralMeter
-                              ? l10n.centralHeating
-                              : l10n.ownMeter,
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: theme.colorScheme.onSurfaceVariant,
+                          roomName,
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
                         if (readings.isNotEmpty) ...[
@@ -1034,10 +984,7 @@ class _HeatingMeterCardState extends State<_HeatingMeterCard> {
 
     await provider.updateMeter(
       meter.id,
-      result.name,
       result.roomId,
-      heatingType: result.heatingType,
-      heatingRatio: result.heatingRatio,
     );
   }
 

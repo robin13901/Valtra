@@ -21,11 +21,11 @@ class HeatingDao extends DatabaseAccessor<AppDatabase>
     return (select(heatingMeters)..where((m) => m.id.equals(id))).getSingle();
   }
 
-  /// Retrieves all heating meters for a household, ordered alphabetically by name.
+  /// Retrieves all heating meters for a household, ordered by room ID.
   Future<List<HeatingMeter>> getMetersForHousehold(int householdId) {
     return (select(heatingMeters)
           ..where((m) => m.householdId.equals(householdId))
-          ..orderBy([(m) => OrderingTerm.asc(m.name)]))
+          ..orderBy([(m) => OrderingTerm.asc(m.roomId)]))
         .get();
   }
 
@@ -33,7 +33,7 @@ class HeatingDao extends DatabaseAccessor<AppDatabase>
   Stream<List<HeatingMeter>> watchMetersForHousehold(int householdId) {
     return (select(heatingMeters)
           ..where((m) => m.householdId.equals(householdId))
-          ..orderBy([(m) => OrderingTerm.asc(m.name)]))
+          ..orderBy([(m) => OrderingTerm.asc(m.roomId)]))
         .watch();
   }
 
@@ -41,7 +41,7 @@ class HeatingDao extends DatabaseAccessor<AppDatabase>
   Future<List<HeatingMeter>> getMetersForRoom(int roomId) {
     return (select(heatingMeters)
           ..where((m) => m.roomId.equals(roomId))
-          ..orderBy([(m) => OrderingTerm.asc(m.name)]))
+          ..orderBy([(m) => OrderingTerm.asc(m.id)]))
         .get();
   }
 
@@ -49,7 +49,7 @@ class HeatingDao extends DatabaseAccessor<AppDatabase>
   Stream<List<HeatingMeter>> watchMetersForRoom(int roomId) {
     return (select(heatingMeters)
           ..where((m) => m.roomId.equals(roomId))
-          ..orderBy([(m) => OrderingTerm.asc(m.name)]))
+          ..orderBy([(m) => OrderingTerm.asc(m.id)]))
         .watch();
   }
 

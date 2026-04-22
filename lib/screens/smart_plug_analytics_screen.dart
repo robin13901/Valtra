@@ -19,13 +19,17 @@ import '../widgets/charts/year_comparison_chart.dart';
 /// Used as a child of IndexedStack in SmartPlugsScreen.
 ///
 /// Follows the reference composition pattern established in Phase 29:
-/// MonthSelector → MonthlySummaryCard → MonthlyBarChart →
-/// YearComparisonChart → HouseholdComparisonChart → per-plug pie + list.
-///
-/// Satisfies SPLG-01 (unified analytics design), SPLG-02 (single-hue colors),
-/// SPLG-03 (per-plug pie + list), SPLG-04 (room grouping removed from Analyse tab).
-class SmartPlugAnalyseTab extends StatelessWidget {
+/// MonthSelector -> MonthlySummaryCard -> MonthlyBarChart ->
+/// YearComparisonChart -> HouseholdComparisonChart -> per-plug/room pie + list.
+class SmartPlugAnalyseTab extends StatefulWidget {
   const SmartPlugAnalyseTab({super.key});
+
+  @override
+  State<SmartPlugAnalyseTab> createState() => _SmartPlugAnalyseTabState();
+}
+
+class _SmartPlugAnalyseTabState extends State<SmartPlugAnalyseTab> {
+  bool _showByRoom = false;
 
   @override
   Widget build(BuildContext context) {
@@ -161,22 +165,55 @@ class SmartPlugAnalyseTab extends StatelessWidget {
           ],
         ],
 
-        // Per-plug breakdown section
+        // Per-plug/room breakdown section with toggle
         if (spProvider.data != null && spProvider.data!.byPlug.isNotEmpty) ...[
-          Text(l10n.consumptionByPlugTitle,
-              style: Theme.of(context).textTheme.titleMedium),
+          // Toggle + title row
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  _showByRoom ? l10n.consumptionByRoomTitle : l10n.consumptionByPlugTitle,
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+              ),
+              SegmentedButton<bool>(
+                segments: [
+                  ButtonSegment<bool>(
+                    value: false,
+                    label: Text(l10n.byPlug),
+                  ),
+                  ButtonSegment<bool>(
+                    value: true,
+                    label: Text(l10n.byRoom),
+                  ),
+                ],
+                selected: {_showByRoom},
+                onSelectionChanged: (selection) {
+                  setState(() => _showByRoom = selection.first);
+                },
+                style: ButtonStyle(
+                  visualDensity: VisualDensity.compact,
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ),
+              ),
+            ],
+          ),
           const SizedBox(height: 8),
           SizedBox(
             height: 250,
             child: ConsumptionPieChart(
-              slices: _buildPlugSlices(spProvider.data!),
+              slices: _showByRoom
+                  ? _buildRoomSlices(spProvider.data!)
+                  : _buildPlugSlices(spProvider.data!),
               unit: spProvider.data!.unit,
               locale: locale,
             ),
           ),
           const SizedBox(height: 8),
-          ...spProvider.data!.byPlug
-              .map((plug) => _PlugBreakdownItem(plug: plug, locale: locale)),
+          if (_showByRoom)
+            ..._buildRoomBreakdownItems(spProvider.data!, locale)
+          else
+            ..._buildPlugBreakdownItems(spProvider.data!, locale),
         ] else if (monthlyData == null) ...[
           _buildEmptyState(context, l10n),
         ],
@@ -212,7 +249,9 @@ class SmartPlugAnalyseTab extends StatelessWidget {
   List<PieSliceData> _buildPlugSlices(SmartPlugAnalyticsData data) {
     final total = data.totalSmartPlug;
     if (total == 0) return [];
-    return data.byPlug
+    final sorted = data.byPlug.toList()
+      ..sort((a, b) => b.consumption.compareTo(a.consumption));
+    return sorted
         .map((p) => PieSliceData(
               label: p.plugName,
               value: p.consumption,
@@ -220,6 +259,40 @@ class SmartPlugAnalyseTab extends StatelessWidget {
               color: p.color,
             ))
         .toList();
+  }
+
+  List<PieSliceData> _buildRoomSlices(SmartPlugAnalyticsData data) {
+    final total = data.totalSmartPlug;
+    if (total == 0) return [];
+    final sorted = data.byRoom.where((r) => r.consumption > 0).toList()
+      ..sort((a, b) => b.consumption.compareTo(a.consumption));
+    int i = 0;
+    return sorted
+        .map((r) => PieSliceData(
+              label: r.roomName,
+              value: r.consumption,
+              percentage: (r.consumption / total) * 100,
+              color: pieChartColors[i++ % pieChartColors.length],
+            ))
+        .toList();
+  }
+
+  List<Widget> _buildPlugBreakdownItems(SmartPlugAnalyticsData data, String locale) {
+    final sorted = data.byPlug.toList()
+      ..sort((a, b) => b.consumption.compareTo(a.consumption));
+    return sorted
+        .map((plug) => _PlugBreakdownItem(plug: plug, locale: locale))
+        .toList();
+  }
+
+  List<Widget> _buildRoomBreakdownItems(SmartPlugAnalyticsData data, String locale) {
+    final sorted = data.byRoom.where((r) => r.consumption > 0).toList()
+      ..sort((a, b) => b.consumption.compareTo(a.consumption));
+    int i = 0;
+    return sorted.map((room) {
+      final color = pieChartColors[i++ % pieChartColors.length];
+      return _RoomBreakdownItem(room: room, color: color, locale: locale);
+    }).toList();
   }
 }
 
@@ -247,6 +320,43 @@ class _PlugBreakdownItem extends StatelessWidget {
       subtitle: Text(plug.roomName),
       trailing: Text(
         '${ValtraNumberFormat.consumption(plug.consumption, locale)} kWh',
+        style: Theme.of(context)
+            .textTheme
+            .bodyMedium
+            ?.copyWith(fontWeight: FontWeight.w600),
+      ),
+    );
+  }
+}
+
+class _RoomBreakdownItem extends StatelessWidget {
+  final RoomConsumption room;
+  final Color color;
+  final String locale;
+
+  const _RoomBreakdownItem({
+    required this.room,
+    required this.color,
+    required this.locale,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      dense: true,
+      visualDensity: VisualDensity.compact,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
+      leading: Container(
+        width: 12,
+        height: 12,
+        decoration: BoxDecoration(
+          color: color,
+          shape: BoxShape.circle,
+        ),
+      ),
+      title: Text(room.roomName),
+      trailing: Text(
+        '${ValtraNumberFormat.consumption(room.consumption, locale)} kWh',
         style: Theme.of(context)
             .textTheme
             .bodyMedium

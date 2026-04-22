@@ -2,7 +2,6 @@ import 'package:drift/drift.dart' hide isNotNull, isNull;
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:valtra/database/app_database.dart';
-import 'package:valtra/database/tables.dart';
 
 /// Creates an in-memory v2 database with pre-populated data, then opens it
 /// through AppDatabase to trigger the v2->v3 migration.
@@ -164,8 +163,6 @@ void main() {
             .get();
 
         expect(meters.length, 2);
-        expect(meters[0].name, 'Bedroom Radiator');
-        expect(meters[1].name, 'Kitchen Radiator');
 
         // Verify rooms were created
         final rooms = await db.select(db.rooms).get();
@@ -286,29 +283,6 @@ void main() {
         expect(readings[0].value, 100.0);
         expect(readings[1].heatingMeterId, 1);
         expect(readings[1].value, 150.0);
-
-        await db.close();
-      });
-
-      test('new heating_type defaults to ownMeter (0) after migration',
-          () async {
-        final db = _createMigratingDatabase(
-          populateV2: (exec) {
-            exec(
-              'INSERT INTO households (id, name) VALUES (?, ?)',
-              [1, 'Home'],
-            );
-            exec(
-              'INSERT INTO heating_meters (id, household_id, name, location) VALUES (?, ?, ?, ?)',
-              [1, 1, 'Meter', 'Room'],
-            );
-          },
-        );
-
-        final meters = await db.select(db.heatingMeters).get();
-        expect(meters.length, 1);
-        expect(meters.first.heatingType, HeatingType.ownMeter);
-        expect(meters.first.heatingRatio, isNull);
 
         await db.close();
       });
@@ -612,11 +586,80 @@ void main() {
       });
     });
 
-    group('Fresh install at v3', () {
+    group('Migration v4 to v5: heating meter column removal', () {
+      test('name, heating_type, heating_ratio columns removed after migration',
+          () async {
+        final db = _createMigratingDatabase(
+          populateV2: (exec) {
+            exec(
+              'INSERT INTO households (id, name) VALUES (?, ?)',
+              [1, 'Home'],
+            );
+            exec(
+              'INSERT INTO heating_meters (id, household_id, name, location) VALUES (?, ?, ?, ?)',
+              [1, 1, 'Old Meter', 'Room A'],
+            );
+          },
+        );
+
+        // Verify the migrated table has only id, household_id, room_id
+        final result = await db.customSelect(
+          "PRAGMA table_info(heating_meters)",
+        ).get();
+
+        final columnNames = result.map((r) => r.read<String>('name')).toList();
+        expect(columnNames, contains('id'));
+        expect(columnNames, contains('household_id'));
+        expect(columnNames, contains('room_id'));
+        expect(columnNames, isNot(contains('name')));
+        expect(columnNames, isNot(contains('heating_type')));
+        expect(columnNames, isNot(contains('heating_ratio')));
+
+        await db.close();
+      });
+
+      test('meter data preserved after column removal', () async {
+        final db = _createMigratingDatabase(
+          populateV2: (exec) {
+            exec(
+              'INSERT INTO households (id, name) VALUES (?, ?)',
+              [1, 'Home'],
+            );
+            exec(
+              'INSERT INTO heating_meters (id, household_id, name, location) VALUES (?, ?, ?, ?)',
+              [1, 1, 'Kitchen Radiator', 'Kitchen'],
+            );
+            exec(
+              'INSERT INTO heating_meters (id, household_id, name, location) VALUES (?, ?, ?, ?)',
+              [2, 1, 'Bedroom Radiator', 'Bedroom'],
+            );
+          },
+        );
+
+        final meters = await (db.select(db.heatingMeters)
+              ..orderBy([(m) => OrderingTerm.asc(m.id)]))
+            .get();
+
+        expect(meters.length, 2);
+        expect(meters[0].id, 1);
+        expect(meters[0].householdId, 1);
+        expect(meters[0].roomId, isNotNull);
+        expect(meters[1].id, 2);
+        expect(meters[1].householdId, 1);
+        expect(meters[1].roomId, isNotNull);
+
+        // Room IDs should differ (Kitchen vs Bedroom)
+        expect(meters[0].roomId, isNot(equals(meters[1].roomId)));
+
+        await db.close();
+      });
+    });
+
+    group('Fresh install at v5', () {
       test('fresh database creates all tables without migration', () async {
         final db = AppDatabase(NativeDatabase.memory());
 
-        // Verify we can insert and query data with the v3 schema
+        // Verify we can insert and query data with the v5 schema
         final householdId = await db.into(db.households).insert(
               HouseholdsCompanion.insert(name: 'Fresh Home', personCount: 1),
             );
@@ -630,7 +673,6 @@ void main() {
               HeatingMetersCompanion.insert(
                 householdId: householdId,
                 roomId: roomId,
-                name: 'Radiator',
               ),
             );
 
@@ -638,8 +680,6 @@ void main() {
               ..where((m) => m.id.equals(meterId)))
             .getSingle();
         expect(meter.roomId, roomId);
-        expect(meter.heatingType, HeatingType.ownMeter);
-        expect(meter.heatingRatio, isNull);
 
         // Verify smart plug consumption uses month (not interval)
         final plugId = await db.into(db.smartPlugs).insert(

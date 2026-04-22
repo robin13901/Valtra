@@ -10,7 +10,9 @@
       "WebSearch",
       "Bash(flutter test test/widgets/dialogs/smart_plug_form_dialog_test.dart test/widgets/dialogs/smart_plug_consumption_form_dialog_test.dart)",
       "Bash(flutter test test/widgets/smart_plug_form_dialog_test.dart test/widgets/smart_plug_consumption_form_dialog_test.dart)",
-      "Bash(flutter test test/screens/settings_screen_test.dart)"
+      "Bash(flutter test test/screens/settings_screen_test.dart)",
+      "Bash(node -e ' *)",
+      "Bash(node *)"
     ]
   }
 }

@@ -949,6 +949,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get consumptionByPlugTitle => 'Consumption by Plug';
 
   @override
+  String get byRoom => 'By Room';
+
+  @override
+  String get byPlug => 'By Plug';
+
+  @override
   String consumptionWithPercent(String value, String percent) {
     return '$value kWh ($percent%)';
   }

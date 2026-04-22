@@ -394,6 +394,8 @@
   "notTracked": "Nicht erfasst",
   "consumptionByRoomTitle": "Verbrauch nach Raum",
   "consumptionByPlugTitle": "Verbrauch nach Steckdose",
+  "byRoom": "Nach Raum",
+  "byPlug": "Nach Gerät",
   "consumptionWithPercent": "{value} kWh ({percent}%)",
   "@consumptionWithPercent": {
     "placeholders": {

@@ -1,4 +1,3 @@
-import 'package:drift/drift.dart' as drift;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
@@ -11,7 +10,6 @@ import 'package:valtra/database/daos/gas_dao.dart';
 import 'package:valtra/database/daos/heating_dao.dart';
 import 'package:valtra/database/daos/household_dao.dart';
 import 'package:valtra/database/daos/water_dao.dart';
-import 'package:valtra/database/tables.dart';
 import 'package:valtra/l10n/app_localizations.dart';
 import 'package:valtra/providers/analytics_provider.dart';
 import 'package:valtra/providers/cost_config_provider.dart';
@@ -148,18 +146,16 @@ void main() {
               await dao.insertMeter(HeatingMetersCompanion.insert(
                 householdId: householdId,
                 roomId: roomId,
-                name: 'Bedroom Radiator',
               ));
               final room2Id = await database
                   .into(database.rooms)
                   .insert(RoomsCompanion.insert(
-                    householdId: householdId,
-                    name: 'Kitchen',
-                  ));
+          householdId: householdId,
+          name: 'Kitchen',
+        ));
               await dao.insertMeter(HeatingMetersCompanion.insert(
                 householdId: householdId,
                 roomId: room2Id,
-                name: 'Kitchen Radiator',
               ));
               await Future.delayed(const Duration(milliseconds: 100));
 
@@ -168,59 +164,12 @@ void main() {
               await tester.pumpAndSettle();
 
               // Room headers should be visible
-              expect(find.text('Living Room'), findsOneWidget);
-              expect(find.text('Kitchen'), findsOneWidget);
+              expect(find.text('Living Room'), findsAtLeastNWidgets(1));
+              expect(find.text('Kitchen'), findsAtLeastNWidgets(1));
 
               // Room section icons
               expect(find.byIcon(Icons.meeting_room),
                   findsAtLeastNWidgets(2));
-
-              // Meter names
-              expect(find.text('Bedroom Radiator'), findsOneWidget);
-              expect(find.text('Kitchen Radiator'), findsOneWidget);
-
-              await tester.pumpWidget(Container());
-            }));
-
-    testWidgets('shows heating type label on meter card',
-        (tester) => tester.runAsync(() async {
-              await dao.insertMeter(HeatingMetersCompanion.insert(
-                householdId: householdId,
-                roomId: roomId,
-                name: 'Own Meter',
-                heatingType: const drift.Value(HeatingType.ownMeter),
-              ));
-              await Future.delayed(const Duration(milliseconds: 100));
-
-              await tester
-                  .pumpWidget(wrapWithProviders(const HeatingScreen()));
-              await tester.pumpAndSettle();
-
-              expect(find.text('Own meter'), findsOneWidget);
-
-              await tester.pumpWidget(Container());
-            }));
-
-    testWidgets('central meter shows ratio badge',
-        (tester) => tester.runAsync(() async {
-              await dao.insertMeter(HeatingMetersCompanion.insert(
-                householdId: householdId,
-                roomId: roomId,
-                name: 'Central Meter',
-                heatingType: const drift.Value(HeatingType.centralMeter),
-                heatingRatio: const drift.Value(0.25),
-              ));
-              await Future.delayed(const Duration(milliseconds: 100));
-
-              await tester
-                  .pumpWidget(wrapWithProviders(const HeatingScreen()));
-              await tester.pumpAndSettle();
-
-              // Should show ratio badge
-              expect(find.text('25%'), findsOneWidget);
-
-              // Should show central heating type label
-              expect(find.text('Central heating'), findsOneWidget);
 
               await tester.pumpWidget(Container());
             }));
@@ -231,7 +180,6 @@ void main() {
                   await dao.insertMeter(HeatingMetersCompanion.insert(
                 householdId: householdId,
                 roomId: roomId,
-                name: 'Test Meter',
               ));
               await dao.insertReading(HeatingReadingsCompanion.insert(
                 heatingMeterId: meterId,
@@ -262,7 +210,6 @@ void main() {
                   await dao.insertMeter(HeatingMetersCompanion.insert(
                 householdId: householdId,
                 roomId: roomId,
-                name: 'Test Meter',
               ));
               await dao.insertReading(HeatingReadingsCompanion.insert(
                 heatingMeterId: meterId,
@@ -294,7 +241,6 @@ void main() {
               await dao.insertMeter(HeatingMetersCompanion.insert(
                 householdId: householdId,
                 roomId: roomId,
-                name: 'Test Meter',
               ));
               await Future.delayed(const Duration(milliseconds: 100));
 
@@ -319,7 +265,6 @@ void main() {
               await dao.insertMeter(HeatingMetersCompanion.insert(
                 householdId: householdId,
                 roomId: roomId,
-                name: 'Test Meter',
               ));
               await Future.delayed(const Duration(milliseconds: 100));
 
@@ -343,7 +288,6 @@ void main() {
               await dao.insertMeter(HeatingMetersCompanion.insert(
                 householdId: householdId,
                 roomId: roomId,
-                name: 'Empty Meter',
               ));
               await Future.delayed(const Duration(milliseconds: 100));
 
@@ -379,7 +323,6 @@ void main() {
               await dao.insertMeter(HeatingMetersCompanion.insert(
                 householdId: householdId,
                 roomId: roomId,
-                name: 'Test Meter',
               ));
               await Future.delayed(const Duration(milliseconds: 100));
 
@@ -399,12 +342,10 @@ void main() {
               await dao.insertMeter(HeatingMetersCompanion.insert(
                 householdId: householdId,
                 roomId: roomId,
-                name: 'Radiator 1',
               ));
               await dao.insertMeter(HeatingMetersCompanion.insert(
                 householdId: householdId,
                 roomId: roomId,
-                name: 'Radiator 2',
               ));
               await Future.delayed(const Duration(milliseconds: 100));
 
@@ -413,11 +354,10 @@ void main() {
               await tester.pumpAndSettle();
 
               // Only one room header for "Living Room"
-              expect(find.text('Living Room'), findsOneWidget);
+              expect(find.text('Living Room'), findsAtLeastNWidgets(1));
 
-              // Both meters visible
-              expect(find.text('Radiator 1'), findsOneWidget);
-              expect(find.text('Radiator 2'), findsOneWidget);
+              // Both meters visible (two cards under one room)
+              expect(find.byType(GlassCard), findsNWidgets(2));
 
               await tester.pumpWidget(Container());
             }));
@@ -605,7 +545,6 @@ void main() {
                   await dao.insertMeter(HeatingMetersCompanion.insert(
                 householdId: householdId,
                 roomId: roomId,
-                name: 'Test Meter',
               ));
               final year = DateTime.now().year;
               final month = DateTime.now().month;
@@ -644,7 +583,6 @@ void main() {
                   await dao.insertMeter(HeatingMetersCompanion.insert(
                 householdId: householdId,
                 roomId: roomId,
-                name: 'Test Meter',
               ));
               final year = DateTime.now().year;
               final month = DateTime.now().month;
@@ -684,7 +622,6 @@ void main() {
                   await dao.insertMeter(HeatingMetersCompanion.insert(
                 householdId: householdId,
                 roomId: roomId,
-                name: 'Test Meter',
               ));
               await dao.insertReading(HeatingReadingsCompanion.insert(
                 heatingMeterId: meterId,
@@ -747,7 +684,6 @@ void main() {
                   await dao.insertMeter(HeatingMetersCompanion.insert(
                 householdId: householdId,
                 roomId: roomId,
-                name: 'Test Meter',
               ));
               final year = DateTime.now().year;
               final month = DateTime.now().month;
@@ -810,7 +746,6 @@ void main() {
                   await dao.insertMeter(HeatingMetersCompanion.insert(
                 householdId: householdId,
                 roomId: roomId,
-                name: 'Radiator A',
               ));
               final now = DateTime.now();
               final prevMonth = DateTime(now.year, now.month - 1, 1);
@@ -830,14 +765,13 @@ void main() {
               final room2Id = await database
                   .into(database.rooms)
                   .insert(RoomsCompanion.insert(
-                    householdId: householdId,
-                    name: 'Bedroom',
-                  ));
+          householdId: householdId,
+          name: 'Kitchen',
+        ));
               final meter2Id =
                   await dao.insertMeter(HeatingMetersCompanion.insert(
                 householdId: householdId,
                 roomId: room2Id,
-                name: 'Radiator B',
               ));
               await dao.insertReading(HeatingReadingsCompanion.insert(
                 heatingMeterId: meter2Id,
@@ -872,7 +806,6 @@ void main() {
               await dao.insertMeter(HeatingMetersCompanion.insert(
                 householdId: householdId,
                 roomId: roomId,
-                name: 'Empty Meter',
               ));
               await Future.delayed(const Duration(milliseconds: 100));
 
@@ -898,7 +831,6 @@ void main() {
                   await dao.insertMeter(HeatingMetersCompanion.insert(
                 householdId: householdId,
                 roomId: roomId,
-                name: 'Radiator One',
               ));
               final now2 = DateTime.now();
               final prevMonth2 = DateTime(now2.year, now2.month - 1, 1);
@@ -917,14 +849,13 @@ void main() {
               final room2Id = await database
                   .into(database.rooms)
                   .insert(RoomsCompanion.insert(
-                    householdId: householdId,
-                    name: 'Bedroom',
-                  ));
+          householdId: householdId,
+          name: 'Kitchen',
+        ));
               final meter2Id =
                   await dao.insertMeter(HeatingMetersCompanion.insert(
                 householdId: householdId,
                 roomId: room2Id,
-                name: 'Radiator Two',
               ));
               await dao.insertReading(HeatingReadingsCompanion.insert(
                 heatingMeterId: meter2Id,

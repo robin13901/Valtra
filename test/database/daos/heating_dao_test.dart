@@ -2,7 +2,6 @@ import 'package:drift/drift.dart' hide isNotNull, isNull;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:valtra/database/app_database.dart';
 import 'package:valtra/database/daos/heating_dao.dart';
-import 'package:valtra/database/tables.dart';
 
 import '../../helpers/test_database.dart';
 
@@ -37,7 +36,6 @@ void main() {
       final id = await dao.insertMeter(HeatingMetersCompanion.insert(
         householdId: householdId,
         roomId: roomId,
-        name: 'Bedroom Radiator',
       ));
 
       final meter = await dao.getMeter(id);
@@ -45,61 +43,28 @@ void main() {
       expect(meter.id, id);
       expect(meter.householdId, householdId);
       expect(meter.roomId, roomId);
-      expect(meter.name, 'Bedroom Radiator');
-      expect(meter.heatingType, HeatingType.ownMeter);
-      expect(meter.heatingRatio, isNull);
     });
 
-    test('insert meter with heatingType and heatingRatio', () async {
-      final id = await dao.insertMeter(HeatingMetersCompanion.insert(
+    test('getMetersForHousehold returns meters ordered by id', () async {
+      final id1 = await dao.insertMeter(HeatingMetersCompanion.insert(
         householdId: householdId,
         roomId: roomId,
-        name: 'Central Radiator',
-        heatingType: const Value(HeatingType.centralMeter),
-        heatingRatio: const Value(0.25),
       ));
-
-      final meter = await dao.getMeter(id);
-
-      expect(meter.name, 'Central Radiator');
-      expect(meter.heatingType, HeatingType.centralMeter);
-      expect(meter.heatingRatio, 0.25);
-    });
-
-    test('default heatingType is ownMeter', () async {
-      final id = await dao.insertMeter(HeatingMetersCompanion.insert(
+      final id2 = await dao.insertMeter(HeatingMetersCompanion.insert(
         householdId: householdId,
         roomId: roomId,
-        name: 'Default Type',
       ));
-
-      final meter = await dao.getMeter(id);
-      expect(meter.heatingType, HeatingType.ownMeter);
-    });
-
-    test('getMetersForHousehold returns meters ordered by name', () async {
-      await dao.insertMeter(HeatingMetersCompanion.insert(
+      final id3 = await dao.insertMeter(HeatingMetersCompanion.insert(
         householdId: householdId,
         roomId: roomId,
-        name: 'Z Meter',
-      ));
-      await dao.insertMeter(HeatingMetersCompanion.insert(
-        householdId: householdId,
-        roomId: roomId,
-        name: 'A Meter',
-      ));
-      await dao.insertMeter(HeatingMetersCompanion.insert(
-        householdId: householdId,
-        roomId: roomId,
-        name: 'M Meter',
       ));
 
       final meters = await dao.getMetersForHousehold(householdId);
 
       expect(meters.length, 3);
-      expect(meters[0].name, 'A Meter');
-      expect(meters[1].name, 'M Meter');
-      expect(meters[2].name, 'Z Meter');
+      expect(meters[0].id, id1);
+      expect(meters[1].id, id2);
+      expect(meters[2].id, id3);
     });
 
     test('watchMetersForHousehold emits on changes', () async {
@@ -113,7 +78,6 @@ void main() {
       await dao.insertMeter(HeatingMetersCompanion.insert(
         householdId: householdId,
         roomId: roomId,
-        name: 'New Meter',
       ));
 
       await Future.delayed(const Duration(milliseconds: 50));
@@ -123,7 +87,6 @@ void main() {
       expect(emissions.length, greaterThanOrEqualTo(2));
       expect(emissions.first, isEmpty);
       expect(emissions.last.length, 1);
-      expect(emissions.last.first.name, 'New Meter');
     });
 
     test('getMetersForRoom returns meters for specific room', () async {
@@ -137,21 +100,19 @@ void main() {
       await dao.insertMeter(HeatingMetersCompanion.insert(
         householdId: householdId,
         roomId: roomId,
-        name: 'Living Room Radiator',
       ));
       await dao.insertMeter(HeatingMetersCompanion.insert(
         householdId: householdId,
         roomId: room2Id,
-        name: 'Kitchen Radiator',
       ));
 
       final livingRoomMeters = await dao.getMetersForRoom(roomId);
       final kitchenMeters = await dao.getMetersForRoom(room2Id);
 
       expect(livingRoomMeters.length, 1);
-      expect(livingRoomMeters.first.name, 'Living Room Radiator');
+      expect(livingRoomMeters.first.roomId, roomId);
       expect(kitchenMeters.length, 1);
-      expect(kitchenMeters.first.name, 'Kitchen Radiator');
+      expect(kitchenMeters.first.roomId, room2Id);
     });
 
     test('watchMetersForRoom emits on changes', () async {
@@ -165,7 +126,6 @@ void main() {
       await dao.insertMeter(HeatingMetersCompanion.insert(
         householdId: householdId,
         roomId: roomId,
-        name: 'New Room Meter',
       ));
 
       await Future.delayed(const Duration(milliseconds: 50));
@@ -175,14 +135,12 @@ void main() {
       expect(emissions.length, greaterThanOrEqualTo(2));
       expect(emissions.first, isEmpty);
       expect(emissions.last.length, 1);
-      expect(emissions.last.first.name, 'New Room Meter');
     });
 
     test('getRoomForMeter returns correct room', () async {
       final meterId = await dao.insertMeter(HeatingMetersCompanion.insert(
         householdId: householdId,
         roomId: roomId,
-        name: 'Test Meter',
       ));
 
       final room = await dao.getRoomForMeter(meterId);
@@ -202,31 +160,22 @@ void main() {
       final id = await dao.insertMeter(HeatingMetersCompanion.insert(
         householdId: householdId,
         roomId: roomId,
-        name: 'Original Name',
       ));
 
       final updated = await dao.updateMeter(HeatingMetersCompanion(
         id: Value(id),
-        name: const Value('Updated Name'),
         roomId: Value(room2Id),
-        heatingType: const Value(HeatingType.centralMeter),
-        heatingRatio: const Value(0.5),
       ));
 
       expect(updated, true);
 
       final meter = await dao.getMeter(id);
-      expect(meter.name, 'Updated Name');
       expect(meter.roomId, room2Id);
-      expect(meter.heatingType, HeatingType.centralMeter);
-      expect(meter.heatingRatio, 0.5);
     });
 
     test('updateMeter throws without id', () async {
       expect(
-        () => dao.updateMeter(const HeatingMetersCompanion(
-          name: Value('Test'),
-        )),
+        () => dao.updateMeter(const HeatingMetersCompanion()),
         throwsA(isA<ArgumentError>()),
       );
     });
@@ -235,7 +184,6 @@ void main() {
       final meterId = await dao.insertMeter(HeatingMetersCompanion.insert(
         householdId: householdId,
         roomId: roomId,
-        name: 'Test Meter',
       ));
 
       await dao.insertReading(HeatingReadingsCompanion.insert(
@@ -265,7 +213,6 @@ void main() {
       final meterId = await dao.insertMeter(HeatingMetersCompanion.insert(
         householdId: householdId,
         roomId: roomId,
-        name: 'Test Meter',
       ));
 
       expect(await dao.getReadingCountForMeter(meterId), 0);
@@ -292,7 +239,6 @@ void main() {
       meterId = await dao.insertMeter(HeatingMetersCompanion.insert(
         householdId: householdId,
         roomId: roomId,
-        name: 'Test Meter',
       ));
     });
 
@@ -546,7 +492,6 @@ void main() {
       meterId = await dao.insertMeter(HeatingMetersCompanion.insert(
         householdId: householdId,
         roomId: roomId,
-        name: 'Range Test Meter',
       ));
     });
 
@@ -644,7 +589,6 @@ void main() {
       final meter1Id = await dao.insertMeter(HeatingMetersCompanion.insert(
         householdId: householdId,
         roomId: roomId,
-        name: 'Meter 1',
       ));
       final room2Id = await database
           .into(database.rooms)
@@ -655,7 +599,6 @@ void main() {
       final meter2Id = await dao.insertMeter(HeatingMetersCompanion.insert(
         householdId: householdId,
         roomId: room2Id,
-        name: 'Meter 2',
       ));
 
       await dao.insertReading(HeatingReadingsCompanion.insert(
@@ -692,88 +635,19 @@ void main() {
       await dao.insertMeter(HeatingMetersCompanion.insert(
         householdId: householdId,
         roomId: roomId,
-        name: 'Meter in H1',
       ));
       await dao.insertMeter(HeatingMetersCompanion.insert(
         householdId: household2Id,
         roomId: room2Id,
-        name: 'Meter in H2',
       ));
 
       final h1Meters = await dao.getMetersForHousehold(householdId);
       final h2Meters = await dao.getMetersForHousehold(household2Id);
 
       expect(h1Meters.length, 1);
-      expect(h1Meters.first.name, 'Meter in H1');
+      expect(h1Meters.first.householdId, householdId);
       expect(h2Meters.length, 1);
-      expect(h2Meters.first.name, 'Meter in H2');
-    });
-  });
-
-  group('HeatingDao - HeatingType and Ratio', () {
-    test('stores and retrieves ownMeter type', () async {
-      final id = await dao.insertMeter(HeatingMetersCompanion.insert(
-        householdId: householdId,
-        roomId: roomId,
-        name: 'Own Meter',
-        heatingType: const Value(HeatingType.ownMeter),
-      ));
-
-      final meter = await dao.getMeter(id);
-      expect(meter.heatingType, HeatingType.ownMeter);
-      expect(meter.heatingRatio, isNull);
-    });
-
-    test('stores and retrieves centralMeter type with ratio', () async {
-      final id = await dao.insertMeter(HeatingMetersCompanion.insert(
-        householdId: householdId,
-        roomId: roomId,
-        name: 'Central Meter',
-        heatingType: const Value(HeatingType.centralMeter),
-        heatingRatio: const Value(0.25),
-      ));
-
-      final meter = await dao.getMeter(id);
-      expect(meter.heatingType, HeatingType.centralMeter);
-      expect(meter.heatingRatio, 0.25);
-    });
-
-    test('ratio = 0 is stored correctly', () async {
-      final id = await dao.insertMeter(HeatingMetersCompanion.insert(
-        householdId: householdId,
-        roomId: roomId,
-        name: 'Zero Ratio',
-        heatingType: const Value(HeatingType.centralMeter),
-        heatingRatio: const Value(0.0),
-      ));
-
-      final meter = await dao.getMeter(id);
-      expect(meter.heatingRatio, 0.0);
-    });
-
-    test('ratio = 1 is stored correctly', () async {
-      final id = await dao.insertMeter(HeatingMetersCompanion.insert(
-        householdId: householdId,
-        roomId: roomId,
-        name: 'Full Ratio',
-        heatingType: const Value(HeatingType.centralMeter),
-        heatingRatio: const Value(1.0),
-      ));
-
-      final meter = await dao.getMeter(id);
-      expect(meter.heatingRatio, 1.0);
-    });
-
-    test('null ratio for own_meter', () async {
-      final id = await dao.insertMeter(HeatingMetersCompanion.insert(
-        householdId: householdId,
-        roomId: roomId,
-        name: 'No Ratio',
-      ));
-
-      final meter = await dao.getMeter(id);
-      expect(meter.heatingType, HeatingType.ownMeter);
-      expect(meter.heatingRatio, isNull);
+      expect(h2Meters.first.householdId, household2Id);
     });
   });
 }

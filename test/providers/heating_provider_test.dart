@@ -1,7 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:valtra/database/app_database.dart';
 import 'package:valtra/database/daos/heating_dao.dart';
-import 'package:valtra/database/tables.dart';
 import 'package:valtra/providers/heating_provider.dart';
 
 import '../helpers/test_database.dart';
@@ -40,7 +39,6 @@ void main() {
       await dao.insertMeter(HeatingMetersCompanion.insert(
         householdId: householdId,
         roomId: roomId,
-        name: 'Test Meter',
       ));
 
       expect(provider.meters, isEmpty);
@@ -49,14 +47,13 @@ void main() {
       await Future.delayed(const Duration(milliseconds: 100));
 
       expect(provider.meters.length, 1);
-      expect(provider.meters.first.name, 'Test Meter');
+      expect(provider.meters.first.roomId, roomId);
     });
 
     test('setHouseholdId clears meters when set to null', () async {
       await dao.insertMeter(HeatingMetersCompanion.insert(
         householdId: householdId,
         roomId: roomId,
-        name: 'Test Meter',
       ));
 
       provider.setHouseholdId(householdId);
@@ -85,42 +82,19 @@ void main() {
     });
 
     test('addMeter creates record with roomId', () async {
-      final id = await provider.addMeter('Bedroom Radiator', roomId);
+      final id = await provider.addMeter(roomId);
       await Future.delayed(const Duration(milliseconds: 100));
 
       expect(id, greaterThan(0));
       expect(provider.meters.length, 1);
-      expect(provider.meters.first.name, 'Bedroom Radiator');
       expect(provider.meters.first.roomId, roomId);
-    });
-
-    test('addMeter creates central meter with ratio', () async {
-      final id = await provider.addMeter(
-        'Central Radiator',
-        roomId,
-        heatingType: HeatingType.centralMeter,
-        heatingRatio: 0.25,
-      );
-      await Future.delayed(const Duration(milliseconds: 100));
-
-      expect(id, greaterThan(0));
-      expect(provider.meters.first.heatingType, HeatingType.centralMeter);
-      expect(provider.meters.first.heatingRatio, 0.25);
-    });
-
-    test('addMeter defaults to ownMeter type', () async {
-      await provider.addMeter('Default Type', roomId);
-      await Future.delayed(const Duration(milliseconds: 100));
-
-      expect(provider.meters.first.heatingType, HeatingType.ownMeter);
-      expect(provider.meters.first.heatingRatio, isNull);
     });
 
     test('addMeter throws when no household selected', () async {
       provider.setHouseholdId(null);
 
       expect(
-        () => provider.addMeter('Test', roomId),
+        () => provider.addMeter(roomId),
         throwsA(isA<StateError>()),
       );
     });
@@ -133,18 +107,17 @@ void main() {
             name: 'Kitchen',
           ));
 
-      final id = await provider.addMeter('Original', roomId);
+      final id = await provider.addMeter(roomId);
       await Future.delayed(const Duration(milliseconds: 100));
 
-      await provider.updateMeter(id, 'Updated', room2Id);
+      await provider.updateMeter(id, room2Id);
       await Future.delayed(const Duration(milliseconds: 100));
 
-      expect(provider.meters.first.name, 'Updated');
       expect(provider.meters.first.roomId, room2Id);
     });
 
     test('deleteMeter removes record and clears selected', () async {
-      final id = await provider.addMeter('To Delete', roomId);
+      final id = await provider.addMeter(roomId);
       await Future.delayed(const Duration(milliseconds: 100));
 
       provider.setSelectedMeterId(id);
@@ -158,7 +131,7 @@ void main() {
     });
 
     test('getReadingCountForMeter returns correct count', () async {
-      final meterId = await provider.addMeter('Test', roomId);
+      final meterId = await provider.addMeter(roomId);
       await Future.delayed(const Duration(milliseconds: 100));
 
       expect(await provider.getReadingCountForMeter(meterId), 0);
@@ -177,12 +150,11 @@ void main() {
     });
 
     test('metersWithRooms returns HeatingMeterWithRoom objects', () async {
-      await provider.addMeter('Radiator 1', roomId);
+      await provider.addMeter(roomId);
       await Future.delayed(const Duration(milliseconds: 100));
 
       final metersWithRooms = provider.metersWithRooms;
       expect(metersWithRooms.length, 1);
-      expect(metersWithRooms.first.meter.name, 'Radiator 1');
       expect(metersWithRooms.first.roomName, 'Living Room');
     });
 
@@ -194,21 +166,19 @@ void main() {
             name: 'Kitchen',
           ));
 
-      await provider.addMeter('Living Radiator', roomId);
-      await provider.addMeter('Kitchen Radiator', room2Id);
+      await provider.addMeter(roomId);
+      await provider.addMeter(room2Id);
       await Future.delayed(const Duration(milliseconds: 100));
 
       final grouped = provider.metersByRoom;
       expect(grouped.keys.length, 2);
       expect(grouped['Living Room']!.length, 1);
       expect(grouped['Kitchen']!.length, 1);
-      expect(grouped['Living Room']!.first.meter.name, 'Living Radiator');
-      expect(grouped['Kitchen']!.first.meter.name, 'Kitchen Radiator');
     });
 
     test('multiple meters in same room grouped together', () async {
-      await provider.addMeter('Radiator A', roomId);
-      await provider.addMeter('Radiator B', roomId);
+      await provider.addMeter(roomId);
+      await provider.addMeter(roomId);
       await Future.delayed(const Duration(milliseconds: 100));
 
       final grouped = provider.metersByRoom;
@@ -224,7 +194,7 @@ void main() {
       provider.setHouseholdId(householdId);
       await Future.delayed(const Duration(milliseconds: 50));
 
-      meterId = await provider.addMeter('Test Meter', roomId);
+      meterId = await provider.addMeter(roomId);
       await Future.delayed(const Duration(milliseconds: 100));
     });
 
@@ -269,7 +239,7 @@ void main() {
       provider.setHouseholdId(householdId);
       await Future.delayed(const Duration(milliseconds: 50));
 
-      meterId = await provider.addMeter('Test Meter', roomId);
+      meterId = await provider.addMeter(roomId);
       await Future.delayed(const Duration(milliseconds: 100));
     });
 
@@ -303,7 +273,7 @@ void main() {
       provider.setHouseholdId(householdId);
       await Future.delayed(const Duration(milliseconds: 50));
 
-      meterId = await provider.addMeter('Test Meter', roomId);
+      meterId = await provider.addMeter(roomId);
       await Future.delayed(const Duration(milliseconds: 100));
 
       await provider.addReading(meterId, DateTime(2024, 1, 1), 1000.0);
@@ -376,7 +346,7 @@ void main() {
       provider.setHouseholdId(householdId);
       await Future.delayed(const Duration(milliseconds: 50));
 
-      final meterId = await provider.addMeter('Test', roomId);
+      final meterId = await provider.addMeter(roomId);
       await Future.delayed(const Duration(milliseconds: 100));
 
       expect(provider.selectedMeterId, isNull);
@@ -392,7 +362,7 @@ void main() {
       provider.setHouseholdId(householdId);
       await Future.delayed(const Duration(milliseconds: 50));
 
-      final meterId = await provider.addMeter('Test', roomId);
+      final meterId = await provider.addMeter(roomId);
       await Future.delayed(const Duration(milliseconds: 100));
 
       provider.setSelectedMeterId(meterId);

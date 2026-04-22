@@ -17,7 +17,9 @@
       "Read(//c/SAPDevelop/Privat/XFin/**)",
       "Bash(xargs grep *)",
       "Bash(flutter pub *)",
-      "Bash(flutter gen-l10n *)"
+      "Bash(flutter gen-l10n *)",
+      "Bash(grep -E \"\\\\.\\(dart\\)$\")",
+      "Bash(xargs ls *)"
     ],
     "additionalDirectories": [
       "\\tmp"

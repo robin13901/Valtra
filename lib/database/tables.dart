@@ -3,8 +3,6 @@ import 'package:drift/drift.dart';
 /// Water meter types for distinguishing cold/hot water
 enum WaterMeterType { cold, hot, other }
 
-/// Heating meter types: own meter (direct reading) or central meter (shared with ratio)
-enum HeatingType { ownMeter, centralMeter }
 
 /// Households table - top-level entity for grouping meters
 @DataClassName('Household')
@@ -52,16 +50,13 @@ class WaterReadings extends Table {
   RealColumn get valueCubicMeters => real()();
 }
 
-/// Heating meters - multiple per household, assigned to rooms
+/// Heating meters - multiple per household, assigned to rooms.
+/// Each meter represents a single radiator in a room.
 @DataClassName('HeatingMeter')
 class HeatingMeters extends Table {
   IntColumn get id => integer().autoIncrement()();
   IntColumn get householdId => integer().references(Households, #id)();
   IntColumn get roomId => integer().references(Rooms, #id)();
-  TextColumn get name => text().withLength(min: 1, max: 100)();
-  IntColumn get heatingType =>
-      intEnum<HeatingType>().withDefault(const Constant(0))();
-  RealColumn get heatingRatio => real().nullable()();
 }
 
 /// Heating meter readings - linked to specific heating meter

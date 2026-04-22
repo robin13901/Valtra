@@ -172,7 +172,7 @@ void main() {
             RoomsCompanion.insert(householdId: id, name: 'Room 1'));
 
         await database.into(database.heatingMeters).insert(
-            HeatingMetersCompanion.insert(householdId: id, roomId: roomId, name: 'Radiator 1'));
+            HeatingMetersCompanion.insert(householdId: id, roomId: roomId));
 
         final hasData = await dao.hasRelatedData(id);
         expect(hasData, isTrue);

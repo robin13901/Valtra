@@ -1772,6 +1772,18 @@ abstract class AppLocalizations {
   /// **'Consumption by Plug'**
   String get consumptionByPlugTitle;
 
+  /// No description provided for @byRoom.
+  ///
+  /// In en, this message translates to:
+  /// **'By Room'**
+  String get byRoom;
+
+  /// No description provided for @byPlug.
+  ///
+  /// In en, this message translates to:
+  /// **'By Plug'**
+  String get byPlug;
+
   /// No description provided for @consumptionWithPercent.
   ///
   /// In en, this message translates to:

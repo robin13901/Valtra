@@ -460,6 +460,8 @@
   "notTracked": "Not Tracked",
   "consumptionByRoomTitle": "Consumption by Room",
   "consumptionByPlugTitle": "Consumption by Plug",
+  "byRoom": "By Room",
+  "byPlug": "By Plug",
   "consumptionWithPercent": "{value} kWh ({percent}%)",
   "@consumptionWithPercent": {
     "placeholders": {

@@ -38,7 +38,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase(super.e);
 
   @override
-  int get schemaVersion => 4;
+  int get schemaVersion => 5;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -129,6 +129,23 @@ class AppDatabase extends _$AppDatabase {
             await customStatement(
               "ALTER TABLE households ADD COLUMN person_count INTEGER NOT NULL DEFAULT 1",
             );
+          }
+          if (from < 5) {
+            // Remove name, heating_type, heating_ratio columns from heating_meters
+            await customStatement('''
+              CREATE TABLE heating_meters_new (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                household_id INTEGER NOT NULL REFERENCES households(id),
+                room_id INTEGER NOT NULL REFERENCES rooms(id)
+              )
+            ''');
+            await customStatement('''
+              INSERT INTO heating_meters_new (id, household_id, room_id)
+              SELECT id, household_id, room_id FROM heating_meters
+            ''');
+            await customStatement('DROP TABLE heating_meters');
+            await customStatement(
+                'ALTER TABLE heating_meters_new RENAME TO heating_meters');
           }
         },
       );
