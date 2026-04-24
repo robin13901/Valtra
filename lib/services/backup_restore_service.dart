@@ -84,7 +84,7 @@ class BackupRestoreService {
       // Check schema version
       final versionResult = db.select('PRAGMA user_version');
       final version = versionResult.first['user_version'] as int;
-      if (version != expectedSchemaVersion) return false;
+      if (version < 1 || version > expectedSchemaVersion) return false;
 
       return true;
     } catch (_) {

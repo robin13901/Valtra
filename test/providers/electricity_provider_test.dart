@@ -272,5 +272,80 @@ void main() {
       expect(items.length, 1);
       expect(items.first.isInterpolated, false);
     });
+
+    test('interpolated delta uses month-to-month boundaries, not adjacent real readings', () async {
+      provider.setHouseholdId(householdId);
+      await Future.delayed(const Duration(milliseconds: 50));
+
+      // Dec 1 exact match, Jan 15 and Mar 15 are real readings mid-month.
+      // This forces Feb 1 interpolated to sit AFTER Jan 15 real in the list,
+      // exposing the bug where delta was computed against Jan 15 instead of Jan 1.
+      await provider.addReading(DateTime(2023, 12, 1), 1000.0);
+      await provider.addReading(DateTime(2024, 1, 15), 1050.0);
+      await provider.addReading(DateTime(2024, 3, 15), 1200.0);
+      await Future.delayed(const Duration(milliseconds: 100));
+
+      provider.toggleInterpolatedValues();
+      final items = provider.displayItems;
+
+      // Interpolated boundaries: Jan 1, Feb 1, Mar 1
+      final jan1 = items.where(
+        (i) => i.isInterpolated && i.timestamp == DateTime(2024, 1, 1),
+      );
+      final feb1 = items.where(
+        (i) => i.isInterpolated && i.timestamp == DateTime(2024, 2, 1),
+      );
+      final mar1 = items.where(
+        (i) => i.isInterpolated && i.timestamp == DateTime(2024, 3, 1),
+      );
+
+      expect(jan1.length, 1);
+      expect(feb1.length, 1);
+      expect(mar1.length, 1);
+
+      // Jan 1 delta = Jan1_value - Dec1_boundary (Dec 1 is exact match @ 1000)
+      expect(jan1.first.delta, isNotNull);
+      expect(jan1.first.delta!, closeTo(jan1.first.value - 1000.0, 0.01));
+
+      // Feb 1 delta must be Feb1 - Jan1 (month boundary), NOT Feb1 - Jan15_real
+      final expectedFeb1Delta = feb1.first.value - jan1.first.value;
+      expect(feb1.first.delta, isNotNull);
+      expect(feb1.first.delta!, closeTo(expectedFeb1Delta, 0.01));
+      // Confirm it's NOT the old buggy value (Feb1 - Jan15 = Feb1 - 1050)
+      expect(feb1.first.delta!, isNot(closeTo(feb1.first.value - 1050.0, 0.01)));
+
+      // Mar 1 delta must be Mar1 - Feb1
+      final expectedMar1Delta = mar1.first.value - feb1.first.value;
+      expect(mar1.first.delta, isNotNull);
+      expect(mar1.first.delta!, closeTo(expectedMar1Delta, 0.01));
+    });
+
+    test('interpolated delta is null when no previous month boundary exists', () async {
+      provider.setHouseholdId(householdId);
+      await Future.delayed(const Duration(milliseconds: 50));
+
+      // Two readings mid-month — Feb 1 is interpolated but no Jan 1 boundary
+      await provider.addReading(DateTime(2024, 1, 15), 1000.0);
+      await provider.addReading(DateTime(2024, 3, 15), 1300.0);
+      await Future.delayed(const Duration(milliseconds: 100));
+
+      provider.toggleInterpolatedValues();
+      final items = provider.displayItems;
+
+      // Feb 1 is the earliest boundary (no Jan 1 possible)
+      final feb1 = items.where(
+        (i) => i.isInterpolated && i.timestamp == DateTime(2024, 2, 1),
+      );
+      expect(feb1.length, 1);
+      expect(feb1.first.delta, isNull);
+
+      // Mar 1 has Feb 1 as previous boundary → delta should exist
+      final mar1 = items.where(
+        (i) => i.isInterpolated && i.timestamp == DateTime(2024, 3, 1),
+      );
+      expect(mar1.length, 1);
+      expect(mar1.first.delta, isNotNull);
+      expect(mar1.first.delta!, closeTo(mar1.first.value - feb1.first.value, 0.01));
+    });
   });
 }

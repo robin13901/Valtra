@@ -84,12 +84,25 @@ void main() {
       expect(result, isFalse);
     });
 
-    test('returns false for Valtra SQLite with schema version != 5', () async {
-      final wrongVersion =
-          File('${tempExportDir.path}/wrong_version.sqlite');
-      _createValidValtraDb(wrongVersion.path, schemaVersion: 1);
+    test('returns true for older schema versions that can be migrated',
+        () async {
+      for (final version in [1, 2, 3, 4]) {
+        final olderDb =
+            File('${tempExportDir.path}/older_v$version.sqlite');
+        _createValidValtraDb(olderDb.path, schemaVersion: version);
 
-      final result = await service.validateBackupFile(wrongVersion);
+        final result = await service.validateBackupFile(olderDb);
+
+        expect(result, isTrue, reason: 'schema version $version should be accepted');
+      }
+    });
+
+    test('returns false for schema version higher than expected', () async {
+      final futureDb =
+          File('${tempExportDir.path}/future_version.sqlite');
+      _createValidValtraDb(futureDb.path, schemaVersion: 99);
+
+      final result = await service.validateBackupFile(futureDb);
 
       expect(result, isFalse);
     });

@@ -106,29 +106,28 @@ class GasProvider extends ChangeNotifier {
       rangeEnd: rangeEnd,
     );
 
+    final boundaryByMonth = <DateTime, double>{};
+    for (final b in boundaries) {
+      boundaryByMonth[b.timestamp] = b.value;
+    }
+
     final interpolatedItems = boundaries
         .where((b) => b.isInterpolated)
-        .map((b) => ReadingDisplayItem(
-              timestamp: b.timestamp,
-              value: b.value,
-              isInterpolated: true,
-            ))
+        .map((b) {
+          final prevMonth = DateTime(b.timestamp.year, b.timestamp.month - 1, 1);
+          final prevValue = boundaryByMonth[prevMonth];
+          final delta = prevValue != null ? b.value - prevValue : null;
+          return ReadingDisplayItem(
+            timestamp: b.timestamp,
+            value: b.value,
+            isInterpolated: true,
+            delta: delta != null && delta > 0 ? delta : null,
+          );
+        })
         .toList();
 
     final merged = [...realItems, ...interpolatedItems];
     merged.sort((a, b) => b.timestamp.compareTo(a.timestamp));
-
-    for (int i = 0; i < merged.length; i++) {
-      if (merged[i].isInterpolated && i + 1 < merged.length) {
-        final diff = merged[i].value - merged[i + 1].value;
-        merged[i] = ReadingDisplayItem(
-          timestamp: merged[i].timestamp,
-          value: merged[i].value,
-          isInterpolated: true,
-          delta: diff > 0 ? diff : null,
-        );
-      }
-    }
 
     return merged;
   }
