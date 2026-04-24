@@ -115,6 +115,18 @@ class AnalyticsProvider extends ChangeNotifier {
     _loadYearlyData();
   }
 
+  /// Re-load data if the active meter type doesn't match [type].
+  ///
+  /// Call from screen `build` methods to handle the case where Navigator
+  /// pops back to a screen whose `initState` already ran with a different type.
+  void ensureMeterType(MeterType type) {
+    if (_selectedMeterType == type) return;
+    _selectedMeterType = type;
+    notifyListeners();
+    _loadMonthlyData();
+    _loadYearlyData();
+  }
+
   void navigateMonth(int delta) {
     _selectedMonth =
         DateTime(_selectedMonth.year, _selectedMonth.month + delta, 1);

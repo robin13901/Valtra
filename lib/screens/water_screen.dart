@@ -55,6 +55,13 @@ class _WaterScreenState extends State<WaterScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
 
+    final analyticsProvider = context.read<AnalyticsProvider>();
+    if (analyticsProvider.selectedMeterType != MeterType.water) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) analyticsProvider.ensureMeterType(MeterType.water);
+      });
+    }
+
     return Scaffold(
       appBar: buildGlassAppBar(
         context: context,

@@ -54,6 +54,13 @@ class _HeatingScreenState extends State<HeatingScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
 
+    final analyticsProvider = context.read<AnalyticsProvider>();
+    if (analyticsProvider.selectedMeterType != MeterType.heating) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) analyticsProvider.ensureMeterType(MeterType.heating);
+      });
+    }
+
     return Scaffold(
       appBar: buildGlassAppBar(
         context: context,

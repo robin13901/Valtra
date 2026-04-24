@@ -55,6 +55,14 @@ class _ElectricityScreenState extends State<ElectricityScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
 
+    // Re-sync meter type when returning from another screen via Navigator.pop
+    final analyticsProvider = context.read<AnalyticsProvider>();
+    if (analyticsProvider.selectedMeterType != MeterType.electricity) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) analyticsProvider.ensureMeterType(MeterType.electricity);
+      });
+    }
+
     return Scaffold(
       appBar: buildGlassAppBar(
         context: context,

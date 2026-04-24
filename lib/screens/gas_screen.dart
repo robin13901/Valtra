@@ -53,6 +53,13 @@ class _GasScreenState extends State<GasScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
 
+    final analyticsProvider = context.read<AnalyticsProvider>();
+    if (analyticsProvider.selectedMeterType != MeterType.gas) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) analyticsProvider.ensureMeterType(MeterType.gas);
+      });
+    }
+
     return Scaffold(
       appBar: buildGlassAppBar(
         context: context,
