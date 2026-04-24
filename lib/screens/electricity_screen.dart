@@ -322,6 +322,7 @@ class _ElectricityScreenState extends State<ElectricityScreen> {
             households: analyticsProvider.allTimeHouseholdData,
             unit: monthlyData.unit,
             locale: locale,
+            selectedMonth: analyticsProvider.selectedMonth,
           ),
         ],
       ],

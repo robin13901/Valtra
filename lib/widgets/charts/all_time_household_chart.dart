@@ -12,11 +12,13 @@ class AllTimeHouseholdChart extends StatefulWidget {
   final List<HouseholdChartData> households;
   final String unit;
   final String locale;
+  final DateTime selectedMonth;
 
   const AllTimeHouseholdChart({
     super.key,
     required this.households,
     required this.unit,
+    required this.selectedMonth,
     this.locale = 'de',
   });
 
@@ -27,12 +29,34 @@ class AllTimeHouseholdChart extends StatefulWidget {
 class _AllTimeHouseholdChartState extends State<AllTimeHouseholdChart> {
   bool _perPerson = false;
 
+  /// Compute the 12-month window ending at selectedMonth and filter households.
+  List<HouseholdChartData> get _windowedHouseholds {
+    final end = DateTime(widget.selectedMonth.year, widget.selectedMonth.month, 1);
+    final start = DateTime(end.year, end.month - 11, 1);
+
+    return widget.households
+        .map((h) {
+          final filtered = h.periods.where((p) {
+            final ps = DateTime(p.periodStart.year, p.periodStart.month, 1);
+            return !ps.isBefore(start) && !ps.isAfter(end);
+          }).toList();
+          return HouseholdChartData(
+            name: h.name,
+            periods: filtered,
+            color: h.color,
+            personCount: h.personCount,
+          );
+        })
+        .where((h) => h.periods.isNotEmpty)
+        .toList();
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final households = _windowedHouseholds;
 
-    if (widget.households.isEmpty ||
-        widget.households.every((h) => h.periods.isEmpty)) {
+    if (households.isEmpty || households.every((h) => h.periods.isEmpty)) {
       return Center(child: Text(l10n.noData));
     }
 
@@ -49,11 +73,17 @@ class _AllTimeHouseholdChartState extends State<AllTimeHouseholdChart> {
               isSelected: [!_perPerson, _perPerson],
               onPressed: (index) => setState(() => _perPerson = index == 1),
               borderRadius: BorderRadius.circular(8),
-              constraints: const BoxConstraints(minHeight: 32, minWidth: 60),
+              constraints: const BoxConstraints(minHeight: 32, minWidth: 72),
               textStyle: Theme.of(context).textTheme.bodySmall,
               children: [
-                Text(l10n.total),
-                Text(l10n.perPerson),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: Text(l10n.total),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: Text(l10n.perPerson),
+                ),
               ],
             ),
           ],
@@ -62,13 +92,13 @@ class _AllTimeHouseholdChartState extends State<AllTimeHouseholdChart> {
         SizedBox(
           height: 250,
           child: LineChart(
-            _buildData(context),
+            _buildData(context, households),
             duration: const Duration(milliseconds: 300),
           ),
         ),
         const SizedBox(height: 8),
         ChartLegend(
-          items: widget.households
+          items: households
               .map((h) => ChartLegendItem(color: h.color, label: h.name))
               .toList(),
         ),
@@ -76,21 +106,16 @@ class _AllTimeHouseholdChartState extends State<AllTimeHouseholdChart> {
     );
   }
 
-  int get _minYear {
-    int min = 9999;
-    for (final h in widget.households) {
-      for (final p in h.periods) {
-        if (p.periodStart.year < min) min = p.periodStart.year;
-      }
-    }
-    return min == 9999 ? DateTime.now().year : min;
-  }
-
-  LineChartData _buildData(BuildContext context) {
+  LineChartData _buildData(
+      BuildContext context, List<HouseholdChartData> households) {
     final lineBars = <LineChartBarData>[];
-    final baseYear = _minYear;
 
-    for (final household in widget.households) {
+    final end =
+        DateTime(widget.selectedMonth.year, widget.selectedMonth.month, 1);
+    final start = DateTime(end.year, end.month - 11, 1);
+    final baseYear = start.year;
+
+    for (final household in households) {
       if (household.periods.isEmpty) continue;
 
       final divisor =
@@ -112,19 +137,16 @@ class _AllTimeHouseholdChartState extends State<AllTimeHouseholdChart> {
           isCurved: true,
           curveSmoothness: 0.25,
           preventCurveOverShooting: true,
-          dotData: FlDotData(
-            show: true,
-            getDotPainter: (spot, pct, bar, idx) => FlDotCirclePainter(
-              radius: 3,
-              color: household.color,
-              strokeColor: Theme.of(context).colorScheme.surface,
-              strokeWidth: 1.5,
-            ),
-          ),
+          dotData: const FlDotData(show: false),
           belowBarData: BarAreaData(show: false),
         ));
       }
     }
+
+    final windowMinX = (start.month - 1).toDouble() +
+        ((start.year - baseYear) * 12);
+    final windowMaxX = (end.month - 1).toDouble() +
+        ((end.year - baseYear) * 12);
 
     final allValues = lineBars
         .expand((bar) => bar.spots)
@@ -134,20 +156,13 @@ class _AllTimeHouseholdChartState extends State<AllTimeHouseholdChart> {
         allValues.isEmpty ? 1.0 : allValues.reduce((a, b) => a > b ? a : b);
     final maxY = maxVal > 0 ? maxVal * 1.15 : 1.0;
 
-    final allX = lineBars
-        .expand((bar) => bar.spots)
-        .where((s) => s != FlSpot.nullSpot)
-        .map((s) => s.x);
-    final maxX = allX.isEmpty ? 11.0 : allX.reduce((a, b) => a > b ? a : b);
-    final minX = allX.isEmpty ? 0.0 : allX.reduce((a, b) => a < b ? a : b);
-
     return LineChartData(
-      minX: minX,
-      maxX: maxX,
+      minX: windowMinX,
+      maxX: windowMaxX,
       minY: 0,
       maxY: maxY,
       lineBarsData: lineBars,
-      titlesData: _buildTitles(context, minX, maxX, baseYear),
+      titlesData: _buildTitles(context, windowMinX, windowMaxX, baseYear),
       gridData: ChartAxisStyle.gridData(context),
       borderData: ChartAxisStyle.borderData(context),
       lineTouchData: LineTouchData(
@@ -190,10 +205,7 @@ class _AllTimeHouseholdChartState extends State<AllTimeHouseholdChart> {
             if (monthIndex < 0 || monthIndex > 11) {
               return const SizedBox.shrink();
             }
-            final range = (maxX - minX).toInt() + 1;
-            if (range > 12 && index % 3 != 0) {
-              return const SizedBox.shrink();
-            } else if (range > 6 && range <= 12 && index % 2 != 0) {
+            if (index % 2 != 0) {
               return const SizedBox.shrink();
             }
             final year = baseYear + index ~/ 12;

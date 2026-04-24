@@ -306,6 +306,7 @@ class _GasScreenState extends State<GasScreen> {
             households: analyticsProvider.allTimeHouseholdData,
             unit: monthlyData.unit,
             locale: locale,
+            selectedMonth: analyticsProvider.selectedMonth,
           ),
         ],
       ],

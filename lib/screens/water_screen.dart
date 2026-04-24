@@ -290,6 +290,7 @@ class _WaterScreenState extends State<WaterScreen> {
             households: analyticsProvider.allTimeHouseholdData,
             unit: monthlyData.unit,
             locale: locale,
+            selectedMonth: analyticsProvider.selectedMonth,
           ),
         ],
       ],

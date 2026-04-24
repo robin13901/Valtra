@@ -279,6 +279,7 @@ class _HeatingScreenState extends State<HeatingScreen> {
             households: analyticsProvider.allTimeHouseholdData,
             unit: monthlyData.unit,
             locale: locale,
+            selectedMonth: analyticsProvider.selectedMonth,
           ),
           const SizedBox(height: 24),
         ],
