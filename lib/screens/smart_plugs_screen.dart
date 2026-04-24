@@ -140,7 +140,7 @@ class _SmartPlugsScreenState extends State<SmartPlugsScreen> {
 
   void _navigateToRooms(BuildContext context) {
     Navigator.of(context).push(
-      MaterialPageRoute(builder: (context) => const RoomsScreen()),
+      noAnimRoute(const RoomsScreen()),
     );
   }
 

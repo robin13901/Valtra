@@ -198,9 +198,7 @@ class SettingsScreen extends StatelessWidget {
           title: Text(l10n.costProfiles),
           trailing: const Icon(Icons.chevron_right),
           onTap: () => Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (_) => const HouseholdCostSettingsScreen(),
-            ),
+            noAnimRoute(const HouseholdCostSettingsScreen()),
           ),
         ),
       ),

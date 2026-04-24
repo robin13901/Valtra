@@ -372,7 +372,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _navigateToSettings(BuildContext context) {
     Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => const SettingsScreen()),
+      noAnimRoute(const SettingsScreen()),
     );
   }
 
@@ -388,7 +388,7 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => screen),
+      noAnimRoute(screen),
     );
   }
 

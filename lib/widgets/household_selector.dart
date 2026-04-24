@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../l10n/app_localizations.dart';
 import '../providers/household_provider.dart';
 import '../screens/households_screen.dart';
+import 'liquid_glass_widgets.dart';
 
 /// A dropdown widget for selecting the active household.
 ///
@@ -138,7 +139,7 @@ class HouseholdSelector extends StatelessWidget {
 
   void _navigateToHouseholds(BuildContext context) {
     Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => const HouseholdsScreen()),
+      noAnimRoute(const HouseholdsScreen()),
     );
   }
 }

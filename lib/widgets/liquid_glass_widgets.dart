@@ -5,6 +5,19 @@ import 'package:provider/provider.dart';
 import '../app_theme.dart';
 import '../providers/theme_provider.dart';
 
+/// Zero-duration page route — instant transition matching the LiquidGlass
+/// design language (no slide / fade animation).
+Route<T> noAnimRoute<T>(Widget page) {
+  return PageRouteBuilder<T>(
+    pageBuilder: (context, animation, secondaryAnimation) => page,
+    transitionDuration: Duration.zero,
+    reverseTransitionDuration: Duration.zero,
+    transitionsBuilder: (context, animation, secondaryAnimation, child) =>
+        child,
+    opaque: true,
+  );
+}
+
 /// Helper to detect dark mode from the current [Theme] without subscribing
 /// to a provider.  Safe to call from top-level builder functions where the
 /// passed-in [context] may belong to a different widget.
