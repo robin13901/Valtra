@@ -443,6 +443,14 @@ class AnalyticsProvider extends ChangeNotifier {
           totalConsumption: null,
           unit: _getDisplayUnit(_selectedMeterType),
         );
+        // Still load cross-household data — current household being empty
+        // doesn't mean other households have no data for this meter type.
+        _householdComparisonData = [];
+        try {
+          await _loadAllTimeHouseholdData(_selectedMeterType);
+        } catch (_) {
+          _allTimeHouseholdData = [];
+        }
         _isLoading = false;
         notifyListeners();
         return;
