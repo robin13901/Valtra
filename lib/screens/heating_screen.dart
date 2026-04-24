@@ -62,36 +62,6 @@ class _HeatingScreenState extends State<HeatingScreen> {
     }
 
     return Scaffold(
-      appBar: buildGlassAppBar(
-        context: context,
-        title: l10n.heatingMeters,
-        actions: [
-          // Visibility toggle: only on Liste tab
-          if (_currentTab == 1)
-            Builder(builder: (context) {
-              final provider = context.watch<HeatingProvider>();
-              return IconButton(
-                icon: Icon(
-                  provider.showInterpolatedValues
-                      ? Icons.visibility
-                      : Icons.visibility_off,
-                ),
-                onPressed: () => provider.toggleInterpolatedValues(),
-                tooltip: provider.showInterpolatedValues
-                    ? l10n.hideInterpolatedValues
-                    : l10n.showInterpolatedValues,
-              );
-            }),
-          // Room management: only on Liste tab
-          if (_currentTab == 1)
-            IconButton(
-              icon: const Icon(Icons.meeting_room),
-              onPressed: () => _navigateToRooms(context),
-              tooltip: l10n.manageRooms,
-            ),
-          const SizedBox(width: 8),
-        ],
-      ),
       body: Stack(
         children: [
           IndexedStack(
@@ -118,6 +88,33 @@ class _HeatingScreenState extends State<HeatingScreen> {
               onRightTap: () => _addMeter(context),
               rightVisibleForIndices: const {1},
             ),
+          ),
+          buildLiquidGlassAppBar(
+            context,
+            title: l10n.heatingMeters,
+            actions: [
+              if (_currentTab == 1)
+                Builder(builder: (context) {
+                  final provider = context.watch<HeatingProvider>();
+                  return IconButton(
+                    icon: Icon(
+                      provider.showInterpolatedValues
+                          ? Icons.visibility
+                          : Icons.visibility_off,
+                    ),
+                    onPressed: () => provider.toggleInterpolatedValues(),
+                    tooltip: provider.showInterpolatedValues
+                        ? l10n.hideInterpolatedValues
+                        : l10n.showInterpolatedValues,
+                  );
+                }),
+              if (_currentTab == 1)
+                IconButton(
+                  icon: const Icon(Icons.meeting_room),
+                  onPressed: () => _navigateToRooms(context),
+                  tooltip: l10n.manageRooms,
+                ),
+            ],
           ),
         ],
       ),
@@ -169,7 +166,7 @@ class _HeatingScreenState extends State<HeatingScreen> {
     final heaterSlices = _buildHeaterSlices(heatingProvider, selectedMonth);
 
     return ListView(
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
+      padding: EdgeInsets.fromLTRB(16, liquidGlassAppBarHeight(context) + 16, 16, 100),
       children: [
         // Month selector
         MonthSelector(
@@ -458,7 +455,7 @@ class _HeatingMetersByRoom extends StatelessWidget {
     final roomNames = metersByRoom.keys.toList()..sort();
 
     return ListView.builder(
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
+      padding: EdgeInsets.fromLTRB(16, liquidGlassAppBarHeight(context) + 16, 16, 100),
       itemCount: roomNames.length,
       itemBuilder: (context, index) {
         final roomName = roomNames[index];

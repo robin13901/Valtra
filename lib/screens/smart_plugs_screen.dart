@@ -50,18 +50,6 @@ class _SmartPlugsScreenState extends State<SmartPlugsScreen> {
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
-      appBar: buildGlassAppBar(
-        context: context,
-        title: l10n.smartPlugs,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.meeting_room),
-            onPressed: () => _navigateToRooms(context),
-            tooltip: l10n.manageRooms,
-          ),
-          const SizedBox(width: 8),
-        ],
-      ),
       body: Stack(
         children: [
           IndexedStack(
@@ -89,6 +77,17 @@ class _SmartPlugsScreenState extends State<SmartPlugsScreen> {
               rightVisibleForIndices: const {1},
             ),
           ),
+          buildLiquidGlassAppBar(
+            context,
+            title: l10n.smartPlugs,
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.meeting_room),
+                onPressed: () => _navigateToRooms(context),
+                tooltip: l10n.manageRooms,
+              ),
+            ],
+          ),
         ],
       ),
     );
@@ -108,7 +107,7 @@ class _SmartPlugsScreenState extends State<SmartPlugsScreen> {
     }
 
     return ListView.builder(
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
+      padding: EdgeInsets.fromLTRB(16, liquidGlassAppBarHeight(context) + 16, 16, 100),
       itemCount: plugs.length,
       itemBuilder: (context, index) {
         return _SmartPlugExpandableCard(plugWithRoom: plugs[index]);

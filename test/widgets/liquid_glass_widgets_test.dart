@@ -97,14 +97,19 @@ void main() {
     });
   });
 
-  group('buildGlassAppBar', () {
+  group('buildLiquidGlassAppBar', () {
     testWidgets('renders title', (tester) async {
       await tester.pumpWidget(buildApp(
         child: Builder(
           builder: (context) => Scaffold(
-            appBar: buildGlassAppBar(
-              context: context,
-              title: 'Test Title',
+            body: Stack(
+              children: [
+                buildLiquidGlassAppBar(
+                  context,
+                  title: 'Test Title',
+                  showBackButton: false,
+                ),
+              ],
             ),
           ),
         ),
@@ -118,13 +123,18 @@ void main() {
       await tester.pumpWidget(buildApp(
         child: Builder(
           builder: (context) => Scaffold(
-            appBar: buildGlassAppBar(
-              context: context,
-              title: 'Actions',
-              actions: [
-                IconButton(
-                  icon: const Icon(Icons.search),
-                  onPressed: () {},
+            body: Stack(
+              children: [
+                buildLiquidGlassAppBar(
+                  context,
+                  title: 'Actions',
+                  showBackButton: false,
+                  actions: [
+                    IconButton(
+                      icon: const Icon(Icons.search),
+                      onPressed: () {},
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -136,21 +146,25 @@ void main() {
       expect(find.byIcon(Icons.search), findsOneWidget);
     });
 
-    testWidgets('renders with leading', (tester) async {
+    testWidgets('renders with back button', (tester) async {
       await tester.pumpWidget(buildApp(
         child: Builder(
           builder: (context) => Scaffold(
-            appBar: buildGlassAppBar(
-              context: context,
-              title: 'Leading',
-              leading: const Icon(Icons.menu),
+            body: Stack(
+              children: [
+                buildLiquidGlassAppBar(
+                  context,
+                  title: 'Back',
+                  showBackButton: true,
+                ),
+              ],
             ),
           ),
         ),
       ));
       await tester.pumpAndSettle();
 
-      expect(find.byIcon(Icons.menu), findsOneWidget);
+      expect(find.byType(BackButton), findsOneWidget);
     });
   });
 

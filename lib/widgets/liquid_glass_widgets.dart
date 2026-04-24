@@ -46,48 +46,79 @@ Widget buildCircleButton({
   );
 }
 
-/// Builds an app bar with glass effect.
-PreferredSizeWidget buildGlassAppBar({
-  required BuildContext context,
+/// Builds an app bar with LiquidGlass effect.
+///
+/// Returns a [Positioned] widget — must be placed inside a [Stack] that fills
+/// the [Scaffold.body].  The body content needs top padding of
+/// `MediaQuery.of(context).padding.top + kToolbarHeight` so it doesn't hide
+/// behind the glass bar.
+Widget buildLiquidGlassAppBar(
+  BuildContext context, {
   required String title,
+  bool showBackButton = true,
   List<Widget>? actions,
-  Widget? leading,
-  bool centerTitle = true,
 }) {
-  final isDark = _isDarkFromTheme(context);
-  final textColor = isDark ? Colors.white : AppColors.ultraViolet;
+  final double statusBar = MediaQuery.of(context).padding.top;
+  final double height = statusBar + kToolbarHeight;
+  final settings = liquidGlassSettings(context);
 
-  return PreferredSize(
-    preferredSize: const Size.fromHeight(kToolbarHeight),
-    child: Container(
-      decoration: BoxDecoration(
-        borderRadius: const BorderRadius.vertical(bottom: Radius.circular(16)),
-        color: isDark
-            ? AppColors.darkSurface.withValues(alpha: 0.9)
-            : AppColors.lightSurface.withValues(alpha: 0.9),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.ultraViolet.withValues(alpha: 0.1),
-            blurRadius: 10,
-            offset: const Offset(0, 5),
-          ),
-        ],
-      ),
-      child: AppBar(
-        title: Text(
-          title,
-          style: TextStyle(color: textColor, fontWeight: FontWeight.w600),
+  const double overscan = 40.0;
+
+  return Positioned(
+    top: -overscan,
+    left: -overscan,
+    right: -overscan,
+    height: height + overscan,
+    child: LiquidGlassLayer(
+      settings: settings,
+      child: LiquidGlass.grouped(
+        shape: const LiquidRoundedSuperellipse(borderRadius: 0),
+        child: Stack(
+          children: [
+            Positioned(
+              top: -overscan,
+              left: 0,
+              right: 0,
+              height: height + overscan * 2,
+              child: Container(),
+            ),
+            Positioned(
+              left: overscan,
+              right: overscan,
+              top: statusBar + overscan,
+              height: kToolbarHeight,
+              child: Row(
+                children: [
+                  if (showBackButton) ...[
+                    const BackButton(),
+                  ] else ...[
+                    const SizedBox(width: 8),
+                  ],
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: DefaultTextStyle(
+                      style: Theme.of(context).appBarTheme.titleTextStyle ??
+                          Theme.of(context).textTheme.titleLarge!,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      child: Text(title),
+                    ),
+                  ),
+                  if (actions != null) ...actions,
+                  const SizedBox(width: 8),
+                ],
+              ),
+            ),
+          ],
         ),
-        centerTitle: centerTitle,
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: leading,
-        actions: actions,
-        iconTheme: IconThemeData(color: textColor),
       ),
     ),
   );
 }
+
+/// Top inset for body content placed below a [buildLiquidGlassAppBar].
+double liquidGlassAppBarHeight(BuildContext context) =>
+    MediaQuery.of(context).padding.top + kToolbarHeight;
 
 /// Shared LiquidGlass rendering settings for nav bar and buttons.
 LiquidGlassSettings liquidGlassSettings(BuildContext context) {

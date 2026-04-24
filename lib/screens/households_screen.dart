@@ -21,30 +21,34 @@ class HouseholdsScreen extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
-      appBar: buildGlassAppBar(
-        context: context,
-        title: l10n.households,
-      ),
-      body: Consumer<HouseholdProvider>(
-        builder: (context, provider, child) {
-          final households = provider.households;
+      body: Stack(
+        children: [
+          Consumer<HouseholdProvider>(
+            builder: (context, provider, child) {
+              final households = provider.households;
 
-          if (households.isEmpty) {
-            return _buildEmptyState(context, l10n);
-          }
+              if (households.isEmpty) {
+                return Padding(
+                  padding: EdgeInsets.only(top: liquidGlassAppBarHeight(context)),
+                  child: _buildEmptyState(context, l10n),
+                );
+              }
 
-          return ListView.builder(
-            padding: const EdgeInsets.all(16),
-            itemCount: households.length,
-            itemBuilder: (context, index) {
-              final household = households[index];
-              return _HouseholdCard(
-                household: household,
-                isSelected: household.id == provider.selectedHouseholdId,
+              return ListView.builder(
+                padding: EdgeInsets.fromLTRB(16, liquidGlassAppBarHeight(context) + 16, 16, 16),
+                itemCount: households.length,
+                itemBuilder: (context, index) {
+                  final household = households[index];
+                  return _HouseholdCard(
+                    household: household,
+                    isSelected: household.id == provider.selectedHouseholdId,
+                  );
+                },
               );
             },
-          );
-        },
+          ),
+          buildLiquidGlassAppBar(context, title: l10n.households),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _showCreateDialog(context),

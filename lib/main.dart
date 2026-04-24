@@ -397,25 +397,30 @@ class _HomeScreenState extends State<HomeScreen> {
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
-      appBar: buildGlassAppBar(
-        context: context,
-        title: '',
-        actions: [
-          const HouseholdSelector(),
-          IconButton(
-            icon: const Icon(Icons.settings),
-            onPressed: () => _navigateToSettings(context),
-            tooltip: l10n.settings,
+      body: Stack(
+        children: [
+          _buildHomeHub(context, l10n),
+          buildLiquidGlassAppBar(
+            context,
+            title: '',
+            showBackButton: false,
+            actions: [
+              const HouseholdSelector(),
+              IconButton(
+                icon: const Icon(Icons.settings),
+                onPressed: () => _navigateToSettings(context),
+                tooltip: l10n.settings,
+              ),
+            ],
           ),
         ],
       ),
-      body: _buildHomeHub(context, l10n),
     );
   }
 
   Widget _buildHomeHub(BuildContext context, AppLocalizations l10n) {
     return SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+      padding: EdgeInsets.fromLTRB(8, liquidGlassAppBarHeight(context) + 16, 8, 16),
       child: Column(
         children: [
           // App icon and title

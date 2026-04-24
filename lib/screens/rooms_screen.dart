@@ -19,13 +19,17 @@ class RoomsScreen extends StatelessWidget {
     final rooms = provider.rooms;
 
     return Scaffold(
-      appBar: buildGlassAppBar(
-        context: context,
-        title: l10n.rooms,
+      body: Stack(
+        children: [
+          Padding(
+            padding: EdgeInsets.only(top: liquidGlassAppBarHeight(context)),
+            child: rooms.isEmpty
+                ? _buildEmptyState(context, l10n)
+                : _RoomsList(rooms: rooms),
+          ),
+          buildLiquidGlassAppBar(context, title: l10n.rooms),
+        ],
       ),
-      body: rooms.isEmpty
-          ? _buildEmptyState(context, l10n)
-          : _RoomsList(rooms: rooms),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _addRoom(context),
         child: const Icon(Icons.add),

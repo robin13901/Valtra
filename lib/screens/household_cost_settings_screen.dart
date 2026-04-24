@@ -22,16 +22,20 @@ class HouseholdCostSettingsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     return Scaffold(
-      appBar: buildGlassAppBar(context: context, title: l10n.costProfiles),
-      body: ListView(
-        padding: const EdgeInsets.symmetric(vertical: 8),
-        children: CostMeterType.values
-            .map((type) => Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                  child: _CostMeterTypeCard(meterType: type),
-                ))
-            .toList(),
+      body: Stack(
+        children: [
+          ListView(
+            padding: EdgeInsets.fromLTRB(0, liquidGlassAppBarHeight(context) + 8, 0, 8),
+            children: CostMeterType.values
+                .map((type) => Padding(
+                      padding:
+                          const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                      child: _CostMeterTypeCard(meterType: type),
+                    ))
+                .toList(),
+          ),
+          buildLiquidGlassAppBar(context, title: l10n.costProfiles),
+        ],
       ),
     );
   }

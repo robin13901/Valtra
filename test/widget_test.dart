@@ -210,16 +210,10 @@ void main() {
       await tester.pumpWidget(buildHomeScreen());
       await tester.pumpAndSettle();
 
-      // AppBar title is empty -- 'Valtra' text should not be in the AppBar widget
-      final appBar = find.byType(AppBar);
-      expect(appBar, findsOneWidget);
-      // The AppBar's title should be empty string, not 'Valtra'
-      final appBarWidget = tester.widget<AppBar>(appBar);
-      final titleWidget = appBarWidget.title;
-      if (titleWidget is Text) {
-        expect((titleWidget).data, isNot('Valtra'));
-        expect((titleWidget).data, isEmpty);
-      }
+      // The Liquid Glass AppBar replaced AppBar — no Material AppBar widget.
+      expect(find.byType(AppBar), findsNothing);
+      // 'Valtra' still appears as the body heading, not in the bar.
+      expect(find.text('Valtra'), findsOneWidget);
     });
 
     testWidgets('shows category icons', (tester) async {

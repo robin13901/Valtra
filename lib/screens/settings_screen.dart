@@ -25,21 +25,25 @@ class SettingsScreen extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
-      appBar: buildGlassAppBar(context: context, title: l10n.settings),
-      body: ListView(
-        padding: const EdgeInsets.symmetric(vertical: 8),
+      body: Stack(
         children: [
-          _buildThemeSection(context, l10n),
-          const SizedBox(height: 8),
-          _buildLanguageSection(context, l10n),
-          const SizedBox(height: 8),
-          _buildMeterSettingsSection(context, l10n),
-          const SizedBox(height: 8),
-          _buildCostProfilesNavTile(context, l10n),
-          const SizedBox(height: 8),
-          _buildBackupRestoreSection(context, l10n),
-          const SizedBox(height: 8),
-          _buildAboutSection(context, l10n),
+          ListView(
+            padding: EdgeInsets.fromLTRB(0, liquidGlassAppBarHeight(context) + 8, 0, 8),
+            children: [
+              _buildThemeSection(context, l10n),
+              const SizedBox(height: 8),
+              _buildLanguageSection(context, l10n),
+              const SizedBox(height: 8),
+              _buildMeterSettingsSection(context, l10n),
+              const SizedBox(height: 8),
+              _buildCostProfilesNavTile(context, l10n),
+              const SizedBox(height: 8),
+              _buildBackupRestoreSection(context, l10n),
+              const SizedBox(height: 8),
+              _buildAboutSection(context, l10n),
+            ],
+          ),
+          buildLiquidGlassAppBar(context, title: l10n.settings),
         ],
       ),
     );

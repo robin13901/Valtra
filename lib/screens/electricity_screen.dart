@@ -64,31 +64,6 @@ class _ElectricityScreenState extends State<ElectricityScreen> {
     }
 
     return Scaffold(
-      appBar: buildGlassAppBar(
-        context: context,
-        title: l10n.electricity,
-        actions: [
-          // Visibility toggle: only on Liste tab
-          if (_currentTab == 1)
-            Builder(builder: (context) {
-              final provider = context.watch<ElectricityProvider>();
-              return IconButton(
-                icon: Icon(
-                  provider.showInterpolatedValues
-                      ? Icons.visibility
-                      : Icons.visibility_off,
-                ),
-                onPressed: () => provider.toggleInterpolatedValues(),
-                tooltip: provider.showInterpolatedValues
-                    ? l10n.hideInterpolatedValues
-                    : l10n.showInterpolatedValues,
-              );
-            }),
-          // Cost toggle: only on Analyse tab + cost config exists
-          if (_currentTab == 0) _buildCostToggle(context, l10n),
-          const SizedBox(width: 8),
-        ],
-      ),
       body: Stack(
         children: [
           IndexedStack(
@@ -115,6 +90,28 @@ class _ElectricityScreenState extends State<ElectricityScreen> {
               onRightTap: () => _addReading(context),
               rightVisibleForIndices: const {1},
             ),
+          ),
+          buildLiquidGlassAppBar(
+            context,
+            title: l10n.electricity,
+            actions: [
+              if (_currentTab == 1)
+                Builder(builder: (context) {
+                  final provider = context.watch<ElectricityProvider>();
+                  return IconButton(
+                    icon: Icon(
+                      provider.showInterpolatedValues
+                          ? Icons.visibility
+                          : Icons.visibility_off,
+                    ),
+                    onPressed: () => provider.toggleInterpolatedValues(),
+                    tooltip: provider.showInterpolatedValues
+                        ? l10n.hideInterpolatedValues
+                        : l10n.showInterpolatedValues,
+                  );
+                }),
+              if (_currentTab == 0) _buildCostToggle(context, l10n),
+            ],
           ),
         ],
       ),
@@ -145,7 +142,7 @@ class _ElectricityScreenState extends State<ElectricityScreen> {
     }
 
     return ListView.builder(
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
+      padding: EdgeInsets.fromLTRB(16, liquidGlassAppBarHeight(context) + 16, 16, 100),
       itemCount: items.length,
       itemBuilder: (context, index) {
         final item = items[index];
@@ -205,7 +202,7 @@ class _ElectricityScreenState extends State<ElectricityScreen> {
     }
 
     return ListView(
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
+      padding: EdgeInsets.fromLTRB(16, liquidGlassAppBarHeight(context) + 16, 16, 100),
       children: [
         // Month navigation
         MonthSelector(

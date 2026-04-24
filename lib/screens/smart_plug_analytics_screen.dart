@@ -8,6 +8,7 @@ import '../providers/smart_plug_analytics_provider.dart';
 import '../services/analytics/analytics_models.dart';
 import '../services/number_format_service.dart';
 import '../widgets/charts/chart_legend.dart';
+import '../widgets/liquid_glass_widgets.dart';
 import '../widgets/charts/consumption_pie_chart.dart';
 import '../widgets/charts/month_selector.dart';
 import '../widgets/charts/monthly_bar_chart.dart';
@@ -72,7 +73,7 @@ class _SmartPlugAnalyseTabState extends State<SmartPlugAnalyseTab> {
     }
 
     return ListView(
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
+      padding: EdgeInsets.fromLTRB(16, liquidGlassAppBarHeight(context) + 16, 16, 100),
       children: [
         // Month navigation -- syncs both providers
         MonthSelector(
