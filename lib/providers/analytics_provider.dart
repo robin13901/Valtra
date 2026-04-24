@@ -112,6 +112,7 @@ class AnalyticsProvider extends ChangeNotifier {
     _selectedMeterType = type;
     notifyListeners();
     _loadMonthlyData();
+    _loadYearlyData();
   }
 
   void navigateMonth(int delta) {
