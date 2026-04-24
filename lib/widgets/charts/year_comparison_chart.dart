@@ -198,7 +198,6 @@ class YearComparisonChart extends StatelessWidget {
   }
 
   FlTitlesData _buildTitles(BuildContext context) {
-    final displayUnit = showCosts && costUnit != null ? costUnit! : unit;
     return FlTitlesData(
       topTitles: ChartAxisStyle.hiddenTitles,
       rightTitles: ChartAxisStyle.hiddenTitles,
@@ -226,7 +225,7 @@ class YearComparisonChart extends StatelessWidget {
           },
         ),
       ),
-      leftTitles: ChartAxisStyle.leftTitles(context: context, unit: displayUnit),
+      leftTitles: ChartAxisStyle.leftTitles(context: context),
     );
   }
 }

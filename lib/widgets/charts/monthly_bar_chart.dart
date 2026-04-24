@@ -186,9 +186,6 @@ class _MonthlyBarChartState extends State<MonthlyBarChart> {
       (i) => _buildBarGroup(i, context),
     );
 
-    final displayUnit =
-        widget.showCosts && widget.costUnit != null ? widget.costUnit! : widget.unit;
-
     return BarChartData(
       barGroups: groups,
       alignment: BarChartAlignment.spaceEvenly,
@@ -216,7 +213,7 @@ class _MonthlyBarChartState extends State<MonthlyBarChart> {
           ),
         ),
         leftTitles: useInternalTitles
-            ? ChartAxisStyle.leftTitles(context: context, unit: displayUnit)
+            ? ChartAxisStyle.leftTitles(context: context)
             : const AxisTitles(sideTitles: SideTitles(showTitles: false)),
       ),
       gridData: ChartAxisStyle.gridData(context),
@@ -226,9 +223,6 @@ class _MonthlyBarChartState extends State<MonthlyBarChart> {
   }
 
   BarChartData _buildYAxisOnlyData(BuildContext context) {
-    final displayUnit =
-        widget.showCosts && widget.costUnit != null ? widget.costUnit! : widget.unit;
-
     return BarChartData(
       barGroups: [
         BarChartGroupData(x: 0, barRods: [
@@ -242,7 +236,7 @@ class _MonthlyBarChartState extends State<MonthlyBarChart> {
         bottomTitles: const AxisTitles(
           sideTitles: SideTitles(showTitles: true, reservedSize: 30),
         ),
-        leftTitles: ChartAxisStyle.leftTitles(context: context, unit: displayUnit),
+        leftTitles: ChartAxisStyle.leftTitles(context: context),
       ),
       gridData: const FlGridData(show: false),
       borderData: FlBorderData(show: false),

@@ -620,8 +620,8 @@ void main() {
               await Future.delayed(const Duration(milliseconds: 200));
               await tester.pumpAndSettle();
 
-              // Verify the default shows kWh consumption
-              expect(find.textContaining('kWh'), findsAtLeast(1));
+              // Verify the default shows consumption mode (electric_bolt icon)
+              expect(find.byIcon(Icons.electric_bolt), findsAtLeast(1));
 
               // Tap the cost toggle (electric_bolt icon toggles to euro)
               await tester.tap(find.byIcon(Icons.electric_bolt).last);
@@ -690,9 +690,8 @@ void main() {
               await tester.tap(find.byIcon(Icons.euro));
               await tester.pumpAndSettle();
 
-              // Should revert: electric_bolt icon visible again,
-              // consumption with kWh shown
-              expect(find.textContaining('kWh'), findsAtLeast(1));
+              // Should revert: electric_bolt icon visible again
+              expect(find.byIcon(Icons.electric_bolt), findsAtLeast(1));
 
               await tester.pumpWidget(Container());
             }));

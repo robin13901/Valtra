@@ -9,7 +9,6 @@ import '../services/analytics/analytics_models.dart';
 import '../services/number_format_service.dart';
 import '../widgets/charts/chart_legend.dart';
 import '../widgets/charts/consumption_pie_chart.dart';
-import '../widgets/charts/household_comparison_chart.dart';
 import '../widgets/charts/month_selector.dart';
 import '../widgets/charts/monthly_bar_chart.dart';
 import '../widgets/charts/monthly_summary_card.dart';
@@ -148,21 +147,6 @@ class _SmartPlugAnalyseTabState extends State<SmartPlugAnalyseTab> {
             const SizedBox(height: 24),
           ],
 
-          // Household comparison (only if >1 household has data)
-          if (analyticsProvider.householdComparisonData.length > 1) ...[
-            Text(l10n.households,
-                style: Theme.of(context).textTheme.titleMedium),
-            const SizedBox(height: 8),
-            SizedBox(
-              height: 250,
-              child: HouseholdComparisonChart(
-                households: analyticsProvider.householdComparisonData,
-                unit: monthlyData.unit,
-                locale: locale,
-              ),
-            ),
-            const SizedBox(height: 24),
-          ],
         ],
 
         // Per-plug/room breakdown section with toggle

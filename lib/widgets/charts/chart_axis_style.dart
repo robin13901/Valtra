@@ -34,14 +34,13 @@ class ChartAxisStyle {
         ),
       );
 
-  /// AXIS-03: Small translucent value labels with unit that float inside
+  /// AXIS-03: Small translucent value labels that float inside
   /// the chart area on the dashed horizontal grid lines.
   ///
   /// Used for the left (Y-axis) titles. Labels are skipped at [TitleMeta.min]
   /// and [TitleMeta.max] to avoid clutter at chart edges.
   static AxisTitles leftTitles({
     required BuildContext context,
-    required String unit,
   }) =>
       AxisTitles(
         sideTitles: SideTitles(
@@ -55,7 +54,7 @@ class ChartAxisStyle {
             return SideTitleWidget(
               axisSide: meta.axisSide,
               child: Text(
-                '${value.toStringAsFixed(0)} $unit',
+                value.toStringAsFixed(0),
                 style: TextStyle(
                   fontSize: 10,
                   color: Theme.of(context)

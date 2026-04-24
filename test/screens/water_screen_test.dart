@@ -773,8 +773,8 @@ void main() {
               await tester.tap(find.byIcon(Icons.euro));
               await tester.pumpAndSettle();
 
-              // Should revert to consumption with m³
-              expect(find.textContaining('m³'), findsAtLeast(1));
+              // Should revert to consumption mode (water_drop icon visible)
+              expect(find.byIcon(Icons.water_drop), findsAtLeast(1));
 
               await tester.pumpWidget(Container());
             }));

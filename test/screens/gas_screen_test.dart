@@ -655,9 +655,8 @@ void main() {
               await tester.tap(find.byIcon(Icons.euro));
               await tester.pumpAndSettle();
 
-              // Should revert: local_fire_department icon visible again,
-              // consumption with m³ shown
-              expect(find.textContaining('m³'), findsAtLeast(1));
+              // Should revert: local_fire_department icon visible again
+              expect(find.byIcon(Icons.local_fire_department), findsAtLeast(1));
 
               await tester.pumpWidget(Container());
             }));

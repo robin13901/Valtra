@@ -221,7 +221,7 @@ class _AllTimeHouseholdChartState extends State<AllTimeHouseholdChart> {
         ),
       ),
       leftTitles:
-          ChartAxisStyle.leftTitles(context: context, unit: widget.unit),
+          ChartAxisStyle.leftTitles(context: context),
     );
   }
 }

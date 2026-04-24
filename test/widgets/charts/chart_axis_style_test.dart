@@ -58,11 +58,11 @@ void main() {
     });
 
     group('leftTitles', () {
-      testWidgets('shows titles with unit suffix', (tester) async {
+      testWidgets('shows titles', (tester) async {
         late AxisTitles result;
         await tester.pumpWidget(buildTestApp(
           Builder(builder: (context) {
-            result = ChartAxisStyle.leftTitles(context: context, unit: 'kWh');
+            result = ChartAxisStyle.leftTitles(context: context);
             return const SizedBox();
           }),
         ));
@@ -75,7 +75,7 @@ void main() {
         late AxisTitles result;
         await tester.pumpWidget(buildTestApp(
           Builder(builder: (context) {
-            result = ChartAxisStyle.leftTitles(context: context, unit: 'kWh');
+            result = ChartAxisStyle.leftTitles(context: context);
             return const SizedBox();
           }),
         ));

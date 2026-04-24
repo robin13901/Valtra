@@ -182,7 +182,7 @@ class ConsumptionLineChart extends StatelessWidget {
           },
         ),
       ),
-      leftTitles: ChartAxisStyle.leftTitles(context: context, unit: unit),
+      leftTitles: ChartAxisStyle.leftTitles(context: context),
     );
   }
 

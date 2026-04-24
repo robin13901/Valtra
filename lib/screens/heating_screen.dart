@@ -15,7 +15,6 @@ import '../services/number_format_service.dart';
 import '../widgets/charts/all_time_household_chart.dart';
 import '../widgets/charts/chart_legend.dart';
 import '../widgets/charts/consumption_pie_chart.dart';
-import '../widgets/charts/household_comparison_chart.dart';
 import '../widgets/charts/month_selector.dart';
 import '../widgets/charts/monthly_bar_chart.dart';
 import '../widgets/charts/monthly_summary_card.dart';
@@ -256,19 +255,6 @@ class _HeatingScreenState extends State<HeatingScreen> {
             unit: yearlyData.unit,
             color: color,
             locale: locale,
-          ),
-          const SizedBox(height: 24),
-        ],
-
-        // Household comparison (only if >1 household data available)
-        if (analyticsProvider.householdComparisonData.length > 1) ...[
-          SizedBox(
-            height: 250,
-            child: HouseholdComparisonChart(
-              households: analyticsProvider.householdComparisonData,
-              unit: monthlyData.unit,
-              locale: locale,
-            ),
           ),
           const SizedBox(height: 24),
         ],

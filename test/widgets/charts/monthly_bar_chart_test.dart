@@ -404,7 +404,7 @@ void main() {
       expect(data.titlesData.leftTitles.sideTitles.showTitles, isTrue);
     });
 
-    testWidgets('Y-axis label widget includes unit text for consumption mode',
+    testWidgets('Y-axis label widget shows numeric value without unit',
         (tester) async {
       final periods = buildSamplePeriods();
 
@@ -430,10 +430,10 @@ void main() {
       final labelWidget = getTitles(50.0, meta);
       expect(labelWidget, isA<SideTitleWidget>());
       final text = (labelWidget as SideTitleWidget).child as Text;
-      expect(text.data, contains('kWh'));
+      expect(text.data, '50');
     });
 
-    testWidgets('Y-axis label widget includes costUnit text in cost mode',
+    testWidgets('Y-axis label widget shows numeric value in cost mode',
         (tester) async {
       final periods = buildSamplePeriods();
 
@@ -463,7 +463,7 @@ void main() {
       final labelWidget = getTitles(50.0, meta);
       expect(labelWidget, isA<SideTitleWidget>());
       final text = (labelWidget as SideTitleWidget).child as Text;
-      expect(text.data, contains('EUR'));
+      expect(text.data, '50');
     });
   });
 
