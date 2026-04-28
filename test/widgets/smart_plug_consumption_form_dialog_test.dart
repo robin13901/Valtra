@@ -34,20 +34,14 @@ void main() {
   }
 
   group('SmartPlugConsumptionFormDialog', () {
-    testWidgets('renders month and year dropdowns', (tester) async {
+    testWidgets('renders month and year wheel pickers', (tester) async {
       await tester.pumpWidget(buildTestWidget());
       await tester.pumpAndSettle();
 
       await tester.tap(find.text('Open Dialog'));
       await tester.pumpAndSettle();
 
-      // Two DropdownButtonFormField<int> widgets: month and year
-      expect(
-        find.byType(DropdownButtonFormField<int>),
-        findsNWidgets(2),
-      );
-
-      // "Select month" label
+      expect(find.byType(ListWheelScrollView), findsNWidgets(2));
       expect(find.text('Select month'), findsOneWidget);
     });
 
@@ -62,9 +56,7 @@ void main() {
       final now = DateTime.now();
       final monthName = DateFormat.MMMM('en').format(now);
 
-      // Current month name should appear in the dropdown
       expect(find.text(monthName), findsOneWidget);
-      // Current year should appear in the dropdown
       expect(find.text(now.year.toString()), findsOneWidget);
     });
 
@@ -75,7 +67,6 @@ void main() {
       await tester.tap(find.text('Open Dialog'));
       await tester.pumpAndSettle();
 
-      // Try to save with empty value
       await tester.tap(find.text('Save'));
       await tester.pumpAndSettle();
 
@@ -111,12 +102,10 @@ void main() {
       await tester.tap(find.text('Open Dialog'));
       await tester.pumpAndSettle();
 
-      // Enter valid value
       await tester.enterText(
           find.widgetWithText(TextFormField, 'Value'), '15.5');
       await tester.pumpAndSettle();
 
-      // Save
       await tester.tap(find.text('Save'));
       await tester.pumpAndSettle();
 
@@ -141,16 +130,9 @@ void main() {
       await tester.tap(find.text('Open Dialog'));
       await tester.pumpAndSettle();
 
-      // Verify edit mode title
       expect(find.text('Edit Consumption'), findsOneWidget);
-
-      // Verify value is pre-filled
       expect(find.text('25.0'), findsOneWidget);
-
-      // Verify month is pre-filled to March
       expect(find.text('March'), findsOneWidget);
-
-      // Verify year is pre-filled to 2024
       expect(find.text('2024'), findsOneWidget);
     });
 
@@ -169,22 +151,19 @@ void main() {
       await tester.tap(find.text('Open Dialog'));
       await tester.pumpAndSettle();
 
-      // Enter some data
       await tester.enterText(
           find.widgetWithText(TextFormField, 'Value'), '10');
       await tester.pumpAndSettle();
 
-      // Cancel
       await tester.tap(find.text('Cancel'));
       await tester.pumpAndSettle();
 
-      // Dialog should be closed
       expect(find.text('Add Consumption'), findsNothing);
       expect(resultCalled, true);
       expect(result, isNull);
     });
 
-    testWidgets('shows duplicate warning when onCheckDuplicate returns true',
+    testWidgets('shows duplicate warning when scrolling year wheel',
         (tester) async {
       await tester.pumpWidget(buildTestWidget(
         onCheckDuplicate: (_) async => true,
@@ -194,17 +173,11 @@ void main() {
       await tester.tap(find.text('Open Dialog'));
       await tester.pumpAndSettle();
 
-      // The duplicate check is triggered on month/year change.
-      // Open the year dropdown and select a different year to trigger the check.
-      final yearDropdowns = find.byType(DropdownButtonFormField<int>);
-      await tester.tap(yearDropdowns.last);
+      // Scroll the year wheel (second ListWheelScrollView) down to trigger change
+      final yearWheel = find.byType(ListWheelScrollView).last;
+      await tester.drag(yearWheel, const Offset(0, -40));
       await tester.pumpAndSettle();
 
-      // Select the first year in the list (2020)
-      await tester.tap(find.text('2020').last);
-      await tester.pumpAndSettle();
-
-      // Should show duplicate warning
       expect(
         find.text(
             'Entry already exists for this month. It will be updated.'),
@@ -222,15 +195,11 @@ void main() {
       await tester.tap(find.text('Open Dialog'));
       await tester.pumpAndSettle();
 
-      // Trigger month change
-      final monthDropdowns = find.byType(DropdownButtonFormField<int>);
-      await tester.tap(monthDropdowns.first);
+      // Scroll the month wheel to trigger change
+      final monthWheel = find.byType(ListWheelScrollView).first;
+      await tester.drag(monthWheel, const Offset(0, -40));
       await tester.pumpAndSettle();
 
-      await tester.tap(find.text('January').last);
-      await tester.pumpAndSettle();
-
-      // Should NOT show duplicate warning
       expect(
         find.text(
             'Entry already exists for this month. It will be updated.'),
@@ -245,35 +214,55 @@ void main() {
       await tester.tap(find.text('Open Dialog'));
       await tester.pumpAndSettle();
 
-      // Verify no interval type related UI
       expect(find.text('Interval Type'), findsNothing);
       expect(find.text('Daily'), findsNothing);
       expect(find.text('Weekly'), findsNothing);
-
-      // No date picker / start date
       expect(find.text('Start Date'), findsNothing);
     });
 
-    testWidgets('month dropdown shows month names', (tester) async {
+    testWidgets('month wheel shows month names', (tester) async {
       await tester.pumpWidget(buildTestWidget());
       await tester.pumpAndSettle();
 
       await tester.tap(find.text('Open Dialog'));
       await tester.pumpAndSettle();
 
-      // Open month dropdown
-      final dropdowns = find.byType(DropdownButtonFormField<int>);
-      await tester.tap(dropdowns.first);
+      // The wheel shows the current month in the center.
+      // Nearby months are visible due to the wheel viewport.
+      final now = DateTime.now();
+      final currentMonthName = DateFormat.MMMM('en').format(now);
+      expect(find.text(currentMonthName), findsOneWidget);
+    });
+
+    testWidgets('scrolling month wheel changes selection', (tester) async {
+      SmartPlugConsumptionFormData? result;
+
+      await tester.pumpWidget(buildTestWidget(
+        onResult: (r) => result = r,
+      ));
       await tester.pumpAndSettle();
 
-      // Verify some months are visible in the dropdown overlay
-      // (not all may be visible at once due to scrolling)
-      expect(find.text('January'), findsWidgets);
-      expect(find.text('February'), findsWidgets);
-      expect(find.text('March'), findsWidgets);
-      expect(find.text('April'), findsWidgets);
-      expect(find.text('May'), findsWidgets);
-      expect(find.text('June'), findsWidgets);
+      await tester.tap(find.text('Open Dialog'));
+      await tester.pumpAndSettle();
+
+      // Scroll month wheel up (negative Y = scroll forward/down in list)
+      final monthWheel = find.byType(ListWheelScrollView).first;
+      await tester.drag(monthWheel, const Offset(0, -40));
+      await tester.pumpAndSettle();
+
+      await tester.enterText(
+          find.widgetWithText(TextFormField, 'Value'), '10');
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Save'));
+      await tester.pumpAndSettle();
+
+      expect(result, isNotNull);
+      final now = DateTime.now();
+      final expectedMonth = (now.month % 12) + 1;
+      expect(result!.month.month, expectedMonth);
+      expect(result!.month.year, now.year);
+      expect(result!.valueKwh, 10.0);
     });
   });
 }

@@ -56,8 +56,14 @@ class SmartPlugConsumptionFormDialog extends StatefulWidget {
 
 class _SmartPlugConsumptionFormDialogState
     extends State<SmartPlugConsumptionFormDialog> {
+  static const int _startYear = 2020;
+  static const double _kItemExtent = 40.0;
+  static const double _kWheelHeight = 130.0;
+
   final _formKey = GlobalKey<FormState>();
   late final TextEditingController _valueController;
+  late final FixedExtentScrollController _monthScrollController;
+  late final FixedExtentScrollController _yearScrollController;
   late int _selectedMonth;
   late int _selectedYear;
   bool _duplicateWarning = false;
@@ -78,41 +84,20 @@ class _SmartPlugConsumptionFormDialogState
       _selectedMonth = now.month;
       _selectedYear = now.year;
     }
+    _monthScrollController = FixedExtentScrollController(
+      initialItem: _selectedMonth - 1,
+    );
+    _yearScrollController = FixedExtentScrollController(
+      initialItem: _selectedYear - _startYear,
+    );
   }
 
   @override
   void dispose() {
     _valueController.dispose();
+    _monthScrollController.dispose();
+    _yearScrollController.dispose();
     super.dispose();
-  }
-
-  /// Generates localized month names for the dropdown.
-  List<DropdownMenuItem<int>> _buildMonthItems(String locale) {
-    return List.generate(12, (index) {
-      final month = index + 1;
-      // Create a date for the 15th of each month to format the month name
-      final date = DateTime(2024, month, 15);
-      final formatter = DateFormat.MMMM(locale);
-      return DropdownMenuItem<int>(
-        value: month,
-        child: Text(formatter.format(date)),
-      );
-    });
-  }
-
-  /// Generates year items for the dropdown: 2020 to current year + 1.
-  List<DropdownMenuItem<int>> _buildYearItems() {
-    final currentYear = DateTime.now().year;
-    return List.generate(
-      currentYear - 2020 + 2,
-      (index) {
-        final year = 2020 + index;
-        return DropdownMenuItem<int>(
-          value: year,
-          child: Text(year.toString()),
-        );
-      },
-    );
   }
 
   /// Checks for duplicate month entry when month/year selection changes.
@@ -124,7 +109,6 @@ class _SmartPlugConsumptionFormDialogState
 
     final selectedDate = DateTime(_selectedYear, _selectedMonth, 1);
 
-    // Don't warn when editing the same month
     if (isEditing && widget.consumption!.month == selectedDate) {
       setState(() => _duplicateWarning = false);
       return;
@@ -136,10 +120,127 @@ class _SmartPlugConsumptionFormDialogState
     }
   }
 
+  Widget _buildWheelPicker({
+    required FixedExtentScrollController controller,
+    required int itemCount,
+    required String Function(int index) labelBuilder,
+    required ValueChanged<int> onSelectedItemChanged,
+    required int selectedIndex,
+  }) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final dialogBg =
+        theme.dialogTheme.backgroundColor ?? colorScheme.surface;
+
+    return Container(
+      height: _kWheelHeight,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: colorScheme.outline.withValues(alpha: 0.3),
+        ),
+        color: colorScheme.surface,
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(12),
+        child: Stack(
+          children: [
+            ListWheelScrollView.useDelegate(
+              controller: controller,
+              itemExtent: _kItemExtent,
+              diameterRatio: 1.5,
+              perspective: 0.003,
+              magnification: 1.05,
+              useMagnifier: true,
+              physics: const FixedExtentScrollPhysics(),
+              onSelectedItemChanged: onSelectedItemChanged,
+              childDelegate: ListWheelChildBuilderDelegate(
+                childCount: itemCount,
+                builder: (context, index) {
+                  final isSelected = index == selectedIndex;
+                  return Center(
+                    child: Text(
+                      labelBuilder(index),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: isSelected
+                          ? theme.textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: colorScheme.primary,
+                            )
+                          : theme.textTheme.bodyMedium?.copyWith(
+                              color: colorScheme.onSurface
+                                  .withValues(alpha: 0.6),
+                            ),
+                    ),
+                  );
+                },
+              ),
+            ),
+            // Selection highlight band
+            IgnorePointer(
+              child: Center(
+                child: Container(
+                  height: _kItemExtent,
+                  decoration: BoxDecoration(
+                    color: colorScheme.primary.withValues(alpha: 0.08),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.symmetric(
+                      horizontal: BorderSide(
+                        color: colorScheme.primary.withValues(alpha: 0.2),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            // Top fade
+            IgnorePointer(
+              child: Align(
+                alignment: Alignment.topCenter,
+                child: Container(
+                  height: _kWheelHeight * 0.35,
+                  decoration: BoxDecoration(
+                    borderRadius: const BorderRadius.vertical(
+                        top: Radius.circular(12)),
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [dialogBg, dialogBg.withValues(alpha: 0.0)],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            // Bottom fade
+            IgnorePointer(
+              child: Align(
+                alignment: Alignment.bottomCenter,
+                child: Container(
+                  height: _kWheelHeight * 0.35,
+                  decoration: BoxDecoration(
+                    borderRadius: const BorderRadius.vertical(
+                        bottom: Radius.circular(12)),
+                    gradient: LinearGradient(
+                      begin: Alignment.bottomCenter,
+                      end: Alignment.topCenter,
+                      colors: [dialogBg, dialogBg.withValues(alpha: 0.0)],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final locale = Localizations.localeOf(context).languageCode;
+    final yearCount = DateTime.now().year - _startYear + 2;
 
     return AlertDialog(
       title: Text(isEditing ? l10n.editConsumption : l10n.addConsumption),
@@ -149,7 +250,6 @@ class _SmartPlugConsumptionFormDialogState
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Month/Year picker label
             Text(
               l10n.selectMonth,
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
@@ -157,53 +257,42 @@ class _SmartPlugConsumptionFormDialogState
                   ),
             ),
             const SizedBox(height: 8),
-            // Month and Year dropdowns in a row
             Row(
               children: [
                 Expanded(
                   flex: 3,
-                  child: DropdownButtonFormField<int>(
-                    initialValue: _selectedMonth,
-                    items: _buildMonthItems(locale),
-                    onChanged: (value) {
-                      if (value != null) {
-                        _selectedMonth = value;
-                        _checkDuplicate();
-                      }
+                  child: _buildWheelPicker(
+                    controller: _monthScrollController,
+                    itemCount: 12,
+                    selectedIndex: _selectedMonth - 1,
+                    labelBuilder: (index) {
+                      final date = DateTime(2024, index + 1, 15);
+                      return DateFormat.MMMM(locale).format(date);
                     },
-                    decoration: const InputDecoration(
-                      isDense: true,
-                      contentPadding: EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 8,
-                      ),
-                    ),
+                    onSelectedItemChanged: (index) {
+                      HapticFeedback.selectionClick();
+                      setState(() => _selectedMonth = index + 1);
+                      _checkDuplicate();
+                    },
                   ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
                   flex: 2,
-                  child: DropdownButtonFormField<int>(
-                    initialValue: _selectedYear,
-                    items: _buildYearItems(),
-                    onChanged: (value) {
-                      if (value != null) {
-                        _selectedYear = value;
-                        _checkDuplicate();
-                      }
+                  child: _buildWheelPicker(
+                    controller: _yearScrollController,
+                    itemCount: yearCount,
+                    selectedIndex: _selectedYear - _startYear,
+                    labelBuilder: (index) => (_startYear + index).toString(),
+                    onSelectedItemChanged: (index) {
+                      HapticFeedback.selectionClick();
+                      setState(() => _selectedYear = _startYear + index);
+                      _checkDuplicate();
                     },
-                    decoration: const InputDecoration(
-                      isDense: true,
-                      contentPadding: EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 8,
-                      ),
-                    ),
                   ),
                 ),
               ],
             ),
-            // Duplicate warning
             if (_duplicateWarning) ...[
               const SizedBox(height: 8),
               Text(
@@ -214,7 +303,6 @@ class _SmartPlugConsumptionFormDialogState
               ),
             ],
             const SizedBox(height: 16),
-            // Value input
             TextFormField(
               controller: _valueController,
               decoration: InputDecoration(
