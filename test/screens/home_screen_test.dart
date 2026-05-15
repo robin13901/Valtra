@@ -96,7 +96,8 @@ void main() {
                   if (decoration.gradient is LinearGradient) {
                     final gradient = decoration.gradient as LinearGradient;
                     final hasUltraViolet = gradient.colors.any(
-                      (c) => c.value == AppColors.ultraViolet.value,
+                      (c) =>
+                          c.toARGB32() == AppColors.ultraViolet.toARGB32(),
                     );
                     if (hasUltraViolet) {
                       foundGradient = true;
